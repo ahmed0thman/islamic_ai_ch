@@ -1,0 +1,4445 @@
+{
+  "wireMagic": "pb3",
+  "pens": [ {
+  
+  } ],
+  "wsWinStyles": [ {
+  
+  }, {
+    "mhModeHint": 2,
+    "juJustifCode": 1,
+    "sdScrollDir": 3
+  } ],
+  "wpWinPositions": [ {
+  
+  }, {
+    "apPoint": 6,
+    "ahHorPos": 20,
+    "avVerPos": 100,
+    "rcRows": 2,
+    "ccCols": 40
+  } ],
+  "events": [ {
+    "tStartMs": 0,
+    "dDurationMs": 439879,
+    "id": 1,
+    "wpWinPosId": 1,
+    "wsWinStyleId": 1
+  }, {
+    "tStartMs": 6040,
+    "dDurationMs": 5360,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "منصه",
+      "acAsrConf": 0
+    }, {
+      "utf8": " زادي",
+      "tOffsetMs": 600,
+      "acAsrConf": 0
+    }, {
+      "utf8": " للتعلم",
+      "tOffsetMs": 1279,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الشرعي",
+      "tOffsetMs": 2040,
+      "acAsrConf": 0
+    }, {
+      "utf8": " المفتوح",
+      "tOffsetMs": 2639,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 11920,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 11930,
+    "dDurationMs": 3200,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "[موسيقى]"
+    } ]
+  }, {
+    "tStartMs": 15269,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 15279,
+    "dDurationMs": 6080,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "تقدم",
+      "acAsrConf": 0
+    }, {
+      "utf8": " بسم",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الله",
+      "tOffsetMs": 1281,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الرحمن",
+      "tOffsetMs": 1441,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الرحيم",
+      "tOffsetMs": 1801,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الحمد",
+      "tOffsetMs": 2241,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لله",
+      "tOffsetMs": 2601,
+      "acAsrConf": 0
+    }, {
+      "utf8": " رب",
+      "tOffsetMs": 2881,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 18390,
+    "dDurationMs": 2969,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 18400,
+    "dDurationMs": 6480,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "العالمين",
+      "acAsrConf": 0
+    }, {
+      "utf8": " وصلى",
+      "tOffsetMs": 520,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الله",
+      "tOffsetMs": 920,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وسلم",
+      "tOffsetMs": 1200,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وبارك",
+      "tOffsetMs": 1680,
+      "acAsrConf": 0
+    }, {
+      "utf8": " على",
+      "tOffsetMs": 2240,
+      "acAsrConf": 0
+    }, {
+      "utf8": " نبينا",
+      "tOffsetMs": 2480,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 21349,
+    "dDurationMs": 3531,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 21359,
+    "dDurationMs": 6401,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "محمد",
+      "acAsrConf": 0
+    }, {
+      "utf8": " وعلى",
+      "tOffsetMs": 561,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اله",
+      "tOffsetMs": 881,
+      "acAsrConf": 0
+    }, {
+      "utf8": " واصحابه",
+      "tOffsetMs": 1321,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اجمعين",
+      "tOffsetMs": 2080,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وحياكم",
+      "tOffsetMs": 2680,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الله",
+      "tOffsetMs": 3240,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 24870,
+    "dDurationMs": 2890,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 24880,
+    "dDurationMs": 7679,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "ايها",
+      "acAsrConf": 0
+    }, {
+      "utf8": " الاخوه",
+      "tOffsetMs": 479,
+      "acAsrConf": 0
+    }, {
+      "utf8": " والاخوات",
+      "tOffsetMs": 840,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 27750,
+    "dDurationMs": 4809,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 27760,
+    "dDurationMs": 9600,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "في",
+      "acAsrConf": 0
+    }, {
+      "utf8": " هذه",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " المنصه",
+      "tOffsetMs": 1679,
+      "acAsrConf": 0
+    }, {
+      "utf8": " المباركه",
+      "tOffsetMs": 2439,
+      "acAsrConf": 0
+    }, {
+      "utf8": " منصه",
+      "tOffsetMs": 3080,
+      "acAsrConf": 0
+    }, {
+      "utf8": " زادي",
+      "tOffsetMs": 3800,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 32549,
+    "dDurationMs": 4811,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 32559,
+    "dDurationMs": 8401,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "التعليميه",
+      "acAsrConf": 0
+    }, {
+      "utf8": " التي",
+      "tOffsetMs": 961,
+      "acAsrConf": 0
+    }, {
+      "utf8": " نتعلم",
+      "tOffsetMs": 1961,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فيها",
+      "tOffsetMs": 2601,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تبسيطا",
+      "tOffsetMs": 3520,
+      "acAsrConf": 0
+    }, {
+      "utf8": " مهما",
+      "tOffsetMs": 4121,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 37350,
+    "dDurationMs": 3610,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 37360,
+    "dDurationMs": 6199,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "لفن",
+      "acAsrConf": 0
+    }, {
+      "utf8": " من",
+      "tOffsetMs": 680,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الفنون",
+      "tOffsetMs": 840,
+      "acAsrConf": 0
+    }, {
+      "utf8": " المهمه",
+      "tOffsetMs": 1440,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وهي",
+      "tOffsetMs": 1960,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فن",
+      "tOffsetMs": 2679,
+      "acAsrConf": 0
+    }, {
+      "utf8": " التدبر",
+      "tOffsetMs": 3039,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 40950,
+    "dDurationMs": 2609,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 40960,
+    "dDurationMs": 8320,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "والدارس",
+      "acAsrConf": 0
+    }, {
+      "utf8": " في",
+      "tOffsetMs": 800,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هذه",
+      "tOffsetMs": 960,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الوحده",
+      "tOffsetMs": 1439,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 43549,
+    "dDurationMs": 5731,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 43559,
+    "dDurationMs": 10081,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "المهمه",
+      "acAsrConf": 0
+    }, {
+      "utf8": " نتلقى",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فيها",
+      "tOffsetMs": 1601,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بعض",
+      "tOffsetMs": 2160,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الامور",
+      "tOffsetMs": 3520,
+      "acAsrConf": 0
+    }, {
+      "utf8": " المتعلقه",
+      "tOffsetMs": 4520,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 49270,
+    "dDurationMs": 4370,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 49280,
+    "dDurationMs": 7520,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "بتدار",
+      "acAsrConf": 0
+    }, {
+      "utf8": " القران",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الكريم",
+      "tOffsetMs": 1759,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ما",
+      "tOffsetMs": 2720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هو",
+      "tOffsetMs": 2919,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 53630,
+    "dDurationMs": 3170,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 53640,
+    "dDurationMs": 7120,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "التدارس",
+      "acAsrConf": 0
+    }, {
+      "utf8": " جاءت",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " احاديث",
+      "tOffsetMs": 1360,
+      "acAsrConf": 0
+    }, {
+      "utf8": " كثيره",
+      "tOffsetMs": 1840,
+      "acAsrConf": 0
+    }, {
+      "utf8": " حول",
+      "tOffsetMs": 2200,
+      "acAsrConf": 0
+    }, {
+      "utf8": " التدارس",
+      "tOffsetMs": 2520,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 56790,
+    "dDurationMs": 3970,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 56800,
+    "dDurationMs": 6360,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "يتلون",
+      "acAsrConf": 0
+    }, {
+      "utf8": " كتاب",
+      "tOffsetMs": 559,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الله",
+      "tOffsetMs": 880,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ويتدارسونه",
+      "tOffsetMs": 1279,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بينهم",
+      "tOffsetMs": 2279,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 60750,
+    "dDurationMs": 2410,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 60760,
+    "dDurationMs": 4080,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "ولكن",
+      "acAsrConf": 0
+    }, {
+      "utf8": " كونوا",
+      "tOffsetMs": 400,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ربانيين",
+      "tOffsetMs": 639,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بما",
+      "tOffsetMs": 1160,
+      "acAsrConf": 0
+    }, {
+      "utf8": " كنت",
+      "tOffsetMs": 1400,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تعلمون",
+      "tOffsetMs": 1639,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الكتاب",
+      "tOffsetMs": 2080,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 63150,
+    "dDurationMs": 1690,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 63160,
+    "dDurationMs": 4999,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "بما",
+      "acAsrConf": 0
+    }, {
+      "utf8": " كنتم",
+      "tOffsetMs": 199,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تدرسون",
+      "tOffsetMs": 480,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 64830,
+    "dDurationMs": 3329,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 64840,
+    "dDurationMs": 6919,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "تدارس",
+      "acAsrConf": 0
+    }, {
+      "utf8": " التدارس",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ما",
+      "tOffsetMs": 1520,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هو",
+      "tOffsetMs": 1880,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لو",
+      "tOffsetMs": 2120,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اننا",
+      "tOffsetMs": 2279,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اخذنا",
+      "tOffsetMs": 2639,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 68149,
+    "dDurationMs": 3610,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 68159,
+    "dDurationMs": 8401,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "التدارس",
+      "acAsrConf": 0
+    }, {
+      "utf8": " لغه",
+      "tOffsetMs": 600,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ثم",
+      "tOffsetMs": 1600,
+      "acAsrConf": 0
+    }, {
+      "utf8": " انطلقنا",
+      "tOffsetMs": 1921,
+      "acAsrConf": 0
+    }, {
+      "utf8": " منه",
+      "tOffsetMs": 2481,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الى",
+      "tOffsetMs": 2761,
+      "acAsrConf": 0
+    }, {
+      "utf8": " التدارس",
+      "tOffsetMs": 3000,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 71749,
+    "dDurationMs": 4811,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 71759,
+    "dDurationMs": 5680,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "اصطلاحا",
+      "acAsrConf": 0
+    }, {
+      "utf8": " فان",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " التدارس",
+      "tOffsetMs": 1641,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لغه",
+      "tOffsetMs": 2321,
+      "acAsrConf": 0
+    }, {
+      "utf8": " يمكن",
+      "tOffsetMs": 3321,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ان",
+      "tOffsetMs": 3761,
+      "acAsrConf": 0
+    }, {
+      "utf8": " يدخل",
+      "tOffsetMs": 4121,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فيه",
+      "tOffsetMs": 4481,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 76550,
+    "dDurationMs": 889,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 76560,
+    "dDurationMs": 4320,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "عده",
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 77429,
+    "dDurationMs": 3451,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 77439,
+    "dDurationMs": 8521,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "امور",
+      "acAsrConf": 0
+    }, {
+      "utf8": " الامر",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الاول",
+      "tOffsetMs": 1441,
+      "acAsrConf": 0
+    }, {
+      "utf8": " من",
+      "tOffsetMs": 2360,
+      "acAsrConf": 0
+    }, {
+      "utf8": " قول",
+      "tOffsetMs": 2521,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الله",
+      "tOffsetMs": 2841,
+      "acAsrConf": 0
+    }, {
+      "utf8": " عز",
+      "tOffsetMs": 2961,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وجل",
+      "tOffsetMs": 3201,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 80870,
+    "dDurationMs": 5090,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 80880,
+    "dDurationMs": 8440,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "وليقولوا",
+      "acAsrConf": 0
+    }, {
+      "utf8": " درست",
+      "tOffsetMs": 919,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اي",
+      "tOffsetMs": 1919,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تعلمته",
+      "tOffsetMs": 2760,
+      "acAsrConf": 0
+    }, {
+      "utf8": " من",
+      "tOffsetMs": 3440,
+      "acAsrConf": 0
+    }, {
+      "utf8": " غيرك",
+      "tOffsetMs": 3559,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تلقيته",
+      "tOffsetMs": 4360,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 85950,
+    "dDurationMs": 3370,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 85960,
+    "dDurationMs": 4600,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "من",
+      "acAsrConf": 0
+    }, {
+      "utf8": " غيرك",
+      "tOffsetMs": 119,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اذا",
+      "tOffsetMs": 479,
+      "acAsrConf": 0
+    }, {
+      "utf8": " التدارس",
+      "tOffsetMs": 1199,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فيه",
+      "tOffsetMs": 1960,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تلقي",
+      "tOffsetMs": 2400,
+      "acAsrConf": 0
+    }, {
+      "utf8": " من",
+      "tOffsetMs": 2839,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الغير",
+      "tOffsetMs": 3040,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 89310,
+    "dDurationMs": 1250,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 89320,
+    "dDurationMs": 4759,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "يعني",
+      "acAsrConf": 0
+    }, {
+      "utf8": " اثنين",
+      "tOffsetMs": 159,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 90550,
+    "dDurationMs": 3529,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 90560,
+    "dDurationMs": 6360,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "واحد",
+      "acAsrConf": 0
+    }, {
+      "utf8": " معلم",
+      "tOffsetMs": 320,
+      "acAsrConf": 0
+    }, {
+      "utf8": " والثاني",
+      "tOffsetMs": 599,
+      "acAsrConf": 0
+    }, {
+      "utf8": " متعلم",
+      "tOffsetMs": 1239,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اذا",
+      "tOffsetMs": 2239,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لابد",
+      "tOffsetMs": 2919,
+      "acAsrConf": 0
+    }, {
+      "utf8": " في",
+      "tOffsetMs": 3360,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 94069,
+    "dDurationMs": 2851,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 94079,
+    "dDurationMs": 6241,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "التدارس",
+      "acAsrConf": 0
+    }, {
+      "utf8": " من",
+      "tOffsetMs": 441,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اثنين",
+      "tOffsetMs": 641,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فاكثر",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لابد",
+      "tOffsetMs": 1720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " من",
+      "tOffsetMs": 2161,
+      "acAsrConf": 0
+    }, {
+      "utf8": " في",
+      "tOffsetMs": 2561,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 96910,
+    "dDurationMs": 3410,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 96920,
+    "dDurationMs": 7040,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "التدارس",
+      "acAsrConf": 0
+    }, {
+      "utf8": " من",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اثنين",
+      "tOffsetMs": 1320,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فاكثر",
+      "tOffsetMs": 1800,
+      "acAsrConf": 0
+    }, {
+      "utf8": " كما",
+      "tOffsetMs": 2320,
+      "acAsrConf": 0
+    }, {
+      "utf8": " في",
+      "tOffsetMs": 2519,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الحديث",
+      "tOffsetMs": 2680,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 100310,
+    "dDurationMs": 3650,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 100320,
+    "dDurationMs": 6079,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "يدارسه",
+      "acAsrConf": 0
+    }, {
+      "utf8": " القران",
+      "tOffsetMs": 960,
+      "acAsrConf": 0
+    }, {
+      "utf8": " يدارسه",
+      "tOffsetMs": 1960,
+      "acAsrConf": 0
+    }, {
+      "utf8": " القران",
+      "tOffsetMs": 2600,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اي",
+      "tOffsetMs": 2960,
+      "acAsrConf": 0
+    }, {
+      "utf8": " جبريل",
+      "tOffsetMs": 3320,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 103950,
+    "dDurationMs": 2449,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 103960,
+    "dDurationMs": 6439,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "والنبي",
+      "acAsrConf": 0
+    }, {
+      "utf8": " صلى",
+      "tOffsetMs": 360,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الله",
+      "tOffsetMs": 560,
+      "acAsrConf": 0
+    }, {
+      "utf8": " عليه",
+      "tOffsetMs": 640,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وسلم",
+      "tOffsetMs": 799,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اي",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هما",
+      "tOffsetMs": 1640,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اثنان",
+      "tOffsetMs": 1920,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 106389,
+    "dDurationMs": 4010,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 106399,
+    "dDurationMs": 6801,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "فاكثر",
+      "acAsrConf": 0
+    }, {
+      "utf8": " التدبر",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فقط",
+      "tOffsetMs": 1720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " يمكن",
+      "tOffsetMs": 2080,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ان",
+      "tOffsetMs": 2441,
+      "acAsrConf": 0
+    }, {
+      "utf8": " يكون",
+      "tOffsetMs": 2521,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لوحده",
+      "tOffsetMs": 3000,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 110389,
+    "dDurationMs": 2811,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 110399,
+    "dDurationMs": 4881,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "ويمكن",
+      "acAsrConf": 0
+    }, {
+      "utf8": " مع",
+      "tOffsetMs": 641,
+      "acAsrConf": 0
+    }, {
+      "utf8": " جماعه",
+      "tOffsetMs": 881,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لكن",
+      "tOffsetMs": 1281,
+      "acAsrConf": 0
+    }, {
+      "utf8": " التدارس",
+      "tOffsetMs": 1561,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لابد",
+      "tOffsetMs": 2080,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ان",
+      "tOffsetMs": 2481,
+      "acAsrConf": 0
+    }, {
+      "utf8": " يكون",
+      "tOffsetMs": 2561,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 113190,
+    "dDurationMs": 2090,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 113200,
+    "dDurationMs": 6640,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "بين",
+      "acAsrConf": 0
+    }, {
+      "utf8": " اثنين",
+      "tOffsetMs": 279,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 115270,
+    "dDurationMs": 4570,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 115280,
+    "dDurationMs": 9680,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "ايضا",
+      "acAsrConf": 0
+    }, {
+      "utf8": " لو",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " رجعنا",
+      "tOffsetMs": 1280,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الى",
+      "tOffsetMs": 1720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اللغه",
+      "tOffsetMs": 1960,
+      "acAsrConf": 0
+    }, {
+      "utf8": " من",
+      "tOffsetMs": 2280,
+      "acAsrConf": 0
+    }, {
+      "utf8": " حيث",
+      "tOffsetMs": 2680,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الدرس",
+      "tOffsetMs": 3680,
+      "acAsrConf": 0
+    }, {
+      "utf8": " معى",
+      "tOffsetMs": 4080,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 119830,
+    "dDurationMs": 5130,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 119840,
+    "dDurationMs": 9759,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "ال",
+      "acAsrConf": 0
+    }, {
+      "utf8": " درس",
+      "tOffsetMs": 40,
+      "acAsrConf": 0
+    }, {
+      "utf8": " في",
+      "tOffsetMs": 239,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اللغه",
+      "tOffsetMs": 360,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فانه",
+      "tOffsetMs": 919,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بمعنى",
+      "tOffsetMs": 1520,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ا",
+      "tOffsetMs": 2239,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الوط",
+      "tOffsetMs": 3559,
+      "acAsrConf": 0
+    }, {
+      "utf8": " درس",
+      "tOffsetMs": 4559,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 124950,
+    "dDurationMs": 4649,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 124960,
+    "dDurationMs": 7440,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "يعني",
+      "acAsrConf": 0
+    }, {
+      "utf8": " درست",
+      "tOffsetMs": 240,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الدابه",
+      "tOffsetMs": 640,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الزرع",
+      "tOffsetMs": 1159,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وطئته",
+      "tOffsetMs": 1439,
+      "acAsrConf": 0
+    }, {
+      "utf8": " و",
+      "tOffsetMs": 2400,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فتته",
+      "tOffsetMs": 3320,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هذا",
+      "tOffsetMs": 4320,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 129589,
+    "dDurationMs": 2811,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 129599,
+    "dDurationMs": 5920,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "يمكن",
+      "acAsrConf": 0
+    }, {
+      "utf8": " ان",
+      "tOffsetMs": 321,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ناخذ",
+      "tOffsetMs": 481,
+      "acAsrConf": 0
+    }, {
+      "utf8": " منه",
+      "tOffsetMs": 880,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ان",
+      "tOffsetMs": 1201,
+      "acAsrConf": 0
+    }, {
+      "utf8": " المدارسه",
+      "tOffsetMs": 1561,
+      "acAsrConf": 0
+    }, {
+      "utf8": " المقصود",
+      "tOffsetMs": 2161,
+      "acAsrConf": 0
+    }, {
+      "utf8": " به",
+      "tOffsetMs": 2521,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 132390,
+    "dDurationMs": 3129,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 132400,
+    "dDurationMs": 7440,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "تحليل",
+      "acAsrConf": 0
+    }, {
+      "utf8": " الايه",
+      "tOffsetMs": 440,
+      "acAsrConf": 0
+    }, {
+      "utf8": " النظر",
+      "tOffsetMs": 1120,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فيها",
+      "tOffsetMs": 1640,
+      "acAsrConf": 0
+    }, {
+      "utf8": " استخراج",
+      "tOffsetMs": 2160,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ما",
+      "tOffsetMs": 2720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فيها",
+      "tOffsetMs": 2839,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 135509,
+    "dDurationMs": 4331,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 135519,
+    "dDurationMs": 7841,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "من",
+      "acAsrConf": 0
+    }, {
+      "utf8": " معاني",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ودلالات",
+      "tOffsetMs": 1440,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فهي",
+      "tOffsetMs": 2440,
+      "acAsrConf": 0
+    }, {
+      "utf8": " من",
+      "tOffsetMs": 3161,
+      "acAsrConf": 0
+    }, {
+      "utf8": " باب",
+      "tOffsetMs": 3321,
+      "acAsrConf": 0
+    }, {
+      "utf8": " التحليل",
+      "tOffsetMs": 3641,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 139830,
+    "dDurationMs": 3530,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 139840,
+    "dDurationMs": 8960,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "تحليل",
+      "acAsrConf": 0
+    }, {
+      "utf8": " الايه",
+      "tOffsetMs": 440,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وا",
+      "tOffsetMs": 1200,
+      "acAsrConf": 0
+    }, {
+      "utf8": " استخراج",
+      "tOffsetMs": 2200,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ما",
+      "tOffsetMs": 2640,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 143350,
+    "dDurationMs": 5450,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 143360,
+    "dDurationMs": 7080,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "فيها",
+      "acAsrConf": 0
+    }, {
+      "utf8": " من",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " المعاني",
+      "tOffsetMs": 2000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " المهمه",
+      "tOffsetMs": 2519,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ايضا",
+      "tOffsetMs": 3440,
+      "acAsrConf": 0
+    }, {
+      "utf8": " التذليل",
+      "tOffsetMs": 4000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " درست",
+      "tOffsetMs": 4879,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 148790,
+    "dDurationMs": 1650,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 148800,
+    "dDurationMs": 4600,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "البعير",
+      "acAsrConf": 0
+    }, {
+      "utf8": " يعني",
+      "tOffsetMs": 360,
+      "acAsrConf": 0
+    }, {
+      "utf8": " رو",
+      "tOffsetMs": 600,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 150430,
+    "dDurationMs": 2970,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 150440,
+    "dDurationMs": 8040,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "فالمدارس",
+      "acAsrConf": 0
+    }, {
+      "utf8": " هذه",
+      "tOffsetMs": 799,
+      "acAsrConf": 0
+    }, {
+      "utf8": " المقصود",
+      "tOffsetMs": 1240,
+      "acAsrConf": 0
+    }, {
+      "utf8": " به",
+      "tOffsetMs": 1560,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ان",
+      "tOffsetMs": 1920,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تروض",
+      "tOffsetMs": 2079,
+      "acAsrConf": 0
+    }, {
+      "utf8": " نفسك",
+      "tOffsetMs": 2560,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 153390,
+    "dDurationMs": 5090,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 153400,
+    "dDurationMs": 5080,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "بالقران",
+      "acAsrConf": 0
+    }, {
+      "utf8": " ان",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تتخلق",
+      "tOffsetMs": 1440,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بالقران",
+      "tOffsetMs": 2119,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ان",
+      "tOffsetMs": 2720,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 158710,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 158720,
+    "dDurationMs": 8360,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "تتزكر",
+      "acAsrConf": 0
+    }, {
+      "utf8": " كلما",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اجتمع",
+      "tOffsetMs": 1960,
+      "acAsrConf": 0
+    }, {
+      "utf8": " مجموعه",
+      "tOffsetMs": 2960,
+      "acAsrConf": 0
+    }, {
+      "utf8": " على",
+      "tOffsetMs": 3640,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ذلك",
+      "tOffsetMs": 3879,
+      "acAsrConf": 0
+    }, {
+      "utf8": " كان",
+      "tOffsetMs": 4360,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ذلك",
+      "tOffsetMs": 4640,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 163750,
+    "dDurationMs": 3330,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 163760,
+    "dDurationMs": 6759,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "اعظم",
+      "acAsrConf": 0
+    }, {
+      "utf8": " فهذا",
+      "tOffsetMs": 440,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ياتي",
+      "tOffsetMs": 1399,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بمعنى",
+      "tOffsetMs": 1720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وهذه",
+      "tOffsetMs": 2199,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بدلاله",
+      "tOffsetMs": 2520,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وهذه",
+      "tOffsetMs": 2960,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 167070,
+    "dDurationMs": 3449,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 167080,
+    "dDurationMs": 6760,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "بهدايه",
+      "acAsrConf": 0
+    }, {
+      "utf8": " وهكذا",
+      "tOffsetMs": 560,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هذا",
+      "tOffsetMs": 1560,
+      "acAsrConf": 0
+    }, {
+      "utf8": " معنى",
+      "tOffsetMs": 1840,
+      "acAsrConf": 0
+    }, {
+      "utf8": " التدارس",
+      "tOffsetMs": 2120,
+      "acAsrConf": 0
+    }, {
+      "utf8": " خلاصه",
+      "tOffsetMs": 2920,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 170509,
+    "dDurationMs": 3331,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 170519,
+    "dDurationMs": 7921,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "الامر",
+      "acAsrConf": 0
+    }, {
+      "utf8": " في",
+      "tOffsetMs": 281,
+      "acAsrConf": 0
+    }, {
+      "utf8": " معنى",
+      "tOffsetMs": 481,
+      "acAsrConf": 0
+    }, {
+      "utf8": " التدارس",
+      "tOffsetMs": 761,
+      "acAsrConf": 0
+    }, {
+      "utf8": " انه",
+      "tOffsetMs": 1761,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 173830,
+    "dDurationMs": 4610,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 173840,
+    "dDurationMs": 8280,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "اجتماع",
+      "acAsrConf": 0
+    }, {
+      "utf8": " اثنين",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فاكثر",
+      "tOffsetMs": 1720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لتناول",
+      "tOffsetMs": 2880,
+      "acAsrConf": 0
+    }, {
+      "utf8": " كتاب",
+      "tOffsetMs": 3880,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الله",
+      "tOffsetMs": 4200,
+      "acAsrConf": 0
+    }, {
+      "utf8": " عز",
+      "tOffsetMs": 4399,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 178430,
+    "dDurationMs": 3690,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 178440,
+    "dDurationMs": 4840,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "وجل",
+      "acAsrConf": 0
+    }, {
+      "utf8": " بمعناه",
+      "tOffsetMs": 320,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وهدايات",
+      "tOffsetMs": 1400,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وتزكيه",
+      "tOffsetMs": 2400,
+      "acAsrConf": 0
+    }, {
+      "utf8": " النفوس",
+      "tOffsetMs": 3040,
+      "acAsrConf": 0
+    }, {
+      "utf8": " به",
+      "tOffsetMs": 3480,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 182110,
+    "dDurationMs": 1170,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 182120,
+    "dDurationMs": 5119,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "والتخلق",
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 183270,
+    "dDurationMs": 3969,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 183280,
+    "dDurationMs": 8200,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "به",
+      "acAsrConf": 0
+    }, {
+      "utf8": " ننتقل",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بعد",
+      "tOffsetMs": 1720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ذلك",
+      "tOffsetMs": 1959,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الى",
+      "tOffsetMs": 2319,
+      "acAsrConf": 0
+    }, {
+      "utf8": " امر",
+      "tOffsetMs": 2519,
+      "acAsrConf": 0
+    }, {
+      "utf8": " مهم",
+      "tOffsetMs": 2879,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ايها",
+      "tOffsetMs": 3160,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الاخوه",
+      "tOffsetMs": 3599,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 187229,
+    "dDurationMs": 4251,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 187239,
+    "dDurationMs": 9201,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "وهي",
+      "acAsrConf": 0
+    }, {
+      "utf8": " مجالس",
+      "tOffsetMs": 321,
+      "acAsrConf": 0
+    }, {
+      "utf8": " التدارس",
+      "tOffsetMs": 1280,
+      "acAsrConf": 0
+    }, {
+      "utf8": " المجالس",
+      "tOffsetMs": 2280,
+      "acAsrConf": 0
+    }, {
+      "utf8": " التي",
+      "tOffsetMs": 2881,
+      "acAsrConf": 0
+    }, {
+      "utf8": " حث",
+      "tOffsetMs": 3360,
+      "acAsrConf": 0
+    }, {
+      "utf8": " النبي",
+      "tOffsetMs": 3801,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 191470,
+    "dDurationMs": 4970,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 191480,
+    "dDurationMs": 8119,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "صلى",
+      "acAsrConf": 0
+    }, {
+      "utf8": " الله",
+      "tOffsetMs": 280,
+      "acAsrConf": 0
+    }, {
+      "utf8": " عليه",
+      "tOffsetMs": 560,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وسلم",
+      "tOffsetMs": 920,
+      "acAsrConf": 0
+    }, {
+      "utf8": " عليها",
+      "tOffsetMs": 1399,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ورغب",
+      "tOffsetMs": 2399,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فيها",
+      "tOffsetMs": 3399,
+      "acAsrConf": 0
+    }, {
+      "utf8": " مجالس",
+      "tOffsetMs": 4360,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 196430,
+    "dDurationMs": 3169,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 196440,
+    "dDurationMs": 6040,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "تدارس",
+      "acAsrConf": 0
+    }, {
+      "utf8": " القران",
+      "tOffsetMs": 560,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ايش",
+      "tOffsetMs": 960,
+      "acAsrConf": 0
+    }, {
+      "utf8": " مجالس",
+      "tOffsetMs": 1280,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تدارس",
+      "tOffsetMs": 1640,
+      "acAsrConf": 0
+    }, {
+      "utf8": " القران",
+      "tOffsetMs": 2159,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 199589,
+    "dDurationMs": 2891,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 199599,
+    "dDurationMs": 4640,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "مجالس",
+      "acAsrConf": 0
+    }, {
+      "utf8": " تدارس",
+      "tOffsetMs": 521,
+      "acAsrConf": 0
+    }, {
+      "utf8": " القران",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هي",
+      "tOffsetMs": 1360,
+      "acAsrConf": 0
+    }, {
+      "utf8": " مجالس",
+      "tOffsetMs": 1640,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تقوم",
+      "tOffsetMs": 2161,
+      "acAsrConf": 0
+    }, {
+      "utf8": " على",
+      "tOffsetMs": 2601,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 202470,
+    "dDurationMs": 1769,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 202480,
+    "dDurationMs": 5160,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "اسلوب",
+      "acAsrConf": 0
+    }, {
+      "utf8": " النقاش",
+      "tOffsetMs": 399,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 204229,
+    "dDurationMs": 3411,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 204239,
+    "dDurationMs": 8200,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "والتفاعل",
+      "acAsrConf": 0
+    }, {
+      "utf8": " النقاش",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " والتفاعل",
+      "tOffsetMs": 1481,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ليست",
+      "tOffsetMs": 2000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هي",
+      "tOffsetMs": 2321,
+      "acAsrConf": 0
+    }, {
+      "utf8": " درس",
+      "tOffsetMs": 2521,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 207630,
+    "dDurationMs": 4809,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 207640,
+    "dDurationMs": 8560,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "يلقى",
+      "acAsrConf": 0
+    }, {
+      "utf8": " يعني",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " شيخ",
+      "tOffsetMs": 1360,
+      "acAsrConf": 0
+    }, {
+      "utf8": " قع",
+      "tOffsetMs": 2200,
+      "acAsrConf": 0
+    }, {
+      "utf8": " طلاب",
+      "tOffsetMs": 2480,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لا",
+      "tOffsetMs": 2760,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وانما",
+      "tOffsetMs": 2959,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هي",
+      "tOffsetMs": 3519,
+      "acAsrConf": 0
+    }, {
+      "utf8": " شيخ",
+      "tOffsetMs": 4120,
+      "acAsrConf": 0
+    }, {
+      "utf8": " او",
+      "tOffsetMs": 4599,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 212429,
+    "dDurationMs": 3771,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 212439,
+    "dDurationMs": 7681,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "طلاب",
+      "acAsrConf": 0
+    }, {
+      "utf8": " يتدارسون",
+      "tOffsetMs": 440,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فيما",
+      "tOffsetMs": 1121,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بينهم",
+      "tOffsetMs": 1921,
+      "acAsrConf": 0
+    }, {
+      "utf8": " كتاب",
+      "tOffsetMs": 2921,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الله",
+      "tOffsetMs": 3281,
+      "acAsrConf": 0
+    }, {
+      "utf8": " عز",
+      "tOffsetMs": 3520,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 216190,
+    "dDurationMs": 3930,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 216200,
+    "dDurationMs": 7959,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "وجل",
+      "acAsrConf": 0
+    }, {
+      "utf8": " من",
+      "tOffsetMs": 720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " حيث",
+      "tOffsetMs": 959,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تلاوته",
+      "tOffsetMs": 1480,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وفهمه",
+      "tOffsetMs": 2480,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 220110,
+    "dDurationMs": 4049,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 220120,
+    "dDurationMs": 8280,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "وتدبره",
+      "acAsrConf": 0
+    }, {
+      "utf8": " يعني",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هو",
+      "tOffsetMs": 1319,
+      "acAsrConf": 0
+    }, {
+      "utf8": " مجلس",
+      "tOffsetMs": 1640,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فيه",
+      "tOffsetMs": 2479,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تلاوه",
+      "tOffsetMs": 2839,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وفيه",
+      "tOffsetMs": 3280,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فهم",
+      "tOffsetMs": 3679,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 224149,
+    "dDurationMs": 4251,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 224159,
+    "dDurationMs": 6761,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "وفيه",
+      "acAsrConf": 0
+    }, {
+      "utf8": " تدبر",
+      "tOffsetMs": 401,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وتزكيه",
+      "tOffsetMs": 1360,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لماذا",
+      "tOffsetMs": 2360,
+      "acAsrConf": 0
+    }, {
+      "utf8": " نريد",
+      "tOffsetMs": 3201,
+      "acAsrConf": 0
+    }, {
+      "utf8": " من",
+      "tOffsetMs": 3681,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هذا",
+      "tOffsetMs": 3881,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 228390,
+    "dDurationMs": 2530,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 228400,
+    "dDurationMs": 6839,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "المجلس",
+      "acAsrConf": 0
+    }, {
+      "utf8": " تحقيق",
+      "tOffsetMs": 360,
+      "acAsrConf": 0
+    }, {
+      "utf8": " التزكيه",
+      "tOffsetMs": 800,
+      "acAsrConf": 0
+    }, {
+      "utf8": " والاهتداء",
+      "tOffsetMs": 1240,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بالقران",
+      "tOffsetMs": 1759,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 230910,
+    "dDurationMs": 4329,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 230920,
+    "dDurationMs": 7959,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "اذا",
+      "acAsrConf": 0
+    }, {
+      "utf8": " غايه",
+      "tOffsetMs": 319,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هذا",
+      "tOffsetMs": 800,
+      "acAsrConf": 0
+    }, {
+      "utf8": " المجلس",
+      "tOffsetMs": 1440,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ليست",
+      "tOffsetMs": 2440,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هي",
+      "tOffsetMs": 3080,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فقط",
+      "tOffsetMs": 3319,
+      "acAsrConf": 0
+    }, {
+      "utf8": " علم",
+      "tOffsetMs": 3640,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 235229,
+    "dDurationMs": 3650,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 235239,
+    "dDurationMs": 7000,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "وليست",
+      "acAsrConf": 0
+    }, {
+      "utf8": " هي",
+      "tOffsetMs": 481,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تلاوه",
+      "tOffsetMs": 720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وانما",
+      "tOffsetMs": 1241,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هو",
+      "tOffsetMs": 1801,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تزكيه",
+      "tOffsetMs": 2200,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تزكيه",
+      "tOffsetMs": 3200,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 238869,
+    "dDurationMs": 3370,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 238879,
+    "dDurationMs": 5080,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "واهتداء",
+      "acAsrConf": 0
+    }, {
+      "utf8": " بالقران",
+      "tOffsetMs": 841,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هذه",
+      "tOffsetMs": 1560,
+      "acAsrConf": 0
+    }, {
+      "utf8": " المجالس",
+      "tOffsetMs": 2000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " العظيمه",
+      "tOffsetMs": 2481,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ايها",
+      "tOffsetMs": 2920,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 242229,
+    "dDurationMs": 1730,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 242239,
+    "dDurationMs": 4881,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "الاخوه",
+      "acAsrConf": 0
+    }, {
+      "utf8": " ينبغي",
+      "tOffsetMs": 681,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 243949,
+    "dDurationMs": 3171,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 243959,
+    "dDurationMs": 7961,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "ان",
+      "acAsrConf": 0
+    }, {
+      "utf8": " نحييها",
+      "tOffsetMs": 1161,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ينبغي",
+      "tOffsetMs": 2161,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 247110,
+    "dDurationMs": 4810,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 247120,
+    "dDurationMs": 9200,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "ان",
+      "acAsrConf": 0
+    }, {
+      "utf8": " نكون",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " من",
+      "tOffsetMs": 1399,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اهلها",
+      "tOffsetMs": 1560,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فانها",
+      "tOffsetMs": 2319,
+      "acAsrConf": 0
+    }, {
+      "utf8": " منهج",
+      "tOffsetMs": 3000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " رباني",
+      "tOffsetMs": 3600,
+      "acAsrConf": 0
+    }, {
+      "utf8": " مجالس",
+      "tOffsetMs": 4240,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 251910,
+    "dDurationMs": 4410,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 251920,
+    "dDurationMs": 9520,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "القران",
+      "acAsrConf": 0
+    }, {
+      "utf8": " منهج",
+      "tOffsetMs": 959,
+      "acAsrConf": 0
+    }, {
+      "utf8": " رباني",
+      "tOffsetMs": 1640,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لتحقيق",
+      "tOffsetMs": 2640,
+      "acAsrConf": 0
+    }, {
+      "utf8": " روح",
+      "tOffsetMs": 3200,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الاخوه",
+      "tOffsetMs": 3519,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بين",
+      "tOffsetMs": 4080,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 256310,
+    "dDurationMs": 5130,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 256320,
+    "dDurationMs": 7560,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "المسلمين",
+      "acAsrConf": 0
+    }, {
+      "utf8": " وجمع",
+      "tOffsetMs": 759,
+      "acAsrConf": 0
+    }, {
+      "utf8": " كلمتهم",
+      "tOffsetMs": 1720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بعيدا",
+      "tOffsetMs": 2720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " عن",
+      "tOffsetMs": 3199,
+      "acAsrConf": 0
+    }, {
+      "utf8": " التكتلات",
+      "tOffsetMs": 3360,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 261430,
+    "dDurationMs": 2450,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 261440,
+    "dDurationMs": 6280,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "الجنسيه",
+      "acAsrConf": 0
+    }, {
+      "utf8": " والحزبيه",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 263870,
+    "dDurationMs": 3850,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 263880,
+    "dDurationMs": 7960,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "والعنصريه",
+      "acAsrConf": 0
+    }, {
+      "utf8": " يعني",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هذه",
+      "tOffsetMs": 1759,
+      "acAsrConf": 0
+    }, {
+      "utf8": " المجالس",
+      "tOffsetMs": 2160,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تجمع",
+      "tOffsetMs": 3039,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الناس",
+      "tOffsetMs": 3480,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 267710,
+    "dDurationMs": 4130,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 267720,
+    "dDurationMs": 7400,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "على",
+      "acAsrConf": 0
+    }, {
+      "utf8": " كتاب",
+      "tOffsetMs": 280,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الله",
+      "tOffsetMs": 600,
+      "acAsrConf": 0
+    }, {
+      "utf8": " عز",
+      "tOffsetMs": 919,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وجل",
+      "tOffsetMs": 1160,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بعيدا",
+      "tOffsetMs": 2280,
+      "acAsrConf": 0
+    }, {
+      "utf8": " عن",
+      "tOffsetMs": 2720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " كل",
+      "tOffsetMs": 2919,
+      "acAsrConf": 0
+    }, {
+      "utf8": " انتماء",
+      "tOffsetMs": 3319,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 271830,
+    "dDurationMs": 3290,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 271840,
+    "dDurationMs": 9160,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "بعيدا",
+      "acAsrConf": 0
+    }, {
+      "utf8": " عن",
+      "tOffsetMs": 400,
+      "acAsrConf": 0
+    }, {
+      "utf8": " كل",
+      "tOffsetMs": 520,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تحزب",
+      "tOffsetMs": 880,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الحقيقه",
+      "tOffsetMs": 1880,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ما",
+      "tOffsetMs": 2320,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اعظم",
+      "tOffsetMs": 2520,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ان",
+      "tOffsetMs": 2840,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تكون",
+      "tOffsetMs": 2960,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 275110,
+    "dDurationMs": 5890,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 275120,
+    "dDurationMs": 9560,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "هذه",
+      "acAsrConf": 0
+    }, {
+      "utf8": " المجالس",
+      "tOffsetMs": 320,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هي",
+      "tOffsetMs": 840,
+      "acAsrConf": 0
+    }, {
+      "utf8": " حياتنا",
+      "tOffsetMs": 1040,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ل",
+      "tOffsetMs": 2040,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تذيب",
+      "tOffsetMs": 2960,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تلك",
+      "tOffsetMs": 4240,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الحقيقه",
+      "tOffsetMs": 5240,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 280990,
+    "dDurationMs": 3690,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 281000,
+    "dDurationMs": 7320,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "التفرق",
+      "acAsrConf": 0
+    }, {
+      "utf8": " التي",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " نعيشها",
+      "tOffsetMs": 1440,
+      "acAsrConf": 0
+    }, {
+      "utf8": " في",
+      "tOffsetMs": 2000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الامه",
+      "tOffsetMs": 2160,
+      "acAsrConf": 0
+    }, {
+      "utf8": " مجالس",
+      "tOffsetMs": 2840,
+      "acAsrConf": 0
+    }, {
+      "utf8": " القران",
+      "tOffsetMs": 3320,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 284670,
+    "dDurationMs": 3650,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 284680,
+    "dDurationMs": 8320,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "ايها",
+      "acAsrConf": 0
+    }, {
+      "utf8": " الاخوه",
+      "tOffsetMs": 400,
+      "acAsrConf": 0
+    }, {
+      "utf8": " مدرسه",
+      "tOffsetMs": 720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " نبويه",
+      "tOffsetMs": 1680,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بنى",
+      "tOffsetMs": 2680,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فيها",
+      "tOffsetMs": 3079,
+      "acAsrConf": 0
+    }, {
+      "utf8": " النبي",
+      "tOffsetMs": 3359,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 288310,
+    "dDurationMs": 4690,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 288320,
+    "dDurationMs": 8080,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "صلى",
+      "acAsrConf": 0
+    }, {
+      "utf8": " الله",
+      "tOffsetMs": 280,
+      "acAsrConf": 0
+    }, {
+      "utf8": " عليه",
+      "tOffsetMs": 400,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وسلم",
+      "tOffsetMs": 560,
+      "acAsrConf": 0
+    }, {
+      "utf8": " جيلا",
+      "tOffsetMs": 1400,
+      "acAsrConf": 0
+    }, {
+      "utf8": " من",
+      "tOffsetMs": 2200,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الصحابه",
+      "tOffsetMs": 2480,
+      "acAsrConf": 0
+    }, {
+      "utf8": " عظيم",
+      "tOffsetMs": 3680,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 292990,
+    "dDurationMs": 3410,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 293000,
+    "dDurationMs": 8919,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "اعز",
+      "acAsrConf": 0
+    }, {
+      "utf8": " الله",
+      "tOffsetMs": 479,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تعالى",
+      "tOffsetMs": 759,
+      "acAsrConf": 0
+    }, {
+      "utf8": " به",
+      "tOffsetMs": 1039,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الاسلام",
+      "tOffsetMs": 1280,
+      "acAsrConf": 0
+    }, {
+      "utf8": " يعني",
+      "tOffsetMs": 1960,
+      "acAsrConf": 0
+    }, {
+      "utf8": " حقيقه",
+      "tOffsetMs": 2360,
+      "acAsrConf": 0
+    }, {
+      "utf8": " انا",
+      "tOffsetMs": 3160,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 296390,
+    "dDurationMs": 5529,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 296400,
+    "dDurationMs": 8120,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "اقول",
+      "acAsrConf": 0
+    }, {
+      "utf8": " بكل",
+      "tOffsetMs": 400,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وضوح",
+      "tOffsetMs": 1359,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ودقه",
+      "tOffsetMs": 2160,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وواقعيه",
+      "tOffsetMs": 3560,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ان",
+      "tOffsetMs": 4560,
+      "acAsrConf": 0
+    }, {
+      "utf8": " النبي",
+      "tOffsetMs": 4880,
+      "acAsrConf": 0
+    }, {
+      "utf8": " صلى",
+      "tOffsetMs": 5280,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 301909,
+    "dDurationMs": 2611,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 301919,
+    "dDurationMs": 6560,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "الله",
+      "acAsrConf": 0
+    }, {
+      "utf8": " عليه",
+      "tOffsetMs": 201,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وسلم",
+      "tOffsetMs": 401,
+      "acAsrConf": 0
+    }, {
+      "utf8": " انطلق",
+      "tOffsetMs": 681,
+      "acAsrConf": 0
+    }, {
+      "utf8": " في",
+      "tOffsetMs": 1280,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تربيته",
+      "tOffsetMs": 1481,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لهذا",
+      "tOffsetMs": 2081,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 304510,
+    "dDurationMs": 3969,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 304520,
+    "dDurationMs": 7519,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "الجيل",
+      "acAsrConf": 0
+    }, {
+      "utf8": " جيل",
+      "tOffsetMs": 760,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الصحابه",
+      "tOffsetMs": 1080,
+      "acAsrConf": 0
+    }, {
+      "utf8": " من",
+      "tOffsetMs": 1600,
+      "acAsrConf": 0
+    }, {
+      "utf8": " مجالس",
+      "tOffsetMs": 1760,
+      "acAsrConf": 0
+    }, {
+      "utf8": " القران",
+      "tOffsetMs": 2280,
+      "acAsrConf": 0
+    }, {
+      "utf8": " مجالس",
+      "tOffsetMs": 3280,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 308469,
+    "dDurationMs": 3570,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 308479,
+    "dDurationMs": 7041,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "القران",
+      "acAsrConf": 0
+    }, {
+      "utf8": " هي",
+      "tOffsetMs": 801,
+      "acAsrConf": 0
+    }, {
+      "utf8": " مائدتها",
+      "tOffsetMs": 1081,
+      "acAsrConf": 0
+    }, {
+      "utf8": " كتاب",
+      "tOffsetMs": 1841,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الله",
+      "tOffsetMs": 2160,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ولا",
+      "tOffsetMs": 2641,
+      "acAsrConf": 0
+    }, {
+      "utf8": " شك",
+      "tOffsetMs": 3000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ان",
+      "tOffsetMs": 3321,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 312029,
+    "dDurationMs": 3491,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 312039,
+    "dDurationMs": 8241,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "هذه",
+      "acAsrConf": 0
+    }, {
+      "utf8": " المائده",
+      "tOffsetMs": 321,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اعظم",
+      "tOffsetMs": 880,
+      "acAsrConf": 0
+    }, {
+      "utf8": " مائده",
+      "tOffsetMs": 1440,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تبني",
+      "tOffsetMs": 1921,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الانسان",
+      "tOffsetMs": 2481,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 315510,
+    "dDurationMs": 4770,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 315520,
+    "dDurationMs": 7679,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "فمجال",
+      "acAsrConf": 0
+    }, {
+      "utf8": " القران",
+      "tOffsetMs": 600,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الحقيقه",
+      "tOffsetMs": 1239,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هي",
+      "tOffsetMs": 2239,
+      "acAsrConf": 0
+    }, {
+      "utf8": " توصلنا",
+      "tOffsetMs": 2600,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الى",
+      "tOffsetMs": 3320,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بناء",
+      "tOffsetMs": 4119,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 320270,
+    "dDurationMs": 2929,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 320280,
+    "dDurationMs": 7359,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "جيل",
+      "acAsrConf": 0
+    }, {
+      "utf8": " قراني",
+      "tOffsetMs": 479,
+      "acAsrConf": 0
+    }, {
+      "utf8": " يتخلق",
+      "tOffsetMs": 1120,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 323189,
+    "dDurationMs": 4450,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 323199,
+    "dDurationMs": 8921,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "بالقران",
+      "acAsrConf": 0
+    }, {
+      "utf8": " مجالس",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " القران",
+      "tOffsetMs": 1521,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الحقيقه",
+      "tOffsetMs": 2161,
+      "acAsrConf": 0
+    }, {
+      "utf8": " مشروع",
+      "tOffsetMs": 3000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " قراني",
+      "tOffsetMs": 3560,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 327629,
+    "dDurationMs": 4491,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 327639,
+    "dDurationMs": 7801,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "لعوده",
+      "acAsrConf": 0
+    }, {
+      "utf8": " الامه",
+      "tOffsetMs": 601,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لمنهج",
+      "tOffsetMs": 961,
+      "acAsrConf": 0
+    }, {
+      "utf8": " رب",
+      "tOffsetMs": 1481,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بها",
+      "tOffsetMs": 1921,
+      "acAsrConf": 0
+    }, {
+      "utf8": " نحن",
+      "tOffsetMs": 2921,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بفضل",
+      "tOffsetMs": 3881,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الله",
+      "tOffsetMs": 4361,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 332110,
+    "dDurationMs": 3330,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 332120,
+    "dDurationMs": 6440,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "عز",
+      "acAsrConf": 0
+    }, {
+      "utf8": " وجل",
+      "tOffsetMs": 199,
+      "acAsrConf": 0
+    }, {
+      "utf8": " نعيش",
+      "tOffsetMs": 480,
+      "acAsrConf": 0
+    }, {
+      "utf8": " نهضه",
+      "tOffsetMs": 799,
+      "acAsrConf": 0
+    }, {
+      "utf8": " قرانيه",
+      "tOffsetMs": 1240,
+      "acAsrConf": 0
+    }, {
+      "utf8": " في",
+      "tOffsetMs": 1760,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الامه",
+      "tOffsetMs": 1919,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اعظم",
+      "tOffsetMs": 2799,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ما",
+      "tOffsetMs": 3160,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 335430,
+    "dDurationMs": 3130,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 335440,
+    "dDurationMs": 6360,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "ينبغي",
+      "acAsrConf": 0
+    }, {
+      "utf8": " الناء",
+      "tOffsetMs": 400,
+      "acAsrConf": 0
+    }, {
+      "utf8": " به",
+      "tOffsetMs": 879,
+      "acAsrConf": 0
+    }, {
+      "utf8": " مثل",
+      "tOffsetMs": 1080,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هذه",
+      "tOffsetMs": 1360,
+      "acAsrConf": 0
+    }, {
+      "utf8": " المجالس",
+      "tOffsetMs": 1759,
+      "acAsrConf": 0
+    }, {
+      "utf8": " التي",
+      "tOffsetMs": 2319,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تعود",
+      "tOffsetMs": 2680,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 338550,
+    "dDurationMs": 3250,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 338560,
+    "dDurationMs": 8120,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "بنا",
+      "acAsrConf": 0
+    }, {
+      "utf8": " الى",
+      "tOffsetMs": 840,
+      "acAsrConf": 0
+    }, {
+      "utf8": " منهج",
+      "tOffsetMs": 1160,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ربنا",
+      "tOffsetMs": 1560,
+      "acAsrConf": 0
+    }, {
+      "utf8": " عز",
+      "tOffsetMs": 2000,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 341790,
+    "dDurationMs": 4890,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 341800,
+    "dDurationMs": 10160,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "وجل",
+      "acAsrConf": 0
+    }, {
+      "utf8": " التجارب",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " في",
+      "tOffsetMs": 1679,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هذا",
+      "tOffsetMs": 1839,
+      "acAsrConf": 0
+    }, {
+      "utf8": " كثيره",
+      "tOffsetMs": 2119,
+      "acAsrConf": 0
+    }, {
+      "utf8": " و",
+      "tOffsetMs": 3119,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الذين",
+      "tOffsetMs": 4119,
+      "acAsrConf": 0
+    }, {
+      "utf8": " عنوا",
+      "tOffsetMs": 4519,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 346670,
+    "dDurationMs": 5290,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 346680,
+    "dDurationMs": 9200,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "بهذا",
+      "acAsrConf": 0
+    }, {
+      "utf8": " المجالس",
+      "tOffsetMs": 400,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ذكروا",
+      "tOffsetMs": 1120,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اثار",
+      "tOffsetMs": 1600,
+      "acAsrConf": 0
+    }, {
+      "utf8": " عميقه",
+      "tOffsetMs": 2120,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ودقيقه",
+      "tOffsetMs": 3000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " في",
+      "tOffsetMs": 4280,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 351950,
+    "dDurationMs": 3930,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 351960,
+    "dDurationMs": 10040,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "اثار",
+      "acAsrConf": 0
+    }, {
+      "utf8": " اثرها",
+      "tOffsetMs": 920,
+      "acAsrConf": 0
+    }, {
+      "utf8": " على",
+      "tOffsetMs": 1400,
+      "acAsrConf": 0
+    }, {
+      "utf8": " المتدبرين",
+      "tOffsetMs": 1679,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بصفاء",
+      "tOffsetMs": 2280,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ارواحهم",
+      "tOffsetMs": 2920,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 355870,
+    "dDurationMs": 6130,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 355880,
+    "dDurationMs": 10080,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "بتناق",
+      "acAsrConf": 0
+    }, {
+      "utf8": " افكارهم",
+      "tOffsetMs": 800,
+      "acAsrConf": 0
+    }, {
+      "utf8": " با",
+      "tOffsetMs": 1800,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ايضا",
+      "tOffsetMs": 2800,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تلد",
+      "tOffsetMs": 3560,
+      "acAsrConf": 0
+    }, {
+      "utf8": " يعني",
+      "tOffsetMs": 4680,
+      "acAsrConf": 0
+    }, {
+      "utf8": " نماء",
+      "tOffsetMs": 5680,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 361990,
+    "dDurationMs": 3970,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 362000,
+    "dDurationMs": 5560,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "عقولهم",
+      "acAsrConf": 0
+    }, {
+      "utf8": " بالفهم",
+      "tOffsetMs": 800,
+      "acAsrConf": 0
+    }, {
+      "utf8": " يعني",
+      "tOffsetMs": 1800,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ما",
+      "tOffsetMs": 2160,
+      "acAsrConf": 0
+    }, {
+      "utf8": " يتعلق",
+      "tOffsetMs": 2360,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بتزكر",
+      "tOffsetMs": 2840,
+      "acAsrConf": 0
+    }, {
+      "utf8": " نفوسهم",
+      "tOffsetMs": 3479,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 365950,
+    "dDurationMs": 1610,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 365960,
+    "dDurationMs": 6320,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "فيما",
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 367550,
+    "dDurationMs": 4730,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 367560,
+    "dDurationMs": 8960,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "بينهم",
+      "acAsrConf": 0
+    }, {
+      "utf8": " هذا",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ما",
+      "tOffsetMs": 1240,
+      "acAsrConf": 0
+    }, {
+      "utf8": " يتعلق",
+      "tOffsetMs": 1400,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ب",
+      "tOffsetMs": 2240,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تدارس",
+      "tOffsetMs": 3240,
+      "acAsrConf": 0
+    }, {
+      "utf8": " القران",
+      "tOffsetMs": 3720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ومجالس",
+      "tOffsetMs": 4039,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 372270,
+    "dDurationMs": 4250,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 372280,
+    "dDurationMs": 7759,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "القران",
+      "acAsrConf": 0
+    }, {
+      "utf8": " والفرق",
+      "tOffsetMs": 600,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بينها",
+      "tOffsetMs": 1199,
+      "acAsrConf": 0
+    }, {
+      "utf8": " حقيقه",
+      "tOffsetMs": 1840,
+      "acAsrConf": 0
+    }, {
+      "utf8": " حتى",
+      "tOffsetMs": 2680,
+      "acAsrConf": 0
+    }, {
+      "utf8": " نتبين",
+      "tOffsetMs": 3680,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 376510,
+    "dDurationMs": 3529,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 376520,
+    "dDurationMs": 6480,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "امرها",
+      "acAsrConf": 0
+    }, {
+      "utf8": " فرق",
+      "tOffsetMs": 720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بينه",
+      "tOffsetMs": 1079,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وبين",
+      "tOffsetMs": 1480,
+      "acAsrConf": 0
+    }, {
+      "utf8": " دروس",
+      "tOffsetMs": 2200,
+      "acAsrConf": 0
+    }, {
+      "utf8": " التفسير",
+      "tOffsetMs": 2560,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ان",
+      "tOffsetMs": 2959,
+      "acAsrConf": 0
+    }, {
+      "utf8": " دروس",
+      "tOffsetMs": 3239,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 380029,
+    "dDurationMs": 2971,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 380039,
+    "dDurationMs": 6641,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "التفسير",
+      "acAsrConf": 0
+    }, {
+      "utf8": " ياتي",
+      "tOffsetMs": 401,
+      "acAsrConf": 0
+    }, {
+      "utf8": " عالم",
+      "tOffsetMs": 761,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ويبين",
+      "tOffsetMs": 1560,
+      "acAsrConf": 0
+    }, {
+      "utf8": " معاني",
+      "tOffsetMs": 2160,
+      "acAsrConf": 0
+    }, {
+      "utf8": " كتاب",
+      "tOffsetMs": 2600,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الله",
+      "tOffsetMs": 2841,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 382990,
+    "dDurationMs": 3690,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 383000,
+    "dDurationMs": 7240,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "عز",
+      "acAsrConf": 0
+    }, {
+      "utf8": " وجل",
+      "tOffsetMs": 199,
+      "acAsrConf": 0
+    }, {
+      "utf8": " نحن",
+      "tOffsetMs": 479,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بحاجه",
+      "tOffsetMs": 720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الى",
+      "tOffsetMs": 1080,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هذا",
+      "tOffsetMs": 1319,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لانه",
+      "tOffsetMs": 1759,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لابد",
+      "tOffsetMs": 2199,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لفهم",
+      "tOffsetMs": 3120,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 386670,
+    "dDurationMs": 3570,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 386680,
+    "dDurationMs": 6440,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "كتاب",
+      "acAsrConf": 0
+    }, {
+      "utf8": " الله",
+      "tOffsetMs": 359,
+      "acAsrConf": 0
+    }, {
+      "utf8": " عز",
+      "tOffsetMs": 680,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وجل",
+      "tOffsetMs": 959,
+      "acAsrConf": 0
+    }, {
+      "utf8": " من",
+      "tOffsetMs": 1720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " معلم",
+      "tOffsetMs": 2079,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لان",
+      "tOffsetMs": 2760,
+      "acAsrConf": 0
+    }, {
+      "utf8": " التفاسير",
+      "tOffsetMs": 3079,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 390230,
+    "dDurationMs": 2890,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 390240,
+    "dDurationMs": 6000,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "هذه",
+      "acAsrConf": 0
+    }, {
+      "utf8": " تحتاج",
+      "tOffsetMs": 399,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الى",
+      "tOffsetMs": 799,
+      "acAsrConf": 0
+    }, {
+      "utf8": " علم",
+      "tOffsetMs": 1040,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تحتاج",
+      "tOffsetMs": 1480,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الى",
+      "tOffsetMs": 1880,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ادوات",
+      "tOffsetMs": 2079,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تحتاج",
+      "tOffsetMs": 2480,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 393110,
+    "dDurationMs": 3130,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 393120,
+    "dDurationMs": 6760,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "الى",
+      "acAsrConf": 0
+    }, {
+      "utf8": " شروط",
+      "tOffsetMs": 199,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تحتاج",
+      "tOffsetMs": 519,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الى",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ان",
+      "tOffsetMs": 1560,
+      "acAsrConf": 0
+    }, {
+      "utf8": " يكون",
+      "tOffsetMs": 1760,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الانسان",
+      "tOffsetMs": 2120,
+      "acAsrConf": 0
+    }, {
+      "utf8": " على",
+      "tOffsetMs": 2840,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 396230,
+    "dDurationMs": 3650,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 396240,
+    "dDurationMs": 7880,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "علم",
+      "acAsrConf": 0
+    }, {
+      "utf8": " باللغه",
+      "tOffsetMs": 320,
+      "acAsrConf": 0
+    }, {
+      "utf8": " والاصول",
+      "tOffsetMs": 720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ونحو",
+      "tOffsetMs": 1519,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ذلك",
+      "tOffsetMs": 1880,
+      "acAsrConf": 0
+    }, {
+      "utf8": " فهذه",
+      "tOffsetMs": 2679,
+      "acAsrConf": 0
+    }, {
+      "utf8": " دروس",
+      "tOffsetMs": 3280,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 399870,
+    "dDurationMs": 4250,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 399880,
+    "dDurationMs": 8560,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "التفسير",
+      "acAsrConf": 0
+    }, {
+      "utf8": " اما",
+      "tOffsetMs": 520,
+      "acAsrConf": 0
+    }, {
+      "utf8": " مجالس",
+      "tOffsetMs": 1039,
+      "acAsrConf": 0
+    }, {
+      "utf8": " التزكيه",
+      "tOffsetMs": 1800,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بالقران",
+      "tOffsetMs": 2360,
+      "acAsrConf": 0
+    }, {
+      "utf8": " مجالس",
+      "tOffsetMs": 3039,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 404110,
+    "dDurationMs": 4330,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 404120,
+    "dDurationMs": 8479,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "التدارس",
+      "acAsrConf": 0
+    }, {
+      "utf8": " هي",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " حقيقه",
+      "tOffsetMs": 1400,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بحاجه",
+      "tOffsetMs": 1880,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الى",
+      "tOffsetMs": 2280,
+      "acAsrConf": 0
+    }, {
+      "utf8": " من",
+      "tOffsetMs": 2519,
+      "acAsrConf": 0
+    }, {
+      "utf8": " يعلم",
+      "tOffsetMs": 2720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " يعني",
+      "tOffsetMs": 3639,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 408430,
+    "dDurationMs": 4169,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 408440,
+    "dDurationMs": 7720,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "يكون",
+      "acAsrConf": 0
+    }, {
+      "utf8": " لديه",
+      "tOffsetMs": 280,
+      "acAsrConf": 0
+    }, {
+      "utf8": " علم",
+      "tOffsetMs": 680,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ومقدار",
+      "tOffsetMs": 1920,
+      "acAsrConf": 0
+    }, {
+      "utf8": " من",
+      "tOffsetMs": 2920,
+      "acAsrConf": 0
+    }, {
+      "utf8": " العلم",
+      "tOffsetMs": 3080,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لكن",
+      "tOffsetMs": 3440,
+      "acAsrConf": 0
+    }, {
+      "utf8": " المهم",
+      "tOffsetMs": 3879,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 412589,
+    "dDurationMs": 3571,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 412599,
+    "dDurationMs": 7761,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "جدا",
+      "acAsrConf": 0
+    }, {
+      "utf8": " ايضا",
+      "tOffsetMs": 320,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ان",
+      "tOffsetMs": 1201,
+      "acAsrConf": 0
+    }, {
+      "utf8": " يكون",
+      "tOffsetMs": 1440,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الهدف",
+      "tOffsetMs": 1841,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هو",
+      "tOffsetMs": 2201,
+      "acAsrConf": 0
+    }, {
+      "utf8": " التزكيه",
+      "tOffsetMs": 2561,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 416150,
+    "dDurationMs": 4210,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 416160,
+    "dDurationMs": 8080,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "الاهتداء",
+      "acAsrConf": 0
+    }, {
+      "utf8": " التربيه",
+      "tOffsetMs": 1039,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هذه",
+      "tOffsetMs": 2039,
+      "acAsrConf": 0
+    }, {
+      "utf8": " التي",
+      "tOffsetMs": 2439,
+      "acAsrConf": 0
+    }, {
+      "utf8": " نريدها",
+      "tOffsetMs": 2719,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لتكون",
+      "tOffsetMs": 3680,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 420350,
+    "dDurationMs": 3890,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 420360,
+    "dDurationMs": 6720,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "باذن",
+      "acAsrConf": 0
+    }, {
+      "utf8": " الله",
+      "tOffsetMs": 399,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تعالى",
+      "tOffsetMs": 679,
+      "acAsrConf": 0
+    }, {
+      "utf8": " عامه",
+      "tOffsetMs": 1440,
+      "acAsrConf": 0
+    }, {
+      "utf8": " في",
+      "tOffsetMs": 2320,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 424230,
+    "dDurationMs": 2850,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 424240,
+    "dDurationMs": 6480,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "المجتمع",
+      "acAsrConf": 0
+    }, {
+      "utf8": " سنواصل",
+      "tOffsetMs": 1000,
+      "acAsrConf": 0
+    }, {
+      "utf8": " معكم",
+      "tOffsetMs": 1600,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الحديث",
+      "tOffsetMs": 1920,
+      "acAsrConf": 0
+    }, {
+      "utf8": " باذن",
+      "tOffsetMs": 2280,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الله",
+      "tOffsetMs": 2639,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 427070,
+    "dDurationMs": 3650,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 427080,
+    "dDurationMs": 7559,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "تعالى",
+      "acAsrConf": 0
+    }, {
+      "utf8": " حول",
+      "tOffsetMs": 360,
+      "acAsrConf": 0
+    }, {
+      "utf8": " هذه",
+      "tOffsetMs": 679,
+      "acAsrConf": 0
+    }, {
+      "utf8": " المجالس",
+      "tOffsetMs": 1320,
+      "acAsrConf": 0
+    }, {
+      "utf8": " بضوابط",
+      "tOffsetMs": 2320,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ومناهج",
+      "tOffsetMs": 2959,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 430710,
+    "dDurationMs": 3929,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 430720,
+    "dDurationMs": 6759,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "وادوات",
+      "acAsrConf": 0
+    }, {
+      "utf8": " وخطوات",
+      "tOffsetMs": 879,
+      "acAsrConf": 0
+    }, {
+      "utf8": " والى",
+      "tOffsetMs": 1879,
+      "acAsrConf": 0
+    }, {
+      "utf8": " لقاء",
+      "tOffsetMs": 2319,
+      "acAsrConf": 0
+    }, {
+      "utf8": " باذن",
+      "tOffsetMs": 2720,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الله",
+      "tOffsetMs": 3120,
+      "acAsrConf": 0
+    }, {
+      "utf8": " تعالى",
+      "tOffsetMs": 3400,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 434629,
+    "dDurationMs": 2850,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 434639,
+    "dDurationMs": 5240,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "في",
+      "acAsrConf": 0
+    }, {
+      "utf8": " محطه",
+      "tOffsetMs": 161,
+      "acAsrConf": 0
+    }, {
+      "utf8": " اخرى",
+      "tOffsetMs": 840,
+      "acAsrConf": 0
+    }, {
+      "utf8": " وحياكم",
+      "tOffsetMs": 1120,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الله",
+      "tOffsetMs": 1801,
+      "acAsrConf": 0
+    }, {
+      "utf8": " ايها",
+      "tOffsetMs": 1921,
+      "acAsrConf": 0
+    }, {
+      "utf8": " الاخوه",
+      "tOffsetMs": 2560,
+      "acAsrConf": 0
+    } ]
+  }, {
+    "tStartMs": 437469,
+    "dDurationMs": 2410,
+    "wWinId": 1,
+    "aAppend": 1,
+    "segs": [ {
+      "utf8": "\n"
+    } ]
+  }, {
+    "tStartMs": 437479,
+    "dDurationMs": 2400,
+    "wWinId": 1,
+    "segs": [ {
+      "utf8": "والاخوات",
+      "acAsrConf": 0
+    } ]
+  } ]
+}
