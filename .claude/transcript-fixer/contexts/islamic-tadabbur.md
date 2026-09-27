@@ -79,6 +79,51 @@ These are non-words or fused forms, seen more than once, with a single reading:
 - Digit-glyph garbles: `2ين` اتنين, `4عه` اربعه, `3لاه`/`لاثه` تلاته, `8انيه` تمانيه,
   `انين 3لا` اتنين تلاته.
 
+## Other speakers and engines (added 2026-09-26)
+
+- **محمد الربيعة** speaks near-MSA with a Najdi colloquial layer (`ايش`، `مانب`، `ودك`،
+  `شش عندهم`). The colloquial words are speech — keep them. His ar-orig captions are
+  much cleaner than the Egyptian series; the errors cluster in names, ayat, and
+  clipped words at word boundaries.
+- **`منصه زادي` / `منصة زادي`** = `منصة زاد` (Zad Academy intro, every Fann lesson).
+  Non-word → dictionary rule.
+- **`التدارك` = `التدارس`** in Rabia's lessons (the course is «فن التدبر والتدارس»).
+  `التدارك` is a real word → context only; almost every occurrence here is تدارس.
+- **`تتزكر` / `تزكر` = `تتزكى` / `تزكية`** (Najdi ى/ر confusion). Non-word → safe.
+- **Whisper output** (`*.whisper.json`) keeps hamza, ة and some punctuation — do not
+  normalize it to the YouTube orthography. Known Whisper hallucination: a closing
+  `شكرا للمشاهدة` (or `اشتركوا في القناة`, `ترجمة …`) over silence/music at the end —
+  not speech; remove it and log it.
+- More Whisper hallucinations on Rabia's lesson outros: a lone trailing `شكرا`, and
+  `ترجمة نانسي قنقر` (a subtitle-credit string it learned from YouTube data). Remove and log.
+- **Whisper drops the `أ`/`ع` onset of a word** in Rabia's speech: `سلوب`→أسلوب،
+  `همية`→أهمية، `سليب`→أساليب، `الشخاص`→الأشخاص، `عجاز`→إعجاز. Non-words → fix;
+  but when the clipped form is a real word (`عادة` for إعادة, `البلاغ` for البلاغة) leave it.
+- **`ع` heard as `أ`/`ء`/`ح`** (the same mechanism as Egyptian ق→ء): `بألم`=بعلم،
+  `الإلم والأمل`=العلم والعمل، `وأملي`=وعملي، `حامة`=عامة، `بتأريف`=بتعريف، `بإبارة`=بعبارة.
+  Several are real words (`ألم`، `أمل`) → context only, proven by the same phrase nearby.
+- **Real-word collisions seen in the Fann lessons** (context only): `المؤلم`=المعلم
+  (the majlis teacher), `وضلالات`=ودلالات (meaning inverts: always check), `تمرة`=ثمرة,
+  `موضعي`=موضوعي (the five question types of lesson 24), `الفاتيح`=المفاتيح.
+- **The Badr-elders athar** (Ibn Abbas and Surat al-Nasr) recurs: `الشيخ بدر`/`شاخ بدر` =
+  `أشياخ بدر`; `كذا كتقول` = `أكذاك تقول`. Rabia once says «ابن عمر» for Umar there
+  (lesson 24): speaker slip or ASR, left as is.
+- **Surah names**: `اء العمران`/`الأمران` = آل عمران; `القرنين` alone = ذو/ذي القرنين.
+- **Rabia's Maqasid majalis (Whisper, 1 h each), recurring real-word collisions** (context
+  only, each proven per sentence):
+  - `الوالدة`/`الوالد` = الواردة/الوارد ("reported").
+  - `الصور` = السور.
+  - `والله على` = والله أعلم (ع/أ).
+  - `كافر لك` = كاف لك, and `يذكره` = ينكره. Both invert the meaning, so always check.
+  - `أعداد`/`عداد` = إعداد, `ضلالات` = دلالات, `مؤلم` = معلم.
+  - `العمران` / `أعلى أمران` / `الإمران` = آل عمران.
+  - Scholar and book names arrive clipped: `البقاع` = البقاعي, `ابن جريل` = ابن جرير,
+    `القرطي` = القرطبي, `عند لسي` = الأندلسي, `النبع العظيم` = النبأ العظيم (Darraz),
+    `نظم الدرب/الدراء` = نظم الدرر.
+  - Whisper once emitted a stray Latin token (`Tapi`) mid-sentence; remove and log it.
+- **Human subtitles uploaded by the channel** (Alwani, `*.ar.json3`): punctuated and
+  near-clean. Only the Quran scan and dictionary pass are worth running.
+
 ## Speaker slips — record, never correct
 
 - ep 5 line 28: «زي ما ابو طالب قال … انا رب الابل» — the saying is Abd al-Muttalib's.
