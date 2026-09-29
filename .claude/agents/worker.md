@@ -29,6 +29,7 @@ If the task turns on a judgment you cannot make with confidence, stop and report
 
 ## What to return
 
+- Write your final report in Arabic: the project owner reads it. Keep Latin script only for file paths and code.
 - Start with the result: what you changed (file paths with line numbers), or the answer you found.
 - Mention anything left undone or uncertain.
 - Do not paste whole files or long tool output unless the caller asks for it.
