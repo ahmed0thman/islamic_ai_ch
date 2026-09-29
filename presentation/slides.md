@@ -17,401 +17,499 @@ layout: cover
 ---
 
 <div class="hu-cv">
-  <section class="hu-cv-id">
-    <div class="hu-kicker">المسار الثالث · التجارب التفاعلية والرحلة المعرفية للتعريف بالإسلام وتعلمه</div>
+  <header class="hu-cv-id">
     <div class="hu-brand">هُدًى</div>
     <div class="hu-tagline">رحلة إلى هدى القرآن</div>
     <p class="hu-def">ليس مصحفًا آخر ولا مساعد محادثة، بل رحلة بالعربية لقارئ غير متخصص</p>
-  </section>
+  </header>
   <section class="hu-cv-flow">
-    <div class="hu-cv-step">
-      <div class="hu-label">يدعو في الفاتحة</div>
-      <div class="hu-ayah hu-quran">«اهدنا الصراط المستقيم»</div>
+    <div class="hu-cv-step hu-cv-step-plain">
+      <div class="hu-step-h"><span class="hu-n">1</span><b>يدعو في الفاتحة</b></div>
+      <div class="hu-ayah">﴿اهدنا الصراط المستقيم﴾</div>
       <div class="hu-ref">(الفاتحة: 6)</div>
     </div>
-    <div class="hu-cv-link"><span class="hu-tag">مناسبة ذكرها مفسرون، منهم ابن الزبير الغرناطي والبقاعي</span></div>
-    <div class="hu-cv-step">
-      <div class="hu-label">ويقرأ أول البقرة</div>
-      <div class="hu-ayah hu-quran">«ذلك الكتاب لا ريب فيه هدى للمتقين»</div>
+    <div class="hu-cv-arrow"><Arr /><span class="hu-cv-arrow-cap">مناسبة ذكرها مفسرون</span></div>
+    <div class="hu-cv-step hu-cv-step-plain">
+      <div class="hu-step-h"><span class="hu-n">2</span><b>ويقرأ أول البقرة</b></div>
+      <div class="hu-ayah">﴿ذلك الكتاب لا ريب فيه هدى للمتقين﴾</div>
       <div class="hu-ref">(البقرة: 2)</div>
     </div>
-    <div class="hu-cv-q"><span class="hu-cv-q-lead">فيسأل</span>كيف آخذ هذا الهدى؟</div>
+    <div class="hu-cv-arrow"><Arr /></div>
+    <div class="hu-cv-step hu-strong hu-cv-strong">
+      <div class="hu-step-h"><span class="hu-n hu-n-lt">3</span></div>
+      <div class="hu-cv-q">فيسأل: كيف آخذ هذا الهدى؟</div>
+    </div>
   </section>
 </div>
 <div class="hu-cv-foot">
   <span class="hu-cv-tawfiq">التوفيق بيد الله وحده، وعملنا أن نقرّب بيان كتابه.</span>
-  <span>تحدي الذكاء الاصطناعي في خدمة المحتوى الإسلامي · مؤسسة باذل الأهلية · 2026</span>
+  <span>المسار الثالث: التجارب التفاعلية والرحلة المعرفية للتعريف بالإسلام وتعلمه</span>
+  <span>تحدي الذكاء الاصطناعي في خدمة المحتوى الإسلامي، مؤسسة باذل الأهلية، 2026</span>
+  <span>المناسبة: ابن الزبير الغرناطي، البرهان في تناسب سور القرآن ص190؛ البقاعي، نظم الدرر 1/77</span>
 </div>
 
 ---
-kicker: المشكلة
+layout: default
 heading: الهدى في الكتاب، وما يعين على فهمه متفرق
+sub: يقرأ القارئ غير المتخصص السورة، وقد يحفظها، ولا يجد طريقًا إلى فهم مترابط يعينه على التدبر.
+class: hu-s2
 ---
 
-<div class="hu-s2">
-  <section class="hu-s2-text">
-    <p class="hu-lead">يقرأ القارئ غير المتخصص السورة، وقد يحفظها، ولا يجد طريقًا إلى فهم مترابط يعينه على التدبر.</p>
-    <ul class="hu-list hu-list-lg">
-      <li><strong>متفرق.</strong> ما يحتاجه موزع بين علوم كثيرة، وكل علم منها يحتاج دراسة طويلة لا يقدر عليها.</li>
-      <li><strong>منفصل.</strong> عرض كل علم تحت عنوان مستقل لا يبيّن كيف تغيّر معلومة من علم فهمَ معلومة من علم آخر.</li>
-      <li><strong>طويل.</strong> دروس التدبر الجذابة طويلة، في زمن يقصر فيه الانتباه.</li>
-      <li><strong>روايات دون بيان ثبوتها.</strong> في دراستنا لأربعة شرّاح معروفين على سورة الكهف، بنى ثلاثة منهم على رواية مشهورة في سبب نزولها دون بيان إسنادها، وفي إسنادها عند الطبري راوٍ لم يُسمَّ.</li>
-    </ul>
-  </section>
-  <section class="hu-scatter" aria-label="علوم متفرقة حول القارئ">
-    <span class="hu-chip hu-sc-1">التفسير</span>
-    <span class="hu-chip hu-sc-2">اللغة</span>
-    <span class="hu-chip hu-sc-3">البلاغة</span>
-    <span class="hu-chip hu-sc-4">أسباب النزول</span>
-    <span class="hu-chip hu-sc-5">السنة</span>
-    <span class="hu-chip hu-sc-6">مقاصد السور</span>
-    <span class="hu-chip hu-chip-ghost hu-sc-7">وغيرها</span>
+<section class="hu-strong">
+  <div class="hu-s2-big">متفرق</div>
+  <div class="hu-hub">
+    <div class="hu-hub-side">
+      <div class="hu-card">التفسير</div>
+      <div class="hu-card">اللغة</div>
+      <div class="hu-card">البلاغة</div>
+      <div class="hu-card">أسباب النزول</div>
+    </div>
     <div class="hu-reader">القارئ</div>
-    <div class="hu-stat"><b>نحو 5 ساعات</b><span>لسورة الفاتحة وحدها، في سلسلة تدبر معروفة</span></div>
-  </section>
-</div>
+    <div class="hu-hub-side">
+      <div class="hu-card">السنة</div>
+      <div class="hu-card">مقاصد السور</div>
+      <div class="hu-card hu-card-wide">وغيرها</div>
+    </div>
+  </div>
+  <p class="hu-s2-need">ما يحتاجه موزع بين علوم كثيرة، وكل علم منها يحتاج دراسة طويلة لا يقدر عليها.</p>
+</section>
+<section class="hu-steps hu-steps-3 hu-s2-rows">
+  <div class="hu-step hu-step-plain">
+    <div class="hu-step-h"><span class="hu-n">1</span><b>منفصل</b></div>
+    <p>عرض كل علم تحت عنوان مستقل لا يبيّن كيف تغيّر معلومة من علم فهمَ معلومة من علم آخر.</p>
+  </div>
+  <div class="hu-step hu-step-plain">
+    <div class="hu-step-h"><span class="hu-n">2</span><b>طويل</b></div>
+    <p>دروس التدبر الجذابة طويلة في زمن يقصر فيه الانتباه، ومنها نحو 5 ساعات لسورة الفاتحة وحدها في سلسلة تدبر معروفة.</p>
+  </div>
+  <div class="hu-step hu-step-plain">
+    <div class="hu-step-h"><span class="hu-n">3</span><b>روايات دون بيان ثبوتها</b></div>
+    <p>في دراستنا لأربعة شرّاح معروفين على سورة الكهف، بنى ثلاثة منهم على رواية مشهورة في سبب نزولها دون بيان إسنادها، وفي إسنادها عند الطبري راوٍ لم يُسمَّ.</p>
+  </div>
+</section>
+
+::sources::
+
+الإسناد: تفسير الطبري عند الكهف: 1
 
 ---
-kicker: المستفيد
+layout: default
 heading: لمن نبني، وما الذي يتغير له
-sub: "يصف دليل التحدي المسار الثالث بأنه «رحلة متدرجة ومستمرة من الاهتمام الأولي إلى التعلم والمتابعة»."
+sub: القارئ العربي غير المتخصص من المسلمين عمومًا، يريد أن يفهم سورة أو آيات منها ويتدبرها، في زمن كثرت مشتتاته، دون دراسة أكاديمية.
+class: hu-s3
 ---
 
-<div class="hu-s3">
-  <div class="hu-s3-who">
-    <div class="hu-card">
-      <div class="hu-label">المستفيد</div>
-      <p>القارئ العربي غير المتخصص من المسلمين عمومًا، يريد أن يفهم سورة أو آيات منها ويتدبرها، في زمن كثرت مشتتاته، دون دراسة أكاديمية.</p>
+<section class="hu-s3-cat">
+  <div class="hu-lab">الفئة التي نختبرها</div>
+  <p>القارئ الذي لم يعتد قراءة التفسير، وهذا وصف لعادة في القراءة لا لتدين. نفترض أن البدء بسؤال تثيره الآيات نفسها يفتح له الرحلة، ونختبر هذا الافتراض.</p>
+</section>
+<section class="hu-strong hu-s3-use">
+  <div class="hu-lab">حالة الاستخدام</div>
+  <div class="hu-steps hu-steps-a3">
+    <div class="hu-step">
+      <div class="hu-step-h"><span class="hu-n hu-n-lt">1</span></div>
+      <p>يختار آيات.</p>
     </div>
-    <div class="hu-card">
-      <div class="hu-label">فئة نختبرها</div>
-      <p>القارئ الذي لم يعتد قراءة التفسير، وهذا وصف لعادة في القراءة لا لتدين. نفترض أن البدء بسؤال تثيره الآيات نفسها يفتح له الرحلة، ونختبر هذا الافتراض.</p>
+    <Arr />
+    <div class="hu-step">
+      <div class="hu-step-h"><span class="hu-n hu-n-lt">2</span></div>
+      <p>يرى سؤالًا منها ومعه جوابه، يقرؤه في دقيقة.</p>
     </div>
-  </div>
-  <div class="hu-s3-use">
-    <div class="hu-label">حالة الاستخدام</div>
-    <ol class="hu-steps">
-      <li><b>يختار آيات</b></li>
-      <li><b>سؤال منها يظهر مع جوابه</b><span>جواب محدود وشاهد واحد، يقرؤها في دقيقة</span></li>
-      <li><b>يختار عمقه ووجهته</b><span>بأسئلته واختياراته، بقدر وقته ورغبته، ويعرف مصدر كل معلومة ونوعها</span></li>
-    </ol>
-    <p class="hu-note">ونعتزم بعد النسخة الأولى أن يعود، إن أذن بحفظ رحلته، في جلسة لاحقة إلى سؤال لم يُحسم.</p>
-  </div>
-  <div class="hu-s3-rules">
-    <div class="hu-rule">
-      <div class="hu-label">يتكيف بلا تصنيف</div>
-      <p>مع أسئلة القارئ نفسه واختياراته في المحتوى، لا مع تصنيف ديني له أو ملف عنه. ولا نستنتج تدينه أو شخصيته، ولا نجمع بيانات عن تدينه.</p>
-    </div>
-    <div class="hu-rule">
-      <div class="hu-label">حدوده</div>
-      <p>لا يفتي، ولا يقدم تأملًا على أنه تفسير، ولا يدعي أن التدبر متوقف على دراسة العلوم كلها، ولا يدعي أنه يهدي أحدًا، ولا يعد بأن يجعل غير المهتم مهتمًا.</p>
+    <Arr />
+    <div class="hu-step">
+      <div class="hu-step-h"><span class="hu-n hu-n-lt">3</span></div>
+      <p>يختار عمقه ووجهته بأسئلته واختياراته، بقدر وقته ورغبته، ويعرف مصدر كل معلومة ونوعها من علامتها.</p>
+      <p class="hu-s3-keep">ونعتزم بعد النسخة الأولى أن يعود، إن أذن بحفظ رحلته، في جلسة لاحقة إلى سؤال لم يُحسم.</p>
     </div>
   </div>
-</div>
+</section>
+<section class="hu-s3-limit">
+  <div class="hu-lab">الحدود</div>
+  <p>يتكيف مع أسئلة القارئ نفسه واختياراته في المحتوى، لا مع تصنيف ديني له أو ملف عنه، ولا نستنتج تدينه أو شخصيته. ولا يفتي، ولا يقدم تأملًا على أنه تفسير، ولا يدعي أن التدبر متوقف على دراسة العلوم كلها، ولا يدعي أنه يهدي أحدًا، ولا يعد بأن يجعل غير المهتم مهتمًا.</p>
+</section>
+
+::sources::
+
+دليل التحدي، المسار الثالث: «رحلة متدرجة ومستمرة من الاهتمام الأولي إلى التعلم والمتابعة»
 
 ---
-kicker: النموذج
+layout: default
 heading: "نسيج المعنى: ما يراه القارئ، وما يصنعه، وما يقيسه"
-sub: "جوهر «هُدًى» نسج المعرفة المتفرقة في شرح واحد مترابط. تُعرض كل مجموعة آيات على عائلات المعرفة كلها، ولا يدخل الشرح إلا ما ثبت وأثّر في المعنى."
+sub: "جوهر «هُدًى» نسج المعرفة المتفرقة في شرح واحد مترابط، يرتّب العلوم فيه بناءُ المعنى، لا قالبٌ ثابت."
+class: hu-s4
 ---
 
-<div class="hu-s4">
-  <section class="hu-layer hu-layer-naseej">
-    <div class="hu-layer-head"><span class="hu-layer-name">النسيج</span><span class="hu-layer-role">ما يراه القارئ</span></div>
-    <div class="hu-depth-cap">درجات عمق <b>يختارها القارئ</b>، والنظام يختار الترتيب</div>
-    <ol class="hu-depth">
-      <li><span class="hu-depth-n">0</span><b>اللمحة</b><span>سؤال وجوابه، وشاهد واحد</span></li>
-      <li><span class="hu-depth-n">1</span><b>الفهم</b><span>المسار الرئيس وصلته بمقصد السورة، وخلاف يغيّر أصل المعنى يظهر بقوليه</span></li>
-      <li><span class="hu-depth-n">2</span><b>التدبر</b><span>الفروع، والهداية في حدود السياق</span></li>
-      <li><span class="hu-depth-n">3</span><b>التعمق</b><span>المصادر كلها والخلاف</span></li>
-    </ol>
-    <ul class="hu-inline">
-      <li>كل رابط بين خطوتين دعوى معزوة</li>
-      <li>كل سؤال يظهر ومعه جوابه</li>
-      <li>يسبق القارئ إلى الإشكال ويحلّه بجواب معزو</li>
-      <li>الشبهات مسارات جانبية تعود إلى المسار</li>
+<section class="hu-steps hu-steps-3 hu-layers">
+  <div class="hu-step hu-strong hu-layer-strong">
+    <div class="hu-step-h"><span class="hu-n hu-n-lt">1</span><b>النسيج: ما يراه القارئ</b></div>
+    <ul class="hu-list">
+      <li>شرح واحد بعربية سهلة، ينتقل بين العلوم كما يحتاج المعنى</li>
+      <li>درجات يختارها القارئ: اللمحة، والفهم، والتدبر، والتعمق</li>
+      <li>كل سؤال يظهر مع جوابه، ويسبق القارئ إلى ما قد يُشكل عليه</li>
+      <li>بعد كل دعوى علامة تفتح مصدرها</li>
+      <li>والشبهات مسارات جانبية تعود إلى الرحلة</li>
     </ul>
-    <p class="hu-guard">ثابت: الدعوى ودليلها. لا يُحجب معنى أساسي ولا خلاف معتبر طلبًا للمتابعة، ولا آليات استدراج.</p>
-  </section>
-  <section class="hu-layer hu-layer-lab">
-    <div class="hu-layer-head"><span class="hu-layer-name">المعمل</span><span class="hu-layer-role">ما يصنع النسيج</span></div>
-    <ol class="hu-stations">
-      <li>خريطة المعرفة</li>
+  </div>
+  <div class="hu-step hu-step-plain">
+    <div class="hu-step-h"><span class="hu-n">2</span><b>المعمل: ما يصنعه</b></div>
+    <ul class="hu-list">
+      <li>خريطة معرفة تمر على عائلات المعرفة كلها</li>
       <li>مصادر معتمدة لكل عائلة</li>
-      <li>التحقق من الدعاوى والروابط</li>
+      <li>تحقق من كل دعوى ورابط</li>
       <li>مراجعة متخصص</li>
       <li>اختبار النقل</li>
-    </ol>
-  </section>
-  <section class="hu-layer hu-layer-mizan">
-    <div class="hu-layer-head"><span class="hu-layer-name">الميزان</span><span class="hu-layer-role">ما يقيسه</span></div>
-    <ul class="hu-list hu-list-sm">
+    </ul>
+  </div>
+  <div class="hu-step hu-step-plain">
+    <div class="hu-step-h"><span class="hu-n">3</span><b>الميزان: ما يقيسه</b></div>
+    <ul class="hu-list">
       <li>فهم العلاقات بين خطوات المعنى</li>
       <li>تمييز الثابت من الاجتهاد والتأمل</li>
       <li>انتقال طوعي مقرون بالفهم</li>
       <li>جودة أسئلة القارئ</li>
       <li>أثر عرض الإشكال</li>
+      <li>مقارنةً بتفسير مختصر، في اختبار المستخدم وحده</li>
     </ul>
-    <p class="hu-layer-foot">مقارنةً بتفسير مختصر، في اختبار المستخدم وحده، لا في الرحلة.</p>
-  </section>
-  <section class="hu-orders">
-    <div class="hu-orders-head">
-      <b>لا ترتيب ثابتًا للعلوم: بناء المعنى يرتّبها</b>
-      <span class="hu-tag hu-tag-ex">مثال توضيحي لترتيب العلوم، لا شرح لآيات بعينها</span>
+  </div>
+</section>
+<section>
+  <div class="hu-lab">دور الذكاء الاصطناعي</div>
+  <div class="hu-ai">
+    <div class="hu-ai-row">
+      <div class="hu-ai-k">يفعل</div>
+      <p>يسترجع من المصادر المعتمدة لكل عائلة ما تحتاجه الآيات، ويقترح ترتيب الخطوات من سجلات الروابط لا من قالب، ويعيد صوغ العبارة بعربية سهلة مع بقاء العزو، ويختار طريقة العرض من مكونات ثابتة، ويجيب عن أسئلة القارئ في مسارات جانبية.</p>
     </div>
-    <div class="hu-path"><span class="hu-path-name">آيات أ</span><span class="hu-pc">تفسير</span><i>←</i><span class="hu-pc">بلاغة</span><i>←</i><span class="hu-pc">تفسير</span><i>←</i><span class="hu-pc">لفظ</span><i>←</i><span class="hu-pc">سبب نزول</span></div>
-    <div class="hu-path"><span class="hu-path-name">آيات ب</span><span class="hu-pc">سؤال لفظ</span><i>←</i><span class="hu-pc">صلته بما قبله (مناسبة معزوة)</span><i>←</i><span class="hu-pc">معنى الآية (تفسير)</span><i>←</i><span class="hu-pc">آية تبيّنه</span><i>←</i><span class="hu-pc">أثر في العمل (هداية)</span></div>
-  </section>
-</div>
+    <div class="hu-ai-row hu-ai-row-no">
+      <div class="hu-ai-k">لا يفعل</div>
+      <p>لا يولّد نص آية، فالنص يُستدعى بمرجعه من مصدر موثق. ولا يولّد معنى ولا رابطًا ولا مقصدًا من عنده. ويمتنع حين لا يجد مصدرًا، ويقول ذلك للقارئ.</p>
+    </div>
+    <div class="hu-ai-row">
+      <div class="hu-ai-k">لماذا الذكاء الاصطناعي</div>
+      <p>الشرح المكتوب الثابت لا يجيب عن سؤال القارئ، ولا يتسع لسور أخرى إلا بكتابة كل رحلة من الصفر.</p>
+    </div>
+  </div>
+</section>
+<section class="hu-rule"><span><b>ثابت:</b> الدعوى ودليلها. <b>ومتغير:</b> ترتيب العلوم، والدرجة، والأمثلة، والأسئلة. ولا يُحجب معنى أساسي ولا خلاف معتبر طلبًا للمتابعة، ولا آليات استدراج.</span></section>
 
 ---
-kicker: مثالان للتوضيح
-heading: وصلة من سورة الكهف، وإشكال من سورة فاطر
-sub: كل سؤال يطرحه الشرح يظهر ومعه جوابه في البطاقة نفسها.
+layout: default
+heading: "سورة الكوثر كما يقرؤها القارئ في «هُدًى»"
+sub: "مثال لشكل المخرج الذي نعتزم بناءه؛ والمنهج نفسه لأي سورة"
+class: hu-s5
 ---
 
-<div class="hu-s5">
-  <article class="hu-ex hu-ex-kahf">
-    <div class="hu-ex-tags"><span class="hu-tag">سورة الكهف · اللمحة</span><span class="hu-tag hu-tag-ex">مثال توضيحي</span></div>
-    <div class="hu-qa-q"><span class="hu-qa-k">السؤال</span><p>عبارة «أحسن عملا» تأتي في الآية 7، ثم تعود في الآية 30. ما الذي يجمعهما؟</p></div>
-    <div class="hu-qa-a">
-      <div class="hu-qa-head"><span class="hu-qa-k">الجواب: المعنيان من «المختصر» متجاوران</span><span class="hu-linktag">«أحسن عملا» في الآيتين: رابط لفظي من النص نفسه</span></div>
-      <div class="hu-pair">
-        <div class="hu-pair-col">
-          <div class="hu-ayah-sm hu-quran">«إنا جعلنا ما على الأرض زينة لها لنبلوهم أيهم أحسن عملا» <span class="hu-ref">(الكهف: 7)</span></div>
-          <div class="hu-tafsir"><span class="hu-type">تفسير منقول</span>«لنختبرهم أيهم أحسن عملًا بما يرضي الله، وأيهم أسوأ عملًا، لنجزي كلا بما يستحقه»</div>
-        </div>
-        <div class="hu-pair-col">
-          <div class="hu-ayah-sm hu-quran">«إن الذين آمنوا وعملوا الصالحات إنا لا نضيع أجر من أحسن عملا» <span class="hu-ref">(الكهف: 30)</span></div>
-          <div class="hu-tafsir"><span class="hu-type">تفسير منقول</span>«إنا لا نضيع أجر من أحسن عملًا، بل نوفيهم أجورهم كاملة غير منقوصة»</div>
-        </div>
+<div class="hu-screen">
+  <div class="hu-tabs">
+    <span class="hu-tab">اللمحة</span>
+    <span class="hu-tab hu-tab-on">الفهم</span>
+    <span class="hu-tab">التدبر</span>
+    <span class="hu-tab">التعمق</span>
+  </div>
+  <div class="hu-scr-main">
+    <section class="hu-doc">
+      <div class="hu-strong hu-glance">
+        <p><span class="hu-gq">من المقطوع حقًّا؟</span> تبيّن سورة الكوثر أن الحرمان الحقيقي هو الحرمان من الخير، لا من الأبناء<Mk i="scholar" n="1" />.</p>
       </div>
-    </div>
-    <div class="hu-ex-frame"><span class="hu-type">الإطار</span>من مقاصد السورة في «المختصر»: «بيان منهج التعامل مع الفتن، وضرب النماذج لذلك»</div>
-    <div class="hu-ex-foot">
-      <span class="hu-mini-path">ترتيب هذا المسار: لفظ <i>←</i> تفسير <i>←</i> تفسير <i>←</i> مقصد</span>
-      <span class="hu-src">المختصر في تفسير القرآن الكريم، ص293 · ص294 · ص297</span>
-    </div>
-  </article>
-  <article class="hu-ex hu-ex-fatir">
-    <div class="hu-ex-tags"><span class="hu-tag">سورة فاطر · استباق الإشكال</span><span class="hu-tag hu-tag-ex">مثال توضيحي</span></div>
-    <div class="hu-ayah-md hu-quran">«إنما يخشى الله من عباده العلماء» <span class="hu-ref">(فاطر: 28)</span></div>
-    <div class="hu-qa-q"><span class="hu-qa-k">الإشكال</span><p>قد يُفهم خطأً أن الله هو الذي يخشى.</p></div>
-    <div class="hu-qa-a hu-qa-a-solo">
-      <div class="hu-qa-k">الجواب <span class="hu-type">إعراب وتفسير منقولان</span></div>
-      <p class="hu-answer">لفظ الجلالة مفعول به مقدَّم، و«العلماء» فاعل مؤخَّر: فلا يخشى اللهَ حق خشيته إلا العالمون به.</p>
-    </div>
-    <div class="hu-ex-foot">
-      <span class="hu-src"><span class="hu-nw">درويش، إعراب القرآن وبيانه 8/150</span> · <span class="hu-nw">ابن كثير 6/544</span> · <span class="hu-nw">المختصر ص437</span></span>
-    </div>
-  </article>
-</div>
-<p class="hu-s5-note">مثالان لتوضيح شكل الرحلة، لا نطاق المنتج ولا آيات النسخة الأولى. والمنهج نفسه يُطبق على أي سورة.</p>
-
----
-kicker: الذكاء الاصطناعي
-heading: كيف يعمل، وما دور الذكاء الاصطناعي
-sub: التصميم الذي نعتزم بناءه، ونبني نسخته الأولى خلال التحدي.
----
-
-<div class="hu-s6">
-  <ol class="hu-pipe">
-    <li><span class="hu-pipe-n">1</span><b>خريطة المعرفة</b><span>تمر على العائلات كلها، وتسجل «لا مادة» حيث لا شيء</span></li>
-    <li class="hu-ai"><span class="hu-pipe-n">2</span><b>مصادر كل عائلة</b><span>يسترجع منها النموذج ما يحتاجه الموضع (<bdi>RAG</bdi>)</span></li>
-    <li><span class="hu-pipe-n">3</span><b>سجل لكل دعوى ورابط</b><span>النص، والمصدر وموضعه، والنوع، والدرجة، والخلاف، وحالة المراجعة</span></li>
-    <li class="hu-ai"><span class="hu-pipe-n">4</span><b>مسار المعنى بدرجاته</b><span>يقترح النموذج الترتيب من سجلات الروابط، ويبسّط العبارة</span></li>
-    <li class="hu-ai"><span class="hu-pipe-n">5</span><b>الواجهة</b><span>يختار النموذج العرض من مكونات ثابتة، ولا يولّد معلومة</span></li>
-  </ol>
-  <div class="hu-bypass"><span class="hu-bypass-label">نص الآية: يُستدعى بمرجعه من مصدر موثق مباشرة، ولا يولّده النموذج</span><span class="hu-bypass-line"></span><i>←</i></div>
-  <div class="hu-legend"><span class="hu-legend-sw"></span>خطوة يعمل فيها النموذج</div>
-  <div class="hu-s6-cols">
-    <section class="hu-card hu-card-teal">
-      <div class="hu-label">ما يفعله الذكاء الاصطناعي</div>
-      <ul class="hu-list">
-        <li>يسترجع للموضع ما في مصادر كل عائلة.</li>
-        <li>يقترح ترتيب الخطوات من سجلات الروابط، لا من قالب ثابت.</li>
-        <li>يبسّط العبارة لغير المتخصص مع بقاء العزو.</li>
-        <li>يجيب عن أسئلة القارئ في مسارات جانبية تعود إلى المسار.</li>
-      </ul>
+      <div class="hu-text">
+        <p>تجيب سورة الكوثر، وهي ثلاث آيات فقط، عن سؤال: من المقطوع حقًّا؟ وجوابها: هو من حُرم الخير، لا من لم يبقَ له ابن<Mk i="scholar" n="1" />.</p>
+        <p>وكثير من الناس يقيسون قيمة الإنسان بما يتركه بعده: أبناء يحملون اسمه، ومال يرثونه. وبهذه الطريقة في الحكم كانت العرب تسمّي من لا ابن له «الأبتر»، أي المقطوع، كأن ذكره ينتهي بموته. وبهذه الكلمة وصف بعض أعدائه النبيَّ ﷺ، والسورة ترد على من وصفه بذلك<Mk i="scholar" n="2" />.</p>
+        <p>ولا تبدأ السورة بالرد، بل بالعطاء: <span class="hu-q">﴿إنا أعطيناك الكوثر﴾</span>. والكوثر يعني الخير الكثير جدًّا. ومن هذا الخير نهر في الجنة وعد الله به نبيه، فالنهر جزء من هذا الخير، والكوثر أوسع منه<Mk i="hadith,athar,scholar" n="6" :on="true" />.</p>
+      </div>
     </section>
-    <section class="hu-card">
-      <div class="hu-label">حدوده، وما يفعله عند الفشل</div>
-      <ul class="hu-list">
-        <li>لا يولّد نص آية.</li>
-        <li>لا يستنبط مقصدًا أو مناسبة من عنده، بل يختار بين أقوال معزوة.</li>
-        <li>لا يضيف رابطًا بلا سند.</li>
-        <li>يمتنع حين لا يجد مصدرًا، ويقول ذلك للقارئ.</li>
-      </ul>
-    </section>
+    <aside class="hu-panel">
+      <div class="hu-p-head"><span class="hu-p-n">6</span><span>الكوثر: الخير الكثير جدًّا، ومنه نهر وعده الله نبيه، والنهر جزء منه</span></div>
+      <div class="hu-p-row">
+        <div class="hu-p-type"><Ic t="hadith" />حديث</div>
+        <p class="hu-p-src">مسلم، كتاب الصلاة، ح400، 1/300: «فإنه نهر وعدنيه ربي عز وجل، عليه خير كثير، هو حوض ترد عليه أمتي يوم القيامة»</p>
+        <p class="hu-p-st"><span class="hu-badge hu-badge-ok">ثابت</span> صحيح، في صحيح مسلم من حديث أنس رضي الله عنه</p>
+        <p class="hu-p-note">في المتن بالمعنى لا باللفظ.</p>
+      </div>
+      <div class="hu-p-row">
+        <div class="hu-p-type"><Ic t="athar" />قول صحابي وتابعي</div>
+        <p class="hu-p-src">البخاري، كتاب الرقاق، باب في الحوض، ح6578، عن ابن عباس: «الكوثر الخير الكثير الذي أعطاه الله إياه. قال أبو بشر: قلت لسعيد: إن أناسا يزعمون أنه نهر في الجنة. فقال سعيد: النهر الذي في الجنة من الخير الذي أعطاه الله إياه»</p>
+        <p class="hu-p-st"><span class="hu-badge hu-badge-ok">ثابت</span> صحيح الإسناد، في صحيح البخاري</p>
+        <p class="hu-p-note">السائل أبو بشر، والمجيب سعيد بن جبير.</p>
+      </div>
+      <div class="hu-p-row">
+        <div class="hu-p-type"><Ic t="scholar" />قول عالم</div>
+        <p class="hu-p-src">ابن حجر، «فتح الباري»، كتاب التفسير، سورة الكوثر، 8/604 بترقيم إسلام ويب: «هذا تأويل من سعيد بن جبير جمع به بين حديثي عائشة وابن عباس». وابن عاشور 30/573: «وكلام النبيء ﷺ المروي في حديث أنس لا يقتضي حصر معاني اللفظ فيما ذكره»</p>
+        <p class="hu-p-st"><span class="hu-badge hu-badge-ok">ثابت</span></p>
+        <p class="hu-p-note">جمع منقول عن عالمين، ومنه في المتن: «النهر جزء من هذا الخير، والكوثر أوسع منه».</p>
+      </div>
+    </aside>
   </div>
-  <p class="hu-s6-alt"><b>مقارنة ببديل أبسط:</b> الشرح المكتوب الثابت لا يجيب عن سؤال القارئ، ولا يتسع لسور أخرى إلا بكتابة كل رحلة من الصفر.</p>
+  <div class="hu-key">
+    <span class="hu-key-h">من أين جاءت المعلومة؟</span>
+    <span class="hu-key-i"><Ic t="ayah" />آية</span>
+    <span class="hu-key-i"><Ic t="hadith" />قول النبي ﷺ</span>
+    <span class="hu-key-i"><Ic t="athar" />صحابي أو تابعي</span>
+    <span class="hu-key-i"><Ic t="scholar" />قول عالم</span>
+    <span class="hu-key-i"><Ic t="link" />ربط اجتهادي</span>
+    <span class="hu-key-i"><Ic t="guide" />هداية مستنبطة</span>
+    <span class="hu-key-sep"></span>
+    <span class="hu-key-h">هل ثبتت؟</span>
+    <span class="hu-key-i"><span class="hu-badge hu-badge-ok">ثابت</span>في اللوحة فقط</span>
+    <span class="hu-key-i"><span class="hu-badge hu-badge-no">لا يثبت</span></span>
+    <span class="hu-key-i"><span class="hu-badge hu-badge-khilaf">خلاف معتبر</span></span>
+  </div>
 </div>
 
 ---
-kicker: الموثوقية
+layout: default
+heading: ما يفتحه القارئ حين يختار العمق
+sub: في التدبر صلة معزوة بالسورة التي قبلها وهداية لحياتنا، وفي التعمق الدليل والخلاف تحت كل دعوى.
+class: hu-s6
+---
+
+<section class="hu-strong">
+  <span class="hu-tabchip">التدبر</span>
+  <p class="hu-s6-lead">قبل الكوثر مباشرة في المصحف سورة الماعون. ويمكن أن نقرأ الكوثر في مقابلها: في الماعون أربعة تصرفات سيئة، وفي الكوثر ما يقابل كل واحد منها<Mk i="ayah,link" n="10" />.</p>
+  <div class="hu-steps hu-steps-4">
+    <div class="hu-step hu-pair">
+      <div class="hu-step-h"><span class="hu-n hu-n-lt">1</span><b>البخل</b></div>
+      <p><span class="hu-q">﴿فذلك الذي يدع اليتيم﴾ ﴿ولا يحض على طعام المسكين﴾</span>. ويقابله <span class="hu-q">﴿إنا أعطيناك الكوثر﴾</span>: عطاء كثير في مقابل البخل<Mk i="scholar,link" n="11" /></p>
+    </div>
+    <div class="hu-step hu-pair">
+      <div class="hu-step-h"><span class="hu-n hu-n-lt">2</span><b>إهمال الصلاة</b></div>
+      <p><span class="hu-q">﴿الذين هم عن صلاتهم ساهون﴾</span>. ويقابله <span class="hu-q">﴿فصل﴾</span>: المحافظة على الصلاة<Mk i="scholar,link" n="12" /></p>
+    </div>
+    <div class="hu-step hu-pair">
+      <div class="hu-step-h"><span class="hu-n hu-n-lt">3</span><b>العمل ليُعجَب الناس</b></div>
+      <p><span class="hu-q">﴿الذين هم يراءون﴾</span>. ويقابله <span class="hu-q">﴿لربك﴾</span>: الصلاة لرضا الله وحده، لا ليراها الناس<Mk i="scholar,link" n="13" /></p>
+    </div>
+    <div class="hu-step hu-pair">
+      <div class="hu-step-h"><span class="hu-n hu-n-lt">4</span><b>منع المساعدة</b></div>
+      <p><span class="hu-q">﴿ويمنعون الماعون﴾</span>. ويقابله <span class="hu-q">﴿وانحر﴾</span>: الذبح تقرّبًا إلى الله<Mk i="scholar,link" n="14" /></p>
+    </div>
+  </div>
+  <p class="hu-caveat">وهذه المقارنة طريقة ممكنة لفهم العلاقة بين السورتين، لا تفسير لمعنى الآيات نفسها. وبعض روابطها أقوى من بعض.</p>
+  <div class="hu-guide">
+    <div class="hu-guide-h"><span class="hu-guide-tag"><Ic t="guide" />هداية مستنبطة</span><span>ومن العطاء والشكر وبقاء الخير نصل إلى ما نأخذه لحياتنا، وهو أمران<Mk i="guide" n="15" />:</span></div>
+    <ul class="hu-list">
+      <li><b>إذا أُعطيت نعمة، فاشكرها بعبادة تقصد بها رضا الله وحده،</b> لا أحدًا سواه.</li>
+      <li><b>لا تقس بقاء أثر الإنسان بعد موته بماله وأبنائه.</b> قد يفقد المرء أبناءه ويبقى خيره وأثره، وقد يكثر ماله وولده وهو المقطوع حقًّا عن الخير.</li>
+    </ul>
+  </div>
+</section>
+<section class="hu-deep">
+  <span class="hu-tabchip">التعمق</span>
+  <div class="hu-fold">
+    <div class="hu-fold-i"><span class="hu-plus">+</span><span>الكوثر: نهر أم خير كثير؟ كلاهما</span></div>
+    <div class="hu-fold-i"><span class="hu-plus">+</span><span>نزلت في مكة أم في المدينة؟ قولان معتبران</span><span class="hu-badge hu-badge-khilaf">خلاف معتبر</span></div>
+    <div class="hu-fold-i"><span class="hu-plus">+</span><span>من قال «أبتر»؟ رواية مشهورة لا تثبت</span><span class="hu-badge hu-badge-no">لا يثبت</span></div>
+    <div class="hu-fold-i"><span class="hu-plus">+</span><span>كيف لا يكون أبتر وقد مات أبناؤه؟ لأن المقياس هو الخير</span></div>
+  </div>
+</section>
+<section class="hu-keyline">
+  <div class="hu-keyline-flow"><span>دعوى</span><Arr /><span>دليل</span><Arr /><span>رابط</span><Arr /><span>درجة الثقة</span><Arr /><span>هداية</span></div>
+  <div class="hu-keyline-cap">هكذا تُبنى كل دعوى، في أي سورة</div>
+</section>
+
+::sources::
+
+المقابلة بين السورتين: الرازي، مفاتيح الغيب 32/110
+
+---
+layout: default
 heading: "المعمل: كيف يثبت كل ما يدخل النسيج"
-sub: معمل نعتزم بناءه وراء الشرح، يصنع النسيج قبل أن يراه القارئ.
+sub: كل دعوى ورابط يُتحقق منه قبل أن يراه القارئ، وما لا مصدر له لا يدخل.
+class: hu-s7
 ---
 
-<div class="hu-s7">
-  <ol class="hu-lab">
-    <li><b>خريطة المعرفة</b><span>أسئلة ثابتة على عائلات المعرفة كلها، و«لا مادة» حيث لا شيء</span></li>
-    <li><b>المصادر بالعائلة</b><span>لكل عائلة مصادرها المعتمدة، و«قيد التحديد» للقراءات وترتيب النزول والسيرة</span></li>
-    <li class="hu-lab-on"><b>التحقق</b><span>من الدعاوى والروابط، واتساق المعنى بين درجات العمق</span></li>
-    <li><b>المراجعة</b><span>نعتزم أن يراجع متخصص في التفسير المنهج والشروح وروابطها وأجوبة الإشكالات</span></li>
-    <li><b>اختبار النقل</b><span>مجموعة آيات ثالثة مختلفة الطبيعة على قواعد المعمل وحدها</span></li>
-  </ol>
-  <div class="hu-s7-cap">في التحقق: كل جملة تحمل نوعها، ومصدرها وموضعه، وحالة ثبوتها</div>
-  <div class="hu-recs">
-    <div class="hu-rec">
-      <div class="hu-rec-type">رواية · سبب نزول سورة الكهف</div>
+<section class="hu-steps hu-steps-a5">
+  <div class="hu-step hu-st">
+    <div class="hu-step-h"><span class="hu-n">1</span><b>خريطة المعرفة</b></div>
+    <p>أسئلة ثابتة على عائلات المعرفة كلها، و«لا مادة» حيث لا شيء.</p>
+  </div>
+  <Arr />
+  <div class="hu-step hu-st">
+    <div class="hu-step-h"><span class="hu-n">2</span><b>المصادر بالعائلة</b></div>
+    <p>لكل عائلة مصادرها المعتمدة، ومنها «المختصر» وابن كثير في التفسير، وابن عاشور في اللغة والبلاغة؛ و«قيد التحديد» للقراءات وترتيب النزول والسيرة. ونطابقها مع الملحق العلمي للتحدي.</p>
+  </div>
+  <Arr />
+  <div class="hu-step hu-strong hu-st-strong">
+    <div class="hu-step-h"><span class="hu-n hu-n-lt">3</span><b>التحقق</b></div>
+    <p>لكل دعوى ورابط نوعه بأيقونته، ومصدره وموضعه، وحالة ثبوته. وكل حديث أو أثر أو سبب نزول يُتحقق من مخرجه ودرجته، ولو تكرر عند كل الشرّاح. والمعنى في اللمحة لا يخالف المعنى في التعمق.</p>
+  </div>
+  <Arr />
+  <div class="hu-step hu-st">
+    <div class="hu-step-h"><span class="hu-n">4</span><b>المراجعة</b></div>
+    <p>نعتزم أن يراجع متخصص في التفسير المنهج، والشروح وروابطها، وأجوبة الإشكالات، قبل أن تصل إلى القارئ.</p>
+  </div>
+  <Arr />
+  <div class="hu-step hu-st">
+    <div class="hu-step-h"><span class="hu-n">5</span><b>اختبار النقل</b></div>
+    <p>مجموعة آيات ثالثة مختلفة الطبيعة على قواعد المعمل وحدها، ونسجل ما احتاج منها إلى تعديل.</p>
+  </div>
+</section>
+<section>
+  <div class="hu-recs-h"><Arr d="d" />ثلاثة سجلات من محطة التحقق</div>
+  <div class="hu-steps hu-steps-3">
+    <div class="hu-step hu-rec">
+      <div class="hu-rec-t"><span class="hu-n">1</span><Ic t="athar" />رواية · سبب نزول سورة الكهف (الشريحة 2)</div>
       <p>في إسنادها عند الطبري راوٍ لم يُسمَّ.</p>
-      <div class="hu-rec-status hu-st-no">لا يُبنى عليها</div>
+      <p class="hu-rec-src">الطبري</p>
+      <p class="hu-rec-st">لا يُبنى عليها</p>
     </div>
-    <div class="hu-rec">
-      <div class="hu-rec-type">وجه اجتهادي معزو · مناسبة الفاتحة والبقرة</div>
-      <p>ابن الزبير الغرناطي، <span class="hu-nw">البرهان ص190</span>؛ البقاعي، <span class="hu-nw">نظم الدرر 1/77</span>. وتحفّظ الألوسي، <span class="hu-nw">روح المعاني 1/108</span>.</p>
-      <div class="hu-rec-status">يُعرض معزوًّا إلى قائليه</div>
+    <div class="hu-step hu-rec">
+      <div class="hu-rec-t"><span class="hu-n">2</span><Ic t="link" />ربط اجتهادي · مناسبة الفاتحة والبقرة (الشريحة 1)</div>
+      <p>الهدى الذي يُسأل في الفاتحة موجود في هذا الكتاب</p>
+      <p class="hu-rec-src">الغرناطي؛ البقاعي؛ وتحفّظ الألوسي</p>
+      <p class="hu-rec-st">ثابت نسبته إلى قائليه، والمناسبة نفسها اجتهاد يُعرض معزوًّا</p>
     </div>
-    <div class="hu-rec">
-      <div class="hu-rec-type">رابط لفظي · الكهف 7 و30</div>
-      <p>«أحسن عملا» في الآيتين، من النص نفسه.</p>
-      <div class="hu-rec-status hu-st-ok">ثابت من النص</div>
+    <div class="hu-step hu-rec">
+      <div class="hu-rec-t"><span class="hu-n">3</span><Ic t="link" />ربط اجتهادي · الماعون والكوثر (الشريحة 6)</div>
+      <p><span class="hu-q">﴿الماعون﴾</span>: المساعدة بالمال أو بالأشياء النافعة. ويقابله <span class="hu-q">﴿وانحر﴾</span></p>
+      <p class="hu-rec-src">الرازي 32/110: «وانحر، وأراد به التصدق بلحم الأضاحي»</p>
+      <p class="hu-rec-st">ثابت (النسبة إلى الرازي)</p>
+      <p class="hu-rec-st">تقدير هدى لقوة الصلة: <span class="hu-str">صلة ضعيفة</span>. يقوم على معنى واحد للماعون، و«التصدق باللحم» زيادة من الرازي على ما رجحه ابن كثير</p>
+      <p class="hu-rec-src">نقدّر الصلة هنا؛ ثبوت القول عن العالم مبيّن بصورة مستقلة.</p>
     </div>
   </div>
-  <div class="hu-s7-rules">
-    <p><b>الروايات:</b> كل حديث أو أثر أو سبب نزول يُتحقق من مخرجه ودرجته قبل العرض، ولو تكرر عند كل الشرّاح. والخلاف المعتبر يُعرض بأقواله وقائليه.</p>
-    <p><b>الإشكالات:</b> لا يُعرض إشكال إلا بجواب موثق معزو إلى العلماء راجعه متخصص.</p>
-    <p><b>الامتناع والإحالة:</b> يمتنع حين لا يجد مصدرًا، ويحيل أسئلة الفتوى والأحكام إلى المختص.</p>
-    <p><b>حالات اختبار مقصودة:</b> سؤال بلا مرجع، وأقوال متعارضة، ورواية ضعيفة مشهورة، وطلب فتوى، <span class="hu-nw">ورابط بلا سند</span>.</p>
-    <p><b>الحقوق:</b> لا يدخل المستودع العام نص قبل فحص ترخيصه.</p>
-  </div>
-</div>
+</section>
+<section>
+  <ul class="hu-rules">
+    <li><b>الإشكالات:</b> لا يُعرض إشكال إلا بجواب موثق معزو إلى العلماء راجعه متخصص.</li>
+    <li><b>الامتناع والإحالة:</b> يمتنع حين لا يجد مصدرًا، ويحيل أسئلة الفتوى والأحكام إلى المختص.</li>
+    <li><b>حالات اختبار مقصودة:</b> سؤال بلا مرجع، وأقوال متعارضة، ورواية ضعيفة مشهورة، وطلب فتوى، ورابط بلا سند.</li>
+    <li><b>الحقوق:</b> لا يدخل المستودع العام نص قبل فحص ترخيصه.</li>
+  </ul>
+</section>
+
+::sources::
+
+الطبري عند الكهف: 1 · ابن الزبير الغرناطي، البرهان ص190؛ البقاعي، نظم الدرر 1/77؛ الألوسي، روح المعاني 1/108 · الرازي، مفاتيح الغيب 32/110
 
 ---
-kicker: الأصالة
-heading: النسج أولًا
-sub: "لكل عنصر صورة قريبة عند غيرنا، ولم نجد اجتماعها في رحلة عربية واحدة."
+layout: default
+heading: "ما الجديد: النسج أولًا"
+sub: لكل عنصر صورة قريبة عند غيرنا، ولم نجد اجتماعها في رحلة عربية واحدة.
+class: hu-s8
 ---
 
-<div class="hu-s8">
+<section>
   <table class="hu-cmp">
     <thead>
       <tr>
-        <th class="hu-cmp-prod"></th>
-        <th class="hu-cmp-first">شرح واحد ينسج علوم الآيات ويصلها بمقصد السورة</th>
-        <th>بالعربية لغير المتخصص</th>
-        <th>عمق يختاره القارئ</th>
-        <th>جواب أسئلة القارئ وشبهاته داخل الرحلة</th>
-        <th>لكل دعوى مصدر ونوع، ولكل حديث درجة</th>
+        <th></th>
+        <th class="c">شرح واحد ينسج علوم الآيات ويصلها بمقصد السورة</th>
+        <th class="c">بالعربية لغير المتخصص</th>
+        <th class="c">عمق يختاره القارئ</th>
+        <th class="c">جواب أسئلة القارئ وشبهاته داخل الرحلة</th>
+        <th class="c">لكل دعوى مصدر ونوع، ولكل حديث درجة</th>
       </tr>
     </thead>
     <tbody>
-      <tr><td class="hu-cmp-prod">خطط <bdi>Quran.com</bdi> <small>رحلة الكهف في سبعة أيام</small></td><td class="hu-cmp-first"><Mark v="half"/></td><td><Mark v="none"/></td><td><Mark v="none"/></td><td><Mark v="none"/></td><td><Mark v="half"/></td></tr>
-      <tr><td class="hu-cmp-prod"><bdi>Maani</bdi> <small>خمس عدسات بالذكاء الاصطناعي</small></td><td class="hu-cmp-first"><Mark v="half"/></td><td><Mark v="none"/></td><td><Mark v="none"/></td><td><Mark v="half"/></td><td><Mark v="half"/></td></tr>
-      <tr><td class="hu-cmp-prod">القرآن تدبر وعمل</td><td class="hu-cmp-first"><Mark v="half"/></td><td><Mark v="full"/></td><td><Mark v="none"/></td><td><Mark v="none"/></td><td><Mark v="half"/></td></tr>
-      <tr><td class="hu-cmp-prod">تدارس القرآن</td><td class="hu-cmp-first"><Mark v="half"/></td><td><Mark v="full"/></td><td><Mark v="none"/></td><td><Mark v="half"/></td><td><Mark v="half"/></td></tr>
-      <tr><td class="hu-cmp-prod"><bdi>Bayyinah TV</bdi></td><td class="hu-cmp-first"><Mark v="half"/></td><td><Mark v="none"/></td><td><Mark v="half"/></td><td><Mark v="none"/></td><td><Mark v="none"/></td></tr>
-      <tr><td class="hu-cmp-prod"><bdi>Quran Mentor</bdi> <small>مسار يبدأ بأسئلة القارئ</small></td><td class="hu-cmp-first"><Mark v="half"/></td><td><Mark v="none"/></td><td><Mark v="none"/></td><td><Mark v="full"/></td><td><Mark v="none"/></td></tr>
-      <tr class="hu-cmp-us"><td class="hu-cmp-prod"><span class="hu-cmp-name">هُدًى</span> <small>المستهدف، لم يُبنَ بعد</small></td><td class="hu-cmp-first"><Mark v="full"/></td><td><Mark v="full"/></td><td><Mark v="full"/></td><td><Mark v="full"/></td><td><Mark v="full"/></td></tr>
+      <tr><td>خطط <bdi>Quran.com</bdi> <span>(رحلة الكهف في سبعة أيام)</span></td><td class="c"><Mark v="half" /></td><td class="c"><Mark v="none" /></td><td class="c"><Mark v="none" /></td><td class="c"><Mark v="none" /></td><td class="c"><Mark v="half" /></td></tr>
+      <tr><td><bdi>Maani</bdi> <span>(خمس عدسات بالذكاء الاصطناعي)</span></td><td class="c"><Mark v="half" /></td><td class="c"><Mark v="none" /></td><td class="c"><Mark v="none" /></td><td class="c"><Mark v="half" /></td><td class="c"><Mark v="half" /></td></tr>
+      <tr><td>القرآن تدبر وعمل</td><td class="c"><Mark v="half" /></td><td class="c"><Mark v="full" /></td><td class="c"><Mark v="none" /></td><td class="c"><Mark v="none" /></td><td class="c"><Mark v="half" /></td></tr>
+      <tr><td>تدارس القرآن</td><td class="c"><Mark v="half" /></td><td class="c"><Mark v="full" /></td><td class="c"><Mark v="none" /></td><td class="c"><Mark v="half" /></td><td class="c"><Mark v="half" /></td></tr>
+      <tr><td><bdi>Bayyinah TV</bdi></td><td class="c"><Mark v="half" /></td><td class="c"><Mark v="none" /></td><td class="c"><Mark v="half" /></td><td class="c"><Mark v="none" /></td><td class="c"><Mark v="none" /></td></tr>
+      <tr><td><bdi>Quran Mentor</bdi> <span>(مسار يبدأ بأسئلة القارئ)</span></td><td class="c"><Mark v="half" /></td><td class="c"><Mark v="none" /></td><td class="c"><Mark v="none" /></td><td class="c"><Mark v="full" /></td><td class="c"><Mark v="none" /></td></tr>
+      <tr class="hu-me"><td>هُدًى <span>(لم يُبنَ بعد)</span><span class="hu-me-tag">المستهدف</span></td><td class="c"><Mark v="full" /></td><td class="c"><Mark v="full" /></td><td class="c"><Mark v="full" /></td><td class="c"><Mark v="full" /></td><td class="c"><Mark v="full" /></td></tr>
     </tbody>
   </table>
-  <div class="hu-key">
-    <span class="hu-key-meta">بحث في المواد العامة لأقرب المنتجات، حتى 27 سبتمبر 2026:</span>
-    <span><Mark v="full"/> موثق في مواده العامة</span>
-    <span><Mark v="half"/> عنصر قريب، أضيق أو بصورة مختلفة</span>
-    <span><Mark v="none"/> لم نجده في مواده العامة، ولا يعني ذلك أنه غير موجود</span>
+</section>
+<section>
+  <div class="hu-cmp-key">
+    <span><Mark v="full" />موثق في مواده العامة</span>
+    <span><Mark v="half" />عنصر قريب، أضيق أو بصورة مختلفة</span>
+    <span><Mark v="none" />لم نجده في مواده العامة، ولا يعني ذلك أنه غير موجود</span>
   </div>
-  <div class="hu-s8-notes">
-    <p>ومساعدات الذكاء الاصطناعي، مثل <bdi>Ansari</bdi> و<bdi>Domla</bdi>، تستشهد بمصادرها، ويعلن <bdi>Domla</bdi> أنه يمتنع حين يغيب الدليل. لكنها سؤال وجواب، لا رحلة في السورة.</p>
-    <p class="hu-s8-take"><b>«هُدًى» رحلة شرح تجيب عن الأسئلة، لا مساعد أسئلة.</b> ونعتزم أن نختبر أن اجتماع هذه العناصر، وأولها النسج، يرفع الفهم، بمقارنة مباشرة مع تفسير مختصر.</p>
-    <p class="hu-s8-method">نستمد حركات الشرح من مدارس التدبر، ودرسنا طريقة أربعة شرّاح معاصرين وسلسلة في الفاتحة: أخذنا الطريقة لا النتائج.</p>
-  </div>
-</div>
+  <p class="hu-s8-ai">ومساعدات الذكاء الاصطناعي، مثل <bdi>Ansari</bdi> و<bdi>Domla</bdi>، تستشهد بمصادرها، ويعلن <bdi>Domla</bdi> أنه يمتنع حين يغيب الدليل. لكنها سؤال وجواب، لا رحلة في السورة.</p>
+</section>
+<section>
+  <p class="hu-s8-sum"><b>«هُدًى» رحلة شرح تجيب عن الأسئلة، لا مساعد أسئلة.</b> ونعتزم أن نختبر أن اجتماع هذه العناصر، وأولها النسج، يرفع الفهم، بمقارنة مباشرة مع تفسير مختصر (الشريحة 9).</p>
+  <p class="hu-s8-method">نستمد حركات الشرح من مدارس التدبر، ودرسنا طريقة أربعة شرّاح معاصرين وسلسلة في الفاتحة: أخذنا الطريقة لا النتائج.</p>
+</section>
+
+::sources::
+
+بحث في المواد العامة لأقرب المنتجات، حتى 27 سبتمبر 2026
 
 ---
-kicker: قابلية التنفيذ
+layout: default
 heading: "البناء والميزان: أصغر بناء صادق، وكيف نقيسه"
+sub: نبني خلال التحدي نسخة أولى عاملة على آيات مختارة، ونقيس أثرها مقارنة بتفسير مختصر.
+class: hu-s9
 ---
 
-<div class="hu-s9">
-  <section class="hu-build">
-    <div class="hu-label">النسخة الأولى، على آيات مختارة</div>
-    <div class="hu-build-art">
-      <div class="hu-screen">
-        <span class="hu-screen-cap">في الواجهة</span>
-        <div class="hu-screen-row"><span class="hu-blk">آيات 1</span><span class="hu-blk">آيات 2</span></div>
-        <small>مجموعتان متجاورتان من قسم واحد: مسار المعنى بدرجاته الأربع، والشبهات مسارات جانبية، والامتناع والإحالة</small>
-      </div>
-      <div class="hu-offscreen">
-        <span class="hu-blk hu-blk-alt">آيات 3</span>
-        <small>مختلفة الطبيعة، على قواعد المعمل وحدها بلا واجهة: «اختبار أولي لقابلية النقل»</small>
-      </div>
+<section class="hu-v1">
+  <div class="hu-frame">
+    <div class="hu-frame-bar"><i></i><i></i><i></i></div>
+    <div class="hu-frame-in">
+      <p>مجموعتا آيات متجاورتان من قسم واحد: المتن بدرجاته الأربع، وعلامة بعد كل دعوى تفتح مصدرها، والشبهات مسارات جانبية، والامتناع والإحالة.</p>
     </div>
-    <p class="hu-note">ويكفي المخرج نصًّا بسيطًا إن ضاق الوقت عن الواجهة، فجودة المخرج أهم من شكله.</p>
-  </section>
-  <section class="hu-plan">
-    <div class="hu-label">الخطة</div>
-    <ol class="hu-days">
-      <li class="hu-day-pre"><b>قبل التحدي</b><em>عمل سابق</em><span>نوثق نسخة بدايته: دراسة منهج الشرّاح، ونص المصحف وأداة تطابق الاقتباسات معه. ونعتزم قبل 4 أكتوبر: خريطة معرفة أولية، وسياسة مصادر، ومجموعة الاختبار.</span></li>
-      <li><b>اليوم الأول</b><em>المعمل</em><span>للمجموعات الثلاث: سجل الدعاوى والروابط، ومخرج نصي معزو يمكن مراجعته.</span></li>
-      <li><b>اليوم الثاني</b><em>النسيج</em><span>للمجموعتين المتجاورتين: مسار المعنى ودرجاته بمكونات ثابتة، والشبهات مسارات جانبية.</span></li>
-      <li><b>اليوم الثالث</b><em>الميزان</em><span>الاختبار مع القراء، والنشر.</span></li>
-    </ol>
-  </section>
-  <section class="hu-mizan">
-    <div class="hu-mizan-head">
-      <b>الميزان</b>
-      <span>مقارنة بقراء تفسير مختصر للآيات نفسها، مع ضبط طول القراءة. <strong>يُطبق في اختبار المستخدم وحده: أسئلته أداة بحث، لا جزء من رحلة القارئ.</strong></span>
-    </div>
-    <ol class="hu-mizan-items">
-      <li><b>فهم العلاقات</b><span>يشرح بكلماته لماذا تلي خطوةٌ خطوةً، وكيف تتصل الآيات بمقصد السورة</span></li>
-      <li><b>الثابت والاجتهاد</b><span>يميز المعنى الثابت من الاجتهاد والتأمل</span></li>
-      <li><b>الانتقال مع الفهم</b><span>من ينتقل إلى الآيات المجاورة باختياره، مقرونًا بسؤال فهم قصير، تمهيدًا لقياس الاستمرارية لاحقًا</span></li>
-      <li><b>جودة الأسئلة</b><span>أسئلة القارئ بجودتها لا بعددها</span></li>
-      <li><b>أثر عرض الإشكال</b><span>هل يزيل اللبس، أم يُحدث لبسًا جديدًا؟</span></li>
-    </ol>
-  </section>
-  <section class="hu-s9-foot">
-    <p><b>مخرجات التسليم:</b> رابط تجربة يعمل، ومستودع <bdi>GitHub</bdi> عام، وفيديو في دقيقتين، وعرض، وسجل مصادر.</p>
-    <p><b>المخاطر:</b> إن ضاق الوقت نقلل الخطوات أو الدرجات، ولا نقلل التحقق. ونحفظ المخرج المتحقق منه ليعمل الرابط لو تعطل الاسترجاع، ونجعل مزود النموذج قابلًا للتبديل. والصوت والفيديو، وحفظ الرحلة وجلسة العودة، خارج النسخة الأولى.</p>
-  </section>
-</div>
+  </div>
+  <div class="hu-out">
+    <p>مجموعة آيات ثالثة مختلفة الطبيعة، على قواعد المعمل وحدها بلا واجهة: اختبار أولي لقابلية النقل.</p>
+  </div>
+  <p class="hu-v1-note">ويكفي المخرج نصًّا بسيطًا إن ضاق الوقت عن الواجهة، فجودة المخرج أهم من شكله. وإن ضاق الوقت نقلل الآيات أو الدرجات، ولا نقلل التحقق. والصوت والفيديو، وحفظ الرحلة وجلسة العودة، خارج النسخة الأولى.</p>
+</section>
+<section class="hu-steps hu-steps-a4 hu-plan">
+  <div class="hu-step">
+    <div class="hu-step-h"><span class="hu-n">1</span><b>قبل التحدي</b></div>
+    <p>(عمل سابق نوثق نسخة بدايته): دراسة منهج الشرّاح، ونص المصحف وأداة تطابق الاقتباسات معه. ونعتزم قبل 4 أكتوبر: خريطة معرفة أولية، وسياسة مصادر للمجموعات الثلاث، ومجموعة الاختبار.</p>
+  </div>
+  <Arr />
+  <div class="hu-step">
+    <div class="hu-step-h"><span class="hu-n">2</span><b>اليوم الأول: المعمل</b></div>
+    <p>للمجموعات الثلاث: سجل الدعاوى والروابط، ومخرج نصي معزو يمكن مراجعته.</p>
+  </div>
+  <Arr />
+  <div class="hu-step">
+    <div class="hu-step-h"><span class="hu-n">3</span><b>اليوم الثاني: النسيج</b></div>
+    <p>للمجموعتين المتجاورتين: المتن ودرجاته بمكونات ثابتة، والشبهات مسارات جانبية.</p>
+  </div>
+  <Arr />
+  <div class="hu-step">
+    <div class="hu-step-h"><span class="hu-n">4</span><b>اليوم الثالث: الميزان</b></div>
+    <p>الاختبار مع القراء، والنشر. والتسليم: رابط تجربة يعمل، ومستودع <bdi>GitHub</bdi> عام، وفيديو في دقيقتين، وعرض، وسجل مصادر.</p>
+  </div>
+</section>
+<section class="hu-strong hu-bal">
+  <div class="hu-bal-h"><b>الميزان: مقارنة بقراء تفسير مختصر للآيات نفسها، مع ضبط طول القراءة</b><span class="hu-bal-note">يُطبق في اختبار المستخدم وحده: أسئلته، ومنها سؤال الفهم، أداة بحث، لا جزء من رحلة القارئ.</span></div>
+  <ul class="hu-list">
+    <li><b>فهم العلاقات:</b> يشرح القارئ بكلماته لماذا تلي خطوةٌ خطوةً، وكيف تتصل الآيات بمقصد السورة.</li>
+    <li><b>الثابت والاجتهاد:</b> يميز المعنى الثابت من الاجتهاد والتأمل.</li>
+    <li><b>الانتقال مع الفهم:</b> من ينتقل إلى الآيات المجاورة باختياره، مقرونًا بسؤال فهم قصير، ونقارن بين قراء متقاربين في الاهتمام الذي يصفونه بأنفسهم، تمهيدًا لقياس الاستمرارية لاحقًا.</li>
+    <li><b>جودة الأسئلة:</b> نراجع أسئلة القارئ بجودتها لا بعددها، لأن كثرتها قد تعني أن الشرح غامض.</li>
+    <li><b>أثر عرض الإشكال:</b> هل يزيل اللبس، أم يُحدث لبسًا جديدًا؟</li>
+  </ul>
+</section>
+
+::sources::
+
+معيار نجاح المسار الثالث: «استمرارية رحلة المستفيد وانتقاله المنطقي بين مراحلها» (دليل التحدي)
 
 ---
-kicker: الفريق
+layout: default
 heading: الفريق
+sub: "أحمد هشام: صاحب الفكرة، والعضو الوحيد في الفريق."
+class: hu-s10
 ---
 
-<div class="hu-s10">
-  <section class="hu-person">
-    <div class="hu-avatar" aria-hidden="true">أ</div>
-    <div class="hu-person-id">
-      <div class="hu-person-name">أحمد هشام</div>
-      <div class="hu-person-latin"><bdi>Ahmed Hisham</bdi></div>
-      <div class="hu-person-role">صاحب الفكرة، والعضو الوحيد في الفريق</div>
-    </div>
-  </section>
-  <section class="hu-bio">
-    <div class="hu-label">الخبرة</div>
-    <!-- TEAM-BULLETS: replace the four placeholder items below with 3–4 short bullets from the owner's resume. -->
-    <ul class="hu-list hu-list-lg hu-bio-list">
-      <li class="hu-ph">[نقطة 1 من السيرة الذاتية]</li>
-      <li class="hu-ph">[نقطة 2 من السيرة الذاتية]</li>
-      <li class="hu-ph">[نقطة 3 من السيرة الذاتية]</li>
-      <li class="hu-ph">[نقطة 4، اختيارية]</li>
-    </ul>
-    <!-- /TEAM-BULLETS -->
-  </section>
-  <section class="hu-s10-side">
-    <div class="hu-card">
-      <div class="hu-label">ما أُنجز قبل التحدي</div>
-      <p>دراسة منهج أربعة شرّاح معاصرين وسلسلة في الفاتحة، ونص المصحف وأداة تطابق الاقتباسات معه. عمل سابق نوثق نسخة بدايته.</p>
-    </div>
-    <div class="hu-card">
-      <div class="hu-label">المراجعة العلمية</div>
-      <p>نعتزم عرض المنهج والنماذج الحساسة على متخصص في التفسير قبل أن تصل إلى القارئ.</p>
-    </div>
-  </section>
-</div>
-<div class="hu-close">التوفيق بيد الله وحده، وعملنا أن نقرّب بيان كتابه.</div>
+<section class="hu-id">
+  <div>
+    <div class="hu-id-name"><span class="hu-id-ar">أحمد هشام</span><span class="hu-id-lat"><bdi>Ahmed Hisham</bdi></span></div>
+    <div class="hu-id-role">صاحب الفكرة، والعضو الوحيد في الفريق</div>
+    <div class="hu-id-link"><bdi>github.com/ahmed0thman</bdi></div>
+  </div>
+</section>
+<section class="hu-strong hu-s10-exp">
+  <div class="hu-lab">الخبرة</div>
+  <ul class="hu-list">
+    <li>مهندس برمجيات متكامل (<bdi>Full-Stack</bdi>) بخبرة تزيد على خمس سنوات.</li>
+    <li>ماجستير علوم الحاسب والذكاء الاصطناعي، جامعة القاهرة.</li>
+    <li>بنى منتجات عربية وإنجليزية كاملة الاتجاه بـ <bdi>Next.js</bdi> و<bdi>NestJS</bdi> و<bdi>PostgreSQL</bdi>، منها واجهة لتحويل النص العربي إلى كلام.</li>
+    <li>يبني «هدى» بسير عمل متعدد الوكلاء يفصل التصميم والتنفيذ والمراجعة.</li>
+  </ul>
+</section>
+<section class="hu-s10-two">
+  <div><p><b>ما أُنجز قبل التحدي:</b> دراسة منهج أربعة شرّاح معاصرين وسلسلة في الفاتحة، ونص المصحف وأداة تطابق الاقتباسات معه. عمل سابق نوثق نسخة بدايته.</p></div>
+  <div><p><b>المراجعة العلمية:</b> نعتزم عرض المنهج والنماذج الحساسة على متخصص في التفسير قبل أن تصل إلى القارئ.</p></div>
+</section>
+
+::sources::
+
+التوفيق بيد الله وحده، وعملنا أن نقرّب بيان كتابه.
