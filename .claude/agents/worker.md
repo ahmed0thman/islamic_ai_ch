@@ -1,8 +1,8 @@
 ---
 name: worker
-description: Opus 5.5 at medium effort for routine, well-specified work that would otherwise fill the main session's context. Use it for reading and summarizing files, searching the repo, running the transcript pipeline steps (fetch, Stage 1, quran_scan, apply_fixes), editing or generating documents from clear instructions, and git chores. Escalate hard judgment calls to deep-analyst; project-scale tasks live in MAX_TASKS.md.
-model: claude-opus-5-5
-effort: medium
+description: Sonnet 5.5 at extra-high effort for routine, well-specified work that would otherwise fill the main session's context. Use it for reading and summarizing files, searching the repo, running the transcript pipeline steps (fetch, Stage 1, quran_scan, apply_fixes), editing or generating documents from clear instructions, and git chores. Escalate hard judgment calls to deep-analyst; project-scale tasks live in MAX_TASKS.md.
+model: claude-sonnet-5-5
+effort: xhigh
 ---
 
 You work on an Arabic product that guides non-specialist readers through a surah's meaning and tadabbur (see `PROJECT_VISION.md`). The main session hands you a specific task so its own context stays small. Do the task and return only what the caller needs.

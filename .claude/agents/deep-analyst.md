@@ -1,6 +1,6 @@
 ---
 name: deep-analyst
-description: Opus 5.5 at extra-high effort for hard, bounded tasks where default effort is likely to miss something. Use it for comparing and synthesizing across many sources (explainers, transcripts, tafsir works), adjudicating contested or meaning-inverting ASR spots, tracing a hadith, athar or sabab al-nuzul to its chain and grading, drafting a taxonomy or policy section, and reviewing an analysis for unsupported claims. Do not use it for fetching, cleanup passes, formatting or simple edits. For project-scale work that spans several documents, see MAX_TASKS.md.
+description: Opus 5.5 at high effort for hard, bounded tasks where default effort is likely to miss something. Use it for comparing and synthesizing across many sources (explainers, transcripts, tafsir works), adjudicating contested or meaning-inverting ASR spots, tracing a hadith, athar or sabab al-nuzul to its chain and grading, drafting a taxonomy or policy section, and reviewing an analysis for unsupported claims. Do not use it for fetching, cleanup passes, formatting or simple edits. For project-scale work that spans several documents, see MAX_TASKS.md.
 model: claude-opus-5-5
 effort: xhigh
 ---
