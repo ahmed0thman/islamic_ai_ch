@@ -1,6 +1,6 @@
 <!-- Source-type icons for the product-screen key (slides 5, 6, 7).
      Drawn as SVG so they do not depend on font coverage. Colours follow
-     kawthar-output.md, "مفتاح الألوان والأيقونات". Shape differs per type, so
+     docs/05-examples/kawthar-output.md, "مفتاح الألوان والأيقونات". Shape differs per type, so
      the meaning never rests on colour alone. -->
 <script setup lang="ts">
 defineProps<{ t: 'ayah' | 'hadith' | 'athar' | 'scholar' | 'link' | 'guide' }>()

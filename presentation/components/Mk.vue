@@ -1,5 +1,5 @@
 <!-- Claim marker: small icon(s) for the source type(s), then a raised number, placed
-     right after the claim (kawthar-output.md design). `i` lists the types in the
+     right after the claim (docs/05-examples/kawthar-output.md design). `i` lists the types in the
      key's order. Badge «لا يثبت» / «خلاف معتبر» sits next to the marker in the body;
      «ثابت» never appears in the body, only in the side panel. -->
 <script setup lang="ts">

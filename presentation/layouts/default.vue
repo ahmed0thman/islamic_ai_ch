@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useSlideContext } from '@slidev/client'
 
-// Reading-flow contract (registration-draft.md §7): one entry point (the title,
+// Reading-flow contract (docs/07-competition/deck-spec.md): one entry point (the title,
 // top right, with one idea line under it), bands read top to bottom, and a thin
 // sources strip at the bottom. The strip is the `sources` named slot.
 const props = defineProps<{ heading?: string; sub?: string }>()

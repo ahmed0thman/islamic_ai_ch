@@ -134,7 +134,7 @@ These are non-words or fused forms, seen more than once, with a single reading:
 - Mushaf text: `tools/data/quran-simple-clean.json` (Tanzil simple-clean), via
   `tools/quran_scan.py`.
 - Series metadata, episode list, cut points: `references/<series>/README.md`.
-- Project scope and terminology: `PROJECT_VISION.md`.
+- Project scope and terminology: `docs/01-vision/`.
 - WebSearch is acceptable for public entities (a companion's name, a book of tafsir, a
   scholar) — these are public, unlike the internal names in other domains.
 
