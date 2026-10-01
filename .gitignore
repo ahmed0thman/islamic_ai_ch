@@ -1,2 +1,9 @@
 .cache/
 .DS_Store
+__pycache__/
+.playwright-mcp/
+
+# Slidev deck (presentation/)
+node_modules/
+dist/
+.slidev/
