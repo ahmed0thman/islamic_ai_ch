@@ -89,6 +89,7 @@
 
 ### 07-competition: المسابقة
 
+- [`challenge-plan.md`](07-competition/challenge-plan.md): **خطة التحدي (3 أكتوبر):** أين نحن من الهدفين بخانات نموذج العمل ومعايير التحكيم النهائي بمستوياتها، وما غيّره الملحق العلمي، والأولويات يومًا بيوم.
 - [`competition-context.md`](07-competition/competition-context.md): المسار، والمواعيد، ومعايير الترشيح والتحكيم، ومتطلبات التسليم.
 - [`registration-draft-overview.md`](07-competition/registration-draft-overview.md): حالة مسودة التسجيل، وحقول الخطوة، ونص المسار.
 - [`idea-name.md`](07-competition/idea-name.md): الاسم ومبرره، والتحقق منه، والمناسبة، والسطر الوصفي، وتميز الاسم، والاعتراضات.
@@ -132,6 +133,7 @@
 ## الخطوات القادمة
 
 - [سجل القرارات: المفتوح والعاجل](decisions.md#مفتوح)
+- [خطة التحدي: الأولويات يومًا بيوم](07-competition/challenge-plan.md#5-الأولويات-يومًا-بيوم)
 - [أمور مفتوحة للبحث والقرار (الرؤية)](08-open/open-questions-vision.md)
 - [أسئلة مفتوحة في منهج الشرح](08-open/open-questions-method.md)
 - [خارج النموذج: قرارات مفتوحة](08-open/model-open-decisions.md)
