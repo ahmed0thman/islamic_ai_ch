@@ -100,6 +100,8 @@
 - [`competitors.md`](07-competition/competitors.md): تحليل المنافسة: جدول 32 منتجًا، والمنافسون الأقرب، والفجوة.
 - [`competition-notes.md`](07-competition/competition-notes.md): ملاحظات من موقع المسابقة: الوثائق، والمصطلحات الأربعة، والمواعيد.
 - [`registration-form.md`](07-competition/registration-form.md): حقول نموذج التسجيل: ما هو متاح علنًا، وما لم يُجلب بعد.
+- [`business-model-rules.md`](07-competition/business-model-rules.md): قواعد نموذج العمل من ورشة المتأهلين، وتطبيقها على «هُدًى».
+- [`official/`](07-competition/official/): الملفان الرسميان من المسابقة: المرجعية والحزمة العلمية والبيانات، وقالب العروض.
 
 ### 08-open: المفتوح
 
