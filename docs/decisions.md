@@ -87,7 +87,8 @@
 | ق-123 | — | قالب العرض: صار القالب الرسمي في [`official/`](07-competition/official/). هل ننقل العرض إليه من قالب Slidev الخاص؟ (القرار 17) | [owner-decisions](08-open/owner-decisions.md) |
 | ق-124 | ج | محور سورة الكهف بعبارة الربيعة غير الجازمة، وعرض موضوعات القصص وجهين معزوين. لا يلزم إلا إن دخلت الكهف النطاق | [open-questions-method](08-open/open-questions-method.md) |
 | ق-125 | — | الوعاء الذي يصل به المنتج في النسخة الأولى: تطبيق ويب يعمل على الجوال؟ التسليم يطلب «رابط تجربة مباشر» | [challenge-plan](07-competition/challenge-plan.md)، [business-model-rules](07-competition/business-model-rules.md) |
-| ق-126 | — | مصادر التفسير: الملحق العلمي يعتمد «أي مصادر إسلامية في القرون الثلاثة الأولى أو منصة dorar.net/tafseer». هل نلتزم بها حصرًا، أم نعرض المتأخرين (ابن كثير، وابن عاشور، والرازي، والبقاعي) معزوين في التعمق؟ ويُسأل المنظمون | [challenge-plan](07-competition/challenge-plan.md)، [الملحق](07-competition/official/informations-data-refereces.pdf) ص3 |
+| ق-126 | — | مصادر التفسير: الملحق العلمي يعتمد «أي مصادر إسلامية في القرون الثلاثة الأولى أو منصة dorar.net/tafseer». هل نلتزم بها حصرًا، أم نعرض المتأخرين (ابن كثير، وابن عاشور، والرازي، والبقاعي) معزوين في التعمق؟ ويُسأل المنظمون | [challenge-plan](07-competition/challenge-plan.md)، [الملحق](07-competition/official/informations-data-refereces.pdf) ص3، [scientific-annex](07-competition/scientific-annex.md) |
+| ق-127 | — | ما يطلبه المعيار الملزم في الملحق (ص5) في الواجهة: إفصاح عن الذكاء الاصطناعي، وتفريق ظاهر بين النص الشرعي وصياغة النظام، وعبارة حين لا تكفي المصادر، وسطر خصوصية معلن. إضافة إلى تصميم ق-024 | [scientific-annex](07-competition/scientific-annex.md)، القسم 3 |
 
 ## للتأكيد
 
