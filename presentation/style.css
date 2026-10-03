@@ -9,7 +9,7 @@
   - Latin runs are wrapped in <bdi> in the slides; bdi is isolated below as well.
   - All custom classes use the hu- prefix so UnoCSS never generates a utility for them.
 
-  Reading-flow contract (registration-draft.md §7):
+  Reading-flow contract (docs/07-competition/deck-spec.md):
   one entry point (title, top right) · bands read top to bottom · right-to-left
   only inside a numbered row · arrows point left or down · ONE strongest-colour
   block per slide (.hu-strong, solid teal) · at most 3 main units · thin
@@ -31,7 +31,7 @@
   --gold: #946f35;
   --gold-tint: #f6ecd9;
 
-  /* source-type icons (kawthar-output.md, "مفتاح الألوان والأيقونات") */
+  /* source-type icons (docs/05-examples/kawthar-output.md, "مفتاح الألوان والأيقونات") */
   --c-ayah: #2e7d32;
   --c-hadith: #1565c0;
   --c-athar: #6a1b9a;
