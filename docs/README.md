@@ -89,7 +89,7 @@
 
 ### 07-competition: المسابقة
 
-- [`scientific-annex.md`](07-competition/scientific-annex.md): **الملحق العلمي:** ما فيه وما الملزم منه، ومصادرنا وضوابطنا مقابله، ومستويات المحتوى الأربعة، وحالات الاختبار، وما يحتاج قرارًا.
+- [`scientific-annex.md`](07-competition/scientific-annex.md): **الملحق العلمي:** ما فيه وما الملزم منه، ومصادرنا مقابله وما تفتحه منصاته في كل مجال، وضوابطنا مقابله، ومستويات المحتوى الأربعة، وحالات الاختبار، وما قررناه.
 - [`challenge-plan.md`](07-competition/challenge-plan.md): **خطة التحدي (3 أكتوبر):** أين نحن من الهدفين بخانات نموذج العمل ومعايير التحكيم النهائي بمستوياتها، وما غيّره الملحق العلمي، والأولويات يومًا بيوم.
 - [`competition-context.md`](07-competition/competition-context.md): المسار، والمواعيد، ومعايير الترشيح والتحكيم، ومتطلبات التسليم.
 - [`registration-draft-overview.md`](07-competition/registration-draft-overview.md): حالة مسودة التسجيل، وحقول الخطوة، ونص المسار.
