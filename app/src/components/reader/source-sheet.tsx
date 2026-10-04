@@ -5,7 +5,7 @@ import type { CSSProperties } from "react";
 import { LinkSquare02Icon, BookOpen01Icon, PlusSignIcon, MinusSignIcon } from "@hugeicons/core-free-icons";
 import type { SourceRecord, Ui } from "@/lib/types";
 import { splitRulings } from "@/lib/rulings";
-import { numeral } from "@/lib/numerals";
+import { arabicDigits, numeral } from "@/lib/numerals";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { SourceBadge } from "@/components/ui/source-badge";
@@ -18,7 +18,7 @@ function EvidenceContent({ evidence, ui }: { evidence: SourceRecord["evidence"][
     <dl className="sheet-facts">
       <div><dt>{ui.panel.source}</dt><dd>{evidence.source_title}</dd></div>
       <div><dt>{ui.panel.author}</dt><dd>{evidence.author}</dd></div>
-      <div><dt>{ui.panel.locator}</dt><dd>{evidence.locator}</dd></div>
+      <div><dt>{ui.panel.locator}</dt><dd>{arabicDigits(evidence.locator)}</dd></div>
     </dl>
     <div><p className="sheet-label">{ui.panel.quote}</p><blockquote className="sheet-evidence-quote">{evidence.quote}</blockquote></div>
     {rulings.map((ruling, rulingIndex) => <dl className="sheet-ruling sheet-facts" key={rulingIndex}>

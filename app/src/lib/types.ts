@@ -8,7 +8,7 @@ export interface Ayah { key: string; no: number; text: string }
 export type Segment =
   | { t: "text"; v: string }
   | { t: "ayah"; key: string }
-  | { t: "quote"; v: string; record: string }
+  | { t: "quote"; v: string; record: string; /** Display only: punctuation that followed the closing mark. Never in content. */ trail?: string }
   | { t: "term"; v: string; record: string }
   | { t: "mark"; records: string[] };
 export type TitleSegment = Extract<Segment, { t: "text" | "term" | "mark" }>;

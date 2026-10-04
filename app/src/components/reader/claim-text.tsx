@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import type { ParagraphBlock, Segment } from "@/lib/types";
 import { toRuns, shouldStack } from "@/lib/runs";
+import { tidyQuoteMarks } from "@/lib/quote-marks";
 import { splitLastWord } from "@/lib/reading-text";
 import type { ReadingProps } from "./reading-context";
 import { InlineAyah } from "./inline-ayah";
@@ -52,7 +53,7 @@ function RunSegments({ segments, ...reading }: ReadingProps & { segments: Segmen
     const segment = segments[index], next = segments[index + 1];
     if (segment.t === "quote" || segment.t === "ayah") {
       const following = followingMarkers(index);
-      if (segment.t === "quote") nodes.push(<VerbatimQuote key={index} text={segment.v} record={segment.record} marker={following.markers} />);
+      if (segment.t === "quote") nodes.push(<VerbatimQuote key={index} text={segment.v} record={segment.record} trail={segment.trail} marker={following.markers} />);
       else nodes.push(<InlineAyah key={index} ayah={ayahs.get(segment.key)!} ui={ui} marker={following.markers} />);
       index = following.lastIndex;
     } else if (segment.t === "term") {
@@ -77,7 +78,7 @@ function RunSegments({ segments, ...reading }: ReadingProps & { segments: Segmen
   return <>{nodes}</>;
 }
 export function ClaimText({ block, mode = "auto", activeRun, inline = false, runPrefix, ...reading }: ClaimTextProps) {
-  const rawRuns = toRuns(block.segments);
+  const rawRuns = toRuns(tidyQuoteMarks(block.segments));
   const stack = !inline && mode !== "flow" && shouldStack(block, rawRuns);
   const runs = displayRuns(rawRuns);
   const children = runs.map((segments, index) => {
