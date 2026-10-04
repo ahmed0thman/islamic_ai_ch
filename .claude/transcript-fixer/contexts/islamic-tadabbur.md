@@ -131,8 +131,9 @@ These are non-words or fused forms, seen more than once, with a single reading:
 
 ## Authoritative sources
 
-- Mushaf text: `tools/data/quran-simple-clean.json` (Tanzil simple-clean), via
-  `tools/quran_scan.py`.
+- Mushaf text: `tools/data/qurancomplex/hafsData_v2-0.json` (King Fahd Complex, Hafs),
+  via `tools/quran_scan.py`. Tanzil's `tools/data/quran-simple-clean.json` stays for
+  comparison only.
 - Series metadata, episode list, cut points: `references/<series>/README.md`.
 - Project scope and terminology: `docs/01-vision/`.
 - WebSearch is acceptable for public entities (a companion's name, a book of tafsir, a

@@ -10,6 +10,10 @@ words that matches the mushaf (after normalization) is reported with its
 surah:ayah reference, plus a word-level comparison of a few words on either side
 of the match, which is where ASR usually garbled the quotation.
 
+The mushaf is the King Fahd Complex Hafs text (ق-038), matched on its
+`aya_text_emlaey` field. Tanzil's simple-clean text stays in data/ for comparison
+only; the scan no longer reads it.
+
 Output is a review aid, not an auto-fixer: every divergence still goes through the
 transcript-cleanup triage in .claude/rules/transcript-cleanup.md.
 """
@@ -20,13 +24,12 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-DATA = Path(__file__).parent / "data" / "quran-simple-clean.json"
+DATA = Path(__file__).parent / "data" / "qurancomplex" / "hafsData_v2-0.json"
 
 _DIACRITICS = re.compile(r"[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640\ufeff]")
 _NON_ARABIC = re.compile(r"[^\u0621-\u064A\s]")
 _MAP = str.maketrans({"أ": "ا", "إ": "ا", "آ": "ا", "ٱ": "ا", "ة": "ه", "ى": "ي",
                       "ؤ": "و", "ئ": "ي", "ء": ""})
-BASMALA = "بسم الله الرحمن الرحيم".split()
 # Everyday formulae that happen to occur in the mushaf; a match that is exactly one
 # of these is speech, not a citation.
 FORMULAE = {tuple(p.split()) for p in (
@@ -34,6 +37,25 @@ FORMULAE = {tuple(p.split()) for p in (
     "لا حول ولا", "الله عليه وسلم", "رسول الله اليكم", "الحمد لله الذي",
     "قول قولي هذا", "بسم الله الرحمن",
 )}
+
+# The Complex's emlaey text writes some words apart or together where transcripts
+# (and the Tanzil text this tool used before) do not; ayah_words() follows the transcripts:
+#  - the vocative يا is joined to its noun (ياأيها، وياقوم). Three words start with
+#    يا without being vocatives; the Uthmani text spells them with a full alif.
+_VOCATIVE = re.compile(r"^(و?يا)(.+)$")
+NOT_VOCATIVE = {"يابس", "يابسات", "ياسين"}
+#  - interrogative hamza + waw stands apart as أو (أو لم for أَوَلَمۡ). It is rejoined
+#    only where the Uthmani text of the same ayah has the joined word, since أو on its
+#    own is also the conjunction "or" (أو لا يستطيع، 2:282).
+_AWA = "أَوَ"
+# Spellings that differ between the Complex text and transcripts. Both sides get the
+# same matching key; the report still shows each side's own words.
+FOLD = (
+    ("سماوات", "سموات"),  # the Complex writes السموات
+    ("لاتخذت", "لتخذت"),  # the Complex follows the rasm in 18:77
+    ("داوود", "داود"),
+    ("حيي", "حي"),  # the Complex writes يحي and لمحي where the rasm has one ya (30:50)
+)
 
 
 def normalize(text: str) -> list[str]:
@@ -43,39 +65,61 @@ def normalize(text: str) -> list[str]:
     return text.split()
 
 
+def key(word: str) -> str:
+    """Matching key: FOLD, the hamza seat (أإذا in Tanzil, أئذا in the Complex), and the
+    alif after a final waw (ندعو in transcripts, ندعوا in the Complex)."""
+    for a, b in FOLD:
+        word = word.replace(a, b)
+    if word.startswith("اا") and len(word) > 2:
+        word = "اي" + word[2:]
+    return word[:-1] if word.endswith("وا") else word
+
+
+def ayah_words(emlaey: str, uthmani: str) -> list[str]:
+    """One ayah's words, split and joined the way transcripts write them."""
+    words = []
+    for w in emlaey.split():
+        m = _VOCATIVE.match(w)
+        words += [m[1], m[2]] if m and w not in NOT_VOCATIVE else [w]
+    joined = {normalize(w)[0] for w in uthmani.split() if w.startswith(_AWA)}
+    out = []
+    for w in words:
+        if out and out[-1] == "أو" and normalize(out[-1] + w)[0] in joined:
+            out[-1] += w
+        else:
+            out.append(w)
+    return normalize(" ".join(out))
+
+
 def load_quran():
-    surahs = json.loads(DATA.read_text())["data"]["surahs"]
     words, refs = [], []  # one flat word stream across the whole mushaf
     names = {}
-    for s in surahs:
-        names[s["number"]] = s["name"].replace("سُورَةُ ", "")
-        for a in s["ayahs"]:
-            w = normalize(a["text"])
-            # Tanzil prefixes ayah 1 of every surah (except 1 and 9) with the basmala.
-            if a["numberInSurah"] == 1 and s["number"] not in (1, 9) and w[:4] == BASMALA:
-                w = w[4:]
-            for i, token in enumerate(w):
-                words.append(token)
-                refs.append((s["number"], a["numberInSurah"], i))
+    for a in json.loads(DATA.read_text()):
+        s = a["sura_no"]
+        names[s] = a["sura_name_ar"]
+        # Unlike Tanzil, the Complex text does not prefix ayah 1 with the basmala.
+        for i, token in enumerate(ayah_words(a["aya_text_emlaey"], a["aya_text"])):
+            words.append(token)
+            refs.append((s, a["aya_no"], i))
     return words, refs, names
 
 
-def build_index(words, n):
+def build_index(keys, n):
     idx = defaultdict(list)
-    for i in range(len(words) - n + 1):
-        idx[tuple(words[i:i + n])].append(i)
+    for i in range(len(keys) - n + 1):
+        idx[tuple(keys[i:i + n])].append(i)
     return idx
 
 
-def scan(line_words, qwords, index, n):
+def scan(line_keys, qkeys, index, n):
     """Greedy left-to-right: longest mushaf match starting at each transcript position."""
     hits, i = [], 0
-    while i <= len(line_words) - n:
+    while i <= len(line_keys) - n:
         best = None
-        for start in index.get(tuple(line_words[i:i + n]), ()):
+        for start in index.get(tuple(line_keys[i:i + n]), ()):
             k = n
-            while (i + k < len(line_words) and start + k < len(qwords)
-                   and line_words[i + k] == qwords[start + k]):
+            while (i + k < len(line_keys) and start + k < len(qkeys)
+                   and line_keys[i + k] == qkeys[start + k]):
                 k += 1
             if best is None or k > best[1]:
                 best = (start, k)
@@ -106,7 +150,8 @@ def main():
     args = ap.parse_args()
 
     qwords, refs, names = load_quran()
-    index = build_index(qwords, args.min)
+    qkeys = [key(w) for w in qwords]
+    index = build_index(qkeys, args.min)
     ts_re = re.compile(r"^\[(\d\d:\d\d:\d\d)\]\s*(.*)")
 
     rows = []
@@ -116,7 +161,7 @@ def main():
             continue
         ts, body = m.groups()
         lw = normalize(body)
-        for i, qs, k in scan(lw, qwords, index, args.min):
+        for i, qs, k in scan([key(w) for w in lw], qkeys, index, args.min):
             if tuple(lw[i:i + k]) in FORMULAE:
                 continue
             ref = fmt_ref(refs, names, qs, k)
