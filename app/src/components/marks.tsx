@@ -1,10 +1,11 @@
 import type { CSSProperties } from "react";
+import { SourceGlyph } from "./ui/source-chip";
 import type { BadgeKey, IconKey, SourceRecord, Ui } from "@/lib/types";
 
 type InkStyle = CSSProperties & { "--ink": string };
 export function Icon({ kind, ui }: { kind: IconKey; ui: Ui }) {
   const icon = ui.icons[kind];
-  return <span className="source-icon" style={{ "--ink": icon.color } as InkStyle} aria-hidden="true">{icon.symbol}</span>;
+  return <span className="source-icon" style={{ "--ink": icon.color } as InkStyle} aria-hidden="true"><SourceGlyph kind={kind} size={16} /></span>;
 }
 export function Badge({ kind, ui }: { kind: BadgeKey; ui: Ui }) {
   const badge = ui.badges[kind];

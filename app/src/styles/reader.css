@@ -7,9 +7,19 @@
 .huda-button:active { transform: scale(.96); }
 .huda-button:focus-visible, .huda-badge:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .source-tone { background: color-mix(in srgb, var(--tone) 22%, transparent); color: color-mix(in srgb, var(--tone) 55%, var(--ink)); }
-.source-chip { display: inline-grid; place-items: center; min-inline-size: 1.625rem; min-block-size: 1.625rem; padding-inline: var(--space-xs); border-radius: var(--radius-s); font-family: var(--font-ui); font-size: var(--text-label); line-height: 1.5; }
-.source-chip-small { min-inline-size: 1.5rem; min-block-size: 1.5rem; padding-inline: .25rem; }
-.source-chip-legend { inline-size: 2.5rem; block-size: 2.5rem; font-size: var(--text-body); }
+.source-chip { --s: 1.625rem; display: inline-grid; place-items: center; box-sizing: border-box; inline-size: var(--s); min-inline-size: var(--s); block-size: var(--s); padding: 0; border-radius: calc(var(--s) * .3); line-height: 1; }
+.source-chip svg { inline-size: calc(var(--s) * .62); block-size: calc(var(--s) * .62); }
+.source-chip-small { --s: 1.375rem; }
+.source-chip-legend { --s: 2.5rem; }
+/* The type is told by silhouette, glyph and color together, so it reads without color. */
+.source-chip[data-kind="ayah"] { border-radius: 50%; }
+.source-chip[data-kind="athar"] { border-radius: 0; inline-size: calc(var(--s) * 1.1); min-inline-size: calc(var(--s) * 1.1); clip-path: polygon(26% 3%, 74% 3%, 100% 50%, 74% 97%, 26% 97%, 0 50%); }
+.source-chip[data-kind="scholar"] { border-start-start-radius: calc(var(--s) * .1); border-end-start-radius: calc(var(--s) * .1); border-start-end-radius: calc(var(--s) * .45); border-end-end-radius: calc(var(--s) * .45); }
+.source-chip[data-kind="link"] { border-radius: 999px; inline-size: calc(var(--s) * 1.35); min-inline-size: calc(var(--s) * 1.35); }
+.source-chip[data-kind="hidaya"] { border-radius: calc(var(--s) * .38) calc(var(--s) * .1) calc(var(--s) * .38) calc(var(--s) * .1); }
+.source-type-badge { display: inline-flex; align-items: center; gap: .3125rem; min-block-size: 1.5rem; padding-inline: .5625rem; border: 1px solid color-mix(in srgb, var(--tone) 45%, transparent); border-radius: var(--radius-pill); font-family: var(--font-ui); font-size: var(--text-label); font-weight: 600; line-height: 1.5; }
+.source-type-badge svg { inline-size: .875rem; block-size: .875rem; }
+.sheet-record-types { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-block-end: var(--space-sm); }
 .huda-badge { min-block-size: 1.5rem; font-size: var(--text-label); line-height: var(--leading-ui); }
 .reader-header h1 { font-family: var(--font-quran); font-size: var(--text-cover); line-height: var(--leading-cover); font-weight: 400; text-wrap: balance; }
 .page-shell { padding-inline: var(--gutter); }
@@ -86,7 +96,7 @@
 .ayah-flow { margin-block: var(--space-lg); padding: var(--space-md); border-radius: var(--radius-s); background: color-mix(in srgb, var(--tone) 11%, var(--surface)); border: 1px solid color-mix(in srgb, var(--tone) 28%, transparent); }
 .ayah-flow-text { font-family: var(--font-quran); font-size: var(--text-inline-ayah); line-height: var(--leading-inline-ayah); font-weight: 400; text-wrap: pretty; }
 .ayah-flow .ayah-gem { color: var(--gold-strong); }
-.inline-ayah-reference { display: block; margin-block-start: var(--space-xs); color: var(--ink-3); font-family: var(--font-ui); font-size: var(--text-label); line-height: var(--leading-ui); font-variant-numeric: tabular-nums; }
+.inline-ayah-reference { display: flex; align-items: center; justify-content: center; gap: .375rem; margin-block-start: var(--space-xs); color: var(--ink-3); font-family: var(--font-ui); font-size: var(--text-label); line-height: var(--leading-ui); font-variant-numeric: tabular-nums; }
 .verbatim-quote { display: block; quotes: none; margin-block: .75rem; padding: .75rem var(--space-md); background: var(--surface-2); border-inline-start: .25rem solid var(--gold); border-radius: var(--radius-s); font-family: var(--font-quote); font-size: var(--text-quote); line-height: var(--leading-quote); font-weight: 400; white-space: pre-wrap; }
 .verbatim-quote::before, .verbatim-quote::after { content: none; }
 .huda-reading-heading { margin-block: var(--space-lg) .75rem; font-size: var(--text-title); font-weight: 700; line-height: var(--leading-title); text-wrap: balance; }
@@ -152,6 +162,7 @@
 .overview-pick small { display: block; color: var(--ink-3); font-size: var(--text-label); font-weight: 400; }
 .overview-stops { display: grid; gap: var(--space-sm); padding-block: .75rem; }
 .thread-nodes { margin-block-start: var(--space-md); }
+.passage-bar .huda-button svg { transform: scaleX(-1); } /* play points toward the reading direction (left in RTL) */
 .passage-bar { position: relative; display: grid; grid-template-columns: 3.5rem minmax(0,1fr) auto; align-items: center; gap: 0; min-block-size: 3.25rem; margin-block: var(--space-xl) var(--space-sm); }
 .passage-node { justify-self: center; inline-size: 1.375rem; block-size: 1.375rem; border-radius: var(--radius-s); background: var(--accent); transform: rotate(45deg); }
 .passage-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--space-xs); padding-inline: .875rem .5rem; }
@@ -236,7 +247,7 @@
 .hero-row { position: relative; display: flex; justify-content: space-between; align-items: center; margin-block-start: var(--space-lg); gap: .75rem; }
 .hero-icons { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
 .hero-go { display: grid; place-items: center; flex: none; inline-size: 3.25rem; block-size: 3.25rem; border-radius: 50%; color: var(--stage-b); background: var(--stage-ink); }
-.hero-icons .source-chip { --ink: var(--stage-ink); }
+.hero-icons .source-chip { background: color-mix(in srgb, var(--stage-ink) 14%, transparent); color: var(--stage-ink); }
 .huda-reader .console, .surah-thread, .reader-text { padding-inline: var(--gutter); }
 .view-toggle { display: flex; padding: var(--space-xs) var(--gutter) 0; }
 .view-toggle .huda-button { color: var(--accent); }
@@ -265,7 +276,8 @@ body:has(.huda-reader) .page-shell { padding-block-start: 0; padding-block-end: 
 .thread-shelf .door-wrap { margin-inline-start: 3.5rem; }
 .thread-shelf .door-wrap::before, .thread-shelf .door-wrap::after { display: none; }
 .thread-shelf .stop-door { background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
-.shelf-end { display: grid; justify-items: center; padding-block: 1.25rem .25rem; color: var(--accent); font-size: 1.75rem; }
+.shelf-end { display: grid; justify-items: center; padding-block: 1.25rem .25rem; color: var(--accent); }
+.shelf-end svg { inline-size: 1.75rem; block-size: 1.75rem; }
 
 /* Scroll containers keep their scrolling and hide the bar, as the adopted model does (style.css:111-114, 154-155, 292, 371). */
 .surah-switcher, .mini-strip, .huda-sheet-scroll, .huda-scene-scroll { scrollbar-width: none; }

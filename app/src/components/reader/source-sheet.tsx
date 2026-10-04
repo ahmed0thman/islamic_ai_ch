@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import type { CSSProperties } from "react";
-import { LinkSquare02Icon, BookOpen01Icon, PlusSignIcon, MinusSignIcon } from "@hugeicons/core-free-icons";
+import { ArrowUpRight01Icon, BookOpen01Icon, PlusSignIcon, MinusSignIcon } from "@hugeicons/core-free-icons";
 import type { SourceRecord, Ui } from "@/lib/types";
 import { splitRulings } from "@/lib/rulings";
 import { arabicDigits, numeral } from "@/lib/numerals";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { SourceBadge } from "@/components/ui/source-badge";
+import { SourceTypeBadge } from "@/components/ui/source-chip";
 import { BottomSheet } from "./bottom-sheet";
 
 export type SourceSheetProps = { records: SourceRecord[]; ui: Ui; term?: string; phrase?: string; onClose: () => void };
@@ -29,11 +30,12 @@ function EvidenceContent({ evidence, ui }: { evidence: SourceRecord["evidence"][
       <div><dt>{ui.panel.takhrij}</dt>{takhrij.map((item, itemIndex) => <dd key={itemIndex}>{item.text}{item.ruler ? <span className="sheet-takhrij-by">{item.ruler}</span> : null}</dd>)}</div>
     </dl> : null}
     {evidence.link_strength !== null ? <div className="sheet-link-strength"><p>{ui.link_strength[evidence.link_strength]}</p><p>{ui.link_strength.note}</p></div> : null}
-    {evidence.url !== null ? <Button variant="primary" size="lg" asChild><a href={evidence.url} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer">{ui.panel.open_source}<Icon icon={LinkSquare02Icon} /></a></Button> : null}
+    {evidence.url !== null ? <Button variant="primary" size="lg" asChild><a href={evidence.url} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer">{ui.panel.open_source}<Icon icon={ArrowUpRight01Icon} /></a></Button> : null}
   </article>;
 }
 function RecordContent({ record, ui }: { record: SourceRecord; ui: Ui }) {
   return <section className="sheet-record" aria-labelledby={`source-claim-${record.id}`}>
+    <div className="sheet-record-types">{ui.icon_order.filter((kind) => record.icons.includes(kind)).map((kind) => <SourceTypeBadge key={kind} kind={kind} ui={ui} />)}</div>
     <p className="sheet-label">{ui.panel.claim}</p>
     <h3 className="sheet-claim" id={`source-claim-${record.id}`}>{record.claim}</h3>
     {/* The badge describes this record alone, so it sits here and never in the sheet's head. */}

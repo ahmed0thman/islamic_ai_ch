@@ -7,6 +7,7 @@ import type { Ui } from "@/lib/types";
 import { scopeContains, type Scope } from "@/lib/scope";
 import { jumpToAyah } from "@/lib/reader-dom";
 import { numeral } from "@/lib/numerals";
+import { SourceGlyph } from "@/components/ui/source-chip";
 import { useReading } from "./reading-context";
 import { AyahNode } from "./ayah-node";
 import { PassageBar } from "./passage-bar";
@@ -49,7 +50,7 @@ export function SurahThread({ map, ui, visited, scope, currentStop, hidden = fal
         return <section className="thread-group" key={group.passage?.id ?? "surah"}>{group.passage ? <PassageBar passage={group.passage} records={group.passage.records.map((id) => reading.records[id])} selected={scope.kind === "passage" && scope.id === group.passage.id} ui={ui} onScope={() => pickPassage(group.passage!.id)} onOpen={reading.onOpen} /> : null}{rows}</section>;
       })}
     </section>
-    {hasItems && items!.shelf.length ? <div className="thread-shelf"><h2 className="sheet-label thread-shelf-title">{ui.reader.shelf_title}</h2><StationDoors stops={items!.shelf} visited={visited} ui={ui} onOpen={onOpen} /><div className="shelf-end" aria-hidden="true">{ui.icons.ayah.symbol}</div></div> : null}
+    {hasItems && items!.shelf.length ? <div className="thread-shelf"><h2 className="sheet-label thread-shelf-title">{ui.reader.shelf_title}</h2><StationDoors stops={items!.shelf} visited={visited} ui={ui} onOpen={onOpen} /><div className="shelf-end" aria-hidden="true"><SourceGlyph kind="ayah" size={24} /></div></div> : null}
     {!hasItems && map.unassignedBlocks.some((block) => block.type === "paragraph" || block.type === "details") ? <div className="thread-unassigned"><ContinuousView blocks={map.unassignedBlocks.filter((block) => block.type !== "ayah")} {...reading} /></div> : null}
   </div>;
 }

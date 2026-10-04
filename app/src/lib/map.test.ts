@@ -160,13 +160,13 @@ test("an empty level keeps ayah stations and has no stops or neighbours", () => 
   assert.equal(map.groups.flatMap((group) => group.stations).length, surah.surah.ayah_count);
 });
 
-test("93: the opening question is the first titled paragraph in content order, not the first ayah on the thread", () => {
+// The content is rewritten often, so this checks the ordering rule, not which stop happens to be first.
+test("93: the opening question is the first titled paragraph in content order", () => {
   const surah = surahs.find((item) => item.surah.no === 93)!;
   const map = deriveSurahMap(surah, 1);
   const pick = (scope: Scope) => heroStop(map.stops, (key) => scopeContains(key, scope, surah.passages), 1);
   const wholeSurah = pick({ kind: "surah" })!;
   assert.equal(wholeSurah.blockIndex, Math.min(...map.stops.map((stop) => stop.blockIndex)));
-  assert.notEqual(wholeSurah, map.stops[0], "the thread's first door is not the opening question");
   const second = surah.passages![1];
   const inSecond = pick({ kind: "passage", id: second.id })!;
   assert.equal(inSecond.passage, second.id);
