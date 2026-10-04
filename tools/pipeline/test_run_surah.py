@@ -3,6 +3,7 @@
 import contextlib
 import io
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -44,7 +45,7 @@ if stage in ('build','fix','fix-review'):
  if mode!='repair' or stage=='fix':(root/'ready').write_text('yes')
 message='unparsed'
 if stage=='review' and mode!='unparsed':
- d=dict(surah=99,sampled={k:1 for k in ('sentences','titles','terms','narrations','depth_items')},scores={k:5 for k in ('support','attribution','quote_fidelity','narration_handling','reader_pull')},findings=[],verdict='ship')
+ d=dict(surah=int(Path(a.brief).read_text().split()[0]),sampled={k:1 for k in ('sentences','titles','terms','narrations','depth_items')},scores={k:5 for k in ('support','attribution','quote_fidelity','narration_handling','reader_pull')},findings=[],verdict='ship')
  message='summary\\n```json\\n{}\\n```\\n```json\\n'+json.dumps(d)+'\\n```'
  if (root/'reviews.json').exists():
   reviews=json.loads((root/'reviews.json').read_text())
@@ -90,9 +91,9 @@ raise SystemExit(rc)
         real = runner.lane_command(spec, brief, root, out, timeout, review)
         return [sys.executable, '-B', str(root/'fake_relay.py')] + real[2:]
 
-    def run_fixture(self):
+    def run_fixture(self, no=99):
         with contextlib.redirect_stdout(io.StringIO()):
-            return runner.run_surah(99, self.args, root=self.root, command_factory=self.command)
+            return runner.run_surah(no, self.args, root=self.root, command_factory=self.command)
 
     def review(self, verdict='ship', findings=None, score=5):
         return dict(surah=99, sampled={k: 1 for k in runner.SAMPLED},
@@ -258,8 +259,13 @@ raise SystemExit(rc)
         self.put('reviews.json', [self.review('do-not-ship', [self.finding('critical', 'review-status')])])
         e = self.run_fixture()
         self.assertEqual(e['review_fix_rounds'], 0)
-        self.assertEqual(e['status'], 'review-failed')
+        self.assertEqual(e['status'], 'passed')
+        self.assertEqual(e['systemic'], 1)
+        self.assertEqual(e['review']['systemic'], 1)
         self.assertEqual(len(e['review_rounds'][0]['findings']), 1)
+        self.assertEqual(runner.read(self.root/'.cache/pipeline/99/eval.json')['systemic'], 1)
+        self.assertIn('| Systemic |', report.render(self.root))
+        self.assertIn('| do-not-ship | 1/0/0 | 1 |', report.render(self.root))
 
     def test_legacy_completion_status_is_ignored(self):
         self.put('reviews.json', [self.review('fix-then-ship', [
@@ -364,6 +370,121 @@ raise SystemExit(rc)
             d = self.review(findings=[self.finding(kind=kind)])
             with self.assertRaisesRegex(ValueError, 'kind'):
                 runner.parse_review('```json\n'+json.dumps(d)+'\n```', 99)
+
+    def existing_review(self, review, freshness='fresh'):
+        self.write('ready', 'yes')
+        self.put('.cache/records/99/draft.v2.json', dict(records=[]))
+        self.put('.cache/pipeline/99/review.json', review)
+        paths = ['content/nasij/99.json', '.cache/records/99/draft.v2.json',
+                 '.cache/pipeline/99/review.json']
+        for path in paths:
+            os.utime(self.root/path, ns=(1000000000, 1000000000))
+        os.utime(self.root/paths[-1], ns=(2000000000, 2000000000))
+        if freshness in ('nasij', 'draft'):
+            os.utime(self.root/paths[0 if freshness == 'nasij' else 1],
+                     ns=(3000000000, 3000000000))
+        elif freshness == 'equal':
+            os.utime(self.root/paths[-1], ns=(1000000000, 1000000000))
+
+    def test_review_fix_reuses_fresh_review_without_previous_eval(self):
+        self.args.stages = 'review,fix'
+        self.existing_review(self.review('fix-then-ship', [self.finding()]))
+        operations = []
+        def execute(command, root, log, timeout):
+            if 'fake_relay.py' in command[2]:
+                operations.append(Path(command[command.index('--brief')+1]).stem)
+            else:
+                operations.append('records' if 'check_v2.py' in command[2] else
+                                  'export-check' if '--check-only' in command else 'export')
+            return runner.execute(command, root, log, timeout)
+        with contextlib.redirect_stdout(io.StringIO()):
+            e = runner.run_surah(99, self.args, root=self.root,
+                                 command_factory=self.command, executor=execute)
+        self.assertEqual(e['status'], 'passed')
+        self.assertEqual(e['review_fix_rounds'], 1)
+        self.assertTrue(e['review_rounds'][0]['reused'])
+        self.assertEqual(operations, ['records', 'export-check', 'brief-fix-review',
+                                     'records', 'export-check', 'export', 'brief-review'])
+        self.assertNotIn('build', e['stages'])
+        self.assertEqual((self.root/'exported').read_text(), 'yes')
+
+    def test_review_fix_reviews_stale_equal_or_invalid_cache_first(self):
+        self.args.stages = 'review,fix'
+        for freshness in ('nasij', 'draft', 'equal', 'invalid'):
+            with self.subTest(freshness=freshness):
+                # Each retry has no blocking cached findings: only reviewer dispatches.
+                self.existing_review({} if freshness == 'invalid' else self.review(), freshness)
+                e = self.run_fixture()
+                self.assertEqual(e['status'], 'passed')
+                self.assertNotIn('reused', e['review_rounds'][-1])
+        self.assertEqual((self.root/'calls').read_text(), 'review True\n' * 4)
+
+    def test_review_fix_fresh_systemic_review_needs_no_dispatch(self):
+        self.args.stages = 'review,fix'
+        self.existing_review(self.review('fix-then-ship', [self.finding(kind='review-status')]))
+        e = self.run_fixture()
+        self.assertEqual(e['status'], 'passed')
+        self.assertEqual(e['systemic'], 1)
+        self.assertEqual(e['review_fix_rounds'], 0)
+        self.assertFalse((self.root/'calls').exists())
+        self.assertFalse((self.root/'exported').exists())
+
+    def test_review_fix_cached_review_respects_round_limit(self):
+        self.args.stages = 'review,fix'
+        self.args.max_review_rounds = 0
+        self.existing_review(self.review('fix-then-ship', [self.finding()]))
+        e = self.run_fixture()
+        self.assertEqual(e['status'], 'review-failed')
+        self.assertEqual(e['review_fix_rounds'], 0)
+        self.assertFalse((self.root/'calls').exists())
+
+    def test_review_fix_without_runner_build_for_93_108_111(self):
+        self.args.stages = 'review,fix'
+        for no in (93, 108, 111):
+            with self.subTest(surah=no):
+                self.put('tools/data/qurancomplex/hafsData_v2-0.json',
+                         [dict(sura_no=no, sura_name_ar='Fixture', aya_no=1)])
+                self.put(f'.cache/records/{no}/records.v2.json', dict(records=[]))
+                self.put(f'.cache/records/{no}/draft.v2.json', dict(records=[]))
+                self.put(f'content/nasij/{no}.json', dict(levels=[]))
+                self.write('ready', 'yes')
+                bad = self.review('fix-then-ship', [self.finding()]); bad['surah'] = no
+                good = self.review(); good['surah'] = no
+                self.put('reviews.json', [bad, good])
+                self.write('review-count', '0')
+                e = self.run_fixture(no)
+                self.assertEqual(e['status'], 'passed')
+                self.assertEqual(e['review_fix_rounds'], 1)
+                self.assertNotIn('build', e['stages'])
+        self.assertEqual((self.root/'calls').read_text(),
+                         'review True\nfix-review False\nreview True\n' * 3)
+
+    def test_review_fix_runs_after_previously_passed(self):
+        first = self.run_fixture()
+        self.args.stages = 'review,fix'
+        self.existing_review(self.review('fix-then-ship', [self.finding()]))
+        e = self.run_fixture()
+        self.assertEqual(e['review_fix_rounds'], 1)
+        self.assertEqual(e['stages']['build'], first['stages']['build'])
+        self.assertEqual((self.root/'calls').read_text(),
+                         'build False\nreview True\nfix-review False\nreview True\n')
+
+    def test_systemic_count_mixed_findings_last_round(self):
+        self.put('reviews.json', [self.review('fix-then-ship', [
+            self.finding('critical'), self.finding(kind='review-status')])])
+        e = self.run_fixture()
+        self.assertEqual(e['status'], 'review-failed')
+        self.assertEqual(e['systemic'], 1)
+        self.assertEqual(e['review_fix_rounds'], 1)
+        brief = (self.root/'.cache/pipeline/99/brief-fix-review.md').read_text()
+        self.assertNotIn('review-status', brief)
+
+    def test_non_ship_minor_or_empty_review_passes_after_last_round(self):
+        self.args.max_review_rounds = 0
+        for findings in ([], [self.finding('minor', 'opening')]):
+            self.put('reviews.json', [self.review('fix-then-ship', findings)])
+            self.args.force = True
+            self.assertEqual(self.run_fixture()['status'], 'passed')
 
     def test_negative_review_round_limit_rejected(self):
         with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as error:

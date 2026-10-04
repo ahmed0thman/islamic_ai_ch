@@ -110,10 +110,17 @@ def parse_review(report, no):
     return d
 
 
+def systemic_finding(finding):
+    return (finding['kind'] in IGNORED_REVIEW_KINDS if 'kind' in finding
+            else 'completion status' in finding['where'].casefold())
+
+
+def systemic_count(review):
+    return sum(systemic_finding(f) for f in review['findings'])
+
+
 def fixable_findings(review):
-    return [f for f in review['findings'] if
-            (f['kind'] not in IGNORED_REVIEW_KINDS if 'kind' in f
-             else 'completion status' not in f['where'].casefold())]
+    return [f for f in review['findings'] if not systemic_finding(f)]
 
 
 def needs_review_fix(review):
@@ -123,8 +130,7 @@ def needs_review_fix(review):
 
 
 def review_passed(review):
-    return review['verdict'] == 'ship' and not any(
-        f['severity'] in ('critical', 'major') for f in review['findings'])
+    return not any(f['severity'] in ('critical', 'major') for f in fixable_findings(review))
 
 
 def usage_limited(text):
@@ -212,7 +218,7 @@ def run_surah(no, args, *, root=ROOT, command_factory=lane_command, executor=exe
     directory = root / f'.cache/pipeline/{no}'
     directory.mkdir(parents=True, exist_ok=True)
     previous = read(directory / 'eval.json', {})
-    if previous.get('status') == 'passed' and not args.force and args.stages != 'review':
+    if previous.get('status') == 'passed' and not args.force and args.stages not in ('review', 'review,fix'):
         print(f'{no}: skipped (passed)'); return previous
     rows = [r for r in read(root / 'tools/data/qurancomplex/hafsData_v2-0.json') if int(r['sura_no']) == no]
     if not rows:
@@ -221,10 +227,10 @@ def run_surah(no, args, *, root=ROOT, command_factory=lane_command, executor=exe
     stages = args.stages.split(',')
     evaluation = dict(surah=no, ayah_count=len(rows), builder=args.builder, reviewer=args.reviewer,
                       started_at=now(), stages={}, fix_rounds=0, review_fix_rounds=0,
-                      review_rounds=[], gates=[], review_status='not-run', status='failed-dispatch')
-    if stages == ['review']:
-        # Retain the build's result and history when retrying only the reviewer.
-        for key in ('builder', 'build_status', 'fix_rounds'):
+                      review_rounds=[], gates=[], review_status='not-run', systemic=0, status='failed-dispatch')
+    if 'build' not in stages:
+        # Retain build results and review history when working on existing files.
+        for key in ('builder', 'build_status', 'fix_rounds', 'systemic'):
             if key in previous:
                 evaluation[key] = previous[key]
         evaluation['stages'] = {k: v for k, v in previous.get('stages', {}).items()
@@ -233,6 +239,17 @@ def run_surah(no, args, *, root=ROOT, command_factory=lane_command, executor=exe
         evaluation['review_rounds'] = previous.get('review_rounds', [])
         if 'review' in previous:
             evaluation['review'] = previous['review']
+    cached_review = None
+    if stages == ['review', 'fix'] and not args.dry_run:
+        review_path = directory / 'review.json'
+        inputs = [root / f'content/nasij/{no}.json',
+                  root / f'.cache/records/{no}/draft.v2.json']
+        if (review_path.is_file() and all(p.is_file() for p in inputs) and
+                all(review_path.stat().st_mtime_ns > p.stat().st_mtime_ns for p in inputs)):
+            try:
+                cached_review = parse_review('```json\n' + review_path.read_text(encoding='utf-8') + '\n```', no)
+            except (ValueError, TypeError, KeyError):
+                pass  # Invalid cached reviews must be replaced by a real review.
     serial = 0
     dispatch_limited = False
     def brief(stage, output=''):
@@ -330,30 +347,37 @@ def run_surah(no, args, *, root=ROOT, command_factory=lane_command, executor=exe
                 while True:
                     round_no = len(evaluation['review_rounds'])
                     stage = 'review' if round_no == 0 else f'review-{round_no}'
-                    start = stage_start(stage)
-                    ok, report = dispatch('review', log)
-                    stage_end(stage, start)
-                    if args.dry_run:
-                        break
-                    (directory / 'review.txt').write_text(report, encoding='utf-8')
-                    (directory / f'review-{round_no}.txt').write_text(report, encoding='utf-8')
-                    round_result = dict(round=round_no, **evaluation['stages'][stage])
-                    evaluation['review_rounds'].append(round_result)
-                    if not ok:
-                        status = 'review-pending' if dispatch_limited else 'failed-dispatch'
-                        evaluation.update(status=status, review_status='pending' if dispatch_limited else 'failed')
-                        round_result['status'] = status
-                        break
-                    try:
-                        review = parse_review(report, no)
-                    except (ValueError, TypeError, KeyError):
-                        evaluation.update(review_status='unparsed', status='review-unparsed')
-                        round_result['status'] = 'review-unparsed'
-                        break
+                    if cached_review is not None:
+                        review = cached_review
+                        cached_review = None
+                        round_result = dict(round=round_no, reused=True)
+                        evaluation['review_rounds'].append(round_result)
+                    else:
+                        start = stage_start(stage)
+                        ok, report = dispatch('review', log)
+                        stage_end(stage, start)
+                        if args.dry_run:
+                            break
+                        (directory / 'review.txt').write_text(report, encoding='utf-8')
+                        (directory / f'review-{round_no}.txt').write_text(report, encoding='utf-8')
+                        round_result = dict(round=round_no, **evaluation['stages'][stage])
+                        evaluation['review_rounds'].append(round_result)
+                        if not ok:
+                            status = 'review-pending' if dispatch_limited else 'failed-dispatch'
+                            evaluation.update(status=status, review_status='pending' if dispatch_limited else 'failed')
+                            round_result['status'] = status
+                            break
+                        try:
+                            review = parse_review(report, no)
+                        except (ValueError, TypeError, KeyError):
+                            evaluation.update(review_status='unparsed', status='review-unparsed')
+                            round_result['status'] = 'review-unparsed'
+                            break
                     save(directory / 'review.json', review)
-                    round_result.update(review, status='parsed')
+                    round_result.update(review, status='parsed', systemic=systemic_count(review))
+                    evaluation['systemic'] = systemic_count(review)
                     evaluation['review_status'] = 'parsed'
-                    evaluation['review'] = dict(scores=review['scores'], verdict=review['verdict'],
+                    evaluation['review'] = dict(scores=review['scores'], verdict=review['verdict'], systemic=systemic_count(review),
                         findings={s: sum(f['severity'] == s for f in review['findings']) for s in ('critical', 'major', 'minor')})
                     evaluation['status'] = 'passed' if review_passed(review) else 'review-failed'
                     if (stages == ['review'] or not needs_review_fix(review) or STOP.is_set() or
@@ -405,7 +429,8 @@ def parser():
     p.add_argument('surahs', type=int, nargs='+')
     p.add_argument('--builder', default='claude:think-pro')
     p.add_argument('--reviewer', default='codex:review')
-    p.add_argument('--stages', default='build,review')
+    p.add_argument('--stages', default='build,review',
+                   help='build, review, build,review, or review,fix (repair existing files without rebuilding)')
     p.add_argument('--max-fix-rounds', type=int, default=2)
     p.add_argument('--max-review-rounds', type=int, default=1,
                    help='Maximum builder repairs after review (review-only never dispatches the builder)')
@@ -420,7 +445,7 @@ def main(argv=None):
     p = parser(); args = p.parse_args(argv)
     if args.parallel < 1 or args.timeout_min < 1 or args.max_fix_rounds < 0 or args.max_review_rounds < 0:
         p.error('invalid concurrency, timeout or fix limit')
-    if args.stages not in ('build', 'review', 'build,review') or any(not 1 <= n <= 114 for n in args.surahs):
+    if args.stages not in ('build', 'review', 'review,fix', 'build,review') or any(not 1 <= n <= 114 for n in args.surahs):
         p.error('invalid stages or surah')
     for spec in (args.builder, args.reviewer):
         try:
