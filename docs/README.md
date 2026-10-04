@@ -124,7 +124,7 @@
 - [`audit-4-recommendations.md`](08-open/audit-4-recommendations.md): توصيات (ج) للوصف، وللشرائح، وللبناء والتوثيق.
 - [`audit-5-owner-questions.md`](08-open/audit-5-owner-questions.md): ثلاثة عشر سؤالًا لصاحب الفكرة.
 - [`audit-6-objection.md`](08-open/audit-6-objection.md): أقوى اعتراض على التدقيق، وجوابه، وما بقي معلقًا.
-- [`local-tasks.md`](08-open/local-tasks.md): مهام تُنفَّذ على الجهاز المحلي: موقع المسابقة، وجلب التفريغات وتنظيفها، وحالة كل مهمة.
+- [`local-tasks.md`](08-open/local-tasks.md): مهام تُنفَّذ على الجهاز المحلي: موقع المسابقة، وجلب التفريغات وتنظيفها، وفحوص الملحق العلمي، وحالة كل مهمة.
 - [`max-tasks.md`](08-open/max-tasks.md): المهام الكبيرة الأربع: خريطة المعرفة، وسياسة المصادر، وبروتوكول الشرح، وتصميم القياس.
 
 ### 09-learning: التعلّم
