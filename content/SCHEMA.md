@@ -77,7 +77,7 @@ Rules the app relies on:
 - A record with badge `la_yathbut` or `khilaf_mutabar` shows the badge next to the marker in the text and in the panel; `thabit` shows in the panel only.
 - Level `n` shows the blocks of `levels[n]` only (levels are complete texts, not increments).
 - The surah map is drawn from the level's blocks: ayah stations in order, and under each station the stops whose `ayahs` start there. An untitled paragraph belongs to the stop before it (same scene). Changing the level redraws the same map with that level's stops. Nothing on the map is generated: every stop is a paragraph with its markers.
-- A stop's `title` is system text (no Quran text in it) and claims nothing beyond what its paragraph's records carry.
+- A stop's `title` is system text and claims nothing beyond what its paragraph's records carry. It holds no Quran text, except the single Quran word the title asks about, written between «». Two or more consecutive Quran words never appear in a title or in a `text` segment; they go in an `ayah` segment.
 
 ## Nasij source (`content/nasij/<no>.json`)
 
