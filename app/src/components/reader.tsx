@@ -39,7 +39,7 @@ function AyahText({ ayah, inline = false, part = "whole" }: { ayah: Ayah; inline
 type ReadingProps = {
   ayahs: Map<string, Ayah>; records: Surah["records"]; ui: Ui; onOpen: (records: SourceRecord[]) => void;
 };
-function ContentBlock({ block, ...props }: ReadingProps & { block: Block }) {
+export function ContentBlock({ block, ...props }: ReadingProps & { block: Block }) {
   const { ayahs, ui } = props;
   if (block.type === "heading") return <h2 className={block.kind === "question" ? "reading-heading reading-question" : "reading-heading"}>{block.text}</h2>;
   if (block.type === "ayah") return <section className="ayah-block" aria-label={ui.reader.ayahs_title}>

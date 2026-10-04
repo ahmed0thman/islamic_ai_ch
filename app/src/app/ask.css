@@ -1,0 +1,27 @@
+.ask-box {
+  max-inline-size: var(--reading-width);
+  margin: var(--space-xl) auto;
+  padding: var(--space-lg);
+  border-block-start: 1px solid var(--rule);
+  color: var(--text);
+}
+.ask-box h2, .ask-box h3 { font-size: var(--size-heading); margin-block: 0 var(--space-md); }
+.ask-note { color: var(--muted); font-size: var(--size-sm); }
+.ask-box form { display: grid; gap: var(--space-sm); }
+.ask-box textarea {
+  inline-size: 100%; box-sizing: border-box; resize: vertical;
+  border: 1px solid var(--rule); border-radius: var(--radius-md);
+  background: var(--surface); color: var(--text); font: inherit;
+  padding: var(--space-md); min-block-size: var(--control-height);
+}
+.ask-box button[type="submit"] {
+  justify-self: start; min-block-size: var(--control-height); min-inline-size: var(--control-height);
+  padding-inline: var(--space-lg); border: 1px solid var(--rule); border-radius: var(--radius-md);
+  background: var(--surface-soft); color: var(--text); font: inherit; cursor: pointer;
+}
+.ask-box button[type="submit"]:disabled { opacity: .6; cursor: default; }
+.ask-box textarea:focus-visible, .ask-box button:focus-visible, .ask-box a:focus-visible {
+  outline: 2px solid var(--focus); outline-offset: var(--space-xs);
+}
+.ask-result { margin-block-start: var(--space-lg); }
+.ask-result a { text-decoration: underline; text-underline-offset: .2em; }

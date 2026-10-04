@@ -5,6 +5,10 @@ import path from "node:path";
 
 const app = fileURLToPath(new URL("../", import.meta.url));
 const out = path.join(app, "out");
+if (process.env.HUDA_ASK === "1") {
+  console.log("Offline worker skipped: HUDA_ASK enables a server build, not a static export.");
+  process.exit(0);
+}
 async function walk(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
   const results = await Promise.all(entries.map((entry) => {

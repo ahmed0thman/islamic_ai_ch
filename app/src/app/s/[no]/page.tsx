@@ -26,5 +26,9 @@ export async function generateMetadata({ params }: { params: Promise<{ no: strin
 }
 export default async function SurahPage({ params }: { params: Promise<{ no: string }> }) {
   const [surah, ui] = await Promise.all([load(params), getUi()]);
+  if (process.env.HUDA_ASK === "1") {
+    const { AskBox } = await import("@/components/ask-box");
+    return <><Reader surah={surah} ui={ui} /><AskBox key={surah.surah.no} surah={surah} ui={ui} /></>;
+  }
   return <Reader surah={surah} ui={ui} />;
 }

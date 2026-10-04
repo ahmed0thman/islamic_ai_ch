@@ -11,7 +11,8 @@
     "prebuild": "node scripts/sync-content.mjs",
     "build": "next build",
     "postbuild": "node scripts/build-offline.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --test src/lib/ask/*.test.ts"
   },
   "dependencies": {
     "next": "16.0.10",
