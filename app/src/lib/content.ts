@@ -44,17 +44,23 @@ export function validateSurah(value: unknown): asserts value is Surah {
   if (typeof data.fixture !== "boolean") fail("fixture", "expected a boolean");
   const meta = summary(data.surah, "surah");
   const prefix = `surah-${meta.no}`;
+  // `ayahs` also carries ayahs cited from other surahs, so only this surah's own are counted.
   const ayahKeys = new Set<string>();
-  const ayahNumbers = new Set<number>();
+  let own = 0;
   array(data.ayahs, `${prefix}.ayahs`).forEach((value, i) => {
     const at = `${prefix}.ayahs[${i}]`, ayah = object(value, at);
     string(ayah.key, `${at}.key`); string(ayah.text, `${at}.text`);
-    integer(ayah.no, `${at}.no`, 1, meta.ayah_count as number);
-    if (ayah.key !== `${meta.no}:${ayah.no}`) fail(at, "key does not match surah and ayah number");
-    if (ayahKeys.has(ayah.key) || ayahNumbers.has(ayah.no as number)) fail(at, "duplicate ayah");
-    ayahKeys.add(ayah.key); ayahNumbers.add(ayah.no as number);
+    integer(ayah.no, `${at}.no`, 1, 286);
+    const match = /^(\d{1,3}):(\d{1,3})$/.exec(ayah.key);
+    if (!match || Number(match[2]) !== ayah.no) fail(at, "key does not match surah and ayah number");
+    const surahNo = Number(match[1]);
+    if (surahNo < 1 || surahNo > 114) fail(at, "unknown surah in ayah key");
+    if (surahNo === meta.no && (ayah.no as number) > (meta.ayah_count as number)) fail(at, "ayah number beyond the surah");
+    if (ayahKeys.has(ayah.key)) fail(at, "duplicate ayah");
+    ayahKeys.add(ayah.key);
+    if (surahNo === meta.no) own += 1;
   });
-  if (ayahKeys.size !== meta.ayah_count) fail(`${prefix}.ayahs`, "ayah count does not match metadata");
+  if (own !== meta.ayah_count) fail(`${prefix}.ayahs`, "ayah count does not match metadata");
   const records = object(data.records, `${prefix}.records`);
   for (const [id, value] of Object.entries(records)) {
     const at = `${prefix}.records.${id}`, record = object(value, at);
@@ -67,8 +73,8 @@ export function validateSurah(value: unknown): asserts value is Surah {
     integer(record.depth_min, `${at}.depth_min`, 0, 3);
     array(record.evidence, `${at}.evidence`).forEach((value, i) => {
       const here = `${at}.evidence[${i}]`, evidence = object(value, here);
+      // The record's icons list only the evidence its claim is built on; the panel may show more.
       member(evidence.icon, icons, `${here}.icon`);
-      if (!recordIcons.includes(evidence.icon)) fail(here, "evidence icon missing from record icons");
       for (const field of ["source_title", "author", "locator", "quote"]) string(evidence[field], `${here}.${field}`);
       if ([...(evidence.quote as string)].length > 200) fail(`${here}.quote`, "quote exceeds 200 characters");
       if (evidence.url !== null) {

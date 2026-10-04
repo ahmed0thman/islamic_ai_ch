@@ -20,9 +20,12 @@ function updateUrl(depth: Depth, push: boolean) {
   else window.history.replaceState(window.history.state, "", url);
 }
 const numeral = (value: number) => value.toLocaleString("ar");
+// The Complex file ends each ayah with a number glyph that only its own font draws;
+// the number is shown separately, so the trailing glyph is dropped. The ayah's words are untouched.
+const ayahWords = (text: string) => text.replace(/[\s\u00a0]*[\ufb50-\ufdcf]+$/u, "");
 function AyahText({ ayah, inline = false }: { ayah: Ayah; inline?: boolean }) {
   return <span className={inline ? "quran inline-ayah" : "quran ayah-text"}>
-    <span>{ayah.text}</span>{" "}<span className="ayah-number">{numeral(ayah.no)}</span>
+    <span>{ayahWords(ayah.text)}</span>{" "}<span className="ayah-number">{numeral(ayah.no)}</span>
   </span>;
 }
 function ContentBlock({ block, ayahs, records, ui, onOpen }: {
