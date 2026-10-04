@@ -63,3 +63,18 @@ Rules the app relies on:
 - Every `ayah.key` and `ayah.keys[]` exists in `ayahs`.
 - A record with badge `la_yathbut` or `khilaf_mutabar` shows the badge next to the marker in the text and in the panel; `thabit` shows in the panel only.
 - Level `n` shows the blocks of `levels[n]` only (levels are complete texts, not increments).
+
+## Nasij source (`content/nasij/<no>.json`)
+
+Written by the content agents, read by `tools/export_content.py`. It holds our own wording only, never book text beyond short verbatim quotes that already exist in a record.
+
+```jsonc
+{
+  "surah": 108,
+  "style": "default",
+  "levels": [ { "depth": 0, "blocks": [ /* Block, same shapes as above */ ] } ],   // depth 0..3
+  "held": [ { "depth": 1, "block": { /* Block */ }, "reason": "…" } ]            // written but not exported: no record permits it yet
+}
+```
+
+The exporter adds `ayahs` from the King Fahd Complex file and the public `records` map from `.cache/records/<no>/records.v2.json`, then refuses the whole surah if any check fails.
