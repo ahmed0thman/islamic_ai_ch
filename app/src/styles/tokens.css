@@ -28,14 +28,16 @@
   --radius: 1.125rem;
   --radius-sheet: 1.625rem;
   --radius-pill: 999px;
+  /* The one spacing scale (px at 16px root): 4, 8, 12, 20, 32, 52. Every padding, margin and gap comes from it.
+     Thread geometry (the 3.5rem thread column, its line and the door branches) is layout, not spacing, and keeps its own values. */
   --space-xs: .25rem;
   --space-sm: .5rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
+  --space-md: .75rem;
+  --space-lg: 1.25rem;
   --space-xl: 2rem;
-  --space-2xl: 3rem;
-  --gutter: 1.25rem;
-  --reading-padding: 1.25rem;
+  --space-2xl: 3.25rem;
+  --gutter: var(--space-lg);
+  --reading-padding: var(--space-lg);
   --font-ui: var(--font-plex), sans-serif;
   --font-quote: var(--font-amiri), serif;
   --font-quran: var(--font-amiri-quran), serif;
@@ -135,14 +137,6 @@
   --radius-md: var(--radius-s);
   --radius-lg: var(--radius);
   --radius-full: var(--radius-pill);
-  --space-1: var(--space-xs);
-  --space-2: var(--space-sm);
-  --space-3: .75rem;
-  --space-4: var(--space-md);
-  --space-5: 1.25rem;
-  --space-6: var(--space-xl);
-  --space-7: var(--space-2xl);
-  --space-8: var(--space-2xl);
 }
 @media (prefers-color-scheme: dark) {
   :root {

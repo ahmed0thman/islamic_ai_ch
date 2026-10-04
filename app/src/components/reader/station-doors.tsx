@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState, type CSSProperties } from "react";
-import type { MapStop } from "@/lib/map";
+import type { SceneUnit } from "@/lib/depth-items";
 import type { Ui } from "@/lib/types";
 import { StopDoor } from "./stop-door";
 
-export type StationDoorsProps = { stops: MapStop[]; ui: Ui; visited: ReadonlySet<number>; onOpen: (stop: MapStop) => void };
-type Row = { key: string; stop: MapStop; entering: boolean; leaving: boolean };
-const keyOf = (stop: MapStop) => `${stop.stationKey}:${stop.title}`;
+export type StationDoorsProps = { stops: SceneUnit[]; ui: Ui; visited: ReadonlySet<number>; onOpen: (stop: SceneUnit) => void };
+type Row = { key: string; stop: SceneUnit; entering: boolean; leaving: boolean };
+const keyOf = (stop: SceneUnit) => `${stop.kind ?? "stop"}:${stop.stationKey}:${stop.title}:${stop.kind ? stop.blockIndex : ""}`;
 export function StationDoors({ stops, ui, visited, onOpen }: StationDoorsProps) {
   const [rows, setRows] = useState<Row[]>(() => stops.map((stop) => ({ key: keyOf(stop), stop, entering: false, leaving: false })));
   useEffect(() => {

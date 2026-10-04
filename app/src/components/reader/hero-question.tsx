@@ -2,12 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
-import type { MapStop } from "@/lib/map";
+import type { SceneUnit } from "@/lib/depth-items";
 import type { Ui } from "@/lib/types";
 import { Icon } from "@/components/ui/icon";
 import { SourceChip } from "@/components/ui/source-chip";
 
-export type HeroQuestionProps = { stop?: MapStop; ui: Ui; onOpen: (stop: MapStop) => void };
+export type HeroQuestionProps = { stop?: SceneUnit; ui: Ui; onOpen: (stop: SceneUnit) => void };
 export function HeroQuestion({ stop, ui, onOpen }: HeroQuestionProps) {
   const last = useRef(stop?.title);
   const [previous, setPrevious] = useState<string | undefined>();

@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { ArrowLeft01Icon, ArrowRight01Icon, MapsIcon } from "@hugeicons/core-free-icons";
-import type { MapStop } from "@/lib/map";
+import type { SceneUnit } from "@/lib/depth-items";
 import type { Passage, SourceRecord, SurahSummary, Ui } from "@/lib/types";
 import { numeral } from "@/lib/numerals";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { SourceMarker } from "./source-marker";
 
-export type NextCardProps = { next?: MapStop; previous?: MapStop; nextPassage?: Passage; nextSurah?: SurahSummary; records: Record<string, SourceRecord>; onOpen: (records: SourceRecord[]) => void; onNext: () => void; onPrevious: () => void; onBack: () => void; ui: Ui };
+export type NextCardProps = { next?: SceneUnit; previous?: SceneUnit; nextPassage?: Passage; nextSurah?: SurahSummary; records: Record<string, SourceRecord>; onOpen: (records: SourceRecord[]) => void; onNext: () => void; onPrevious: () => void; onBack: () => void; ui: Ui };
 export function NextCard({ next, previous, nextPassage, nextSurah, records, onOpen, onNext, onPrevious, onBack, ui }: NextCardProps) {
   const passageSources = nextPassage?.records.map((id) => records[id]) ?? [];
   return <nav className="onward">

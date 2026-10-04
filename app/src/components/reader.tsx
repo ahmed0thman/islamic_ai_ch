@@ -6,7 +6,8 @@ import { Icon } from "./ui/icon";
 import { Button } from "./ui/button";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Ayah, Block, Depth, Segment, SourceRecord, Surah, SurahSummary, Ui } from "@/lib/types";
-import { deriveSurahMap, stopNeighbours, type MapStop } from "@/lib/map";
+import { deriveSurahMap, stopNeighbours } from "@/lib/map";
+import type { SceneUnit } from "@/lib/depth-items";
 import { SourceMarker } from "./reader/source-marker";
 import { TermLink } from "./reader/term-link";
 import type { SourceOptions } from "./reader/sheet-provider";
@@ -171,7 +172,7 @@ export function Reader({ surah, ui, nextSurah }: { surah: Surah; ui: Ui; nextSur
     return () => observer.disconnect();
   }, [stop, view, map]);
   function chooseScope(next: Scope) { setScope(next); jumpToAyah(scopeStart(surah, next)); }
-  function openStop(next: MapStop) {
+  function openStop(next: SceneUnit) {
     setStopNumber(next.number); setSelected(null);
     setVisited((previous) => new Set(previous).add(`${depth}:${next.blockIndex}`));
     setCurrentStops((previous) => ({ ...previous, [depth]: next.number }));
