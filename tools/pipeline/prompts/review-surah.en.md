@@ -6,7 +6,7 @@ Product core: "Huda" guides a non-specialist reader through a surah's meaning. E
 
 Read: `content/SCHEMA.md`, `docs/06-product/record-schema.md`, the private records `.cache/records/{{surah_no}}/records.v2.json`, the woven text `content/nasij/{{surah_no}}.json`, and use `python3 -B tools/retrieve.py --id <passage id>` / `--ayah {{surah_no}}:N` to open the sources and verify quotes in context.
 
-Check a SAMPLE, chosen by you and listed in the report: all of level 0 and level 1, at least 8 sentences of level 2, at least 4 depth items of level 3, every stop title, every passage, every term, and every narration whose build permission is «نعم».
+Check, and list in the report what you checked: ALL of level 0, level 1 and level 2 (every sentence, no sampling); in level 3 every depth-item title and at least half of the depth items (all of them when there are eight or fewer), every stop title, every passage, every term, and every narration whose build permission is «نعم».
 
 For each sampled item decide:
 1. SUPPORT: do the cited records actually carry what the sentence/title says (nothing added, generalised, or made more certain than the source)?
