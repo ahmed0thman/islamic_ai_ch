@@ -1,12 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { BadgeKey, Ui } from "@/lib/types";
 import { Badge, Icon } from "./marks";
 
 export function Legend({ ui }: { ui: Ui }) {
   const [expanded, setExpanded] = useState(false);
-  return <aside className="legend-bar" aria-label={ui.legend.title}>
+  const bar = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const element = bar.current!;
+    const updateHeight = () => document.documentElement.style.setProperty("--legend-occupied-height", `${element.getBoundingClientRect().height}px`);
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(element);
+    return () => {
+      observer.disconnect();
+      document.documentElement.style.removeProperty("--legend-occupied-height");
+    };
+  }, []);
+  return <aside ref={bar} className="legend-bar" aria-label={ui.legend.title}>
     <div className="legend-top">
       <button type="button" className="legend-toggle" aria-expanded={expanded} aria-controls="legend-content" onClick={() => setExpanded((value) => !value)}>
         <span>{expanded ? ui.legend.hide : ui.legend.show}</span><span aria-hidden="true">{expanded ? "−" : "+"}</span>

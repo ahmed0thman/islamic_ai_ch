@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Noto_Naskh_Arabic, Amiri_Quran } from "next/font/google";
+import { Readex_Pro, Amiri } from "next/font/google";
 import type { ReactNode } from "react";
 import { getUi } from "@/lib/content";
 import { Disclosure } from "@/components/disclosure";
@@ -7,8 +7,8 @@ import { Legend } from "@/components/legend";
 import { Offline } from "@/components/offline";
 import "./globals.css";
 
-const body = Noto_Naskh_Arabic({ subsets: ["arabic"], display: "swap", variable: "--font-body" });
-const quran = Amiri_Quran({ weight: "400", subsets: ["arabic"], display: "swap", variable: "--font-quran" });
+const body = Readex_Pro({ subsets: ["arabic"], display: "swap", variable: "--font-body" });
+const quran = Amiri({ weight: "400", subsets: ["arabic"], display: "swap", variable: "--font-quran" });
 export async function generateMetadata(): Promise<Metadata> {
   const ui = await getUi();
   return { title: { default: ui.app_name, template: `%s | ${ui.app_name}` }, description: ui.tagline,
@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 export const viewport: Viewport = {
   width: "device-width", initialScale: 1,
-  themeColor: [{ media: "(prefers-color-scheme: light)", color: "#f8f5ee" }, { media: "(prefers-color-scheme: dark)", color: "#151e1b" }],
+  themeColor: [{ media: "(prefers-color-scheme: light)", color: "#FAFAFA" }, { media: "(prefers-color-scheme: dark)", color: "#121212" }],
 };
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const ui = await getUi();

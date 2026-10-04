@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Ayah, Block, Depth, SourceRecord, Surah, Ui } from "@/lib/types";
 import { Marker } from "./marks";
 import { SourcePanel } from "./source-panel";
+import { numeral } from "@/lib/numerals";
 
 const storageKey = "huda:depth:v1";
 function parseDepth(value: string | null): Depth | null {
@@ -19,13 +20,20 @@ function updateUrl(depth: Depth, push: boolean) {
   if (push) window.history.pushState(window.history.state, "", url);
   else window.history.replaceState(window.history.state, "", url);
 }
-const numeral = (value: number) => value.toLocaleString("ar");
 // The Complex file ends each ayah with a number glyph that only its own font draws;
 // the number is shown separately, so the trailing glyph is dropped. The ayah's words are untouched.
 const ayahWords = (text: string) => text.replace(/[\s\u00a0]*[\ufb50-\ufdcf]+$/u, "");
-function AyahText({ ayah, inline = false }: { ayah: Ayah; inline?: boolean }) {
+// Split only at the last word so a marker never forces a whole claim onto one line.
+function splitLastWord(text: string): [string, string] {
+  const tail = text.match(/\S+\s*$/u)?.[0] ?? text;
+  return [text.slice(0, text.length - tail.length), tail];
+}
+function AyahText({ ayah, inline = false, part = "whole" }: { ayah: Ayah; inline?: boolean; part?: "whole" | "start" | "end" }) {
+  const words = ayahWords(ayah.text);
+  const [start, end] = splitLastWord(words);
   return <span className={inline ? "quran inline-ayah" : "quran ayah-text"}>
-    <span>{ayahWords(ayah.text)}</span>{" "}<span className="ayah-number">{numeral(ayah.no)}</span>
+    <span>{part === "whole" ? words : part === "start" ? start : end}</span>
+    {part !== "start" ? <>{"\u00a0"}<span className="ayah-number">{numeral(ayah.no)}</span></> : null}
   </span>;
 }
 function ContentBlock({ block, ayahs, records, ui, onOpen }: {
@@ -35,19 +43,32 @@ function ContentBlock({ block, ayahs, records, ui, onOpen }: {
   if (block.type === "ayah") return <section className="ayah-block" aria-label={ui.reader.ayahs_title}>
     {block.keys.map((key) => <AyahText key={key} ayah={ayahs.get(key)!} />)}
   </section>;
-  return <p className={block.role === "transmission" ? "reading-paragraph transmission" : "reading-paragraph"}>
-    {block.segments.map((segment, i) => {
-      switch (segment.t) {
-        case "text": return <span key={i}>{segment.v}</span>;
-        case "ayah": return <AyahText key={i} ayah={ayahs.get(segment.key)!} inline />;
-        case "quote": return <q key={i} className="verbatim" data-record={segment.record}>{segment.v}</q>;
-        case "mark": {
-          const sources = [...new Set(segment.records)].map((id) => records[id]);
-          return <Marker key={i} records={sources} ui={ui} onOpen={() => onOpen(sources)} />;
-        }
+  const segments = [...block.segments];
+  const nodes: ReactNode[] = [];
+  segments.forEach((segment, i) => {
+    const followedByMarker = segments[i + 1]?.t === "mark";
+    if (segment.t === "text" || segment.t === "quote") {
+      const [start, end] = followedByMarker ? splitLastWord(segment.v) : ["", segment.v];
+      if (segment.t === "text") {
+        if (start) nodes.push(<span key={`${i}-start`}>{start}</span>);
+        nodes.push(<span key={i}>{end}</span>);
+      } else {
+        if (start) nodes.push(<q key={`${i}-start`} className="verbatim quote-start" data-record={segment.record}>{start}</q>);
+        nodes.push(<q key={i} className={start ? "verbatim quote-end" : "verbatim"} data-record={segment.record}>{end}</q>);
       }
-    })}
-  </p>;
+    } else if (segment.t === "ayah") {
+      if (followedByMarker) nodes.push(<AyahText key={`${i}-start`} ayah={ayahs.get(segment.key)!} inline part="start" />);
+      nodes.push(<AyahText key={i} ayah={ayahs.get(segment.key)!} inline part={followedByMarker ? "end" : "whole"} />);
+    } else {
+      const sources = [...new Set(segment.records)].map((id) => records[id]);
+      const preceding = nodes.pop();
+      const next = segments[i + 1];
+      const punctuation = next?.t === "text" ? next.v.match(/^\s*\p{P}+/u)?.[0] ?? "" : "";
+      if (next?.t === "text" && punctuation) segments[i + 1] = { ...next, v: next.v.slice(punctuation.length) };
+      nodes.push(<span key={`claim-${i}`} className="claim-ending">{preceding}<Marker records={sources} ui={ui} onOpen={() => onOpen(sources)} />{punctuation}</span>);
+    }
+  });
+  return <p className={block.role === "transmission" ? "reading-paragraph transmission" : "reading-paragraph"}>{nodes}</p>;
 }
 export function Reader({ surah, ui }: { surah: Surah; ui: Ui }) {
   const [depth, setDepth] = useState<Depth>(1);
