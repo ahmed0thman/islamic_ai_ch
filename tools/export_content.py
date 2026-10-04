@@ -6,6 +6,7 @@ surahs preserve existing exports. Review samples cover the entire private file,
 use the surah number as seed, and round 20% upward (minimum five, pool permitting).
 """
 import argparse
+from copy import deepcopy
 from collections import defaultdict
 import json
 import math
@@ -25,6 +26,8 @@ CHECKS = {
     "C5": "claims have build permission", "C6": "transmissions and verbatim quotes",
     "C7": "record depth restrictions", "C8": "display refusals excluded",
     "C9": "four nonempty levels", "C10": "held blocks excluded",
+    "C11": "stop titles", "C12": "stop ayahs",
+    "C13": "passages", "C14": "map size",
 }
 
 
@@ -211,12 +214,99 @@ def run_checks(nasij, records, quran, no):
             for ref in refs:
                 ayah_refs.add(ref)
                 check("C1", ref in quran, f"{where}: unknown ayah {ref}")
+    # Map checks also visit paragraphs inside details, but never held content.
+    own_keys = sorted((ref for ref, a in quran.items() if a["sura_no"] == no),
+                      key=lambda ref: int(ref.split(":")[1]))
+    own_set = set(own_keys)
+    passages = {}
+    if "passages" in nasij:
+        items = nasij["passages"]
+        check("C13", isinstance(items, list), "passages: expected list")
+        covered = []
+        for p in items if isinstance(items, list) else []:
+            valid = (isinstance(p, dict) and isinstance(p.get("id"), str) and bool(p["id"].strip())
+                     and isinstance(p.get("from"), str) and p["from"] in own_set
+                     and isinstance(p.get("to"), str) and p["to"] in own_set
+                     and isinstance(p.get("title"), str) and bool(p["title"].strip())
+                     and isinstance(p.get("records"), list) and bool(p["records"]))
+            check("C13", valid, "passage: expected id, own from/to, title and nonempty records")
+            if not valid:
+                continue
+            check("C13", p["id"] not in passages, f"duplicate passage {p['id']}")
+            start, end = own_keys.index(p["from"]), own_keys.index(p["to"])
+            check("C13", start <= end, f"{p['id']}: reversed range")
+            keys = own_keys[start:end + 1]
+            covered.extend(keys)
+            passages[p["id"]] = set(keys)
+            for ident in p["records"]:
+                valid_record = isinstance(ident, str) and ident in records
+                check("C13", valid_record and records[ident].get("display", {}).get("decision") == "\u0646\u0639\u0645",
+                      f"{p['id']}: record {ident!r} missing or display refused")
+                if valid_record:
+                    uses[ident].append(f"passage {p['id']}")
+            check_text(p["title"], f"passage {p['id']}, title")
+        check("C13", covered == own_keys, "passages must cover the surah consecutively, in order, without gaps or overlaps")
+    for level in levels:
+        stops = 0
+        for block in map_blocks(level["blocks"]):
+            where = f"level {level['depth']}, map block"
+            is_stop = block["type"] == "paragraph" and "title" in block
+            if "title" in block and block["type"] != "details":
+                title = block["title"]
+                valid = (block["type"] == "paragraph" and isinstance(title, str)
+                         and 1 <= len(title.split()) <= 8)
+                check("C11", valid, f"{where}: stop title must be paragraph system text of 1..8 words")
+                if isinstance(title, str):
+                    before = len(counts["C2"][1])
+                    check_text(title, f"{where}, stop title")
+                    check("C11", len(counts["C2"][1]) == before, f"{where}: stop title contains Quran")
+            if is_stop:
+                stops += 1
+            if "ayahs" in block or is_stop:
+                keys = stop_ayahs(block, records, own_keys)
+                valid = (block["type"] == "paragraph" and isinstance(keys, list)
+                         and all(isinstance(ref, str) and ref in own_set for ref in keys))
+                check("C12", valid and (not is_stop or bool(keys)),
+                      f"{where}: ayahs must be own keys; a stop needs at least one")
+            if "passage" in block:
+                ident = block["passage"]
+                valid = isinstance(ident, str) and ident in passages
+                check("C13", valid, f"{where}: unknown passage {ident!r}")
+                if valid and is_stop:
+                    keys = stop_ayahs(block, records, own_keys)
+                    check("C13", isinstance(keys, list) and all(isinstance(ref, str) and ref in passages[ident] for ref in keys),
+                          f"{where}: stop ayahs outside its passage")
+            elif is_stop and "passages" in nasij:
+                check("C13", False, f"{where}: stop must identify its passage")
+        if level["depth"] in (0, 1, 2):
+            check("C14", stops <= 12, f"level {level['depth']}: {stops} stops exceeds 12")
     for ident in uses.keys() & records.keys():
         r = records[ident]
         for owner in [r] + r["evidence"]:
             for ref in owner.get("ayah_keys") or []:
                 check("C1", ref in quran, f"{ident}: unknown record/evidence ayah {ref}")
     return counts, uses, ayah_refs
+
+
+def map_blocks(blocks):
+    for block in blocks:
+        yield block
+        if block["type"] == "details":
+            yield from block["blocks"]
+
+
+def stop_ayahs(block, records, own_keys):
+    if "ayahs" in block:
+        return block["ayahs"]
+    ids = set()
+    for segment in block.get("segments", []):
+        if segment["t"] == "mark":
+            ids.update(segment["records"])
+        elif segment["t"] in ("quote", "term"):
+            ids.add(segment["record"])
+    refs = {ref for ident in ids if ident in records
+            for ref in records[ident].get("ayah_keys", [])}
+    return [ref for ref in own_keys if ref in refs]
 
 
 def trim_quote(quote):
@@ -233,6 +323,9 @@ def trim_quote(quote):
 
 def public_record(r, sources, ui, quran):
     ident = r["id"]
+    require(isinstance(r.get("ayah_keys"), list) and
+            all(isinstance(ref, str) and ref in quran for ref in r["ayah_keys"]),
+            f"{ident}: invalid ayah_keys")
     text(r.get("claim"), f"{ident}.claim", True)
     require(r.get("build_permission", {}).get("decision") in ("نعم", "معلّق", "لا"), f"{ident}: unknown build decision")
     require(r.get("display", {}).get("decision") in ("نعم", "لا"), f"{ident}: unknown display decision")
@@ -299,7 +392,7 @@ def public_record(r, sources, ui, quran):
         status = "\n".join(reasons)
     return {"id": ident, "icons": [i for i in ui["icon_order"] if i in icons],
             "badge": badge, "claim": r["claim"], "status_text": status,
-            "depth_min": r["depth_min"], "evidence": out}
+            "depth_min": r["depth_min"], "ayah_keys": list(r["ayah_keys"]), "evidence": out}
 
 
 def review_text(records, sources, uses, no):
@@ -339,11 +432,19 @@ def export_surah(no, records_root, content_root, quran, ui, check_only=False):
         own = sorted((a for a in quran.values() if a["sura_no"] == no), key=lambda a: a["aya_no"])
         require(bool(own), f"unknown surah {no}")
         mapped = {ident: public_record(records[ident], sources, ui, quran) for ident in sorted(uses)}
+        levels = deepcopy(sorted(nasij["levels"], key=lambda l: l["depth"]))
+        own_keys = [f"{no}:{a['aya_no']}" for a in own]
+        for level in levels:
+            for block in map_blocks(level["blocks"]):
+                if block["type"] == "paragraph" and "title" in block:
+                    block["ayahs"] = stop_ayahs(block, records, own_keys)
         ayahs = own + [quran[ref] for ref in sorted(refs, key=lambda k: tuple(map(int, k.split(":")))) if quran[ref]["sura_no"] != no]
         output = {"schema": 1, "fixture": False,
                   "surah": {"no": no, "name": own[0]["sura_name_ar"], "ayah_count": len(own)},
                   "ayahs": [{"key": f"{a['sura_no']}:{a['aya_no']}", "no": a["aya_no"], "text": a["aya_text"]} for a in ayahs],
-                  "levels": sorted(nasij["levels"], key=lambda l: l["depth"]), "records": mapped}
+                  "levels": levels, "records": mapped}
+        if "passages" in nasij:
+            output["passages"] = deepcopy(nasij["passages"])
         review = review_text(records, sources, uses, no)
     except (ValueError, TypeError, KeyError) as exc:
         print(f"{no} MAP FAIL checked=1 failed=1: {exc}")

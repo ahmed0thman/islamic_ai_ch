@@ -468,5 +468,136 @@ class ContentShapeTests(unittest.TestCase):
         self.refused("C10")
 
 
+class MapTests(unittest.TestCase):
+    setUp = ExportTests.setUp
+    save = ExportTests.save
+    run_export = ExportTests.run_export
+    refused = ExportTests.refused
+    paragraph = ExportTests.paragraph
+    details = ContentShapeTests.details
+    quran_text = ContentShapeTests.quran_text
+    def stop(self, paragraph=None):
+        paragraph = self.paragraph() if paragraph is None else paragraph
+        paragraph["title"] = self.paragraph()["segments"][0]["v"]
+        return paragraph
+
+    def exported(self):
+        result = self.run_export()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        return exporter.read_json(self.content / "export/surah-108.json")
+
+    def passage(self):
+        self.nasij["passages"] = [
+            {"id": "p1", "from": "108:1", "to": "108:1",
+             "title": self.paragraph()["segments"][0]["v"], "records": ["108-s0"]},
+            {"id": "p2", "from": "108:2", "to": "108:3",
+             "title": self.paragraph()["segments"][0]["v"], "records": ["108-r1"]}]
+        self.stop()["passage"] = "p1"
+
+    def test_C11_titles(self):
+        p = self.stop()
+        title = p["title"]
+        self.assertEqual(self.exported()["levels"][0]["blocks"][0]["title"], title)
+        for bad in ("", "  ", " ".join([title.split()[0]] * 9), None, [], self.quran_text()):
+            with self.subTest(title=bad):
+                p["title"] = bad
+                self.refused("C11")
+        p["title"] = title
+        heading = {"type": "heading", "text": title, "title": title}
+        self.nasij["levels"][0]["blocks"].append(heading)
+        self.refused("C11")
+
+    def test_C12_inference_and_explicit_ayahs(self):
+        p = self.stop()
+        p["segments"].insert(0, {"t": "term", "v": p["title"], "record": "108-s0"})
+        self.private["records"][0]["ayah_keys"] = ["108:3", "1:1", "108:1"]
+        self.private["records"][1]["ayah_keys"] = ["108:2", "108:1"]
+        out = self.exported()
+        self.assertEqual(out["levels"][0]["blocks"][0]["ayahs"], ["108:1", "108:2", "108:3"])
+        self.assertEqual(out["records"]["108-r1"]["ayah_keys"], ["108:3", "1:1", "108:1"])
+        p["ayahs"] = ["108:2"]
+        self.assertEqual(self.exported()["levels"][0]["blocks"][0]["ayahs"], ["108:2"])
+        for bad in ([], ["108:99"], ["1:1"], "108:1", [None]):
+            with self.subTest(ayahs=bad):
+                p["ayahs"] = bad
+                self.refused("C12")
+
+    def test_C12_no_inferred_ayah(self):
+        self.stop()
+        self.exported()
+        self.private["records"][0]["ayah_keys"] = ["1:1"]
+        self.refused("C12")
+
+    def test_C13_passages_and_records(self):
+        self.passage()
+        out = self.exported()
+        self.assertEqual(out["passages"], self.nasij["passages"])
+        self.assertIn("108-s0", out["records"])
+        original = deepcopy(self.nasij["passages"])
+        changes = [("id", "p1"), ("from", "108:3"), ("from", "108:1"),
+                   ("to", "108:2"), ("to", "108:1"), ("from", "1:1"),
+                   ("records", ["missing"]), ("records", [])]
+        for field, value in changes:
+            with self.subTest(field=field, value=value):
+                self.nasij["passages"] = deepcopy(original)
+                self.nasij["passages"][1][field] = value
+                self.refused("C13")
+        self.nasij["passages"] = deepcopy(original)
+        self.nasij["passages"].reverse()
+        self.refused("C13")
+        for bad in ([], None, [{}]):
+            self.nasij["passages"] = bad
+            self.refused("C13")
+        self.nasij["passages"] = original
+        self.private["records"][1]["display"]["decision"] = None
+        self.refused("C13")
+
+    def test_C13_block_membership(self):
+        self.passage()
+        self.exported()
+        for ident in ("missing", None, "p2"):
+            self.paragraph()["passage"] = ident
+            self.refused("C13")
+        self.paragraph().pop("passage")
+        self.refused("C13")
+        self.paragraph()["passage"] = "p1"
+        heading = {"type": "heading", "text": self.paragraph()["title"], "passage": "p1"}
+        self.nasij["levels"][0]["blocks"].append(heading)
+        self.exported()
+        heading["passage"] = "missing"
+        self.refused("C13")
+
+    def test_C14_nested_and_depth_limits(self):
+        self.stop()
+        p = deepcopy(self.paragraph())
+        for depth in (0, 1, 2):
+            with self.subTest(depth=depth):
+                self.nasij["levels"][depth]["blocks"] = [deepcopy(p) for _ in range(11)]
+                block = self.details()
+                if depth != 0:
+                    self.nasij["levels"][0]["blocks"].remove(block)
+                    self.nasij["levels"][depth]["blocks"].append(block)
+                block["blocks"] = [deepcopy(p)]
+                self.exported()
+                block["blocks"].append(deepcopy(p))
+                self.refused("C14")
+                self.nasij["levels"][depth]["blocks"] = [deepcopy(p)]
+        self.nasij["levels"][3]["blocks"] = [deepcopy(p) for _ in range(20)]
+        self.exported()
+
+    def test_nested_and_held_map_fields(self):
+        block = self.details()
+        inner = self.stop(block["blocks"][0])
+        out = self.exported()
+        self.assertEqual(out["levels"][0]["blocks"][-1]["blocks"][0]["ayahs"], ["108:1"])
+        held = deepcopy(inner)
+        held.update(title=None, ayahs=["missing"], passage="missing")
+        self.nasij["held"].append({"depth": 0, "block": held, "reason": "Held"})
+        out = self.exported()
+        self.assertNotIn(held, out["levels"][0]["blocks"])
+        inner["ayahs"] = ["108:99"]
+        self.refused("C12")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -12,12 +12,14 @@ export type Segment =
   | { t: "term"; v: string; record: string }
   | { t: "mark"; records: string[] };
 export type TitleSegment = Extract<Segment, { t: "text" | "term" | "mark" }>;
-export type ParagraphBlock = { type: "paragraph"; role: "claim" | "transmission"; segments: Segment[] };
-export type Block =
+export type ParagraphBlock = { type: "paragraph"; role: "claim" | "transmission"; title?: string; ayahs?: string[]; passage?: string; segments: Segment[] };
+export type Block = (
   | { type: "heading"; text: string; kind?: "question" }
   | { type: "ayah"; keys: string[] }
   | ParagraphBlock
-  | { type: "details"; title: TitleSegment[]; blocks: ParagraphBlock[] };
+  | { type: "details"; title: TitleSegment[]; blocks: ParagraphBlock[] }
+) & { passage?: string };
+export interface Passage { id: string; from: string; to: string; title: string; records: string[] }
 export interface Ruling { text: string; ruler: string; where: string }
 export interface Evidence {
   icon: IconKey; source_title: string; author: string; locator: string;
@@ -25,10 +27,11 @@ export interface Evidence {
 }
 export interface SourceRecord {
   id: string; icons: IconKey[]; badge: BadgeKey | null; claim: string;
-  status_text: string; depth_min: Depth; evidence: Evidence[];
+  status_text: string; depth_min: Depth; ayah_keys: string[]; evidence: Evidence[];
 }
 export interface Surah {
   schema: 1; fixture: boolean; surah: SurahSummary; ayahs: Ayah[];
+  passages?: Passage[];
   levels: { depth: Depth; blocks: Block[] }[];
   records: Record<string, SourceRecord>;
 }
