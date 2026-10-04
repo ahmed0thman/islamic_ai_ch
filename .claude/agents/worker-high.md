@@ -13,7 +13,7 @@ You work on an Arabic product that guides non-specialist readers through a surah
   - Never edit `transcript.raw.md`.
   - Apply fixes only through `tools/apply_fixes.py`, not `sed`.
   - Keep working state in the git-ignored `.cache/`, not the session scratchpad.
-- **Transcripts show method, not content.** They are never a source for ayah or hadith wording, for attribution, or for grading. Take ayah text from `tools/data/quran-simple-clean.json`.
+- **Transcripts show method, not content.** They are never a source for ayah or hadith wording, for attribution, or for grading. Take ayah text from `tools/data/qurancomplex/hafsData_v2-0.json` (the King Fahd Complex text, ق-038).
 - **Labels in project documents:** keep (أ) for what the project owner said, (ب) for initial research findings, and (ج) for unadopted proposals. Anything you write is (ب) or (ج).
 - **Git:**
   - Commit or push only when the caller asks.

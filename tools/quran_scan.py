@@ -91,6 +91,15 @@ def ayah_words(emlaey: str, uthmani: str) -> list[str]:
     return normalize(" ".join(out))
 
 
+# Two apparent slips in the Complex's aya_text_emlaey field (the rasm field is right).
+# Corrected here, at load time and for matching only; hafsData_v2-0.json is untouched
+# (ق-133 asks whether to tell the Complex).
+EMLAEY_FIXES = {
+    (16, 12): (("اليل", "الليل"),),     # an-Nahl 12: one lam missing
+    (24, 33): (("يكرهن", "يكرههن"),),   # an-Nur 33: one ha missing
+}
+
+
 def load_quran():
     words, refs = [], []  # one flat word stream across the whole mushaf
     names = {}
@@ -98,7 +107,10 @@ def load_quran():
         s = a["sura_no"]
         names[s] = a["sura_name_ar"]
         # Unlike Tanzil, the Complex text does not prefix ayah 1 with the basmala.
-        for i, token in enumerate(ayah_words(a["aya_text_emlaey"], a["aya_text"])):
+        emlaey = a["aya_text_emlaey"]
+        for bad, good in EMLAEY_FIXES.get((s, a["aya_no"]), ()):
+            emlaey = re.sub(rf"(?<!\S){bad}(?!\S)", good, emlaey)
+        for i, token in enumerate(ayah_words(emlaey, a["aya_text"])):
             words.append(token)
             refs.append((s, a["aya_no"], i))
     return words, refs, names
