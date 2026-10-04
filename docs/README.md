@@ -62,6 +62,7 @@
 - [`reliability-rules.md`](03-knowledge-sources/reliability-rules.md): ضوابط الإسناد، والثبوت، والخلاف، والإحالة، والحقوق.
 - [`lab-layer.md`](03-knowledge-sources/lab-layer.md): طبقة المعمل: خريطة المعرفة، وسياسة المصادر، والتحقق، والمراجعة.
 - [`research-references.md`](03-knowledge-sources/research-references.md): نقاط الانطلاق البحثية الخمس.
+- [`source-register.md`](03-knowledge-sources/source-register.md): سجل مصادر جزء عمّ: منصات الملحق مجرّبة بطلب حقيقي، وشروطها كما هي مكتوبة، وخريطة العلوم لكل عائلة.
 - وانظر أيضًا: قائمة المصادر بالعائلة في [`07-competition/content-sources.md`](07-competition/content-sources.md).
 
 ### 04-explainers: الشرّاح
@@ -86,6 +87,7 @@
 - [`depth-levels.md`](06-product/depth-levels.md): المستويات الأربعة: اللمحة، والفهم، والتدبر، والتعمق.
 - [`first-version-scope.md`](06-product/first-version-scope.md): نطاق النسخة الأولى: مقطعان في الواجهة وثالث على قواعد المعمل.
 - [`measurement.md`](06-product/measurement.md): طبقة الميزان، وأفكار القياس التي طُرحت ولم تُعتمد.
+- [`safety-test-set.md`](06-product/safety-test-set.md): مجموعة اختبار السلامة: حالات الملحق الاثنتا عشرة وحالاتنا، ولكل حالة سلوك هُدًى والقرار الذي يحكمه. ونسختها الآلية في `tools/data/eval/safety_cases.json`.
 - وانظر أيضًا: واجهة المخرج وقواعد كتابته في [`02-method/nasij-reader-layer.md`](02-method/nasij-reader-layer.md)، ودور الذكاء الاصطناعي في مواصفة الشريحة 4 ضمن [`07-competition/deck-slides-1-5.md`](07-competition/deck-slides-1-5.md).
 
 ### 07-competition: المسابقة

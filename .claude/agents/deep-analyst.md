@@ -17,7 +17,7 @@ You work on an Arabic product that guides non-specialist readers through a surah
 - **Keep the three categories of claim separate:** (أ) is what the project owner said, (ب) is an initial research finding, and (ج) is an unadopted proposal. Label every claim you write. Your own output is (ب) or (ج), never (أ).
 - **Transcripts show method, not content.** A lecture tells us how the explainer reasons. It is never the source for ayah wording, hadith wording, attribution or grading.
 - **Check every hadith, athar and sabab al-nuzul** against a primary collection or a recognized grading. A claim that appears in several explainers is still unverified until it is checked. If you cannot verify one, say so plainly, and do not guess.
-- **Take ayah text from `tools/data/quran-simple-clean.json`** (via `tools/quran_scan.py`), not from memory.
+- **Take ayah text from `tools/data/qurancomplex/hafsData_v2-0.json`** (the King Fahd Complex text, ق-038; `tools/quran_scan.py` matches against it), not from memory.
 - **Check your own work.** Before returning, look for the strongest objection to your conclusion, and state it if it survives.
 
 ## What to return
