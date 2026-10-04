@@ -8,12 +8,14 @@ import { Icon } from "@/components/ui/icon";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 
 export type BottomSheetProps = {
-  title: string; ui: Ui; onClose: () => void; children: ReactNode; term?: boolean;
+  title: string; ui: Ui; onClose: () => void; children: ReactNode | ((dismiss: () => void) => ReactNode); term?: boolean;
 };
 export function BottomSheet({ title, ui, onClose, children, term = false }: BottomSheetProps) {
   const id = useId();
   const [open, setOpen] = useState(true);
   const closeButton = useRef<HTMLButtonElement>(null);
+  const historyOrigin = useRef<{ state: unknown; pushed: boolean }>({ state: null, pushed: false });
+  const mounted = useRef(false);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
   const [origin] = useState(() => {
@@ -28,18 +30,24 @@ export function BottomSheet({ title, ui, onClose, children, term = false }: Bott
   });
 
   useEffect(() => {
+    mounted.current = true;
     document.documentElement.setAttribute("data-huda-sheet-open", "");
     origin.run?.setAttribute("data-active-source", "true");
-    const previousState = window.history.state;
-    if (previousState?.hudaSheet !== id) window.history.pushState({ ...previousState, hudaSheet: id }, "", window.location.href);
+    if (!historyOrigin.current.pushed) {
+      historyOrigin.current = { state: window.history.state, pushed: true };
+      window.history.pushState({ ...window.history.state, hudaSheet: id }, "", window.location.href);
+    }
     const onBack = () => { if (window.history.state?.hudaSheet !== id) setOpen(false); };
     window.addEventListener("popstate", onBack);
     return () => {
+      mounted.current = false;
       window.removeEventListener("popstate", onBack);
       document.documentElement.removeAttribute("data-huda-sheet-open");
       origin.run?.removeAttribute("data-active-source");
-      // A route change may unmount the sheet before it receives a close event.
-      if (window.history.state?.hudaSheet === id) window.history.replaceState(previousState, "", window.location.href);
+      // Preserve a single entry during the development effect rehearsal.
+      queueMicrotask(() => {
+        if (!mounted.current && window.history.state?.hudaSheet === id) window.history.replaceState(historyOrigin.current.state, "", window.location.href);
+      });
     };
   }, [id, origin]);
 
@@ -62,7 +70,7 @@ export function BottomSheet({ title, ui, onClose, children, term = false }: Bott
         <SheetTitle className={term ? "huda-sheet-title huda-term-title" : "huda-sheet-title"}>{title}</SheetTitle>
         <Button ref={closeButton} variant="round" size="icon" onClick={requestClose} aria-label={ui.panel.close}><Icon icon={Cancel01Icon} /></Button>
       </header>
-      <div className="huda-sheet-scroll">{children}</div>
+      <div className="huda-sheet-scroll">{typeof children === "function" ? children(requestClose) : children}</div>
     </SheetContent>
   </Sheet>;
 }

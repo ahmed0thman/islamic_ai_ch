@@ -11,6 +11,11 @@
   --color-ink-3: var(--ink-3);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
+  --color-gold: var(--gold);
+  --color-gold-strong: var(--gold-strong);
+  --color-on-gold: var(--on-gold);
+  --color-gold-stage: var(--gold-stage);
+  --color-border-ui: var(--border-ui);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
   --color-on-accent: var(--on-accent);

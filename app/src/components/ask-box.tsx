@@ -14,7 +14,7 @@ import type { AskResponse, AskUi } from "@/lib/ask/types";
 import { Search01Icon } from "@hugeicons/core-free-icons";
 import { Icon } from "./ui/icon";
 import { Button } from "./ui/button";
-import { ContentBlock } from "./reader";
+import { ClaimText } from "./reader/claim-text";
 import { useSheets } from "./reader/sheet-provider";
 import "@/app/ask.css";
 
@@ -118,7 +118,7 @@ export function AskBox({ surah, ui: baseUi }: { surah: Surah; ui: Ui }) {
             <>
               <h3>{ui.ask.answer_title}</h3>
               {result.atoms.map((atom) => (
-                <ContentBlock
+                <ClaimText
                   key={atom.id}
                   block={{
                     type: "paragraph",
@@ -128,7 +128,7 @@ export function AskBox({ surah, ui: baseUi }: { surah: Surah; ui: Ui }) {
                   ayahs={ayahs}
                   records={surah.records}
                   ui={ui}
-                  onOpen={setSelected}
+                  onOpen={openSource}
                 />
               ))}
             </>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getIndex, getSurah, getUi } from "@/lib/content";
-import { Reader } from "@/components/reader";
+import { Reader } from "@/components/reader/reader";
 
 export const dynamicParams = false;
 export async function generateStaticParams() {
@@ -30,7 +30,7 @@ export default async function SurahPage({ params }: { params: Promise<{ no: stri
   const nextSurah = index.surahs[position + 1];
   if (process.env.HUDA_ASK === "1") {
     const { AskBox } = await import("@/components/ask-box");
-    return <><Reader key={surah.surah.no} surah={surah} ui={ui} nextSurah={nextSurah} /><AskBox key={surah.surah.no} surah={surah} ui={ui} /></>;
+    return <><Reader key={surah.surah.no} surah={surah} ui={ui} surahs={index.surahs} nextSurah={nextSurah} /><AskBox key={surah.surah.no} surah={surah} ui={ui} /></>;
   }
-  return <Reader key={surah.surah.no} surah={surah} ui={ui} nextSurah={nextSurah} />;
+  return <Reader key={surah.surah.no} surah={surah} ui={ui} surahs={index.surahs} nextSurah={nextSurah} />;
 }

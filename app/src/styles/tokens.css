@@ -1,22 +1,28 @@
 :root {
   color-scheme: light dark;
-  --bg: #e7eded;
-  --surface: #f6f9f8;
-  --surface-2: #ecf2f1;
-  --ink: #0e1c1f;
-  --ink-2: #405559;
-  --ink-3: #5f7377;
-  --line: rgba(14, 28, 31, .13);
-  --line-strong: rgba(14, 28, 31, .24);
-  --accent: #0a5b69;
+  --bg:        #f1eee4;   /* page ground (warm neutral) */
+  --surface:   #fbf9f3;   /* cards, sheets, doors */
+  --surface-2: #f3efe3;   /* quotes, evidence blocks, track */
+  --ink:       #1c2420;   /* primary text */
+  --ink-2:     #46514a;   /* secondary text */
+  --ink-3:     #5e6962;   /* tertiary, labels, captions (12.5px and up only) */
+  --line:        rgba(28,36,32,.13);
+  --line-strong: rgba(28,36,32,.26);   /* thread, dividers */
+  --border-ui:   rgba(28,36,32,.5);    /* borders of controls (3:1 against the ground) */
+  --accent:      #14472f;  /* dark green, the primary: stage, hook card, doors' branches, terms, links, selected */
   --accent-soft: color-mix(in srgb, var(--accent) 12%, transparent);
-  --on-accent: #f2fbfa;
-  --stage-a: #0c2a31;
-  --stage-b: #0a4350;
-  --stage-ink: #eaf5f2;
-  --stage-mute: #8dbbbb;
-  --scrim: rgba(6, 18, 20, .5);
-  --shadow: 0 1px 0 rgba(14,28,31,.04), 0 14px 28px -18px rgba(10,70,82,.45);
+  --on-accent:   #f4f0e2;
+  --gold:        #9f7d27;  /* the one accent: ayah-number ring, thread progress, current bead, depth underline, progress pips. Strokes and fills only, never small text */
+  --gold-strong: #7a5c12;  /* gold when it must be text on a light ground (ayah number in the medal) */
+  --on-gold:     #1c1608;
+  --gold-stage:  #d9bc77;  /* gold on the dark green stage (ayah gem) */
+  --stage-a: #14402f;      /* ayah stage + hero card gradient, dark green in both modes */
+  --stage-b: #0b271c;
+  --stage-ink:  #f2eddd;
+  --stage-mute: #a9c4b0;
+  --shadow: 0 1px 0 rgba(28,36,32,.04), 0 14px 28px -18px rgba(16,51,37,.45);
+  --scrim: rgba(8,16,12,.55);
+
   --shadow-sheet: 0 -20px 50px -20px rgba(0,0,0,.5);
   --radius-s: .75rem;
   --radius: 1.125rem;
@@ -29,7 +35,7 @@
   --space-xl: 2rem;
   --space-2xl: 3rem;
   --gutter: 1.25rem;
-  --reading-padding: 1.375rem;
+  --reading-padding: 1.25rem;
   --font-ui: var(--font-plex), sans-serif;
   --font-quote: var(--font-amiri), serif;
   --font-quran: var(--font-amiri-quran), serif;
@@ -47,7 +53,7 @@
   --text-term-title: 1.5rem;
   --text-ui: .9375rem;
   --text-label: .8125rem;
-  --leading-cover: 1.55;
+  --leading-cover: 1.95;
   --leading-stage: 2.2;
   --leading-verse: 2.15;
   --leading-inline-ayah: 2.1;
@@ -85,8 +91,8 @@
   --muted: var(--surface-2);
   --muted-foreground: var(--ink-3);
   --accent-foreground: var(--on-accent);
-  --border: var(--line-strong);
-  --input: var(--line-strong);
+  --border: var(--border-ui);
+  --input: var(--border-ui);
   --ring: var(--accent);
   --destructive: var(--ink);
 
@@ -140,13 +146,13 @@
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #071113; --surface: #0e1c1f; --surface-2: #14272b;
-    --ink: #e7f1ef; --ink-2: #a9bfbd; --ink-3: #7f9695;
-    --line: rgba(231,241,239,.14); --line-strong: rgba(231,241,239,.28);
-    --accent: #5ec8d6; --on-accent: #04242a;
-    --stage-a: #0b2229; --stage-b: #0d3a45;
-    --scrim: rgba(0,0,0,.62);
+    --bg:#14161a; --surface:#1a1d22; --surface-2:#1f232a;
+    --ink:#ece8de; --ink-2:#a9aeb6; --ink-3:#8a9098;
+    --line:rgba(236,232,222,.14); --line-strong:rgba(236,232,222,.3); --border-ui:rgba(236,232,222,.5);
+    --accent:#7fc49c; --on-accent:#0b271c;
+    --gold:#c9a95c; --gold-strong:#d9bc77; --on-gold:#1a1608; --gold-stage:#d9bc77;
     --shadow: 0 1px 0 rgba(255,255,255,.03), 0 14px 28px -16px rgba(0,0,0,.8);
+    --stage-a:#133b2b; --stage-b:#0b271c; --scrim:rgba(0,0,0,.62);
   }
 }
 @media (prefers-reduced-motion: reduce) {

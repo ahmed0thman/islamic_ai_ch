@@ -8,10 +8,10 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        pill: "rounded-full border-line-strong bg-surface text-ink hover:bg-surface-2",
-        round: "aspect-square rounded-full border-line-strong bg-surface text-ink hover:bg-surface-2",
+        pill: "rounded-full border-border-ui bg-surface text-ink hover:bg-surface-2",
+        round: "aspect-square rounded-full border-border-ui bg-surface text-ink hover:bg-surface-2",
         primary: "rounded-full bg-accent text-on-accent hover:opacity-90",
-        quiet: "rounded-full border-line-strong bg-transparent text-ink hover:bg-surface-2",
+        quiet: "rounded-full border-border-ui bg-transparent text-ink hover:bg-surface-2",
         default: "bg-primary text-primary-foreground hover:bg-primary/80",
         outline:
           "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
@@ -24,9 +24,9 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "min-h-11 min-w-11 rounded-s px-4 py-2",
-        xs: "min-h-11 min-w-11 rounded-s px-3 py-2 text-xs",
-        sm: "min-h-11 min-w-11 rounded-s px-3 py-2 text-sm",
+        default: "min-h-11 min-w-11 px-4 py-2",
+        xs: "min-h-11 min-w-11 px-3 py-2 text-xs",
+        sm: "min-h-11 min-w-11 px-3 py-2 text-sm",
         lg: "min-h-11 min-w-11 px-4 py-2",
         icon: "size-11 p-0",
         "icon-xs": "size-11 p-0",

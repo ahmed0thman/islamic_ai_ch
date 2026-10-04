@@ -16,7 +16,7 @@ button { color: inherit; }
 h1, h2, h3, p, blockquote, dl, dd { margin: 0; }
 h1, h2, h3 { font-weight: 600; }
 ul { list-style: none; padding: 0; margin: 0; }
-.page-shell { max-width: var(--reading-width); margin-inline: auto; padding: var(--space-lg) var(--space-md) calc(var(--legend-occupied-height, var(--legend-height)) + var(--space-xl) + env(safe-area-inset-bottom)); }
+.page-shell { max-width: var(--reading-width); margin-inline: auto; padding: var(--space-lg) var(--gutter) calc(var(--legend-occupied-height, var(--legend-height)) + var(--space-xl) + env(safe-area-inset-bottom)); }
 .eyebrow { font-size: var(--size-sm); color: var(--ink-muted); line-height: 1.7; }
 .muted { color: var(--ink-muted); }
 .home-header { text-align: center; padding-block: var(--space-7) var(--space-8); }
@@ -134,7 +134,7 @@ ul { list-style: none; padding: 0; margin: 0; }
   .panel-shell { height: 100dvh; max-height: 100dvh; }
 }
 @media (max-width: 23rem) {
-  .page-shell { padding-inline: var(--space-4); }
+  .page-shell { padding-inline: var(--gutter); }
   .surah-card { grid-template-columns: 2rem 1fr auto; }
   .card-arrow { display: none; }
   .legend-top { padding-inline: var(--space-md); }

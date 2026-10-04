@@ -7,7 +7,8 @@ import { Button } from "./ui/button";
 import { useEffect, useRef } from "react";
 import type { MapStop } from "@/lib/map";
 import type { SurahSummary } from "@/lib/types";
-import { ContentBlock, type ReadingProps } from "./reader";
+import { ContinuousView } from "./reader/continuous-view";
+import type { ReadingProps } from "./reader/reading-context";
 
 export function StopScene({ stop, previous, next, nextSurah, onNavigate, onBack, ...reading }: ReadingProps & {
   stop: MapStop;
@@ -24,11 +25,11 @@ export function StopScene({ stop, previous, next, nextSurah, onNavigate, onBack,
   }, [stop.number]);
 
   return <section className="stop-scene" aria-labelledby="stop-scene-title">
-    <div className="scene-pinned-ayahs"><ContentBlock block={{ type: "ayah", keys: stop.ayahKeys }} {...reading} /></div>
+    <div className="scene-pinned-ayahs"><ContinuousView blocks={[{ type: "ayah", keys: stop.ayahKeys }]} {...reading} /></div>
     <div className="scene-body">
       <Button variant="quiet" className="scene-map-button" onClick={onBack}><Icon icon={ArrowRight01Icon} />{reading.ui.reader.map_view}</Button>
       <h2 className="scene-title" id="stop-scene-title" ref={heading} tabIndex={-1}>{stop.title}</h2>
-      {stop.scene.map((block, index) => <ContentBlock key={index} block={block} showTitle={false} {...reading} />)}
+      <ContinuousView blocks={stop.scene} showTitles={false} {...reading} />
       <nav className="scene-navigation">
         {previous ? <Button variant="quiet" className="scene-neighbour scene-previous" onClick={() => onNavigate(previous)}>
           <span><span className="scene-neighbour-label">{reading.ui.reader.previous_stop}</span><span>{previous.title}</span></span><Icon icon={ArrowRight01Icon} />

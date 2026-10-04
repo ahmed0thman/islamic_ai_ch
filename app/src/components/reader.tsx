@@ -7,11 +7,21 @@ import { Button } from "./ui/button";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Ayah, Block, Depth, Segment, SourceRecord, Surah, SurahSummary, Ui } from "@/lib/types";
 import { deriveSurahMap, stopNeighbours, type MapStop } from "@/lib/map";
-import { Marker } from "./marks";
+import { SourceMarker } from "./reader/source-marker";
+import { TermLink } from "./reader/term-link";
+import type { SourceOptions } from "./reader/sheet-provider";
 import { useSheets } from "./reader/sheet-provider";
-import { SurahMap } from "./surah-map";
-import { StopScene } from "./stop-scene";
+import { SurahThread } from "./reader/surah-thread";
+import { scopeStart, type Scope } from "@/lib/scope";
+import { jumpToAyah } from "@/lib/reader-dom";
+import { DepthDial } from "./reader/depth-dial";
+import { MiniStrip } from "./reader/mini-strip";
+import { StopScene } from "./reader/stop-scene";
 import { GlanceCard } from "./glance-card";
+import { ContinuousView } from "./reader/continuous-view";
+import { ReadingProvider } from "./reader/reading-context";
+import { ayahWords, splitLastWord } from "@/lib/reading-text";
+import { relationRecords } from "@/lib/relations";
 import { numeral } from "@/lib/numerals";
 
 const storageKey = "huda:depth:v1";
@@ -31,16 +41,11 @@ function updateUrl(depth: Depth, stop: number | null, text: boolean, push: boole
   url.searchParams.set("d", String(depth));
   if (stop !== null) url.searchParams.set("stop", String(stop)); else url.searchParams.delete("stop");
   if (text) url.searchParams.set("view", "text"); else url.searchParams.delete("view");
-  if (push) window.history.pushState(window.history.state, "", url);
-  else window.history.replaceState(window.history.state, "", url);
-}
-// The Complex file ends each ayah with a number glyph that only its own font draws;
-// the number is shown separately, so the trailing glyph is dropped. The ayah's words are untouched.
-const ayahWords = (text: string) => text.replace(/[\s\u00a0]*[\ufb50-\ufdcf]+$/u, "");
-// Split only at the last word so a marker never forces a whole claim onto one line.
-function splitLastWord(text: string): [string, string] {
-  const tail = text.match(/\S+\s*$/u)?.[0] ?? text;
-  return [text.slice(0, text.length - tail.length), tail];
+  const state = { ...window.history.state };
+  if (stop === null) delete state.hudaScene;
+  if (push && stop !== null) state.hudaScene = true;
+  if (push) window.history.pushState(state, "", url);
+  else window.history.replaceState(state, "", url);
 }
 export function AyahText({ ayah, inline = false, part = "whole" }: { ayah: Ayah; inline?: boolean; part?: "whole" | "start" | "end" }) {
   const words = ayahWords(ayah.text);
@@ -51,7 +56,7 @@ export function AyahText({ ayah, inline = false, part = "whole" }: { ayah: Ayah;
   </span>;
 }
 export type ReadingProps = {
-  ayahs: Map<string, Ayah>; records: Surah["records"]; ui: Ui; onOpen: (records: SourceRecord[]) => void;
+  ayahs: Map<string, Ayah>; records: Surah["records"]; ui: Ui; onOpen: (records: SourceRecord[], options?: SourceOptions) => void;
 };
 export function ContentBlock({ block, showTitle = true, ...props }: ReadingProps & { block: Block; showTitle?: boolean }) {
   const { ayahs, ui } = props;
@@ -87,23 +92,22 @@ function ReadingSegments({ segments: input, ayahs, records, ui, onOpen }: Readin
       if (followedByMarker) nodes.push(<AyahText key={`${i}-start`} ayah={ayahs.get(segment.key)!} inline part="start" />);
       nodes.push(<AyahText key={i} ayah={ayahs.get(segment.key)!} inline part={followedByMarker ? "end" : "whole"} />);
     } else if (segment.t === "term") {
-      // Keep the interactive term attached to the following marker and punctuation.
-      nodes.push(<button key={i} type="button" className="reading-term" aria-haspopup="dialog" onClick={(event) => {
-        event.stopPropagation(); onOpen([records[segment.record]]);
-      }}>{segment.v}</button>);
+      nodes.push(<TermLink key={i} term={segment.v} record={records[segment.record]} ui={ui} onOpen={onOpen} />);
     } else {
       const sources = [...new Set(segment.records)].map((id) => records[id]);
       const preceding = nodes.pop();
       const next = segments[i + 1];
       const punctuation = next?.t === "text" ? next.v.match(/^\s*\p{P}+/u)?.[0] ?? "" : "";
       if (next?.t === "text" && punctuation) segments[i + 1] = { ...next, v: next.v.slice(punctuation.length) };
-      nodes.push(<span key={`claim-${i}`} className="claim-ending">{preceding}<Marker records={sources} ui={ui} onOpen={() => onOpen(sources)} />{punctuation}</span>);
+      nodes.push(<span key={`claim-${i}`} className="claim-ending">{preceding}<SourceMarker records={sources} ui={ui} onOpen={() => onOpen(sources)} />{punctuation}</span>);
     }
   });
   return <>{nodes}</>;
 }
 export function Reader({ surah, ui, nextSurah }: { surah: Surah; ui: Ui; nextSurah?: SurahSummary }) {
   const [depth, setDepth] = useState<Depth>(1);
+  const [currentAyah, setCurrentAyah] = useState<string | null>(null);
+  const [scope, setScope] = useState<Scope>({ kind: "surah" });
   const [view, setView] = useState<ReadingView>("map");
   const [stopNumber, setStopNumber] = useState<number | null>(null);
   const [visited, setVisited] = useState<Set<string>>(() => new Set());
@@ -153,52 +157,54 @@ export function Reader({ surah, ui, nextSurah }: { surah: Surah; ui: Ui; nextSur
   const stop = showMap ? map.stops.find((item) => item.number === stopNumber) : undefined;
   const neighbours = stop ? stopNeighbours(map, stop.number) : {};
   const visitedNumbers = new Set(map.stops.filter((item) => visited.has(`${depth}:${item.blockIndex}`)).map((item) => item.number));
-  const reading = { ayahs, records: surah.records, ui, onOpen: setSelected };
+  const reading = { surahNo: surah.surah.no, relations: relationRecords(surah, depth), ayahs, records: surah.records, ui, onOpen: openSource };
   const glance = depth === 0 && map.stops.length > 0 && map.stops.length <= 2
     ? map.stops.reduce((first, item) => item.blockIndex < first.blockIndex ? item : first) : undefined;
 
+  useEffect(() => {
+    if (stop || view === "text") return;
+    const observer = new IntersectionObserver((entries) => {
+      const entry = entries.filter((item) => item.isIntersecting).sort((a, b) => Math.abs(a.boundingClientRect.top - window.innerHeight / 2) - Math.abs(b.boundingClientRect.top - window.innerHeight / 2))[0];
+      if (entry) setCurrentAyah((entry.target as HTMLElement).dataset.stationKey ?? null);
+    }, { rootMargin: "-38% 0px -52% 0px" });
+    document.querySelectorAll("[data-station-key]").forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, [stop, view, map]);
+  function chooseScope(next: Scope) { setScope(next); jumpToAyah(scopeStart(surah, next)); }
   function openStop(next: MapStop) {
     setStopNumber(next.number); setSelected(null);
     setVisited((previous) => new Set(previous).add(`${depth}:${next.blockIndex}`));
     setCurrentStops((previous) => ({ ...previous, [depth]: next.number }));
-    updateUrl(depth, next.number, false, true);
+    updateUrl(depth, next.number, false, stopNumber === null);
   }
   function backToMap() {
-    setStopNumber(null); setSelected(null); updateUrl(depth, null, false, true);
+    if (window.history.state?.hudaScene) window.history.back();
+    else { setStopNumber(null); updateUrl(depth, null, false, false); }
   }
   function chooseView(next: ReadingView) {
     setView(next); setStopNumber(null); setSelected(null); rememberView(next);
     updateUrl(depth, null, next === "text", true);
   }
-  return <>
+  return <ReadingProvider value={reading}>
     <header className="reader-header">
       <Link className="back-link" href="/" prefetch={false}><Icon icon={ArrowRight01Icon} />{ui.reader.back}</Link>
       <p className="eyebrow">{ui.app_name}<span className="header-divider" aria-hidden="true"> / </span>{numeral(surah.surah.no)}</p>
       <h1>{surah.surah.name}</h1>
-      <fieldset className="depth-switch">
-        <legend>{ui.reader.choose_depth}</legend>
-        <div className="depth-options">
-          {ui.levels.map((item) => <label key={item.depth} className={depth === item.depth ? "depth-option is-selected" : "depth-option"}>
-            <input type="radio" name="depth" value={item.depth} checked={depth === item.depth} onChange={() => {
-              setDepth(item.depth); setStopNumber(null); setSelected(null); remember(item.depth);
-              updateUrl(item.depth, null, (item.depth === 1 || item.depth === 2) && (view === "text" || !maps[item.depth].stops.length), true);
-            }} />
-            <span>{item.name}</span>
-          </label>)}
-        </div>
-      </fieldset>
     </header>
+    <div className="console"><MiniStrip groups={map.groups} depthPins={Object.fromEntries(map.groups.flatMap((group) => group.stations.map((station) => [station.ayah.key, station.stops.length])))} current={currentAyah} scope={scope} onJump={jumpToAyah} onScope={chooseScope} ariaLabel={ui.reader.ayahs_title} /><DepthDial depth={depth} levels={ui.levels} label={ui.reader.choose_depth} onChange={(next) => {
+      setDepth(next); setStopNumber(null); remember(next); updateUrl(next, null, view === "text" || next === 3, true);
+    }} /></div>
     {switchable && map.stops.length > 0 ? <div className="reader-view-switch">
       <Button variant="pill" aria-pressed={view === "map"} onClick={() => chooseView("map")}><Icon icon={MapsIcon} />{ui.reader.map_view}</Button>
       <Button variant="pill" aria-pressed={view === "text"} onClick={() => chooseView("text")}><Icon icon={BookOpen01Icon} />{ui.reader.read_continuous}</Button>
     </div> : null}
     <article className="reading-body" aria-label={ui.levels.find((item) => item.depth === depth)!.name}>
       {showMap ? <>
-        <SurahMap key={depth} map={map} ui={ui} visited={visitedNumbers} currentStop={currentStops[depth] ?? null} hidden={Boolean(stop)} onOpen={openStop} />
-        {stop ? <StopScene stop={stop} {...neighbours} nextSurah={nextSurah} onNavigate={openStop} onBack={backToMap} {...reading} /> : null}
+        <SurahThread map={map} scope={scope} onScope={chooseScope} ui={ui} visited={visitedNumbers} currentStop={currentStops[depth] ?? null} hidden={Boolean(stop)} onOpen={openStop} />
+        {stop ? <StopScene stop={stop} stops={map.stops} passage={surah.passages?.find((item) => item.id === stop.passage)} {...neighbours} nextSurah={nextSurah} onNavigate={openStop} onBack={backToMap} {...reading} /> : null}
       </> : glance ? <GlanceCard stop={glance} ayahKeys={map.groups.flatMap((group) => group.stations.map((station) => station.ayah.key))} {...reading} />
-        : level.blocks.length ? map.continuousBlocks.map((block, i) => <ContentBlock key={`${depth}-${i}`} block={block} {...reading} />)
+        : level.blocks.length ? <ContinuousView key={depth} blocks={map.continuousBlocks} {...reading} />
         : <p>{ui.reader.empty_level}</p>}
     </article>
-  </>;
+  </ReadingProvider>;
 }
