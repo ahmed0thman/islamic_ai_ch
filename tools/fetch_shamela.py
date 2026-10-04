@@ -82,6 +82,9 @@ def positive(value):
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--books', required=True, help='comma-separated book IDs')
+    parser.add_argument('--root', type=Path, default=ROOT, help='output directory')
+    parser.add_argument('--batch', type=positive, choices=range(1, 9), default=1,
+                        help='body base pages per request (1-8)')
     parser.add_argument('--delay', type=float, default=4)
     parser.add_argument('--max-requests', type=positive)
     parser.add_argument('--only-book', type=positive)
@@ -137,7 +140,7 @@ class Fetcher:
             self.states[book] = state
 
     def book_dir(self, book):
-        return ROOT / 'books' / str(book)
+        return self.args.root / 'books' / str(book)
 
     def save(self, book):
         state = self.states[book]
@@ -159,6 +162,7 @@ class Fetcher:
     def report(self):
         states = list(self.states.values())
         requests = sum(s['requests'] for s in states)
+        pages = sum(s['pages_saved'] for s in states)
         seconds = sum(s['request_seconds'] for s in states)
         lines = ['# تقرير جلب كتب الشاملة', '',
                  f'- وقت بدء التشغيل: {self.started}', f'- آخر تحديث: {now()}',
@@ -172,6 +176,7 @@ class Fetcher:
                       f"{s.get('last_page_number', '—')} | {s['requests']} | "
                       f"{s['errors']} | {'نعم' if s['finished'] else 'لا'} |", '']
         lines += ['## الإجماليات', '', f'- الطلبات: {requests}',
+                  f'- الصفحات لكل طلب (pages per request): {pages / requests if requests else 0:.2f}',
                   f"- البايتات المحفوظة: {sum(s['bytes_saved'] for s in states)}",
                   f'- متوسط الثواني لكل طلب: {seconds / requests if requests else 0:.2f}',
                   '', '## آخر عشرة أخطاء', '', '| الوقت | حالة HTTP | السبب |', '|---|---|---|']
@@ -179,7 +184,7 @@ class Fetcher:
         for e in errors:
             message = str(e['error']).replace('|', '/').replace('\n', ' ')[:300]
             lines.append(f"| {e['time']} | {e['http_status'] or '—'} | {message} |")
-        atomic_write(ROOT / 'fetch-report.md', ('\n'.join(lines) + '\n').encode('utf-8'))
+        atomic_write(self.args.root / 'fetch-report.md', ('\n'.join(lines) + '\n').encode('utf-8'))
 
     def record(self, book, tool, arguments, elapsed, status, message, size):
         s = self.states[book]
@@ -192,7 +197,7 @@ class Fetcher:
         if message:
             s['errors'] += 1
             s['last_errors'] = (s['last_errors'] + [entry])[-10:]
-        with (ROOT / 'fetch-log.jsonl').open('a', encoding='utf-8') as handle:
+        with (self.args.root / 'fetch-log.jsonl').open('a', encoding='utf-8') as handle:
             handle.write(json.dumps(entry, ensure_ascii=False) + '\n')
             handle.flush()
         self.save(book)
@@ -238,7 +243,7 @@ class Fetcher:
             except (ValueError, TypeError, OverflowError):
                 return 0
 
-    def call(self, book, tool, arguments):
+    def call(self, book, tool, arguments, allow_partial=False):
         while True:
             self.check_stop()
             if self.last_request is not None:
@@ -275,7 +280,7 @@ class Fetcher:
             finally:
                 self.last_request = time.monotonic()
                 self.record(book, tool, arguments, self.last_request - started, status, message, size)
-            if message is None:
+            if message is None or (allow_partial and result is not None):
                 self.failures = 0
                 return result
             if status == 403:
@@ -334,6 +339,50 @@ class Fetcher:
             self.save(book)
         return source
 
+    def fetch_bodies(self, book, page, count):
+        # The server caps context pages per call (about seven in total), so a batch
+        # asks for consecutive base pages with no context: eight pages per call.
+        batch = self.call(book, 'shamela_open_many', {
+            'pages': [{'book_id': book, 'page_id': page + i,
+                       'field': 'body', 'max_chars': 16000} for i in range(count)],
+            'context': 3 if count == 1 else 0,
+            'max_total_chars': 56000 if count == 1 else 64000},
+            allow_partial=count > 1)
+        sources = batch.get('sources', [])
+        for source in sources:
+            self.validate(source, book)
+        # Follow returned links; source array order is not page order.
+        by_id = {source['page_id']: source for source in sources}
+        current, chain = page, set()
+        pending = self.states[book]['pending']
+        while current in by_id and current not in chain:
+            chain.add(current)
+            pending.setdefault(str(current), {}).setdefault('body', by_id[current])
+            current = by_id[current]['navigation']['next_page_id']
+        if str(page) not in pending:
+            if count > 1:
+                return self.fetch_bodies(book, page, 1)
+            pending[str(page)] = {}
+        self.save(book)
+
+    def fetch_footnotes(self, book):
+        pending = self.states[book]['pending']
+        missing = [int(p) for p, fields in pending.items()
+                   if 'footnotes' not in fields and not
+                   (self.book_dir(book) / 'pages' / f'{p}.json').exists()]
+        for offset in range(0, len(missing), 8):
+            pages = missing[offset:offset + 8]
+            batch = self.call(book, 'shamela_open_many', {
+                'pages': [{'book_id': book, 'page_id': p, 'field': 'footnotes',
+                           'max_chars': 16000} for p in pages],
+                'context': 0, 'max_total_chars': 56000 if self.args.batch == 1 else 64000})
+            for source in batch.get('sources', []):
+                self.validate(source, book, field='footnotes')
+                if source['page_id'] not in pages:
+                    raise ValueError('Unexpected page in footnote batch')
+                pending[str(source['page_id'])]['footnotes'] = source
+            self.save(book)
+
     def walk(self, book):
         s = self.states[book]
         if s['finished']:
@@ -368,37 +417,9 @@ class Fetcher:
                     raise ValueError('Existing page has the wrong identity')
             else:
                 if str(page) not in s['pending']:
-                    batch = self.call(book, 'shamela_open_many', {
-                        'pages': [{'book_id': book, 'page_id': page, 'field': 'body', 'max_chars': 16000}],
-                        'context': 3, 'max_total_chars': 56000})
-                    sources = batch.get('sources', [])
-                    for source in sources:
-                        self.validate(source, book)
-                    # Follow returned links; source array order is not page order.
-                    by_id = {source['page_id']: source for source in sources}
-                    current, chain = page, set()
-                    while current in by_id and current not in chain:
-                        chain.add(current)
-                        s['pending'][str(current)] = {'body': by_id[current]}
-                        current = by_id[current]['navigation']['next_page_id']
-                    if str(page) not in s['pending']:
-                        s['pending'][str(page)] = {}
-                    self.save(book)
+                    self.fetch_bodies(book, page, self.args.batch)
                 body = self.finish_field(book, page, 'body')
-                # Known page IDs allow a single footnote batch without guessing IDs.
-                missing = [int(p) for p, fields in s['pending'].items()
-                           if 'footnotes' not in fields and not
-                           (self.book_dir(book) / 'pages' / f'{p}.json').exists()][:8]
-                if missing:
-                    batch = self.call(book, 'shamela_open_many', {
-                        'pages': [{'book_id': book, 'page_id': p, 'field': 'footnotes', 'max_chars': 16000}
-                                  for p in missing], 'context': 0, 'max_total_chars': 56000})
-                    for source in batch.get('sources', []):
-                        self.validate(source, book, field='footnotes')
-                        if source['page_id'] not in missing:
-                            raise ValueError('Unexpected page in footnote batch')
-                        s['pending'][str(source['page_id'])]['footnotes'] = source
-                    self.save(book)
+                self.fetch_footnotes(book)
                 footnotes = self.finish_field(book, page, 'footnotes')
                 if body['navigation'] != footnotes['navigation']:
                     raise ValueError('Body/footnote navigation mismatch')
@@ -430,10 +451,10 @@ class Fetcher:
 
 def main():
     args = parse_args()
-    ROOT.mkdir(parents=True, exist_ok=True)
+    args.root.mkdir(parents=True, exist_ok=True)
     # Lock the append-only log so two invocations cannot overwrite a page.
     import fcntl
-    with (ROOT / 'fetch-log.jsonl').open('a', encoding='utf-8') as lock:
+    with (args.root / 'fetch-log.jsonl').open('a', encoding='utf-8') as lock:
         try:
             fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
