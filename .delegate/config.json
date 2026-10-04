@@ -1,0 +1,126 @@
+{
+  "version": "delegate-fleet.v1",
+  "lanes": {
+    "think": {
+      "implementer": "agy",
+      "model": "claude-opus-5-5-high",
+      "effort": "high"
+    },
+    "think-pro": {
+      "implementer": "claude",
+      "model": "claude-opus-5-5",
+      "effort": "high"
+    },
+    "debate": {
+      "implementer": "codex",
+      "model": "gpt-6-astra",
+      "effort": "high",
+      "readOnly": true
+    },
+    "review": {
+      "implementer": "codex",
+      "model": "gpt-6-astra",
+      "effort": "medium",
+      "readOnly": true
+    },
+    "review-gemini": {
+      "implementer": "agy",
+      "model": "gemini-3.1-pro-high",
+      "effort": "high",
+      "readOnly": true
+    },
+    "research": {
+      "implementer": "agy",
+      "model": "gemini-3.1-pro-high",
+      "effort": "high",
+      "readOnly": true
+    },
+    "research-codex": {
+      "implementer": "codex",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "readOnly": true
+    },
+    "extract": {
+      "implementer": "agy",
+      "model": "gemini-3.8-flash-high",
+      "effort": "high",
+      "readOnly": true
+    },
+    "extract-deep": {
+      "implementer": "agy",
+      "model": "gemini-3.1-pro-high",
+      "effort": "high",
+      "readOnly": true
+    },
+    "extract-codex": {
+      "implementer": "codex",
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "readOnly": true
+    },
+    "code-free": {
+      "implementer": "opencode",
+      "model": "opencode/ling-3.1-flash-free",
+      "variant": "high"
+    },
+    "code": {
+      "implementer": "opencode",
+      "model": "opencode-go/glm-5.3-flash",
+      "variant": "high"
+    },
+    "code-codex": {
+      "implementer": "codex",
+      "model": "gpt-6.1-sol",
+      "effort": "medium"
+    },
+    "code-hard": {
+      "implementer": "codex",
+      "model": "gpt-6.1-sol",
+      "effort": "xhigh"
+    },
+    "code-sonnet": {
+      "implementer": "agy",
+      "model": "claude-sonnet-5-5-high",
+      "effort": "high"
+    },
+    "code-sonnet-xhigh": {
+      "implementer": "claude",
+      "model": "claude-sonnet-5-5",
+      "effort": "xhigh"
+    },
+    "ui-free": {
+      "implementer": "opencode",
+      "model": "opencode/muse-spark-1.3-contributor-free",
+      "variant": "high"
+    },
+    "ui": {
+      "implementer": "opencode",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "variant": "high"
+    },
+    "ui-hard": {
+      "implementer": "opencode",
+      "model": "opencode-go/kimi-k3",
+      "variant": "max"
+    },
+    "ui-design": {
+      "implementer": "agy",
+      "model": "gemini-3.1-pro-high",
+      "effort": "high"
+    },
+    "chores-free": {
+      "implementer": "opencode",
+      "model": "opencode/mimo-v2.6-flash-free"
+    },
+    "chores": {
+      "implementer": "opencode",
+      "model": "opencode-go/mimo-v2.6-flash"
+    },
+    "chores-codex": {
+      "implementer": "codex",
+      "model": "gpt-6-luna",
+      "effort": "low"
+    }
+  }
+}

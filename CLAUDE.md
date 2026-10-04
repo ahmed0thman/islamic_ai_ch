@@ -22,6 +22,7 @@
 
 - **لا تنشئ ملفًا جديدًا** إذا كان موضوعه يدخل في ملف موجود. وكل ملف جديد يُضاف إلى `docs/README.md` في المجلد الذي يناسب موضوعه.
 - **التفريغات الصوتية** تمر بـ[`.claude/rules/transcript-cleanup.md`](.claude/rules/transcript-cleanup.md).
+- **توزيع الشغل على النماذج والاشتراكات** يمر بـ[`.claude/rules/model-routing.md`](.claude/rules/model-routing.md) (ق-042 إلى ق-047).
 
 ## اللغة
 
