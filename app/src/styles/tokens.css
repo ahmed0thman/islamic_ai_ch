@@ -1,0 +1,162 @@
+:root {
+  color-scheme: light dark;
+  --bg: #e7eded;
+  --surface: #f6f9f8;
+  --surface-2: #ecf2f1;
+  --ink: #0e1c1f;
+  --ink-2: #405559;
+  --ink-3: #5f7377;
+  --line: rgba(14, 28, 31, .13);
+  --line-strong: rgba(14, 28, 31, .24);
+  --accent: #0a5b69;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, transparent);
+  --on-accent: #f2fbfa;
+  --stage-a: #0c2a31;
+  --stage-b: #0a4350;
+  --stage-ink: #eaf5f2;
+  --stage-mute: #8dbbbb;
+  --scrim: rgba(6, 18, 20, .5);
+  --shadow: 0 1px 0 rgba(14,28,31,.04), 0 14px 28px -18px rgba(10,70,82,.45);
+  --shadow-sheet: 0 -20px 50px -20px rgba(0,0,0,.5);
+  --radius-s: .75rem;
+  --radius: 1.125rem;
+  --radius-sheet: 1.625rem;
+  --radius-pill: 999px;
+  --space-xs: .25rem;
+  --space-sm: .5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --gutter: 1.25rem;
+  --reading-padding: 1.375rem;
+  --font-ui: var(--font-plex), sans-serif;
+  --font-quote: var(--font-amiri), serif;
+  --font-quran: var(--font-amiri-quran), serif;
+  --text-cover: clamp(3.375rem, 17vw, 4.5rem);
+  --text-stage: 1.875rem;
+  --text-verse: 1.75rem;
+  --text-inline-ayah: 1.5625rem;
+  --text-title: 1.75rem;
+  --text-hero: 1.5625rem;
+  --text-body: 1.125rem;
+  --text-details: 1.0625rem;
+  --text-quote: 1.25rem;
+  --text-door: 1.0625rem;
+  --text-sheet-title: 1.1875rem;
+  --text-term-title: 1.5rem;
+  --text-ui: .9375rem;
+  --text-label: .8125rem;
+  --leading-cover: 1.55;
+  --leading-stage: 2.2;
+  --leading-verse: 2.15;
+  --leading-inline-ayah: 2.1;
+  --leading-title: 1.55;
+  --leading-hero: 1.6;
+  --leading-body: 2.05;
+  --leading-quote: 2.1;
+  --leading-door: 1.7;
+  --leading-ui: 1.7;
+  --ease: cubic-bezier(.16,1,.3,1);
+  --dur-fast: 200ms;
+  --dur-base: 300ms;
+  --dur-state: 200ms;
+  --dur-door: 320ms;
+  --dur-scene: 320ms;
+  --z-sticky: 5;
+  --z-scene: 20;
+  --z-scrim: 30;
+  --z-sheet: 31;
+  --control-height: 2.75rem;
+  --reading-width: 34rem;
+  --panel-width: 34rem;
+  --legend-height: 88px;
+
+  --background: var(--bg);
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
+  --primary: var(--accent);
+  --primary-foreground: var(--on-accent);
+  --secondary: var(--surface-2);
+  --secondary-foreground: var(--ink);
+  --muted: var(--surface-2);
+  --muted-foreground: var(--ink-3);
+  --accent-foreground: var(--on-accent);
+  --border: var(--line-strong);
+  --input: var(--line-strong);
+  --ring: var(--accent);
+  --destructive: var(--ink);
+
+  /* Compatibility roles keep the existing screens on the same palette. */
+  --bg-primary: var(--surface);
+  --bg-secondary: var(--surface-2);
+  --text-primary: var(--ink);
+  --text-secondary: var(--ink-2);
+  --paper: var(--bg);
+  --surface-soft: var(--surface-2);
+  --text: var(--ink);
+  --ink-muted: var(--ink-2);
+  --ink-strong: var(--ink);
+  --rule: var(--line);
+  --focus: var(--accent);
+  --overlay: var(--scrim);
+  --font-body: var(--font-ui);
+  --color-ayah: var(--accent);
+  --color-hadith: var(--accent);
+  --color-athar: var(--accent);
+  --color-scholar: var(--accent);
+  --color-link: var(--accent);
+  --color-hidaya: var(--accent);
+  --shadow-sm: var(--shadow);
+  --shadow-md: var(--shadow);
+  --shadow-lg: var(--shadow);
+  --text-xs: var(--text-label);
+  --text-sm: var(--text-ui);
+  --text-base: var(--text-body);
+  --text-lg: var(--text-title);
+  --text-xl: var(--text-title);
+  --size-xs: var(--text-label);
+  --size-sm: var(--text-ui);
+  --size-body: var(--text-body);
+  --size-heading: var(--text-title);
+  --size-title: var(--text-title);
+  --size-quran: var(--text-verse);
+  --leading-quran: var(--leading-verse);
+  --radius-sm: var(--radius-s);
+  --radius-md: var(--radius-s);
+  --radius-lg: var(--radius);
+  --radius-full: var(--radius-pill);
+  --space-1: var(--space-xs);
+  --space-2: var(--space-sm);
+  --space-3: .75rem;
+  --space-4: var(--space-md);
+  --space-5: 1.25rem;
+  --space-6: var(--space-xl);
+  --space-7: var(--space-2xl);
+  --space-8: var(--space-2xl);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #071113; --surface: #0e1c1f; --surface-2: #14272b;
+    --ink: #e7f1ef; --ink-2: #a9bfbd; --ink-3: #7f9695;
+    --line: rgba(231,241,239,.14); --line-strong: rgba(231,241,239,.28);
+    --accent: #5ec8d6; --on-accent: #04242a;
+    --stage-a: #0b2229; --stage-b: #0d3a45;
+    --scrim: rgba(0,0,0,.62);
+    --shadow: 0 1px 0 rgba(255,255,255,.03), 0 14px 28px -16px rgba(0,0,0,.8);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition-duration: .01ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .console { background: var(--bg); backdrop-filter: none; }
+}

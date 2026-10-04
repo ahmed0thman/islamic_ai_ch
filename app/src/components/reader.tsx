@@ -1,11 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { ArrowRight01Icon, BookOpen01Icon, MapsIcon } from "@hugeicons/core-free-icons";
+import { Icon } from "./ui/icon";
+import { Button } from "./ui/button";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Ayah, Block, Depth, Segment, SourceRecord, Surah, SurahSummary, Ui } from "@/lib/types";
 import { deriveSurahMap, stopNeighbours, type MapStop } from "@/lib/map";
 import { Marker } from "./marks";
-import { SourcePanel } from "./source-panel";
+import { useSheets } from "./reader/sheet-provider";
 import { SurahMap } from "./surah-map";
 import { StopScene } from "./stop-scene";
 import { GlanceCard } from "./glance-card";
@@ -105,10 +108,10 @@ export function Reader({ surah, ui, nextSurah }: { surah: Surah; ui: Ui; nextSur
   const [stopNumber, setStopNumber] = useState<number | null>(null);
   const [visited, setVisited] = useState<Set<string>>(() => new Set());
   const [currentStops, setCurrentStops] = useState<Partial<Record<Depth, number>>>({});
-  const [selected, setSelected] = useState<SourceRecord[] | null>(null);
+  const { openSource } = useSheets();
+  const setSelected = (records: SourceRecord[] | null) => { if (records) openSource(records); };
   const maps = useMemo(() => ([0, 1, 2, 3] as const).map((level) => deriveSurahMap(surah, level)), [surah]);
   const ayahs = useMemo(() => new Map(surah.ayahs.map((ayah) => [ayah.key, ayah])), [surah.ayahs]);
-  const closePanel = useCallback(() => setSelected(null), []);
   useEffect(() => {
     function restore(useSavedView: boolean) {
       let saved: Depth | null = null;
@@ -139,7 +142,7 @@ export function Reader({ surah, ui, nextSurah }: { surah: Surah; ui: Ui; nextSur
       updateUrl(next, stop?.number ?? null, switchable && (nextView === "text" || !map.stops.length), false);
     }
     restore(true);
-    const popstate = () => restore(false);
+    const popstate = () => { if (!document.documentElement.hasAttribute("data-huda-sheet-open")) restore(false); };
     window.addEventListener("popstate", popstate);
     return () => window.removeEventListener("popstate", popstate);
   }, [maps]);
@@ -169,7 +172,7 @@ export function Reader({ surah, ui, nextSurah }: { surah: Surah; ui: Ui; nextSur
   }
   return <>
     <header className="reader-header">
-      <Link className="back-link" href="/" prefetch={false}><span aria-hidden="true">→ </span>{ui.reader.back}</Link>
+      <Link className="back-link" href="/" prefetch={false}><Icon icon={ArrowRight01Icon} />{ui.reader.back}</Link>
       <p className="eyebrow">{ui.app_name}<span className="header-divider" aria-hidden="true"> / </span>{numeral(surah.surah.no)}</p>
       <h1>{surah.surah.name}</h1>
       <fieldset className="depth-switch">
@@ -186,8 +189,8 @@ export function Reader({ surah, ui, nextSurah }: { surah: Surah; ui: Ui; nextSur
       </fieldset>
     </header>
     {switchable && map.stops.length > 0 ? <div className="reader-view-switch">
-      <button type="button" aria-pressed={view === "map"} onClick={() => chooseView("map")}>{ui.reader.map_view}</button>
-      <button type="button" aria-pressed={view === "text"} onClick={() => chooseView("text")}>{ui.reader.read_continuous}</button>
+      <Button variant="pill" aria-pressed={view === "map"} onClick={() => chooseView("map")}><Icon icon={MapsIcon} />{ui.reader.map_view}</Button>
+      <Button variant="pill" aria-pressed={view === "text"} onClick={() => chooseView("text")}><Icon icon={BookOpen01Icon} />{ui.reader.read_continuous}</Button>
     </div> : null}
     <article className="reading-body" aria-label={ui.levels.find((item) => item.depth === depth)!.name}>
       {showMap ? <>
@@ -197,6 +200,5 @@ export function Reader({ surah, ui, nextSurah }: { surah: Surah; ui: Ui; nextSur
         : level.blocks.length ? map.continuousBlocks.map((block, i) => <ContentBlock key={`${depth}-${i}`} block={block} {...reading} />)
         : <p>{ui.reader.empty_level}</p>}
     </article>
-    {selected ? <SourcePanel records={selected} ui={ui} onClose={closePanel} /> : null}
   </>;
 }

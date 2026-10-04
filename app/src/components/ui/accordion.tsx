@@ -3,7 +3,7 @@
 import * as React from "react"
 import { cn } from "cn"
 import { Accordion as AccordionPrimitive } from "radix-ui"
-import { HugeiconsIcon } from "@hugeicons/react"
+import { Icon } from "@/components/ui/icon"
 import { ArrowDown01Icon, ArrowUp01Icon } from "@hugeicons/core-free-icons"
 
 function Accordion({
@@ -48,8 +48,8 @@ function AccordionTrigger({
         {...props}
       >
         {children}
-        <HugeiconsIcon icon={ArrowDown01Icon} strokeWidth={2} data-slot="accordion-trigger-icon" className="pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden" />
-        <HugeiconsIcon icon={ArrowUp01Icon} strokeWidth={2} data-slot="accordion-trigger-icon" className="pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline" />
+        <Icon icon={ArrowDown01Icon} data-slot="accordion-trigger-icon" className="pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden" />
+        <Icon icon={ArrowUp01Icon} data-slot="accordion-trigger-icon" className="pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline" />
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   )

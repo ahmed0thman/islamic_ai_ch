@@ -11,8 +11,11 @@ import {
 } from "react";
 import type { Surah, Ui, SourceRecord } from "@/lib/types";
 import type { AskResponse, AskUi } from "@/lib/ask/types";
+import { Search01Icon } from "@hugeicons/core-free-icons";
+import { Icon } from "./ui/icon";
+import { Button } from "./ui/button";
 import { ContentBlock } from "./reader";
-import { SourcePanel } from "./source-panel";
+import { useSheets } from "./reader/sheet-provider";
 import "@/app/ask.css";
 
 export function AskBox({ surah, ui: baseUi }: { surah: Surah; ui: Ui }) {
@@ -21,13 +24,13 @@ export function AskBox({ surah, ui: baseUi }: { surah: Surah; ui: Ui }) {
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AskResponse | null>(null);
-  const [selected, setSelected] = useState<SourceRecord[] | null>(null);
+  const { openSource } = useSheets();
+  const setSelected = (records: SourceRecord[] | null) => { if (records) openSource(records); };
   const active = useRef<AbortController | null>(null);
   const ayahs = useMemo(
     () => new Map(surah.ayahs.map((ayah) => [ayah.key, ayah])),
     [surah.ayahs],
   );
-  const closePanel = useCallback(() => setSelected(null), []);
   useEffect(() => () => active.current?.abort(), []);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -94,12 +97,13 @@ export function AskBox({ surah, ui: baseUi }: { surah: Surah; ui: Ui }) {
           required
           rows={3}
         />
-        <button
+        <Button
+          variant="primary"
           type="submit"
           disabled={loading || [...question.trim()].length < 3}
         >
-          {ui.ask.submit}
-        </button>
+          <Icon icon={Search01Icon} />{ui.ask.submit}
+        </Button>
       </form>
       <div
         className="ask-result"
@@ -138,9 +142,6 @@ export function AskBox({ surah, ui: baseUi }: { surah: Surah; ui: Ui }) {
           )
         ) : null}
       </div>
-      {selected ? (
-        <SourcePanel records={selected} ui={ui} onClose={closePanel} />
-      ) : null}
     </section>
   );
 }

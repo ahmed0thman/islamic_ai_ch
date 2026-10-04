@@ -5,7 +5,9 @@ import type { MapStop, SurahMapModel } from "@/lib/map";
 import type { Ui } from "@/lib/types";
 import { numeral } from "@/lib/numerals";
 import { AyahText } from "./reader";
-import { Icon } from "./marks";
+import { SourceChip } from "./ui/source-chip";
+import { Icon } from "./ui/icon";
+import { ArrowLeft01Icon, PlusSignIcon, MinusSignIcon } from "@hugeicons/core-free-icons";
 import "@/app/map.css";
 
 export function SurahMap({ map, ui, visited, currentStop, hidden = false, onOpen }: {
@@ -66,7 +68,7 @@ export function SurahMap({ map, ui, visited, currentStop, hidden = false, onOpen
           <span className="map-passage-content"><span>{passage.title}</span>
             <span className="map-passage-range">{ui.reader.ayahs_title}{" "}<bdi>{numeral(Number(passage.from.split(":")[1]))}{"–"}{numeral(Number(passage.to.split(":")[1]))}</bdi></span>
           </span>
-          <span className="map-disclosure" aria-hidden="true">{open ? "−" : "+"}</span>
+          <span className="map-disclosure" aria-hidden="true"><Icon icon={open ? MinusSignIcon : PlusSignIcon} /></span>
         </button></h3> : null}
         <div className="map-line" id={sectionId} hidden={!open}>
           {group.stations.map((station) => <section className="map-station" key={station.ayah.key}>
@@ -89,9 +91,9 @@ export function SurahMap({ map, ui, visited, currentStop, hidden = false, onOpen
                   aria-label={[stop.title, ...ui.icon_order.filter((kind) => stop.icons.includes(kind)).map((kind) => ui.icons[kind].label)].join(" — ")}
                   aria-current={currentStop === stop.number ? "step" : undefined} onClick={() => onOpen(stop)}>
                   <span className="map-stop-icons" aria-hidden="true">{ui.icon_order.filter((kind) => stop.icons.includes(kind)).map((kind) =>
-                    <span key={kind} className={kind === "hidaya" ? "map-hidaya-dot" : undefined}><Icon kind={kind} ui={ui} /></span>,
+                    <span key={kind} className={kind === "hidaya" ? "map-hidaya-dot" : undefined}><SourceChip kind={kind} ui={ui} /></span>,
                   )}</span>
-                  <span className="map-stop-title">{stop.title}</span>
+                  <span className="map-stop-title">{stop.title}</span><Icon icon={ArrowLeft01Icon} />
                 </button>
               </li>)}
             </ul> : null}
