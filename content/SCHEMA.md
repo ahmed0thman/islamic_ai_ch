@@ -12,6 +12,8 @@ The app renders only what is in `content/`. It never writes Arabic text itself.
   "fixture": false,                       // true only for placeholder data
   "surah": { "no": 108, "name": "…", "ayah_count": 3 },
   "ayahs": [ { "key": "108:1", "no": 1, "text": "…" } ],   // Quran text, from the King Fahd Complex file
+  "passages": [ { "id": "p1", "from": "93:1", "to": "93:5",  // optional. Consecutive ayah ranges that cover the surah with no gap and no overlap
+                  "title": "…", "records": ["93-r20"] } ],  //   the division is a scholar's, carried by its records; absent = the whole surah is one passage
   "levels": [ { "depth": 0, "blocks": [ /* Block */ ] } ],   // depth 0..3, always four entries
   "records": { "108-r06": { /* Record */ } }
 }
@@ -25,6 +27,9 @@ The app renders only what is in `content/`. It never writes Arabic text itself.
 { "type": "ayah", "keys": ["108:1", "108:2"] }             // displayed Quran text, taken from `ayahs`
 { "type": "paragraph",
   "role": "claim" | "transmission",                        // transmission = quoted narration shown as-is, never restyled
+  "title": "…",                                            // optional. A short question (at most 8 words). A titled paragraph is a STOP on the surah map
+  "ayahs": ["108:1"],                                      // optional in the nasij source; always present on a stop in the export: the ayah station(s) the stop hangs from
+  "passage": "p1",                                         // optional: the passage this block belongs to (see `passages`)
   "segments": [ /* Segment */ ] }
 { "type": "details",                                       // an item that opens on tap; closed by default
   "title": [ /* Segment: text | term | mark */ ],          // carries the short answer; it is a claim, so it ends with a mark
@@ -51,6 +56,7 @@ The app renders only what is in `content/`. It never writes Arabic text itself.
   "claim": "…",
   "status_text": "…",                     // ready sentence describing the state; may be empty
   "depth_min": 0,
+  "ayah_keys": ["108:1"],                 // the ayahs this record is about; links stops to ayah stations
   "evidence": [
     { "icon": "scholar",
       "source_title": "…", "author": "…", "locator": "…",
@@ -70,6 +76,8 @@ Rules the app relies on:
 - Every `ayah.key` and `ayah.keys[]` exists in `ayahs`.
 - A record with badge `la_yathbut` or `khilaf_mutabar` shows the badge next to the marker in the text and in the panel; `thabit` shows in the panel only.
 - Level `n` shows the blocks of `levels[n]` only (levels are complete texts, not increments).
+- The surah map is drawn from the level's blocks: ayah stations in order, and under each station the stops whose `ayahs` start there. An untitled paragraph belongs to the stop before it (same scene). Changing the level redraws the same map with that level's stops. Nothing on the map is generated: every stop is a paragraph with its markers.
+- A stop's `title` is system text (no Quran text in it) and claims nothing beyond what its paragraph's records carry.
 
 ## Nasij source (`content/nasij/<no>.json`)
 

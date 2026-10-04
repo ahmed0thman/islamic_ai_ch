@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>هُدًى - Surah Map Mock</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Readex+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Shared Tokens */
+        :root {
+            --bg-primary: #FAFAFA;
+            --bg-secondary: #F0F0F0;
+            --bg-tertiary: #E5E5EA;
+            --text-primary: #1C1C1E;
+            --text-secondary: #6C6C70;
+            --border-color: #E5E5EA;
+            
+            --color-ayah: #2E7D32;
+            --color-hadith: #1565C0;
+            --color-athar: #6A1B9A;
+            --color-scholar: #546E7A;
+            --color-link: #B26A00;
+            --color-hidaya: #AD1457;
+            
+            --badge-thabit-bg: #607D8B;
+            --badge-layathbut-bg: #B23B2E;
+            --badge-khilaf-bg: #00838F;
+
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-2xl: 48px;
+
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 16px;
+            --radius-full: 999px;
+
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+
+            --text-xs: 0.75rem;
+            --text-sm: 0.875rem;
+            --text-base: 1rem;
+            --text-lg: 1.25rem;
+            --text-xl: 1.75rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-primary: #121212;
+                --bg-secondary: #1E1E1E;
+                --bg-tertiary: #2C2C2E;
+                --text-primary: #E5E5E7;
+                --text-secondary: #8E8E93;
+                --border-color: #38383A;
+            }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Readex Pro', sans-serif;
+            background-color: #E5E5EA;
+            color: var(--text-primary);
+            line-height: 1.8;
+            font-size: var(--text-base);
+            padding: var(--space-xl);
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            gap: var(--space-2xl);
+        }
+
+        /* Mock Frame container */
+        .frame-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+            align-items: center;
+        }
+        
+        .frame-title {
+            font-size: var(--text-lg);
+            font-weight: 600;
+            color: #333;
+        }
+
+        .mock-frame {
+            background-color: var(--bg-primary);
+            width: 390px;
+            height: 844px; /* Typical mobile height */
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            border: 8px solid #333;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Shared Header */
+        .header {
+            padding: var(--space-lg) var(--space-md) var(--space-md);
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-primary);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .level-label {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: var(--space-sm);
+        }
+        .depth-switch {
+            display: flex;
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-full);
+            padding: 2px;
+        }
+        .depth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 6px var(--space-xs);
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .depth-tab.active {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+            font-weight: 600;
+        }
+
+        /* Map Container */
+        .map-view {
+            padding: var(--space-xl) var(--space-md);
+            flex: 1;
+            overflow-y: auto;
+        }
+        .surah-line-container {
+            position: relative;
+            padding-right: 16px;
+        }
+        .surah-vertical-line {
+            position: absolute;
+            right: 23px; /* Centers with the 16px dot */
+            top: 10px;
+            bottom: -20px; /* Connects to hidaya */
+            width: 2px;
+            background-color: var(--border-color);
+            z-index: 1;
+        }
+        .map-station {
+            position: relative;
+            margin-bottom: var(--space-xl);
+            z-index: 2;
+        }
+        .station-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+        .station-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: var(--bg-primary);
+            border: 2px solid var(--color-ayah);
+            flex-shrink: 0;
+        }
+        .passage-dot {
+            border-radius: 4px;
+            border-color: var(--text-secondary);
+        }
+        .station-text-ayah {
+            font-family: 'Amiri', serif;
+            font-size: var(--text-lg);
+            color: var(--text-primary);
+        }
+        
+        .stop-branches {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+            padding-right: 32px;
+            position: relative;
+        }
+        .stop-card-item {
+            display: flex;
+            align-items: center;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-sm) var(--space-md);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            min-height: 44px;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        .stop-card-item:hover, .stop-card-item:active {
+            background-color: var(--bg-secondary);
+        }
+        .stop-card-item::before {
+            content: '';
+            position: absolute;
+            right: -24px;
+            top: 50%;
+            width: 24px;
+            height: 2px;
+            background-color: var(--border-color);
+        }
+        .stop-card-item.cross-surah::before {
+            border-top: 2px dashed var(--color-link);
+            background: none;
+        }
+        
+        .stop-icon-wrapper {
+            margin-left: var(--space-sm);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+        }
+        .icon-scholar { color: var(--color-scholar); }
+        .icon-link { color: var(--color-link); }
+        .icon-hidaya { color: var(--color-hidaya); }
+        
+        .stop-title-text {
+            font-size: var(--text-sm);
+            font-weight: 500;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .hidaya-station {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-top: var(--space-xl);
+            position: relative;
+            z-index: 2;
+        }
+        .hidaya-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: var(--bg-primary);
+            border: 2px solid var(--color-hidaya);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+            margin-right: -6px; /* align center with the 16px ayah dot */
+        }
+        .hidaya-text {
+            font-size: var(--text-base);
+            font-weight: 600;
+            color: var(--color-hidaya);
+        }
+
+        /* Stop Scene */
+        .scene-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background-color: var(--bg-primary);
+        }
+        .scene-header {
+            position: sticky;
+            top: 0;
+            background-color: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding: var(--space-lg) var(--space-md);
+            z-index: 10;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+        .scene-ayah {
+            font-family: 'Amiri', serif;
+            font-size: var(--text-xl);
+            color: var(--color-ayah);
+            line-height: 1.8;
+        }
+        .scene-body {
+            padding: var(--space-lg) var(--space-md);
+            flex: 1;
+            overflow-y: auto;
+        }
+        .scene-title {
+            font-size: var(--text-lg);
+            font-weight: 600;
+            margin-bottom: var(--space-lg);
+        }
+        .scene-sentence {
+            font-size: var(--text-base);
+            line-height: 1.8;
+            margin-bottom: var(--space-md);
+        }
+        .scene-next-container {
+            margin-top: var(--space-xl);
+            border-top: 1px solid var(--border-color);
+            padding-top: var(--space-lg);
+        }
+        .scene-why-next {
+            margin-bottom: var(--space-md);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        .scene-next-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--bg-secondary);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            min-height: 44px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .scene-next-btn:hover {
+            background-color: var(--border-color);
+        }
+        .scene-next-title {
+            font-weight: 500;
+            font-size: var(--text-sm);
+        }
+        .scene-next-icon {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            transform: scaleX(-1); /* RTL arrow */
+        }
+        .scene-continuous-switch {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            margin-top: var(--space-lg);
+            min-height: 44px;
+            cursor: pointer;
+        }
+
+        /* Glance Card */
+        .glance-container {
+            padding: var(--space-xl) var(--space-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background-color: var(--bg-tertiary);
+        }
+        .glance-card-inner {
+            background-color: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl) var(--space-lg);
+            box-shadow: var(--shadow-md);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+        }
+        .glance-q {
+            font-size: var(--text-xl);
+            font-weight: 700;
+            text-align: center;
+        }
+        .glance-a {
+            font-size: var(--text-lg);
+            line-height: 1.8;
+            text-align: center;
+        }
+        .glance-highlight {
+            background-color: var(--bg-secondary);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+        .glance-highlight-ayah {
+            font-family: 'Amiri', serif;
+            font-size: var(--text-xl);
+            color: var(--color-ayah);
+            margin-bottom: var(--space-sm);
+        }
+
+        /* Panel from Reader Mock */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.4);
+            z-index: 20;
+        }
+        .bottom-sheet {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background-color: var(--bg-primary);
+            border-radius: 24px 24px 0 0;
+            padding: var(--space-md);
+            z-index: 30;
+            box-shadow: var(--shadow-lg);
+            max-height: 90%;
+            overflow-y: auto;
+        }
+        .drag-handle {
+            width: 40px;
+            height: 4px;
+            background-color: var(--border-color);
+            border-radius: var(--radius-full);
+            margin: 0 auto var(--space-md);
+        }
+        .sheet-title {
+            font-size: var(--text-lg);
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .close-btn {
+            color: var(--text-secondary);
+            font-size: var(--text-sm);
+            cursor: pointer;
+            padding: 8px;
+        }
+        .claim-box {
+            background-color: var(--bg-secondary);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-lg);
+            font-weight: 500;
+        }
+        .source-card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+        .source-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-sm);
+        }
+        .source-type {
+            font-weight: 600;
+            font-size: var(--text-sm);
+            color: var(--color-scholar);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .source-detail {
+            font-size: var(--text-sm);
+            margin-bottom: 4px;
+        }
+        .source-quote {
+            font-family: 'Amiri', serif;
+            font-size: var(--text-base);
+            color: var(--text-secondary);
+            border-right: 2px solid var(--color-scholar);
+            padding-right: var(--space-sm);
+            margin-top: var(--space-sm);
+            background-color: var(--bg-secondary);
+            padding: var(--space-sm);
+            border-radius: var(--radius-sm);
+        }
+
+        /* Markers & Badges */
+        .marker-wrapper {
+            display: inline-flex;
+            align-items: center;
+            vertical-align: middle;
+            margin: 0 4px;
+            cursor: pointer;
+        }
+        .marker-icons {
+            display: inline-flex;
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            padding: 2px 6px;
+            min-height: 28px;
+            min-width: 44px;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            border: 1px solid var(--border-color);
+        }
+        .marker-ref {
+            font-size: var(--text-xs);
+            color: var(--text-secondary);
+            margin-right: 4px;
+        }
+        .badge {
+            display: inline-block;
+            font-size: var(--text-xs);
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
+            margin-right: 6px;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+        .badge-thabit { border: 1px solid var(--badge-thabit-bg); color: var(--badge-thabit-bg); }
+
+        /* Placeholders */
+        .placeholder-bar {
+            height: 16px;
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            width: 100%;
+        }
+        .placeholder-bar.w-75 { width: 75%; }
+        .placeholder-bar.w-50 { width: 50%; }
+        .placeholder-bar.w-30 { width: 30%; }
+        
+        /* Legend Bar */
+        .legend-bar {
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: var(--space-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .legend-bar-title {
+            font-size: var(--text-sm);
+            font-weight: 600;
+        }
+        .legend-bar-action {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            padding: var(--space-xs) var(--space-sm);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Frame 1: Surah map (level الفهم) -->
+    <div class="frame-wrapper">
+        <div class="frame-title">1. Map (الفهم)</div>
+        <div class="mock-frame">
+            <div class="header">
+                <div class="level-label">اختر درجة القراءة</div>
+                <div class="depth-switch">
+                    <div class="depth-tab">اللمحة</div>
+                    <div class="depth-tab active">الفهم</div>
+                    <div class="depth-tab">التدبر</div>
+                    <div class="depth-tab">التعمق</div>
+                </div>
+            </div>
+            <div class="map-view">
+                <div class="surah-line-container">
+                    <div class="surah-vertical-line"></div>
+                    
+                    <div class="map-station">
+                        <div class="station-header">
+                            <div class="station-dot"></div>
+                            <div class="station-text-ayah">﴿إِنَّآ أَعۡطَيۡنَٰكَ ٱلۡكَوۡثَرَ ﰀ﴾</div>
+                        </div>
+                        <div class="stop-branches">
+                            <div class="stop-card-item">
+                                <div class="stop-icon-wrapper"><span class="icon-scholar">■</span></div>
+                                <div class="stop-title-text">الكوثر: نهر أم خير كثير؟ كلاهما</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="map-station">
+                        <div class="station-header">
+                            <div class="station-dot"></div>
+                            <div class="station-text-ayah">﴿فَصَلِّ لِرَبِّكَ وَٱنۡحَرۡ ﰁ﴾</div>
+                        </div>
+                        <div class="stop-branches">
+                            <div class="stop-card-item">
+                                <div class="stop-icon-wrapper"><span class="icon-scholar">■</span></div>
+                                <div class="stop-title-text" style="width: 100%;"><div class="placeholder-bar w-75"></div></div>
+                            </div>
+                            <div class="stop-card-item cross-surah">
+                                <div class="stop-icon-wrapper"><span class="icon-link">⇄</span></div>
+                                <div class="stop-title-text">سورتان متجاورتان: مقارنة تكشف الفرق</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="map-station">
+                        <div class="station-header">
+                            <div class="station-dot"></div>
+                            <div class="station-text-ayah">﴿إِنَّ شَانِئَكَ هُوَ ٱلۡأَبۡتَرُ ﰂ﴾</div>
+                        </div>
+                        <div class="stop-branches">
+                            <div class="stop-card-item">
+                                <div class="stop-icon-wrapper"><span class="icon-scholar">■</span></div>
+                                <div class="stop-title-text">من المقطوع حقًّا؟</div>
+                            </div>
+                            <div class="stop-card-item">
+                                <div class="stop-icon-wrapper"><span class="icon-scholar">■</span></div>
+                                <div class="stop-title-text">كيف لا يكون أبتر وقد مات أبناؤه؟ لأن المقياس هو الخير</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hidaya-station">
+                        <div class="hidaya-dot"><span class="icon-hidaya">✦</span></div>
+                        <div class="hidaya-text">ما الذي تتركه السورة فينا؟</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Frame 2: Map at اللمحة -->
+    <div class="frame-wrapper">
+        <div class="frame-title">2. Map (اللمحة)</div>
+        <div class="mock-frame">
+            <div class="header">
+                <div class="level-label">اختر درجة القراءة</div>
+                <div class="depth-switch">
+                    <div class="depth-tab active">اللمحة</div>
+                    <div class="depth-tab">الفهم</div>
+                    <div class="depth-tab">التدبر</div>
+                    <div class="depth-tab">التعمق</div>
+                </div>
+            </div>
+            <div class="map-view">
+                <div class="surah-line-container">
+                    <div class="surah-vertical-line" style="bottom: 40px;"></div>
+                    
+                    <div class="map-station">
+                        <div class="station-header">
+                            <div class="station-dot"></div>
+                            <div class="station-text-ayah">﴿إِنَّآ أَعۡطَيۡنَٰكَ ٱلۡكَوۡثَرَ ﰀ﴾</div>
+                        </div>
+                    </div>
+
+                    <div class="map-station">
+                        <div class="station-header">
+                            <div class="station-dot"></div>
+                            <div class="station-text-ayah">﴿فَصَلِّ لِرَبِّكَ وَٱنۡحَرۡ ﰁ﴾</div>
+                        </div>
+                    </div>
+
+                    <div class="map-station">
+                        <div class="station-header">
+                            <div class="station-dot"></div>
+                            <div class="station-text-ayah">﴿إِنَّ شَانِئَكَ هُوَ ٱلۡأَبۡتَرُ ﰂ﴾</div>
+                        </div>
+                        <div class="stop-branches">
+                            <div class="stop-card-item">
+                                <div class="stop-icon-wrapper"><span class="icon-scholar">■</span></div>
+                                <div class="stop-title-text">من المقطوع حقًّا؟</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Frame 3: Map at التدبر -->
+    <div class="frame-wrapper">
+        <div class="frame-title">3. Map (التدبر)</div>
+        <div class="mock-frame">
+            <div class="header">
+                <div class="level-label">اختر درجة القراءة</div>
+                <div class="depth-switch">
+                    <div class="depth-tab">اللمحة</div>
+                    <div class="depth-tab">الفهم</div>
+                    <div class="depth-tab active">التدبر</div>
+                    <div class="depth-tab">التعمق</div>
+                </div>
+            </div>
+            <div class="map-view">
+                <div class="surah-line-container">
+                    <div class="surah-vertical-line"></div>
+                    
+                    <div class="map-station">
+                        <div class="station-header">
+                            <div class="station-dot"></div>
+                            <div class="station-text-ayah">﴿إِنَّآ أَعۡطَيۡنَٰكَ ٱلۡكَوۡثَرَ ﰀ﴾</div>
+                        </div>
+                        <div class="stop-branches">
+                            <div class="stop-card-item">
+                                <div class="stop-icon-wrapper"><span class="icon-scholar">■</span></div>
+                                <div class="stop-title-text">الكوثر: نهر أم خير كثير؟ كلاهما</div>
+                            </div>
+                            <div class="stop-card-item">
+                                <div class="stop-icon-wrapper"><span class="icon-scholar">■</span></div>
+                                <div class="stop-title-text">نزلت في مكة أم في المدينة؟ قولان معتبران</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="map-station">
+                        <div class="station-header">
+                            <div class="station-dot"></div>
+                            <div class="station-text-ayah">﴿فَصَلِّ لِرَبِّكَ وَٱنۡحَرۡ ﰁ﴾</div>
+                        </div>
+                        <div class="stop-branches">
+                            <div class="stop-card-item">
+                                <div class="stop-icon-wrapper"><span class="icon-scholar">■</span></div>
+                                <div class="stop-title-text" style="width: 100%;"><div class="placeholder-bar w-75"></div></div>
+                            </div>
+                            <div class="stop-card-item cross-surah">
+                                <div class="stop-icon-wrapper"><span class="icon-link">⇄</span></div>
+                                <div class="stop-title-text">سورتان متجاورتان: مقارنة تكشف الفرق</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="map-station">
+                        <div class="station-header">
+                            <div class="station-dot"></div>
+                            <div class="station-text-ayah">﴿إِنَّ شَانِئَكَ هُوَ ٱلۡأَبۡتَرُ ﰂ﴾</div>
+                        </div>
+                        <div class="stop-branches">
+                            <div class="stop-card-item">
+                                <div class="stop-icon-wrapper"><span class="icon-scholar">■</span></div>
+                                <div class="stop-title-text">من المقطوع حقًّا؟</div>
+                            </div>
+                            <div class="stop-card-item">
+                                <div class="stop-icon-wrapper"><span class="icon-scholar">■</span></div>
+                                <div class="stop-title-text">كيف لا يكون أبتر وقد مات أبناؤه؟ لأن المقياس هو الخير</div>
+                            </div>
+                            <div class="stop-card-item">
+                                <div class="stop-icon-wrapper"><span class="icon-scholar">■</span></div>
+                                <div class="stop-title-text">من قال «أبتر»؟ رواية مشهورة لا تثبت</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hidaya-station">
+                        <div class="hidaya-dot"><span class="icon-hidaya">✦</span></div>
+                        <div class="hidaya-text">ما الذي تتركه السورة فينا؟</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Frame 4: Stop opened (scene) -->
+    <div class="frame-wrapper">
+        <div class="frame-title">4. Stop Scene</div>
+        <div class="mock-frame">
+            <div class="scene-container">
+                <div class="scene-header">
+                    <div class="scene-ayah">﴿إِنَّ شَانِئَكَ هُوَ ٱلۡأَبۡتَرُ ﰂ﴾</div>
+                </div>
+                <div class="scene-body">
+                    <div class="scene-title">من المقطوع حقًّا؟</div>
+                    
+                    <div class="scene-sentence">
+                        تجيب سورة الكوثر، وهي ثلاث آيات فقط، عن سؤال: من المقطوع حقًّا؟
+                    </div>
+                    
+                    <div class="scene-sentence">
+                        وجوابها: هو من حُرم الخير، لا من لم يبقَ له ابن
+                        <span class="marker-wrapper">
+                            <span class="marker-icons"><span class="icon-scholar">■</span><span class="marker-ref">⁽¹⁾</span></span>
+                        </span>
+                    </div>
+                    
+                    <div class="scene-sentence">
+                        و«شانئك» يعني: من يكرهك.
+                        <span class="marker-wrapper">
+                            <span class="marker-icons"><span class="icon-scholar">■</span><span class="marker-ref">⁽³⁾</span></span>
+                        </span>
+                    </div>
+                    
+                    <div class="scene-next-container">
+                        <div class="scene-why-next">
+                            <!-- optional line for context -->
+                            <div class="placeholder-bar w-50"></div>
+                        </div>
+                        <div class="scene-next-btn">
+                            <div class="scene-next-title">كيف لا يكون أبتر وقد مات أبناؤه؟ لأن المقياس هو الخير</div>
+                            <div class="scene-next-icon">➜</div>
+                        </div>
+                    </div>
+
+                    <div class="scene-continuous-switch">
+                        <!-- read as continuous text switch -->
+                        <div class="placeholder-bar w-30"></div>
+                        <div class="placeholder-bar w-50" style="height: 24px; border-radius: var(--radius-full);"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Frame 5: Glance single card -->
+    <div class="frame-wrapper">
+        <div class="frame-title">5. Glance Card</div>
+        <div class="mock-frame">
+            <div class="header">
+                <div class="level-label">اختر درجة القراءة</div>
+                <div class="depth-switch">
+                    <div class="depth-tab active">اللمحة</div>
+                    <div class="depth-tab">الفهم</div>
+                    <div class="depth-tab">التدبر</div>
+                    <div class="depth-tab">التعمق</div>
+                </div>
+            </div>
+            <div class="glance-container">
+                <div class="glance-card-inner">
+                    <div class="glance-q">من المقطوع حقًّا؟</div>
+                    
+                    <div class="glance-highlight">
+                        <div class="glance-highlight-ayah">﴿إِنَّ شَانِئَكَ هُوَ ٱلۡأَبۡتَرُ ﰂ﴾</div>
+                        <div class="marker-wrapper">
+                            <span class="marker-icons"><span class="icon-scholar">■</span><span class="marker-ref">⁽¹⁾</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="glance-a">
+                        في سورة الكوثر أن الله أعطى نبيه ﷺ الخير الكثير، ومنه نهر الكوثر في الجنة. وفيها أمره بأن يشكر الله على هذه النعمة: أن يصلي له وحده، ويذبح له وحده.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Frame 6: Long surah's map -->
+    <div class="frame-wrapper">
+        <div class="frame-title">6. Long Surah Map</div>
+        <div class="mock-frame">
+            <div class="header">
+                <div class="level-label">اختر درجة القراءة</div>
+                <div class="depth-switch">
+                    <div class="depth-tab">اللمحة</div>
+                    <div class="depth-tab active">الفهم</div>
+                    <div class="depth-tab">التدبر</div>
+                    <div class="depth-tab">التعمق</div>
+                </div>
+            </div>
+            <div class="map-view">
+                <div class="surah-line-container">
+                    <div class="surah-vertical-line"></div>
+                    
+                    <div class="map-station">
+                        <div class="station-header">
+                            <div class="station-dot passage-dot"></div>
+                            <div style="width: 100%; display: flex; flex-direction: column; gap: var(--space-xs);">
+                                <div class="placeholder-bar w-75"></div>
+                                <div class="placeholder-bar w-30"></div>
+                            </div>
+                        </div>
+                        <div class="stop-branches">
+                            <div class="stop-card-item">
+                                <div class="stop-icon-wrapper"><div class="placeholder-bar" style="width: 16px; border-radius: 50%;"></div></div>
+                                <div class="stop-title-text" style="width: 100%;"><div class="placeholder-bar w-75"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="map-station">
+                        <div class="station-header">
+                            <div class="station-dot passage-dot"></div>
+                            <div style="width: 100%; display: flex; flex-direction: column; gap: var(--space-xs);">
+                                <div class="placeholder-bar w-50"></div>
+                                <div class="placeholder-bar w-30"></div>
+                            </div>
+                        </div>
+                        <div class="stop-branches">
+                            <div class="stop-card-item">
+                                <div class="stop-icon-wrapper"><div class="placeholder-bar" style="width: 16px; border-radius: 50%;"></div></div>
+                                <div class="stop-title-text" style="width: 100%;"><div class="placeholder-bar w-50"></div></div>
+                            </div>
+                            <div class="stop-card-item">
+                                <div class="stop-icon-wrapper"><div class="placeholder-bar" style="width: 16px; border-radius: 50%;"></div></div>
+                                <div class="stop-title-text" style="width: 100%;"><div class="placeholder-bar w-75"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Frame 7: Panel over stop scene -->
+    <div class="frame-wrapper">
+        <div class="frame-title">7. Source Panel</div>
+        <div class="mock-frame">
+            <div class="scene-container" style="overflow: hidden;">
+                <div class="scene-header">
+                    <div class="scene-ayah">﴿إِنَّ شَانِئَكَ هُوَ ٱلۡأَبۡتَرُ ﰂ﴾</div>
+                </div>
+                <div class="scene-body">
+                    <div class="scene-title">من المقطوع حقًّا؟</div>
+                    <div class="scene-sentence">
+                        تجيب سورة الكوثر، وهي ثلاث آيات فقط، عن سؤال: من المقطوع حقًّا؟
+                    </div>
+                    <div class="scene-sentence">
+                        وجوابها: هو من حُرم الخير، لا من لم يبقَ له ابن
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overlay & Panel -->
+            <div class="overlay"></div>
+            <div class="bottom-sheet">
+                <div class="drag-handle"></div>
+                <div class="sheet-title">
+                    <span>من أين جاءت هذه المعلومة؟</span>
+                    <span class="close-btn">إغلاق</span>
+                </div>
+                
+                <div class="claim-box">
+                    المقطوع حقًّا من حُرم الخير، أو قلّ نصيبه منه، لا من لم يبقَ له ابن
+                </div>
+                
+                <div class="source-card">
+                    <div class="source-header">
+                        <span class="source-type"><span class="icon-scholar">■</span> قول مفسر</span>
+                        <span class="badge badge-thabit">ثابت</span>
+                    </div>
+                    <div class="source-detail">
+                        <strong>القائل:</strong> ابن عاشور
+                    </div>
+                    <div class="source-detail">
+                        <strong>المصدر:</strong> التحرير والتنوير
+                    </div>
+                    <div class="source-detail">
+                        <strong>الموضع:</strong> 30/576–577
+                    </div>
+                    <div class="source-quote">
+                        «ومعنى الأبتر في الآية: الذي لا خير فيه... بصرف مراد القائل عن الأبتر الذي هو عديم الابن الذكر إلى ما هو أجدر بالاعتبار وهو الناقص حظ الخير»
+                    </div>
+                </div>
+                
+                <div class="legend-bar">
+                    <div class="legend-bar-title">مفتاح العلامات</div>
+                    <div class="legend-bar-action">المفتاح</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
