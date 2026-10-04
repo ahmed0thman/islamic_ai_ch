@@ -21,10 +21,14 @@ The app renders only what is in `content/`. It never writes Arabic text itself.
 
 ```jsonc
 { "type": "heading", "text": "…" }
+{ "type": "heading", "text": "…", "kind": "question" }     // a question the next paragraph answers (the question never stands without its answer). It claims nothing, so it has no marker
 { "type": "ayah", "keys": ["108:1", "108:2"] }             // displayed Quran text, taken from `ayahs`
 { "type": "paragraph",
   "role": "claim" | "transmission",                        // transmission = quoted narration shown as-is, never restyled
   "segments": [ /* Segment */ ] }
+{ "type": "details",                                       // an item that opens on tap; closed by default
+  "title": [ /* Segment: text | term | mark */ ],          // carries the short answer; it is a claim, so it ends with a mark
+  "blocks": [ /* paragraph blocks only */ ] }
 ```
 
 `Segment` is one of:
@@ -34,6 +38,7 @@ The app renders only what is in `content/`. It never writes Arabic text itself.
 { "t": "ayah", "key": "108:1" }                             // inline Quran text, rendered from `ayahs`, visually distinct
 { "t": "quote", "v": "…", "record": "108-r27" }             // verbatim source text, visually distinct from system wording
 { "t": "mark", "records": ["108-r06"] }                     // marker after a claim; shows the icons of its records; opens the panel
+{ "t": "term", "v": "…", "record": "108-r41" }              // a term of the sciences, shown as a link inside system wording; opens the panel on its record, whose `claim` is the term's short definition
 ```
 
 `Record`:
@@ -59,7 +64,9 @@ The app renders only what is in `content/`. It never writes Arabic text itself.
 
 Rules the app relies on:
 
-- Every `mark.records[]` and `quote.record` id exists in `records`.
+- Every `mark.records[]`, `quote.record` and `term.record` id exists in `records`.
+- A `term` is not a marker: the sentence it sits in still ends with its own `mark`. Its record needs the same build and display permission as a claim's record.
+- A `details` title follows the rules of a claim paragraph; its inner blocks follow the rules of their own role. `details` do not nest.
 - Every `ayah.key` and `ayah.keys[]` exists in `ayahs`.
 - A record with badge `la_yathbut` or `khilaf_mutabar` shows the badge next to the marker in the text and in the panel; `thabit` shows in the panel only.
 - Level `n` shows the blocks of `levels[n]` only (levels are complete texts, not increments).
