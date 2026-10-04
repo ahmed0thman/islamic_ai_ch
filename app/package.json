@@ -1,0 +1,29 @@
+{
+  "name": "huda-reader",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.26.1",
+  "engines": { "node": ">=20.9.0" },
+  "scripts": {
+    "sync-content": "node scripts/sync-content.mjs",
+    "predev": "node scripts/sync-content.mjs",
+    "dev": "next dev",
+    "prebuild": "node scripts/sync-content.mjs",
+    "build": "next build",
+    "postbuild": "node scripts/build-offline.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "16.0.10",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.1.18",
+    "tailwindcss": "4.1.18",
+    "typescript": "5.9.3",
+    "@types/node": "22.19.3",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3"
+  }
+}

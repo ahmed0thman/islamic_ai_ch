@@ -7,3 +7,9 @@ __pycache__/
 node_modules/
 dist/
 .slidev/
+
+# Huda reader generated files
+app/src/content/
+app/node_modules/
+app/.next/
+app/out/

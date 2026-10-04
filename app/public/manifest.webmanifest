@@ -1,0 +1,21 @@
+{
+  "id": "/",
+  "name": "هُدًى",
+  "short_name": "هُدًى",
+  "description": "افهم السورة، ثم تدبّرها",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f8f5ee",
+  "theme_color": "#234b40",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
