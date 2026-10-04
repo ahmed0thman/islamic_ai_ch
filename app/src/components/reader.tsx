@@ -49,9 +49,11 @@ export function ContentBlock({ block, ...props }: ReadingProps & { block: Block 
     <summary className="reading-summary"><ReadingSegments segments={block.title} {...props} /></summary>
     <div className="reading-details-body">{block.blocks.map((inner, i) => <ContentBlock key={i} block={inner} {...props} />)}</div>
   </details>;
-  return <p className={block.role === "transmission" ? "reading-paragraph transmission" : "reading-paragraph"}>
+  const paragraph = <p className={block.role === "transmission" ? "reading-paragraph transmission" : "reading-paragraph"}>
     <ReadingSegments segments={block.segments} {...props} />
   </p>;
+  // A titled paragraph is a stop: in continuous reading its title shows as the question above it.
+  return block.title ? <><h2 className="reading-heading reading-question">{block.title}</h2>{paragraph}</> : paragraph;
 }
 function ReadingSegments({ segments: input, ayahs, records, ui, onOpen }: ReadingProps & { segments: Segment[] }) {
   const segments = [...input];

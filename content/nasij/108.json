@@ -15,14 +15,14 @@
           "origin": "approved"
         },
         {
-          "type": "heading",
-          "text": "من المقطوع حقًّا؟",
-          "kind": "question",
-          "origin": "new"
-        },
-        {
           "type": "paragraph",
           "role": "claim",
+          "title": "من المقطوع حقًّا؟",
+          "ayahs": [
+            "108:1",
+            "108:2",
+            "108:3"
+          ],
           "origin": "new",
           "segments": [
             {
@@ -98,14 +98,14 @@
           "origin": "approved"
         },
         {
-          "type": "heading",
-          "text": "من المقطوع حقًّا: من لم يبقَ له ابن، أم من حُرم الخير؟",
-          "kind": "question",
-          "origin": "new"
-        },
-        {
           "type": "paragraph",
           "role": "claim",
+          "title": "من المقطوع حقًّا؟",
+          "ayahs": [
+            "108:1",
+            "108:2",
+            "108:3"
+          ],
           "origin": "new",
           "segments": [
             {
@@ -130,6 +130,10 @@
         {
           "type": "paragraph",
           "role": "claim",
+          "title": "ما الكوثر؟",
+          "ayahs": [
+            "108:1"
+          ],
           "origin": "new",
           "segments": [
             {
@@ -162,6 +166,10 @@
         {
           "type": "paragraph",
           "role": "transmission",
+          "title": "ماذا جاء في الحديث عن هذا النهر؟",
+          "ayahs": [
+            "108:1"
+          ],
           "origin": "new",
           "segments": [
             {
@@ -188,6 +196,10 @@
         {
           "type": "paragraph",
           "role": "claim",
+          "title": "بماذا يُشكر هذا العطاء؟",
+          "ayahs": [
+            "108:2"
+          ],
           "origin": "new",
           "segments": [
             {
@@ -278,6 +290,10 @@
         {
           "type": "paragraph",
           "role": "claim",
+          "title": "عمّن تتحدث الآية الأخيرة؟",
+          "ayahs": [
+            "108:3"
+          ],
           "origin": "approved",
           "segments": [
             {
@@ -309,6 +325,10 @@
         {
           "type": "paragraph",
           "role": "claim",
+          "title": "ما معنى «الأبتر»؟",
+          "ayahs": [
+            "108:3"
+          ],
           "origin": "new",
           "segments": [
             {
@@ -368,14 +388,12 @@
           ]
         },
         {
-          "type": "heading",
-          "text": "وهل ينقطع ذكره ﷺ إذا مات بنوه؟",
-          "kind": "question",
-          "origin": "new"
-        },
-        {
           "type": "paragraph",
           "role": "claim",
+          "title": "هل ينقطع ذكره ﷺ إذا مات بنوه؟",
+          "ayahs": [
+            "108:3"
+          ],
           "origin": "new",
           "segments": [
             {
@@ -421,6 +439,10 @@
         {
           "type": "paragraph",
           "role": "claim",
+          "title": "ما مقصد السورة كلها؟",
+          "ayahs": [
+            "108:3"
+          ],
           "origin": "new",
           "segments": [
             {
@@ -455,14 +477,12 @@
           "origin": "approved"
         },
         {
-          "type": "heading",
-          "text": "لماذا خُصّت الصلاة والنحر بالذكر في هذه السورة؟",
-          "kind": "question",
-          "origin": "new"
-        },
-        {
           "type": "paragraph",
           "role": "claim",
+          "title": "لماذا خُصّت الصلاة والنحر بالذكر؟",
+          "ayahs": [
+            "108:2"
+          ],
           "origin": "new",
           "segments": [
             {
@@ -482,14 +502,12 @@
           ]
         },
         {
-          "type": "heading",
-          "text": "وهل الوصف في آخر السورة خاص بشخص واحد؟",
-          "kind": "question",
-          "origin": "new"
-        },
-        {
           "type": "paragraph",
           "role": "claim",
+          "title": "هل الوصف في آخر السورة خاص بشخص واحد؟",
+          "ayahs": [
+            "108:3"
+          ],
           "origin": "new",
           "segments": [
             {
@@ -509,14 +527,12 @@
           ]
         },
         {
-          "type": "heading",
-          "text": "وهل للأمر بالصلاة والنحر لله نظير في موضع آخر من القرآن؟",
-          "kind": "question",
-          "origin": "new"
-        },
-        {
           "type": "paragraph",
           "role": "claim",
+          "title": "هل لهذا الأمر نظير في القرآن؟",
+          "ayahs": [
+            "108:2"
+          ],
           "origin": "new",
           "segments": [
             {
@@ -563,6 +579,12 @@
         {
           "type": "paragraph",
           "role": "claim",
+          "title": "ماذا تقول الآيات الثلاث؟",
+          "ayahs": [
+            "108:1",
+            "108:2",
+            "108:3"
+          ],
           "origin": "new",
           "segments": [
             {
@@ -606,6 +628,10 @@
         {
           "type": "paragraph",
           "role": "claim",
+          "title": "هل ينقطع ذكره ﷺ إذا مات بنوه؟",
+          "ayahs": [
+            "108:3"
+          ],
           "origin": "new",
           "segments": [
             {
@@ -637,6 +663,10 @@
         {
           "type": "paragraph",
           "role": "claim",
+          "title": "ما مقصد السورة كلها؟",
+          "ayahs": [
+            "108:3"
+          ],
           "origin": "new",
           "segments": [
             {
