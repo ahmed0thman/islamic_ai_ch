@@ -27,7 +27,7 @@ The app renders only what is in `content/`. It never writes Arabic text itself.
 { "type": "ayah", "keys": ["108:1", "108:2"] }             // displayed Quran text, taken from `ayahs`
 { "type": "paragraph",
   "role": "claim" | "transmission",                        // transmission = quoted narration shown as-is, never restyled
-  "title": "…",                                            // optional. A short question (at most 8 words). A titled paragraph is a STOP on the surah map
+  "title": "…",                                            // optional. A short title, a question or a noun phrase (at most 8 words). A titled paragraph is a STOP on the surah map
   "ayahs": ["108:1"],                                      // optional in the nasij source; always present on a stop in the export: the ayah station(s) the stop hangs from
   "passage": "p1",                                         // optional: the passage this block belongs to (see `passages`)
   "segments": [ /* Segment */ ] }
