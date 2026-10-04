@@ -18,7 +18,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DB = ROOT / ".cache/index/sources.sqlite"
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 _MARKS = re.compile(
     r"[\u0610-\u061a\u064b-\u065f\u0670\u06d6-\u06ed"
     r"\u0898-\u089f\u08ca-\u08ff\u0640\ufeff]"
@@ -106,15 +106,47 @@ def _snippet(text, terms=(), width=240, *, allow_partial=False):
     return text[start:start + width], start, min(start + width, len(text))
 
 
+@lru_cache(maxsize=1)
+def build_sources():
+    if __package__:
+        from .build_index import _registry
+    else:
+        from build_index import _registry
+    return set(_registry(ROOT))
+
+
+def source_filter(where, parameters, only):
+    if only:
+        ids = sorted(build_sources())
+        where += ' AND p.source_id IN (' + ','.join('?' for _ in ids) + ')'
+        parameters.extend(ids)
+    return where
+
+
+def word_forms(word):
+    article = '\u0627\u0644'
+    prefixes = ('', '\u0648', '\u0641', '\u0628', '\u0643', '\u0644', '\u0648\u0628', '\u0641\u0628', '\u0648\u0644', '\u0641\u0644')
+    bases = {word}
+    for prefix in prefixes:
+        for lead in (prefix, prefix + article):
+            if lead and word.startswith(lead) and len(word) - len(lead) >= 2:
+                bases.add(word[len(lead):])
+        if prefix.endswith('\u0644') and word.startswith(prefix + '\u0644'):
+            bases.add(word[len(prefix) + 1:])
+    return sorted({p + a + base for base in bases if base for p in prefixes for a in ('', article)} |
+                  {p + '\u0644' + base for base in bases for p in prefixes if p.endswith('\u0644')})
+
+
 def _result(connection, row, terms=(), *, allow_partial=False):
     links = [dict(link) for link in connection.execute(
-        "SELECT ayah_key, link_kind FROM passage_ayahs WHERE passage_id=? "
-        "ORDER BY CASE link_kind WHEN 'native' THEN 0 ELSE 1 END, ayah_key",
+        "SELECT ayah_key, link_kind FROM passage_ayahs_v2 WHERE passage_id=? "
+        "ORDER BY CASE link_kind WHEN 'native' THEN 0 WHEN 'cited' THEN 1 WHEN 'quoted' THEN 2 ELSE 3 END, ayah_key",
         (row["id"],),
     )]
     snippet, start, end = _snippet(row["text"], terms, allow_partial=allow_partial)
     result = {
         "id": row["id"], "source_id": row["source_id"],
+        "build_source": row["source_id"] in build_sources(),
         "source_title": row["source_title"], "author": row["author"],
         "unit_kind": row["unit_kind"], "section": row["section"],
         "locator": json.loads(row["locator_json"]),
@@ -136,7 +168,7 @@ def _bounds(limit, offset):
         raise ValueError("limit must be positive and offset nonnegative")
 
 
-def search_ayah(ayah, *, source=None, limit=10, offset=0, db=DEFAULT_DB):
+def search_ayah(ayah, *, source=None, limit=10, offset=0, db=DEFAULT_DB, build_sources_only=False):
     """Return linked passages, native links first, plus the full match count."""
     validate_ayah(ayah)
     _bounds(limit, offset)
@@ -146,28 +178,31 @@ def search_ayah(ayah, *, source=None, limit=10, offset=0, db=DEFAULT_DB):
     if source:
         where += " AND p.source_id=?"
         parameters.append(source)
+    where = source_filter(where, parameters, build_sources_only)
     with closing(_open(db)) as connection:
         # A passage can have both native and quoted links to the same ayah.
-        joins = "FROM passages p JOIN passage_ayahs a ON a.passage_id=p.id WHERE " + where
+        joins = "FROM passages p JOIN passage_ayahs_v2 a ON a.passage_id=p.id WHERE " + where
         total = connection.execute("SELECT count(DISTINCT p.id) " + joins, parameters).fetchone()[0]
+        rank = "CASE WHEN max(a.link_kind='surah') THEN 3 ELSE min(CASE a.link_kind WHEN 'native' THEN 0 WHEN 'cited' THEN 1 WHEN 'quoted' THEN 2 ELSE 3 END) END"
         rows = connection.execute(
-            "SELECT p.*, CASE min(CASE a.link_kind WHEN 'native' THEN 0 ELSE 1 END) "
-            "WHEN 0 THEN 'native' ELSE 'quoted' END AS link_kind " + joins +
-            " GROUP BY p.id ORDER BY min(CASE a.link_kind WHEN 'native' THEN 0 ELSE 1 END), "
-            "p.source_id, p.row_order, p.id LIMIT ? OFFSET ?", parameters + [limit, offset],
+            "SELECT p.*, CASE (" + rank + ") "
+            "WHEN 0 THEN 'native' WHEN 1 THEN 'cited' WHEN 2 THEN 'quoted' ELSE 'surah' END AS link_kind " + joins +
+            " GROUP BY p.id ORDER BY " + rank + ", p.source_id, p.row_order, p.id LIMIT ? OFFSET ?",
+            parameters + [limit, offset],
         ).fetchall()
         return {"query": {"ayah": ayah, "source": source}, "total": total,
                 "returned": len(rows),
                 "results": [_result(connection, row, terms, allow_partial=True) for row in rows]}
 
 
-def search_text(text, *, source=None, near_ayah=None, limit=10, offset=0, db=DEFAULT_DB):
+def search_text(text, *, source=None, near_ayah=None, limit=10, offset=0, db=DEFAULT_DB, build_sources_only=False):
     """Search a normalized literal phrase by bm25, optionally within one surah."""
     _bounds(limit, offset)
     terms = re.findall(r"\w+", normalize(text))
     if not terms:
         raise ValueError("text query must contain at least one word")
-    phrase = '"' + " ".join(terms) + '"'
+    forms = [word_forms(term) for term in terms]
+    phrase = ' AND '.join('(' + ' OR '.join('"' + form + '"' for form in group) + ')' for group in forms)
     where = "passages_fts MATCH ?"
     parameters = [phrase]
     priority = "0"
@@ -178,14 +213,20 @@ def search_text(text, *, source=None, near_ayah=None, limit=10, offset=0, db=DEF
     if near_ayah:
         surah = validate_ayah(near_ayah)
         where += (
-            " AND (p.surah_no=? OR EXISTS (SELECT 1 FROM passage_ayahs n "
+            " AND (p.surah_no=? OR EXISTS (SELECT 1 FROM passage_ayahs_v2 n "
             "WHERE n.passage_id=p.id AND n.ayah_key LIKE ?))"
         )
         parameters += [surah, str(surah) + ":%"]
-        priority = ("CASE WHEN EXISTS (SELECT 1 FROM passage_ayahs n "
+        priority = ("CASE WHEN EXISTS (SELECT 1 FROM passage_ayahs_v2 n "
                     "WHERE n.passage_id=p.id AND n.ayah_key=?) THEN 0 ELSE 1 END")
         priority_parameters = [near_ayah]
+    where = source_filter(where, parameters, build_sources_only)
     with closing(_open(db)) as connection:
+        if len(forms) > 1:
+            pattern = re.compile(r'(?<!\w)' + r'[^\w]+'.join(
+                '(?:' + '|'.join(map(re.escape, group)) + ')' for group in forms) + r'(?!\w)')
+            connection.create_function('phrase_match', 1, lambda value: bool(pattern.search(value)))
+            where += ' AND phrase_match(p.text_norm)'
         joins = "FROM passages_fts JOIN passages p ON p.id=passages_fts.rowid WHERE " + where
         total = connection.execute("SELECT count(*) " + joins, parameters).fetchone()[0]
         rows = connection.execute(
@@ -241,7 +282,7 @@ def _markdown(output):
         for direction, neighbours in output["neighbours"].items():
             entries += [(direction.title(), entry) for entry in neighbours]
     for label, entry in entries:
-        lines += ["", f"## {label} {entry['id']} ({entry['source_id']})", "",
+        lines += ["", f"## {label} {entry['id']} ({entry['source_id']}; {entry.get('link_kind', 'context')})", "",
                   json.dumps(entry["locator"], ensure_ascii=False), "",
                   "Snippet:", entry["snippet"], "", "Text:", entry["text"]]
     return "\n".join(lines) + "\n"
@@ -253,6 +294,7 @@ def main(argv=None):
     mode.add_argument("--ayah")
     mode.add_argument("--text")
     mode.add_argument("--id", type=int)
+    parser.add_argument("--build-sources-only", action="store_true")
     parser.add_argument("--source", help="exact source_id from the build summary")
     parser.add_argument("--near-ayah", help="text search: restrict to this surah, exact ayah first")
     parser.add_argument("--db", type=Path, default=DEFAULT_DB)
@@ -267,12 +309,16 @@ def main(argv=None):
     try:
         if args.ayah:
             output = search_ayah(args.ayah, source=args.source, limit=args.limit,
-                                 offset=args.offset, db=args.db)
+                                 offset=args.offset, db=args.db, build_sources_only=args.build_sources_only)
         elif args.text is not None:
             output = search_text(args.text, source=args.source, near_ayah=args.near_ayah,
-                                 limit=args.limit, offset=args.offset, db=args.db)
+                                 limit=args.limit, offset=args.offset, db=args.db, build_sources_only=args.build_sources_only)
         else:
             output = get_passage(args.id, db=args.db)
+            if args.build_sources_only:
+                if output['passage'] and not output['passage']['build_source']:
+                    output['passage'] = None
+                output['neighbours'] = {k: [e for e in v if e['build_source']] for k, v in output['neighbours'].items()}
     except (ValueError, OSError, sqlite3.Error) as exc:
         print(f"Retrieval failed: {exc}", file=sys.stderr)
         return 1

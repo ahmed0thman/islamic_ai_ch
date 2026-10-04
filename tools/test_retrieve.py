@@ -32,14 +32,12 @@ class RetrievalTests(unittest.TestCase):
         cls.filler = cls.quran[0]["aya_text_emlaey"].split()[0]
 
     def setUp(self):
-        self.temporary = tempfile.TemporaryDirectory(prefix="huda-index-test-")
-        self.addCleanup(self.temporary.cleanup)
-        self.root = Path(self.temporary.name)
+        self.root = Path(tempfile.mkdtemp(prefix="huda-index-test-"))
         self.db = self.root / "index/sources.sqlite"
         self.pages = self.root / ".cache/sources/shamela/books/22912/pages"
         self.write_page(1, " ".join([self.word] * 5), previous=None, following=2)
         self.write_page(2, self.word + " " + " ".join([self.filler] * 100), previous=1, following=3)
-        self.write_page(3, self.ayah1["aya_text_emlaey"], previous=2, following=4,
+        self.write_page(3, self.ayah3["aya_text_emlaey"], previous=2, following=4,
                         footnotes=self.filler)
         # Both a torn file and valid JSON missing required page fields are expected errors.
         (self.pages / "4.json").write_text('{"book_id":', encoding="utf-8")
@@ -107,6 +105,79 @@ class RetrievalTests(unittest.TestCase):
         with closing(sqlite3.connect(self.db)) as connection:
             return connection.execute("SELECT id,locator_json,text,text_norm FROM passages ORDER BY id").fetchall()
 
+    def test_cited_forms_and_digits(self):
+        name = self.ayah1['sura_name_ar']
+        digits = ('1', '\u0661')
+        for separator in (':', '/'):
+            for digit in digits:
+                self.write_page(7, f'[{name}{separator} {digit}]')
+                self.build(sources=['shamela'])
+                output = retrieve.search_ayah('108:1', source='sahih_masbur', db=self.db)
+                self.assertEqual(output['results'][0]['link_kind'], 'cited')
+
+    def test_short_quotes_and_basmala_guard(self):
+        links = build_index.QuranLinks()
+        short = self.ayah1['aya_text_emlaey']
+        self.assertNotIn('108:1', links.quoted(short))
+        self.assertNotIn('108:1', links.quoted(short, 93))
+        self.assertIn('108:1', links.quoted(short, 107))
+        self.assertIn('108:1', links.quoted(short, 108))
+        basmala = self.quran[0]['aya_text_emlaey']
+        self.assertNotIn('1:1', links.quoted(basmala, 108))
+        self.assertIn('1:1', links.quoted(basmala, 1))
+        partial = ' '.join(short.split()[:2])
+        self.assertNotIn('108:1', links.quoted(partial, 108))
+
+    def test_locators_and_build_sources(self):
+        full = retrieve.search_ayah('108:1', source='saadi', db=self.db)['results'][0]
+        self.assertEqual(full['locator']['part'], 'body')
+        for sid, key in build_index.SOURCE_IDS['quranenc'].items():
+            source = build_index.Source(key, 'quranenc', sid, [])
+            passage = build_index._passage(source, 'download.json', 1, 'translation', self.word,
+                                           unit_kind='ayah-entry')
+            locator = json.loads(passage['locator_json'])
+            self.assertEqual(locator['table'], 'translations')
+            self.assertEqual(locator['file'], f'.cache/sources/quranenc/{sid}/{sid}.sqlite')
+        self.make_project(999, [(1, 'aya', self.word, 108, self.ayah1['id'])])
+        self.build()
+        output = retrieve.search_text(self.word, limit=100, db=self.db)
+        self.assertTrue(any(not entry['build_source'] for entry in output['results']))
+        filtered = retrieve.search_text(self.word, limit=100, db=self.db, build_sources_only=True)
+        self.assertTrue(all(entry['build_source'] for entry in filtered['results']))
+        ayahs = retrieve.search_ayah('108:1', limit=100, db=self.db, build_sources_only=True)
+        self.assertNotIn('surahpedia_999', [entry['source_id'] for entry in ayahs['results']])
+
+    def test_article_and_prefix_forms(self):
+        article = '\u0627\u0644'
+        bare = retrieve.normalize(self.word)
+        if bare.startswith(article):
+            bare = bare[2:]
+        self.write_page(7, '\u0648' + article + bare)
+        self.build(sources=['shamela'])
+        for query in (bare, article + bare, '\u0628' + article + bare):
+            output = retrieve.search_text(query, source='sahih_masbur', db=self.db)
+            self.assertIn(7, [entry['location']['page_id'] for entry in output['results']])
+
+    def test_surah_rows_stay_after_ayah_results_even_with_quotes(self):
+        path = self.root / '.cache/sources/surahpedia/p27/project-27.sqlite'
+        with closing(sqlite3.connect(path)) as connection:
+            connection.execute('UPDATE project_contents SET content=? WHERE id=1',
+                               (self.ayah3['aya_text_emlaey'],))
+            connection.commit()
+        self.build(sources=['maqasid'])
+        results = retrieve.search_ayah('108:3', limit=100, db=self.db)['results']
+        self.assertEqual(results[-1]['link_kind'], 'surah')
+        self.assertEqual(results[-1]['source_id'], 'maqasid')
+
+    def test_multiword_search_preserves_phrase_order(self):
+        tokens = self.ayah3['aya_text_emlaey'].split()
+        self.write_page(7, ' '.join(tokens[::-1]))
+        self.build(sources=['shamela'])
+        output = retrieve.search_text(' '.join(tokens), source='sahih_masbur', db=self.db)
+        pages = [entry['location']['page_id'] for entry in output['results']]
+        self.assertIn(3, pages)
+        self.assertNotIn(7, pages)
+
     def test_normalization_equivalences(self):
         corpus = " ".join(row["aya_text"] + " " + row["aya_text_emlaey"] for row in self.quran)
         for original, replacement in (
@@ -130,7 +201,7 @@ class RetrievalTests(unittest.TestCase):
         native = retrieve.search_ayah("108:1", source="saadi", db=self.db)
         self.assertEqual(native["total"], 2)  # Raw row and its exact note substring.
         self.assertTrue(all(entry["link_kind"] == "native" for entry in native["results"]))
-        quoted = retrieve.search_ayah("108:1", source="sahih_masbur", db=self.db)
+        quoted = retrieve.search_ayah("108:3", source="sahih_masbur", db=self.db)
         self.assertEqual(quoted["total"], 1)
         self.assertEqual(quoted["results"][0]["location"]["page_id"], 3)
         self.assertEqual(retrieve.search_ayah("108:3", source="saadi", db=self.db)["total"], 1)
@@ -153,7 +224,7 @@ class RetrievalTests(unittest.TestCase):
         saadi = [entry for entry in output["results"] if entry["source_id"] == "saadi"]
         self.assertEqual({entry["locator"]["row_id"] for entry in saadi}, {1, 2})
         self.assertTrue(any(entry["source_id"] == "maqasid" for entry in output["results"]))
-        self.assertEqual(retrieve.search_ayah("108:1", source="maqasid", db=self.db)["total"], 0)
+        self.assertEqual(retrieve.search_ayah("108:1", source="maqasid", db=self.db)["results"][0]["link_kind"], "surah")
 
     def test_verbatim_fields_notes_snippets_and_locators(self):
         output = retrieve.search_ayah("108:1", source="saadi", db=self.db)
@@ -203,26 +274,26 @@ class RetrievalTests(unittest.TestCase):
     def test_changed_field_prunes_stale_passages_and_links(self):
         self.write_page(3, self.filler, previous=2, following=4, footnotes="")
         self.build(sources=["sahih_masbur"])
-        self.assertEqual(retrieve.search_ayah("108:1", source="sahih_masbur", db=self.db)["total"], 0)
+        self.assertEqual(retrieve.search_ayah("108:3", source="sahih_masbur", db=self.db)["total"], 0)
         with closing(sqlite3.connect(self.db)) as connection:
             count = connection.execute("SELECT count(*) FROM passages WHERE page_id=3").fetchone()[0]
         self.assertEqual(count, 1)
 
     def test_neighbours_do_not_skip_missing_pages(self):
-        page3 = retrieve.search_ayah("108:1", source="sahih_masbur", db=self.db)["results"][0]
+        page3 = retrieve.search_ayah("108:3", source="sahih_masbur", db=self.db)["results"][0]
         output = retrieve.get_passage(page3["id"], db=self.db)
         self.assertEqual({entry["location"]["page_id"] for entry in output["neighbours"]["previous"]}, {2})
         self.assertEqual(output["neighbours"]["next"], [])
         self.assertEqual(retrieve.get_passage(-1, db=self.db)["passage"], None)
 
     def test_ayah_snippet_centres_on_later_quote(self):
-        text = " ".join([self.filler] * 80) + " " + self.ayah1["aya_text_emlaey"] + " " + " ".join([self.filler] * 80)
+        text = " ".join([self.filler] * 80) + " " + self.ayah3["aya_text_emlaey"] + " " + " ".join([self.filler] * 80)
         self.write_page(4, text, previous=3, following=5)
         self.build(sources=["shamela"])
-        entries = retrieve.search_ayah("108:1", source="sahih_masbur", db=self.db)["results"]
+        entries = retrieve.search_ayah("108:3", source="sahih_masbur", db=self.db)["results"]
         hit = next(entry for entry in entries if entry["location"]["page_id"] == 4)
         self.assertGreater(hit["snippet_start"], 0)
-        self.assertIn(retrieve.normalize(self.ayah1["aya_text_emlaey"]), retrieve.normalize(hit["snippet"]))
+        self.assertIn(retrieve.normalize(self.ayah3["aya_text_emlaey"]), retrieve.normalize(hit["snippet"]))
         self.assertEqual(hit["snippet"], text[hit["snippet_start"]:hit["snippet_end"]])
 
     def test_rebuild_preserves_ids_and_source_files(self):

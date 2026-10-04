@@ -59,7 +59,10 @@ def _registry(root):
             if node.func.id == "dict" and not node.args:
                 return {item.arg: value(item.value) for item in node.keywords}
             if node.func.id in ("_sp", "_qe"):
-                return {}  # Disk paths come from discovered files, not executable helpers.
+                n = value(node.args[0])
+                if node.func.id == '_sp':
+                    return dict(kind='sqlite', file=f'.cache/sources/surahpedia/p{n}/project-{n}.sqlite', table='project_contents', key='id', field='content')
+                return dict(kind='sqlite', file=f'.cache/sources/quranenc/{n}/{n}.sqlite', table='translations', key='id', field='translation')
         raise ValueError("Unsupported SOURCES registry expression: " + type(node).__name__)
 
     tree = ast.parse(path.read_text(encoding="utf-8"))
@@ -91,7 +94,10 @@ def discover_sources(root):
                   for sid, data in registry.items()}
     catalogs = {}
     for path in sorted((root / ".cache/sources/surahpedia").glob("projects*.json")):
-        catalog = json.loads(path.read_text(encoding="utf-8"))
+        try:
+            catalog = _read_json(path)
+        except (OSError, ValueError):
+            continue
         catalogs.update({str(item["id"]): item for item in catalog["data"]})
 
     def make(platform, platform_id, paths):
@@ -131,7 +137,7 @@ def discover_sources(root):
 
 
 class QuranLinks:
-    """Reuse quran_scan's orthography, matching keys, greedy scan and formula guard."""
+    """Reuse quran_scan's orthography, matching keys and formula guard."""
 
     def __init__(self):
         raw = quran_scan.DATA.read_bytes()
@@ -142,14 +148,58 @@ class QuranLinks:
         self.keys = [quran_scan.key(word) for word in words]
         self.index = quran_scan.build_index(self.keys, 3)
 
-    def quoted(self, text):
-        words = quran_scan.normalize(text)
+        self.names = {normalize(row['sura_name_ar']): int(row['sura_no']) for row in rows}
+        self.ayah_lengths = {}
+        self.short = {}
+        for row in rows:
+            key = f"{row['sura_no']}:{row['aya_no']}"
+            tokens = tuple(quran_scan.key(w) for w in quran_scan.ayah_words(row['aya_text_emlaey'], row['aya_text']))
+            self.ayah_lengths[key] = len(tokens)
+            if len(tokens) < 4:
+                self.short.setdefault(tokens, set()).add(key)
+        self.nearby_short = {}
+        for tokens, refs in self.short.items():
+            for ref in refs:
+                surah = int(ref.split(':')[0])
+                for native in range(max(1, surah - 1), min(114, surah + 1) + 1):
+                    if ref == '1:1' and native != 1:
+                        continue
+                    self.nearby_short.setdefault(native, {}).setdefault(tokens, set()).add(ref)
+
+    def cited(self, text):
         found = set()
-        for start, qstart, length in quran_scan.scan(
-            [quran_scan.key(word) for word in words], self.keys, self.index, 3,
-        ):
-            if tuple(words[start:start + length]) not in quran_scan.FORMULAE:
-                found.update(f"{surah}:{ayah}" for surah, ayah, _ in self.refs[qstart:qstart + length])
+        for name, number in re.findall(r'\[([^\[\]:/]+)[:/]\s*([0-9\u0660-\u0669]+)\s*\]', text):
+            surah = self.names.get(normalize(name))
+            key = f'{surah}:{int(number)}'
+            if surah and key in self.ayah_lengths:
+                found.add(key)
+        return found
+
+    def quoted(self, text, native_surah=None):
+        words = quran_scan.normalize(text)
+        keys = [quran_scan.key(w) for w in words]
+        found = set()
+        for start in range(len(keys) - 2):
+            for qstart in self.index.get(tuple(keys[start:start + 3]), ()):
+                length = 3
+                while start + length < len(keys) and qstart + length < len(self.keys) and keys[start + length] == self.keys[qstart + length]:
+                    length += 1
+                matched = tuple(words[start:start + length])
+                if matched in quran_scan.FORMULAE:
+                    continue
+                if length < 4 and sum(len(w) for w in matched) < 20:
+                    continue
+                refs = self.refs[qstart:qstart + length]
+                if len({r[0] for r in refs}) != 1:
+                    continue
+                found.update(f'{surah}:{ayah}' for surah, ayah, _ in refs
+                             if (surah, ayah) != (1, 1) or native_surah == 1)
+        # Complete short ayahs are eligible only in their own or adjacent surah.
+        nearby = self.nearby_short.get(native_surah, {})
+        if nearby:
+            for start in range(len(keys)):
+                for length in (1, 2, 3):
+                    found.update(nearby.get(tuple(keys[start:start + length]), ()))
         return found
 
 
@@ -163,7 +213,7 @@ def check_fts5():
 
 def _schema(connection):
     version = connection.execute("PRAGMA user_version").fetchone()[0]
-    if version not in (0, SCHEMA_VERSION):
+    if version not in (0, 1, SCHEMA_VERSION):
         raise ValueError("Unsupported existing index schema")
     connection.executescript("""
         PRAGMA foreign_keys=ON;
@@ -187,13 +237,13 @@ def _schema(connection):
         CREATE INDEX IF NOT EXISTS passages_source ON passages(source_id, row_order);
         CREATE INDEX IF NOT EXISTS passages_file ON passages(file);
         CREATE INDEX IF NOT EXISTS passages_page ON passages(source_id, book_id, page_id);
-        CREATE TABLE IF NOT EXISTS passage_ayahs (
+        CREATE TABLE IF NOT EXISTS passage_ayahs_v2 (
             passage_id INTEGER NOT NULL REFERENCES passages(id) ON DELETE CASCADE,
             ayah_key TEXT NOT NULL,
-            link_kind TEXT NOT NULL CHECK(link_kind IN ('native','quoted')),
+            link_kind TEXT NOT NULL CHECK(link_kind IN ('native','quoted','cited','surah')),
             PRIMARY KEY(passage_id, ayah_key, link_kind)
         );
-        CREATE INDEX IF NOT EXISTS passage_ayahs_lookup ON passage_ayahs(ayah_key, link_kind, passage_id);
+        CREATE INDEX IF NOT EXISTS passage_ayahs_v2_lookup ON passage_ayahs_v2(ayah_key, link_kind, passage_id);
         CREATE VIRTUAL TABLE IF NOT EXISTS passages_fts USING fts5(
             text_norm, content='passages', content_rowid='id', tokenize='unicode61'
         );
@@ -236,8 +286,11 @@ def _passage(source, file, row, field_name, text, *, unit_kind, row_order=None,
     if not isinstance(text, str):
         raise ValueError("non-string source text")
     locator = _locator(file, row, field_name, table=table, key=key,
-                       part="footnote" if footnote_no is not None else "field",
+                       part="footnote" if footnote_no is not None else ("body" if table == "project_contents" else "field"),
                        footnote_no=footnote_no)
+    if source.platform == 'quranenc':
+        disk = source.metadata.get('disk') or dict(file=f'.cache/sources/quranenc/{source.platform_id}/{source.platform_id}.sqlite', table='translations')
+        locator.update(file=disk['file'], table=disk['table'])
     return dict(
         passage_key=_json([source.source_id, file, row, field_name, footnote_no]),
         source_id=source.source_id, source_title=source.metadata.get("title") or source.source_id,
@@ -322,7 +375,7 @@ def _surahpedia(source, path, file, quran):
                 native = f"{surah}:{ayah}"
             kind = "page" if row["content_type"] == "page" else "ayah-entry"
             if row["content_type"] == "sura":
-                source.notes.add("whole-surah rows: surah context retained; no invented native ayah links")
+                source.notes.add("whole-surah rows linked as surah context after ayah-level results")
             metadata = {key: row[key] for key in ("content_type", "content_id", "word_id", "aya_id")}
             metadata["project_id"] = int(source.platform_id)
             common = dict(unit_kind=kind, table="project_contents", native=native,
@@ -376,11 +429,15 @@ def _save_passage(connection, passage, quran):
         f"ON CONFLICT(passage_key) DO UPDATE SET {updates}", list(passage.values()),
     )
     passage_id = connection.execute("SELECT id FROM passages WHERE passage_key=?", (passage["passage_key"],)).fetchone()[0]
-    connection.execute("DELETE FROM passage_ayahs WHERE passage_id=?", (passage_id,))
-    links = [(passage_id, ayah, "quoted") for ayah in sorted(quran.quoted(passage["text"]))]
+    connection.execute("DELETE FROM passage_ayahs_v2 WHERE passage_id=?", (passage_id,))
+    links = [(passage_id, ayah, "quoted") for ayah in sorted(quran.quoted(passage["text"], passage['surah_no']))]
+    links += [(passage_id, ayah, 'cited') for ayah in sorted(quran.cited(passage['text']))]
+    if json.loads(passage['metadata_json']).get('content_type') == 'sura' and passage['surah_no']:
+        links += [(passage_id, ayah, 'surah') for ayah in quran.ayah_lengths
+                  if ayah.startswith(str(passage['surah_no']) + ':')]
     if native:
         links.append((passage_id, native, "native"))
-    connection.executemany("INSERT INTO passage_ayahs VALUES (?,?,?)", links)
+    connection.executemany("INSERT INTO passage_ayahs_v2 VALUES (?,?,?)", links)
     return passage_id
 
 
@@ -455,7 +512,7 @@ def build_index(*, db=DEFAULT_DB, sources=None, rebuild=False, root=ROOT):
                     reason = str(exc) if isinstance(exc, (ValueError, OSError, sqlite3.Error)) else type(exc).__name__
                     print(f"Input error: {file}: {reason}", file=sys.stderr)
             count = connection.execute("SELECT count(*) FROM passages WHERE source_id=?", (source.source_id,)).fetchone()[0]
-            links = connection.execute("SELECT count(*) FROM passage_ayahs a JOIN passages p ON p.id=a.passage_id "
+            links = connection.execute("SELECT count(*) FROM passage_ayahs_v2 a JOIN passages p ON p.id=a.passage_id "
                                        "WHERE p.source_id=?", (source.source_id,)).fetchone()[0]
             summaries.append(dict(source_id=source.source_id, passages=count, ayah_links=links,
                                   skipped=source.skipped, errors=source.errors, updated=source.updated,
