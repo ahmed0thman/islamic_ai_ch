@@ -8,14 +8,23 @@ import { LegendSheet } from "./legend-sheet";
 import { ReadingUnitSheet } from "./reading-unit-sheet";
 import { SourceSheet } from "./source-sheet";
 
-export type SourceOptions = { term?: string };
-type Selection = { kind: "source"; records: SourceRecord[]; term?: string } | { kind: "legend" } | { kind: "unit"; surah: Surah; scope: Scope; onChoose: (scope: Scope) => void } | null;
+export type SourceOptions = { term?: string; phrase?: string };
+type Selection = { kind: "source"; records: SourceRecord[]; term?: string; phrase?: string } | { kind: "legend" } | { kind: "unit"; surah: Surah; scope: Scope; onChoose: (scope: Scope) => void } | null;
 type SheetActions = { openUnit: (surah: Surah, scope: Scope, onChoose: (scope: Scope) => void) => void; legendOpen: boolean; openSource: (records: SourceRecord[], options?: SourceOptions) => void; openLegend: () => void; closeSheet: () => void };
 const SheetContext = createContext<SheetActions | null>(null);
+/** The words the reader pressed a mark after: the text of the marked run it sits in, without the marks and ayah references. */
+function pressedPhrase(): string | undefined {
+  const opener = document.activeElement;
+  const run = opener instanceof HTMLElement ? opener.closest<HTMLElement>("[data-run]") : null;
+  if (!run) return undefined;
+  const copy = run.cloneNode(true) as HTMLElement;
+  copy.querySelectorAll(".source-marker, .inline-ayah-reference").forEach((node) => node.remove());
+  return copy.textContent?.replace(/\s+/g, " ").trim() || undefined;
+}
 export function SheetProvider({ ui, children }: { ui: Ui; children: ReactNode }) {
   const [selection, setSelection] = useState<Selection>(null);
   const openSource = useCallback((records: SourceRecord[], options?: SourceOptions) => {
-    if (records.length) setSelection({ kind: "source", records, term: options?.term });
+    if (records.length) setSelection({ kind: "source", records, term: options?.term, phrase: options?.term ? undefined : options?.phrase ?? pressedPhrase() });
   }, []);
   const openUnit = useCallback((surah: Surah, scope: Scope, onChoose: (scope: Scope) => void) => setSelection({ kind: "unit", surah, scope, onChoose }), []);
   const openLegend = useCallback(() => setSelection({ kind: "legend" }), []);
@@ -25,7 +34,7 @@ export function SheetProvider({ ui, children }: { ui: Ui; children: ReactNode })
     {children}
     {selection?.kind === "legend" ? <LegendSheet ui={ui} onClose={closeSheet} /> : null}
     {selection?.kind === "unit" ? <ReadingUnitSheet surah={selection.surah} scope={selection.scope} ui={ui} onChoose={selection.onChoose} onClose={closeSheet} /> : null}
-    {selection?.kind === "source" ? <SourceSheet records={selection.records} term={selection.term} ui={ui} onClose={closeSheet} /> : null}
+    {selection?.kind === "source" ? <SourceSheet records={selection.records} term={selection.term} phrase={selection.phrase} ui={ui} onClose={closeSheet} /> : null}
   </SheetContext.Provider></Direction.Provider>;
 }
 export function useSheets() {

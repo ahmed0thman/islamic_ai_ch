@@ -2,7 +2,9 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 // @ts-expect-error -- Node 24 requires the source extension; no files are emitted.
-import { deriveSurahMap, stopNeighbours } from "./map.ts";
+import { deriveSurahMap, heroStop, stopNeighbours } from "./map.ts";
+// @ts-expect-error -- Node 24 requires the source extension; no files are emitted.
+import { scopeContains, type Scope } from "./scope.ts";
 import type { Block, ParagraphBlock, Surah } from "./types";
 
 const surahs: Surah[] = await Promise.all([108, 93, 111].map(async (no) =>
@@ -156,4 +158,17 @@ test("an empty level keeps ayah stations and has no stops or neighbours", () => 
   assert.deepEqual(map.continuousBlocks, []);
   assert.deepEqual(map.unassignedBlocks, []);
   assert.equal(map.groups.flatMap((group) => group.stations).length, surah.surah.ayah_count);
+});
+
+test("93: the opening question is the first titled paragraph in content order, not the first ayah on the thread", () => {
+  const surah = surahs.find((item) => item.surah.no === 93)!;
+  const map = deriveSurahMap(surah, 1);
+  const pick = (scope: Scope) => heroStop(map.stops, (key) => scopeContains(key, scope, surah.passages), 1);
+  const wholeSurah = pick({ kind: "surah" })!;
+  assert.equal(wholeSurah.blockIndex, Math.min(...map.stops.map((stop) => stop.blockIndex)));
+  assert.notEqual(wholeSurah, map.stops[0], "the thread's first door is not the opening question");
+  const second = surah.passages![1];
+  const inSecond = pick({ kind: "passage", id: second.id })!;
+  assert.equal(inSecond.passage, second.id);
+  assert.equal(inSecond.blockIndex, Math.min(...map.stops.filter((stop) => stop.passage === second.id).map((stop) => stop.blockIndex)));
 });

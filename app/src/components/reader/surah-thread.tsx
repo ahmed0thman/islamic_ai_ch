@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import type { MapStation, SurahMapModel } from "@/lib/map";
+import { isLongSurah, type MapStation, type SurahMapModel } from "@/lib/map";
 import type { DepthItemsModel, SceneUnit } from "@/lib/depth-items";
 import type { Ui } from "@/lib/types";
 import { scopeContains, type Scope } from "@/lib/scope";
@@ -19,6 +19,9 @@ export function SurahThread({ map, ui, visited, scope, currentStop, hidden = fal
   const reading = useReading();
   const passages = map.groups.flatMap((group) => group.passage ? [group.passage] : []);
   const hasItems = Boolean(items?.units.length);
+  // A short surah shows its passages in the thread itself. A long one opens on the outline alone until a unit is chosen.
+  const long = passages.length > 0 && isLongSurah(map.groups.reduce((sum, group) => sum + group.stations.length, 0));
+  const outlineOnly = long && scope.kind === "surah";
   const pins: Record<string, SceneUnit[]> = {};
   for (const pin of items?.pins ?? []) (pins[pin.stationKey] ??= []).push(pin);
   useEffect(() => {
@@ -31,8 +34,8 @@ export function SurahThread({ map, ui, visited, scope, currentStop, hidden = fal
     return <AyahNode key={station.ayah.key} station={station} scope={scope} dimmed={!scopeContains(station.ayah.key, scope, passages)} ui={ui} visited={visited} onOpen={onOpen} onScope={() => { if (onAyah) onAyah(station.ayah.key); else onScope({ kind: "ayah", key: station.ayah.key }); }}>{hasItems ? <StationDoors stops={pins[station.ayah.key] ?? []} visited={visited} ui={ui} onOpen={onOpen} /> : undefined}</AyahNode>;
   }
   return <div className="surah-thread" hidden={hidden}>
-    {passages.length ? <PassageOverview groups={map.groups} records={reading.records} active={scope.kind === "passage" ? scope.id : null} ui={ui} visited={visited} pins={pins} onPick={pickPassage} onOpen={reading.onOpen} onOpenStop={onOpen} /> : null}
-    <section className="thread-nodes" aria-label={ui.reader.map_view}>
+    {long ? <PassageOverview groups={map.groups} records={reading.records} active={scope.kind === "passage" ? scope.id : null} ui={ui} visited={visited} pins={pins} onPick={pickPassage} onOpen={reading.onOpen} onOpenStop={onOpen} /> : null}
+    <section className="thread-nodes" aria-label={ui.reader.map_view} hidden={outlineOnly}>
       {map.groups.map((group) => {
         const rows: React.ReactNode[] = [];
         for (let index = 0; index < group.stations.length; index++) {
@@ -46,7 +49,7 @@ export function SurahThread({ map, ui, visited, scope, currentStop, hidden = fal
         return <section className="thread-group" key={group.passage?.id ?? "surah"}>{group.passage ? <PassageBar passage={group.passage} records={group.passage.records.map((id) => reading.records[id])} selected={scope.kind === "passage" && scope.id === group.passage.id} ui={ui} onScope={() => pickPassage(group.passage!.id)} onOpen={reading.onOpen} /> : null}{rows}</section>;
       })}
     </section>
-    {hasItems && items!.shelf.length ? <div className="thread-shelf"><StationDoors stops={items!.shelf} visited={visited} ui={ui} onOpen={onOpen} /><div className="shelf-end" aria-hidden="true">{ui.icons.ayah.symbol}</div></div> : null}
+    {hasItems && items!.shelf.length ? <div className="thread-shelf"><h2 className="sheet-label thread-shelf-title">{ui.reader.shelf_title}</h2><StationDoors stops={items!.shelf} visited={visited} ui={ui} onOpen={onOpen} /><div className="shelf-end" aria-hidden="true">{ui.icons.ayah.symbol}</div></div> : null}
     {!hasItems && map.unassignedBlocks.some((block) => block.type === "paragraph" || block.type === "details") ? <div className="thread-unassigned"><ContinuousView blocks={map.unassignedBlocks.filter((block) => block.type !== "ayah")} {...reading} /></div> : null}
   </div>;
 }

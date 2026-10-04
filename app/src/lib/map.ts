@@ -21,6 +21,10 @@ export interface SurahMapModel {
   unassignedBlocks: Block[];
 }
 
+/** Beads and ayah nodes need about 1.5rem and a row each; past this many ayahs a surah is long: its strip shows rails alone and its thread opens on the passage outline. */
+export const longSurahAyahs = 12;
+export const isLongSurah = (ayahCount: number) => ayahCount > longSurahAyahs;
+
 const iconOrder: IconKey[] = ["ayah", "hadith", "athar", "scholar", "link", "hidaya"];
 
 /** Only a matching question immediately before its titled answer is redundant. */
@@ -92,4 +96,17 @@ export function stopNeighbours(map: SurahMapModel, number: number) {
     previous: index > 0 ? map.stops[index - 1] : undefined,
     next: index >= 0 ? map.stops[index + 1] : undefined,
   };
+}
+
+/**
+ * The question that opens a unit: the first titled paragraph in content order inside the scope, not the first
+ * ayah on the thread. A weaving puts its opening question first in the blocks even when its ayah comes later.
+ * A scope without a stop of its own falls back to the first stop, in content order, from its start ayah onward.
+ */
+export function heroStop<T extends { blockIndex: number; stationKey: string }>(
+  stops: T[], inScope: (stationKey: string) => boolean, startNumber: number,
+): T | undefined {
+  const first = (list: T[]) => list.reduce<T | undefined>((best, stop) => !best || stop.blockIndex < best.blockIndex ? stop : best, undefined);
+  return first(stops.filter((stop) => inScope(stop.stationKey)))
+    ?? first(stops.filter((stop) => Number(stop.stationKey.split(":")[1]) >= startNumber));
 }

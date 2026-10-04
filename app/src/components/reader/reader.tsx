@@ -2,10 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { Depth, SourceRecord, Surah, SurahSummary, Ui } from "@/lib/types";
-import { deriveSurahMap } from "@/lib/map";
+import { deriveSurahMap, heroStop } from "@/lib/map";
 import { deriveDepthItems, depthHero, depthPlaylist, sceneNeighbours, type SceneUnit } from "@/lib/depth-items";
 import { relationRecords } from "@/lib/relations";
-import { scopeStart, type Scope } from "@/lib/scope";
+import { scopeContains, scopeStart, type Scope } from "@/lib/scope";
 import { jumpToAyah } from "@/lib/reader-dom";
 import { useSheets } from "./sheet-provider";
 import { ReadingProvider } from "./reading-context";
@@ -16,7 +16,6 @@ import { MiniStrip } from "./mini-strip";
 import { ViewToggle } from "./view-toggle";
 import { SurahThread } from "./surah-thread";
 import { StopScene } from "./stop-scene";
-import { AyahStage } from "./ayah-stage";
 import { ContinuousView } from "./continuous-view";
 
 const storageKey = "huda:depth:v1";
@@ -95,7 +94,8 @@ export function Reader({ surah, ui, nextSurah, surahs }: { surah: Surah; ui: Ui;
   const mapped = units.length > 0;
   const showMap = mapped && view === "map";
   const stop = showMap ? units.find((item) => item.number === stopNumber) : undefined;
-  const playlist: SceneUnit[] = stop?.kind ? depthPlaylist(items, stop) : map.stops;
+  // The scene walks the weaving in its own order, so the opening question is followed by the paragraph the text puts second.
+  const playlist: SceneUnit[] = stop?.kind ? depthPlaylist(items, stop) : [...map.stops].sort((a, b) => a.blockIndex - b.blockIndex);
   const neighbours = stop ? sceneNeighbours(playlist, stop.number) : { previous: undefined, next: undefined };
   const visitedNumbers = new Set(units.filter((item) => visited.has(`${depth}:${item.blockIndex}`)).map((item) => item.number));
   const reading = { surahNo: surah.surah.no, relations: relationRecords(surah, depth), ayahs, records: surah.records, ui, onOpen: openSource };
@@ -125,7 +125,8 @@ export function Reader({ surah, ui, nextSurah, surahs }: { surah: Surah; ui: Ui;
     updateUrl(depth, null, next === "text", true);
   }
   const startNumber = Number(scopeStart(surah, scope).split(":")[1]);
-  const hero: SceneUnit | undefined = map.stops.length ? map.stops.find((item) => Number(item.stationKey.split(":")[1]) >= startNumber) : depthHero(items, startNumber, scope.kind === "surah");
+  const passages = surah.passages ?? [];
+  const hero: SceneUnit | undefined = map.stops.length ? heroStop(map.stops, (key) => scopeContains(key, scope, passages), startNumber) : depthHero(items, startNumber, scope.kind === "surah");
   const passage = stop ? surah.passages?.find((item) => item.id === stop.passage) : undefined;
   const nextPassage = neighbours.next && neighbours.next.passage !== stop?.passage ? surah.passages?.find((item) => item.id === neighbours.next!.passage) : undefined;
   return <ReadingProvider value={reading}><div className="huda-reader">
@@ -138,7 +139,7 @@ export function Reader({ surah, ui, nextSurah, surahs }: { surah: Surah; ui: Ui;
     {mapped ? <ViewToggle view={view} ui={ui} onChange={chooseView} /> : null}
     <article className="reading-body" aria-label={ui.levels.find((item) => item.depth === depth)!.name}>
       {showMap ? <SurahThread map={map} items={items} scope={scope} onScope={chooseScope} onAyah={(key) => openUnit(surah, { kind: "ayah", key }, chooseScope)} ui={ui} visited={visitedNumbers} currentStop={currentStops[depth] ?? null} hidden={Boolean(stop)} onOpen={openStop} />
-        : level.blocks.length ? <><AyahStage ayahs={map.groups.flatMap((group) => group.stations.map((station) => station.ayah))} ui={ui} focusKey={scopeStart(surah, scope)} /><div className="reader-text"><ContinuousView key={depth} blocks={map.continuousBlocks} {...reading} /></div></> : <p className="reader-text">{ui.reader.empty_level}</p>}
+        : level.blocks.length ? <div className="reader-text"><ContinuousView key={depth} blocks={map.continuousBlocks} {...reading} /></div> : <p className="reader-text">{ui.reader.empty_level}</p>}
     </article>
     {stop ? <StopScene stop={stop} stops={playlist} passage={passage} nextPassage={nextPassage} {...neighbours} nextSurah={nextSurah} onNavigate={openStop} onBack={backToMap} {...reading} /> : null}
   </div></ReadingProvider>;

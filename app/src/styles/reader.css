@@ -39,6 +39,13 @@
 .sheet-facts dd { font-size: var(--text-ui); line-height: var(--leading-ui); white-space: pre-wrap; }
 .sheet-evidence-quote { margin-block-start: var(--space-xs); padding: .75rem var(--space-md); border-inline-start: .25rem solid color-mix(in srgb, var(--tone) 70%, transparent); border-radius: var(--radius-s); background: var(--surface); font-family: var(--font-quote); font-size: var(--text-quote); line-height: var(--leading-quote); white-space: pre-wrap; }
 .sheet-ruling { padding: .75rem; background: var(--surface); border-radius: var(--radius-s); }
+.sheet-for { display: grid; gap: var(--space-xs); padding-block: var(--space-sm) var(--space-md); border-block-end: 1px solid var(--line); }
+.sheet-for-text { padding: var(--space-sm) var(--space-md); border-inline-start: .25rem solid var(--accent); border-radius: var(--radius-s); background: var(--surface); font-size: var(--text-details); line-height: 1.95; font-weight: 500; overflow-wrap: anywhere; }
+.sheet-count { color: var(--ink-2); font-size: var(--text-label); line-height: var(--leading-ui); }
+.sheet-count b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.sheet-takhrij { padding: .75rem; border: 1px dashed var(--line-strong); border-radius: var(--radius-s); }
+.sheet-takhrij dd + dd { margin-block-start: var(--space-sm); }
+.sheet-takhrij-by { display: block; color: var(--ink-3); font-size: var(--text-label); line-height: var(--leading-ui); }
 .sheet-link-strength { font-size: var(--text-label); line-height: 1.8; color: var(--ink-2); }
 .sheet-more-record { border-block-start: 1px solid var(--line); }
 .sheet-more-record > summary { list-style: none; display: flex; align-items: center; gap: var(--space-sm); min-block-size: var(--control-height); padding-block: var(--space-md); cursor: pointer; font-size: var(--text-ui); }
@@ -76,6 +83,9 @@
 .claim-pulse + .claim-pulse { margin-block-start: var(--space-sm); }
 .claim-pulse::before { content: ""; position: absolute; inset-inline-start: 0; inset-block: .5rem; inline-size: 3px; background: color-mix(in srgb, var(--tone) 70%, transparent); border-radius: var(--radius-pill); }
 .huda-inline-ayah { display: block; margin-block: .75rem; padding: var(--space-md); border-radius: var(--radius-s); background: color-mix(in srgb, var(--tone) 11%, var(--surface)); border: 1px solid color-mix(in srgb, var(--tone) 28%, transparent); font-family: var(--font-quran); font-size: var(--text-inline-ayah); line-height: var(--leading-inline-ayah); font-weight: 400; text-align: center; text-wrap: pretty; }
+.ayah-flow { margin-block: var(--space-lg); padding: var(--space-md); border-radius: var(--radius-s); background: color-mix(in srgb, var(--tone) 11%, var(--surface)); border: 1px solid color-mix(in srgb, var(--tone) 28%, transparent); }
+.ayah-flow-text { font-family: var(--font-quran); font-size: var(--text-inline-ayah); line-height: var(--leading-inline-ayah); font-weight: 400; text-wrap: pretty; }
+.ayah-flow .ayah-gem { color: var(--gold-strong); }
 .inline-ayah-reference { display: block; margin-block-start: var(--space-xs); color: var(--ink-3); font-family: var(--font-ui); font-size: var(--text-label); line-height: var(--leading-ui); font-variant-numeric: tabular-nums; }
 .verbatim-quote { display: block; quotes: none; margin-block: .75rem; padding: .75rem var(--space-md); background: var(--surface-2); border-inline-start: .25rem solid var(--gold); border-radius: var(--radius-s); font-family: var(--font-quote); font-size: var(--text-quote); line-height: var(--leading-quote); font-weight: 400; white-space: pre-wrap; }
 .verbatim-quote::before, .verbatim-quote::after { content: none; }
@@ -100,7 +110,7 @@
 .ayah-reference-button { min-inline-size: var(--control-height); min-block-size: var(--control-height); padding-inline: .75rem; border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--accent); font: inherit; text-decoration: underline; text-underline-offset: .2em; }
 [data-relation-highlight="true"] { background: var(--accent-soft); }
 .scene-scrim { z-index: var(--z-scene); background: var(--scrim); backdrop-filter: none; }
-.huda-stop-scene { position: fixed; inset-inline: 0; inset-block: 0; z-index: var(--z-scene); inline-size: 100%; max-inline-size: var(--reading-width); block-size: 100dvh; max-block-size: 100dvh; margin-inline: auto; translate: none; transform: none; display: flex; flex-direction: column; gap: 0; padding: 0; border-radius: 0; background: var(--bg); color: var(--ink); box-shadow: none; outline: none; animation: scene-in var(--dur-scene) var(--ease); }
+.huda-stop-scene { position: fixed; inset-inline: 0; inset-block: 0; z-index: var(--z-scene); inline-size: 100%; max-inline-size: var(--reading-width); block-size: 100dvh; max-block-size: 100dvh; margin-inline: auto; --tw-translate-x: 0; --tw-translate-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; translate: 0 0; transform: none; display: flex; flex-direction: column; gap: 0; padding: 0; border-radius: 0; background: var(--bg); color: var(--ink); box-shadow: none; outline: none; animation: scene-in var(--dur-scene) var(--ease); }
 @keyframes scene-in { from { transform: translateY(104%); } to { transform: none; } }
 .scene-topbar { display: flex; align-items: center; gap: var(--space-sm); flex: none; padding: var(--space-md) var(--gutter); border-block-end: 1px solid var(--line); }
 .scene-pips { flex: 1; display: flex; flex-wrap: wrap; gap: var(--space-xs); min-inline-size: 0; }
@@ -144,7 +154,8 @@
 .thread-nodes { margin-block-start: var(--space-md); }
 .passage-bar { position: relative; display: grid; grid-template-columns: 3.5rem minmax(0,1fr) auto; align-items: center; gap: 0; min-block-size: 3.25rem; margin-block: var(--space-xl) var(--space-sm); }
 .passage-node { justify-self: center; inline-size: 1.375rem; block-size: 1.375rem; border-radius: var(--radius-s); background: var(--accent); transform: rotate(45deg); }
-.passage-title { font-size: var(--text-door); line-height: 1.8; font-weight: 700; color: var(--accent); padding-inline: .875rem .5rem; }
+.passage-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--space-xs); padding-inline: .875rem .5rem; }
+.passage-title { font-size: var(--text-door); line-height: 1.8; font-weight: 700; color: var(--accent); }
 .passage-range { padding-inline: .875rem .5rem; color: var(--ink-3); font-size: var(--text-label); font-variant-numeric: tabular-nums; }
 .ayah-node { display: grid; grid-template-columns: 3.5rem minmax(0,1fr); position: relative; padding-block: var(--space-xs) var(--space-md); scroll-margin-block-start: 10rem; transition: opacity var(--dur-state) var(--ease); }
 .ayah-node::before, .ayah-node::after { content: ""; position: absolute; inset-block: 0; inset-inline-start: 1.6875rem; inline-size: 2px; background: var(--line-strong); }
@@ -172,10 +183,11 @@
 }
 @media (prefers-reduced-motion: reduce) { .ayah-node::after { transform: none; } }
 .console { position: sticky; inset-block-start: 0; z-index: var(--z-sticky); padding-block: .75rem var(--space-sm); background: color-mix(in srgb,var(--bg) 82%,transparent); backdrop-filter: blur(14px) saturate(140%); border-block: 1px solid var(--line); }
-.mini-strip { overflow-x: auto; }
+.mini-strip { overflow-x: clip; overflow-y: visible; }
+.mini-here { grid-row: 2; justify-self: center; inline-size: .625rem; block-size: .625rem; margin-block-start: var(--space-xs); border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 3px var(--bg); }
 .mini-grid { display: grid; gap: 0 .25rem; }
 .mini-group { display: contents; }
-.mini-rail { grid-row: 1; display: grid; align-items: center; min-block-size: var(--control-height); padding: 0; border: 0; background: transparent; }
+.mini-rail { grid-row: 1; display: grid; align-items: center; min-block-size: 1.5rem; padding: 0; border: 0; background: transparent; }
 .mini-rail span { block-size: .25rem; border-radius: var(--radius-pill); }
 .mini-rail[aria-pressed="true"] span { background: var(--accent) !important; }
 .mini-rail.is-plain { min-block-size: .5rem; }
@@ -211,7 +223,7 @@
 .cover-meta { position: relative; display: flex; align-items: start; gap: .75rem; font-size: var(--text-ui); color: var(--ink-2); line-height: var(--leading-ui); }
 .cover-count { display: flex; flex: none; align-items: center; gap: var(--space-sm); color: var(--accent); font-variant-numeric: tabular-nums; }
 .reading-unit-button { margin-block-start: .75rem; inline-size: auto; max-inline-size: 100%; }
-.surah-switcher { display: flex; gap: var(--space-sm); overflow-x: auto; margin-inline: calc(-1 * var(--gutter)); padding: var(--space-lg) var(--gutter) var(--space-xs); scroll-snap-type: x proximity; }
+.surah-switcher { display: flex; gap: var(--space-sm); overflow-x: auto; margin-inline: calc(-1 * var(--gutter)); padding: var(--space-md) var(--gutter) var(--space-xs); scroll-snap-type: x proximity; }
 .surah-switch-chip { display: inline-flex; align-items: center; flex: none; min-inline-size: var(--control-height); min-block-size: var(--control-height); padding-inline: var(--space-lg); border: 1px solid var(--border-ui); border-radius: var(--radius-pill); font-family: var(--font-quran); font-size: var(--text-quote); line-height: 1.8; scroll-snap-align: start; }
 .surah-switch-chip[aria-current="page"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .hero-area { padding-inline: var(--gutter); padding-block-end: var(--space-md); }
@@ -226,9 +238,8 @@
 .hero-go { display: grid; place-items: center; flex: none; inline-size: 3.25rem; block-size: 3.25rem; border-radius: 50%; color: var(--stage-b); background: var(--stage-ink); }
 .hero-icons .source-chip { --ink: var(--stage-ink); }
 .huda-reader .console, .surah-thread, .reader-text { padding-inline: var(--gutter); }
-.view-toggle { display: flex; flex-wrap: wrap; gap: var(--space-sm); padding: .75rem var(--gutter) 0; }
-.view-toggle .huda-button { flex: 1; }
-.view-toggle [aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.view-toggle { display: flex; padding: var(--space-xs) var(--gutter) 0; }
+.view-toggle .huda-button { color: var(--accent); }
 body:has(.huda-reader) .huda-legend-bar { display: none; }
 body:has(.huda-reader) .page-shell { padding-block-start: 0; padding-block-end: calc(var(--space-xl) + env(safe-area-inset-bottom)); }
 .reading-unit-sheet { display: grid; gap: var(--space-lg); padding-block: var(--space-sm) var(--space-md); }
@@ -255,3 +266,9 @@ body:has(.huda-reader) .page-shell { padding-block-start: 0; padding-block-end: 
 .thread-shelf .door-wrap::before, .thread-shelf .door-wrap::after { display: none; }
 .thread-shelf .stop-door { background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
 .shelf-end { display: grid; justify-items: center; padding-block: 1.25rem .25rem; color: var(--accent); font-size: 1.75rem; }
+
+/* Scroll containers keep their scrolling and hide the bar, as the adopted model does (style.css:111-114, 154-155, 292, 371). */
+.surah-switcher, .mini-strip, .huda-sheet-scroll, .huda-scene-scroll { scrollbar-width: none; }
+.surah-switcher::-webkit-scrollbar, .mini-strip::-webkit-scrollbar, .huda-sheet-scroll::-webkit-scrollbar, .huda-scene-scroll::-webkit-scrollbar { display: none; }
+.thread-shelf-title { padding-block-end: var(--space-sm); margin-inline-start: 3.5rem; }
+.huda-scene-title:focus { outline: none; }
