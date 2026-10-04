@@ -45,7 +45,9 @@ export interface Ui {
   link_strength: Record<LinkStrength | "note", string>;
   panel: Record<"title" | "claim" | "source" | "author" | "locator" | "quote" | "ruling" | "ruler" | "open_source" | "close" | "no_badge", string>;
   legend: Record<"title" | "icons_title" | "badges_title" | "show" | "hide", string>;
-  reader: Record<"choose_depth" | "ayahs_title" | "surahs_title" | "back" | "empty_level", string>;
+  reader: Record<"choose_depth" | "ayahs_title" | "surahs_title" | "back" | "empty_level"
+    | "map_view" | "read_continuous" | "next_stop" | "previous_stop" | "why_next" | "next_surah"
+    | "open_term" | "passages_title", string>;
   disclosure: Record<"ai" | "scripture" | "limits", string>;
   phrases: Record<"insufficient_sources" | "out_of_scope" | "arabic_only" | "fatwa", string>;
   links: Record<"fatwa" | "shubuhat", { label: string; url: string }>;

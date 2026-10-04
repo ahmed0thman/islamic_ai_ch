@@ -2,21 +2,32 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
-import type { Ayah, Block, Depth, Segment, SourceRecord, Surah, Ui } from "@/lib/types";
+import type { Ayah, Block, Depth, Segment, SourceRecord, Surah, SurahSummary, Ui } from "@/lib/types";
+import { deriveSurahMap, stopNeighbours, type MapStop } from "@/lib/map";
 import { Marker } from "./marks";
 import { SourcePanel } from "./source-panel";
+import { SurahMap } from "./surah-map";
+import { StopScene } from "./stop-scene";
+import { GlanceCard } from "./glance-card";
 import { numeral } from "@/lib/numerals";
 
 const storageKey = "huda:depth:v1";
+const viewStorageKey = "huda:reader-view:v1";
+type ReadingView = "map" | "text";
 function parseDepth(value: string | null): Depth | null {
   return value !== null && /^[0-3]$/.test(value) ? Number(value) as Depth : null;
 }
 function remember(depth: Depth) {
   try { localStorage.setItem(storageKey, String(depth)); } catch { /* Reading works when storage is unavailable. */ }
 }
-function updateUrl(depth: Depth, push: boolean) {
+function rememberView(view: ReadingView) {
+  try { localStorage.setItem(viewStorageKey, view); } catch { /* Optional device preference. */ }
+}
+function updateUrl(depth: Depth, stop: number | null, text: boolean, push: boolean) {
   const url = new URL(window.location.href);
   url.searchParams.set("d", String(depth));
+  if (stop !== null) url.searchParams.set("stop", String(stop)); else url.searchParams.delete("stop");
+  if (text) url.searchParams.set("view", "text"); else url.searchParams.delete("view");
   if (push) window.history.pushState(window.history.state, "", url);
   else window.history.replaceState(window.history.state, "", url);
 }
@@ -28,7 +39,7 @@ function splitLastWord(text: string): [string, string] {
   const tail = text.match(/\S+\s*$/u)?.[0] ?? text;
   return [text.slice(0, text.length - tail.length), tail];
 }
-function AyahText({ ayah, inline = false, part = "whole" }: { ayah: Ayah; inline?: boolean; part?: "whole" | "start" | "end" }) {
+export function AyahText({ ayah, inline = false, part = "whole" }: { ayah: Ayah; inline?: boolean; part?: "whole" | "start" | "end" }) {
   const words = ayahWords(ayah.text);
   const [start, end] = splitLastWord(words);
   return <span className={inline ? "quran inline-ayah" : "quran ayah-text"}>
@@ -36,10 +47,10 @@ function AyahText({ ayah, inline = false, part = "whole" }: { ayah: Ayah; inline
     {part !== "start" ? <>{"\u00a0"}<span className="ayah-number">{numeral(ayah.no)}</span></> : null}
   </span>;
 }
-type ReadingProps = {
+export type ReadingProps = {
   ayahs: Map<string, Ayah>; records: Surah["records"]; ui: Ui; onOpen: (records: SourceRecord[]) => void;
 };
-export function ContentBlock({ block, ...props }: ReadingProps & { block: Block }) {
+export function ContentBlock({ block, showTitle = true, ...props }: ReadingProps & { block: Block; showTitle?: boolean }) {
   const { ayahs, ui } = props;
   if (block.type === "heading") return <h2 className={block.kind === "question" ? "reading-heading reading-question" : "reading-heading"}>{block.text}</h2>;
   if (block.type === "ayah") return <section className="ayah-block" aria-label={ui.reader.ayahs_title}>
@@ -53,7 +64,7 @@ export function ContentBlock({ block, ...props }: ReadingProps & { block: Block 
     <ReadingSegments segments={block.segments} {...props} />
   </p>;
   // A titled paragraph is a stop: in continuous reading its title shows as the question above it.
-  return block.title ? <><h2 className="reading-heading reading-question">{block.title}</h2>{paragraph}</> : paragraph;
+  return block.title && showTitle ? <><h2 className="reading-heading reading-question">{block.title}</h2>{paragraph}</> : paragraph;
 }
 function ReadingSegments({ segments: input, ayahs, records, ui, onOpen }: ReadingProps & { segments: Segment[] }) {
   const segments = [...input];
@@ -88,23 +99,74 @@ function ReadingSegments({ segments: input, ayahs, records, ui, onOpen }: Readin
   });
   return <>{nodes}</>;
 }
-export function Reader({ surah, ui }: { surah: Surah; ui: Ui }) {
+export function Reader({ surah, ui, nextSurah }: { surah: Surah; ui: Ui; nextSurah?: SurahSummary }) {
   const [depth, setDepth] = useState<Depth>(1);
+  const [view, setView] = useState<ReadingView>("map");
+  const [stopNumber, setStopNumber] = useState<number | null>(null);
+  const [visited, setVisited] = useState<Set<string>>(() => new Set());
+  const [currentStops, setCurrentStops] = useState<Partial<Record<Depth, number>>>({});
   const [selected, setSelected] = useState<SourceRecord[] | null>(null);
+  const maps = useMemo(() => ([0, 1, 2, 3] as const).map((level) => deriveSurahMap(surah, level)), [surah]);
   const ayahs = useMemo(() => new Map(surah.ayahs.map((ayah) => [ayah.key, ayah])), [surah.ayahs]);
   const closePanel = useCallback(() => setSelected(null), []);
   useEffect(() => {
-    function restore() {
+    function restore(useSavedView: boolean) {
       let saved: Depth | null = null;
-      try { saved = parseDepth(localStorage.getItem(storageKey)); } catch { /* Optional device preference. */ }
-      const next = parseDepth(new URL(window.location.href).searchParams.get("d")) ?? saved ?? 1;
-      setDepth(next); setSelected(null); remember(next); updateUrl(next, false);
+      let savedView: ReadingView = "map";
+      try {
+        saved = parseDepth(localStorage.getItem(storageKey));
+        savedView = localStorage.getItem(viewStorageKey) === "text" ? "text" : "map";
+      } catch { /* Optional device preferences. */ }
+      const params = new URL(window.location.href).searchParams;
+      const next = parseDepth(params.get("d")) ?? saved ?? 1;
+      const map = maps[next];
+      const switchable = next === 1 || next === 2;
+      const canOpenScene = map.stops.length > 0 && (switchable || (next === 0 && map.stops.length > 2));
+      const rawStop = params.get("stop");
+      const requestedStop = rawStop && /^[1-9]\d*$/.test(rawStop) ? Number(rawStop) : null;
+      const requestedView = params.get("view");
+      const nextView: ReadingView = requestedView === "text" ? "text"
+        : requestedStop !== null || requestedView === "map" ? "map"
+        : useSavedView || !switchable ? savedView : "map";
+      const stop = canOpenScene && (!switchable || nextView === "map")
+        ? map.stops.find((item) => item.number === requestedStop) : undefined;
+      setDepth(next); setView(nextView); setStopNumber(stop?.number ?? null); setSelected(null);
+      if (stop) {
+        setVisited((previous) => new Set(previous).add(`${next}:${stop.blockIndex}`));
+        setCurrentStops((previous) => ({ ...previous, [next]: stop.number }));
+      }
+      remember(next);
+      updateUrl(next, stop?.number ?? null, switchable && (nextView === "text" || !map.stops.length), false);
     }
-    restore();
-    window.addEventListener("popstate", restore);
-    return () => window.removeEventListener("popstate", restore);
-  }, []);
+    restore(true);
+    const popstate = () => restore(false);
+    window.addEventListener("popstate", popstate);
+    return () => window.removeEventListener("popstate", popstate);
+  }, [maps]);
   const level = surah.levels[depth];
+  const map = maps[depth];
+  const switchable = depth === 1 || depth === 2;
+  const showMap = map.stops.length > 0 && (switchable ? view === "map" : depth === 0 && map.stops.length > 2);
+  const stop = showMap ? map.stops.find((item) => item.number === stopNumber) : undefined;
+  const neighbours = stop ? stopNeighbours(map, stop.number) : {};
+  const visitedNumbers = new Set(map.stops.filter((item) => visited.has(`${depth}:${item.blockIndex}`)).map((item) => item.number));
+  const reading = { ayahs, records: surah.records, ui, onOpen: setSelected };
+  const glance = depth === 0 && map.stops.length > 0 && map.stops.length <= 2
+    ? map.stops.reduce((first, item) => item.blockIndex < first.blockIndex ? item : first) : undefined;
+
+  function openStop(next: MapStop) {
+    setStopNumber(next.number); setSelected(null);
+    setVisited((previous) => new Set(previous).add(`${depth}:${next.blockIndex}`));
+    setCurrentStops((previous) => ({ ...previous, [depth]: next.number }));
+    updateUrl(depth, next.number, false, true);
+  }
+  function backToMap() {
+    setStopNumber(null); setSelected(null); updateUrl(depth, null, false, true);
+  }
+  function chooseView(next: ReadingView) {
+    setView(next); setStopNumber(null); setSelected(null); rememberView(next);
+    updateUrl(depth, null, next === "text", true);
+  }
   return <>
     <header className="reader-header">
       <Link className="back-link" href="/" prefetch={false}><span aria-hidden="true">→ </span>{ui.reader.back}</Link>
@@ -115,20 +177,25 @@ export function Reader({ surah, ui }: { surah: Surah; ui: Ui }) {
         <div className="depth-options">
           {ui.levels.map((item) => <label key={item.depth} className={depth === item.depth ? "depth-option is-selected" : "depth-option"}>
             <input type="radio" name="depth" value={item.depth} checked={depth === item.depth} onChange={() => {
-              setDepth(item.depth); setSelected(null); remember(item.depth); updateUrl(item.depth, true);
+              setDepth(item.depth); setStopNumber(null); setSelected(null); remember(item.depth);
+              updateUrl(item.depth, null, (item.depth === 1 || item.depth === 2) && (view === "text" || !maps[item.depth].stops.length), true);
             }} />
             <span>{item.name}</span>
           </label>)}
         </div>
       </fieldset>
     </header>
+    {switchable && map.stops.length > 0 ? <div className="reader-view-switch">
+      <button type="button" aria-pressed={view === "map"} onClick={() => chooseView("map")}>{ui.reader.map_view}</button>
+      <button type="button" aria-pressed={view === "text"} onClick={() => chooseView("text")}>{ui.reader.read_continuous}</button>
+    </div> : null}
     <article className="reading-body" aria-label={ui.levels.find((item) => item.depth === depth)!.name}>
-      {level.blocks.length ? level.blocks.map((block, i) => {
-        // A question heading already asks what the stop under it is titled; show it once.
-        const above = level.blocks[i - 1];
-        const repeated = block.type === "paragraph" && block.title && above?.type === "heading" && above.text === block.title;
-        return <ContentBlock key={`${depth}-${i}`} block={repeated ? { ...block, title: undefined } : block} ayahs={ayahs} records={surah.records} ui={ui} onOpen={setSelected} />;
-      }) : <p>{ui.reader.empty_level}</p>}
+      {showMap ? <>
+        <SurahMap key={depth} map={map} ui={ui} visited={visitedNumbers} currentStop={currentStops[depth] ?? null} hidden={Boolean(stop)} onOpen={openStop} />
+        {stop ? <StopScene stop={stop} {...neighbours} nextSurah={nextSurah} onNavigate={openStop} onBack={backToMap} {...reading} /> : null}
+      </> : glance ? <GlanceCard stop={glance} ayahKeys={map.groups.flatMap((group) => group.stations.map((station) => station.ayah.key))} {...reading} />
+        : level.blocks.length ? map.continuousBlocks.map((block, i) => <ContentBlock key={`${depth}-${i}`} block={block} {...reading} />)
+        : <p>{ui.reader.empty_level}</p>}
     </article>
     {selected ? <SourcePanel records={selected} ui={ui} onClose={closePanel} /> : null}
   </>;

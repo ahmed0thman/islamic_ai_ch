@@ -25,10 +25,12 @@ export async function generateMetadata({ params }: { params: Promise<{ no: strin
   return { title: (await load(params)).surah.name };
 }
 export default async function SurahPage({ params }: { params: Promise<{ no: string }> }) {
-  const [surah, ui] = await Promise.all([load(params), getUi()]);
+  const [surah, ui, index] = await Promise.all([load(params), getUi(), getIndex()]);
+  const position = index.surahs.findIndex((item) => item.no === surah.surah.no);
+  const nextSurah = index.surahs[position + 1];
   if (process.env.HUDA_ASK === "1") {
     const { AskBox } = await import("@/components/ask-box");
-    return <><Reader surah={surah} ui={ui} /><AskBox key={surah.surah.no} surah={surah} ui={ui} /></>;
+    return <><Reader key={surah.surah.no} surah={surah} ui={ui} nextSurah={nextSurah} /><AskBox key={surah.surah.no} surah={surah} ui={ui} /></>;
   }
-  return <Reader surah={surah} ui={ui} />;
+  return <Reader key={surah.surah.no} surah={surah} ui={ui} nextSurah={nextSurah} />;
 }
