@@ -123,7 +123,12 @@ export function Reader({ surah, ui }: { surah: Surah; ui: Ui }) {
       </fieldset>
     </header>
     <article className="reading-body" aria-label={ui.levels.find((item) => item.depth === depth)!.name}>
-      {level.blocks.length ? level.blocks.map((block, i) => <ContentBlock key={`${depth}-${i}`} block={block} ayahs={ayahs} records={surah.records} ui={ui} onOpen={setSelected} />) : <p>{ui.reader.empty_level}</p>}
+      {level.blocks.length ? level.blocks.map((block, i) => {
+        // A question heading already asks what the stop under it is titled; show it once.
+        const above = level.blocks[i - 1];
+        const repeated = block.type === "paragraph" && block.title && above?.type === "heading" && above.text === block.title;
+        return <ContentBlock key={`${depth}-${i}`} block={repeated ? { ...block, title: undefined } : block} ayahs={ayahs} records={surah.records} ui={ui} onOpen={setSelected} />;
+      }) : <p>{ui.reader.empty_level}</p>}
     </article>
     {selected ? <SourcePanel records={selected} ui={ui} onClose={closePanel} /> : null}
   </>;
