@@ -89,6 +89,7 @@
 - [`first-version-scope.md`](06-product/first-version-scope.md): نطاق النسخة الأولى: مقطعان في الواجهة وثالث على قواعد المعمل.
 - [`measurement.md`](06-product/measurement.md): طبقة الميزان، وأفكار القياس التي طُرحت ولم تُعتمد.
 - [`safety-test-set.md`](06-product/safety-test-set.md): مجموعة اختبار السلامة: حالات الملحق الاثنتا عشرة وحالاتنا، ولكل حالة سلوك هُدًى والقرار الذي يحكمه. ونسختها الآلية في `tools/data/eval/safety_cases.json`، ويتحقق `tools/check_safety_cases.py` أن الملفين بالمعرّفات نفسها.
+- [`record-schema.md`](06-product/record-schema.md): **شكل السجل وجداول قاعدة البيانات (ج):** طبقات البيانات الست، وحقول السجل والدليل، وسبعة جداول، والفحوص الآلية، وأربعة سجلات من الكوثر مثالًا، وما بقي مفتوحًا.
 - وانظر أيضًا: واجهة المخرج وقواعد كتابته في [`02-method/nasij-reader-layer.md`](02-method/nasij-reader-layer.md)، ودور الذكاء الاصطناعي في مواصفة الشريحة 4 ضمن [`07-competition/deck-slides-1-5.md`](07-competition/deck-slides-1-5.md).
 
 ### 07-competition: المسابقة
