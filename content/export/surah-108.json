@@ -1,0 +1,454 @@
+{
+  "schema": 1,
+  "fixture": true,
+  "surah": {
+    "no": 108,
+    "name": "الكَوثر",
+    "ayah_count": 3
+  },
+  "ayahs": [
+    {
+      "key": "108:1",
+      "no": 1,
+      "text": "إِنَّآ أَعۡطَيۡنَٰكَ ٱلۡكَوۡثَرَ ﰀ"
+    },
+    {
+      "key": "108:2",
+      "no": 2,
+      "text": "فَصَلِّ لِرَبِّكَ وَٱنۡحَرۡ ﰁ"
+    },
+    {
+      "key": "108:3",
+      "no": 3,
+      "text": "إِنَّ شَانِئَكَ هُوَ ٱلۡأَبۡتَرُ ﰂ"
+    }
+  ],
+  "levels": [
+    {
+      "depth": 0,
+      "blocks": [
+        {
+          "type": "ayah",
+          "keys": [
+            "108:1",
+            "108:2",
+            "108:3"
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "عنوان تجريبي للدرجة 0"
+        },
+        {
+          "type": "paragraph",
+          "role": "claim",
+          "segments": [
+            {
+              "t": "text",
+              "v": "نص تجريبي قبل الآية "
+            },
+            {
+              "t": "ayah",
+              "key": "108:1"
+            },
+            {
+              "t": "text",
+              "v": " ونص تجريبي بعدها."
+            },
+            {
+              "t": "mark",
+              "records": [
+                "108-x1"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "depth": 1,
+      "blocks": [
+        {
+          "type": "ayah",
+          "keys": [
+            "108:1",
+            "108:2",
+            "108:3"
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "عنوان تجريبي للدرجة 1"
+        },
+        {
+          "type": "paragraph",
+          "role": "claim",
+          "segments": [
+            {
+              "t": "text",
+              "v": "نص تجريبي قبل الآية "
+            },
+            {
+              "t": "ayah",
+              "key": "108:1"
+            },
+            {
+              "t": "text",
+              "v": " ونص تجريبي بعدها."
+            },
+            {
+              "t": "mark",
+              "records": [
+                "108-x1"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "role": "claim",
+          "segments": [
+            {
+              "t": "text",
+              "v": "فقرة تجريبية ثانية بعلامتين."
+            },
+            {
+              "t": "mark",
+              "records": [
+                "108-x2"
+              ]
+            },
+            {
+              "t": "text",
+              "v": " وتكملة تجريبية."
+            },
+            {
+              "t": "mark",
+              "records": [
+                "108-x4"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "depth": 2,
+      "blocks": [
+        {
+          "type": "ayah",
+          "keys": [
+            "108:1",
+            "108:2",
+            "108:3"
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "عنوان تجريبي للدرجة 2"
+        },
+        {
+          "type": "paragraph",
+          "role": "claim",
+          "segments": [
+            {
+              "t": "text",
+              "v": "نص تجريبي قبل الآية "
+            },
+            {
+              "t": "ayah",
+              "key": "108:1"
+            },
+            {
+              "t": "text",
+              "v": " ونص تجريبي بعدها."
+            },
+            {
+              "t": "mark",
+              "records": [
+                "108-x1"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "role": "claim",
+          "segments": [
+            {
+              "t": "text",
+              "v": "فقرة تجريبية ثانية بعلامتين."
+            },
+            {
+              "t": "mark",
+              "records": [
+                "108-x2"
+              ]
+            },
+            {
+              "t": "text",
+              "v": " وتكملة تجريبية."
+            },
+            {
+              "t": "mark",
+              "records": [
+                "108-x4"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "role": "claim",
+          "segments": [
+            {
+              "t": "text",
+              "v": "فقرة تجريبية للهداية."
+            },
+            {
+              "t": "mark",
+              "records": [
+                "108-x5"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "depth": 3,
+      "blocks": [
+        {
+          "type": "ayah",
+          "keys": [
+            "108:1",
+            "108:2",
+            "108:3"
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "عنوان تجريبي للدرجة 3"
+        },
+        {
+          "type": "paragraph",
+          "role": "claim",
+          "segments": [
+            {
+              "t": "text",
+              "v": "نص تجريبي قبل الآية "
+            },
+            {
+              "t": "ayah",
+              "key": "108:1"
+            },
+            {
+              "t": "text",
+              "v": " ونص تجريبي بعدها."
+            },
+            {
+              "t": "mark",
+              "records": [
+                "108-x1"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "role": "claim",
+          "segments": [
+            {
+              "t": "text",
+              "v": "فقرة تجريبية ثانية بعلامتين."
+            },
+            {
+              "t": "mark",
+              "records": [
+                "108-x2"
+              ]
+            },
+            {
+              "t": "text",
+              "v": " وتكملة تجريبية."
+            },
+            {
+              "t": "mark",
+              "records": [
+                "108-x4"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "role": "claim",
+          "segments": [
+            {
+              "t": "text",
+              "v": "فقرة تجريبية للهداية."
+            },
+            {
+              "t": "mark",
+              "records": [
+                "108-x5"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "role": "transmission",
+          "segments": [
+            {
+              "t": "quote",
+              "v": "نص رواية تجريبي منقول بلفظه",
+              "record": "108-x3"
+            },
+            {
+              "t": "mark",
+              "records": [
+                "108-x3"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "records": {
+    "108-x1": {
+      "id": "108-x1",
+      "icons": [
+        "scholar"
+      ],
+      "badge": null,
+      "claim": "دعوى تجريبية لاختبار الواجهة",
+      "status_text": "نص حالة تجريبي",
+      "depth_min": 0,
+      "evidence": [
+        {
+          "icon": "scholar",
+          "source_title": "مصدر تجريبي",
+          "author": "قائل تجريبي",
+          "locator": "موضع تجريبي",
+          "quote": "اقتباس تجريبي قصير",
+          "url": null,
+          "rulings": [],
+          "link_strength": null
+        }
+      ]
+    },
+    "108-x2": {
+      "id": "108-x2",
+      "icons": [
+        "hadith"
+      ],
+      "badge": "thabit",
+      "claim": "دعوى تجريبية لاختبار الواجهة",
+      "status_text": "نص حالة تجريبي",
+      "depth_min": 0,
+      "evidence": [
+        {
+          "icon": "hadith",
+          "source_title": "مصدر تجريبي",
+          "author": "قائل تجريبي",
+          "locator": "موضع تجريبي",
+          "quote": "اقتباس تجريبي قصير",
+          "url": null,
+          "rulings": [
+            {
+              "text": "لفظ حكم تجريبي",
+              "ruler": "حاكم تجريبي",
+              "where": "حاشية"
+            }
+          ],
+          "link_strength": null
+        }
+      ]
+    },
+    "108-x3": {
+      "id": "108-x3",
+      "icons": [
+        "athar"
+      ],
+      "badge": "la_yathbut",
+      "claim": "دعوى تجريبية لاختبار الواجهة",
+      "status_text": "نص حالة تجريبي",
+      "depth_min": 0,
+      "evidence": [
+        {
+          "icon": "athar",
+          "source_title": "مصدر تجريبي",
+          "author": "قائل تجريبي",
+          "locator": "موضع تجريبي",
+          "quote": "اقتباس تجريبي قصير",
+          "url": null,
+          "rulings": [
+            {
+              "text": "لفظ حكم تجريبي",
+              "ruler": "حاكم تجريبي",
+              "where": "حاشية"
+            }
+          ],
+          "link_strength": null
+        }
+      ]
+    },
+    "108-x4": {
+      "id": "108-x4",
+      "icons": [
+        "scholar",
+        "link"
+      ],
+      "badge": "khilaf_mutabar",
+      "claim": "دعوى تجريبية لاختبار الواجهة",
+      "status_text": "نص حالة تجريبي",
+      "depth_min": 0,
+      "evidence": [
+        {
+          "icon": "scholar",
+          "source_title": "مصدر تجريبي",
+          "author": "قائل تجريبي",
+          "locator": "موضع تجريبي",
+          "quote": "اقتباس تجريبي قصير",
+          "url": null,
+          "rulings": [],
+          "link_strength": null
+        },
+        {
+          "icon": "link",
+          "source_title": "مصدر تجريبي",
+          "author": "قائل تجريبي",
+          "locator": "موضع تجريبي",
+          "quote": "اقتباس تجريبي قصير",
+          "url": null,
+          "rulings": [],
+          "link_strength": "medium"
+        }
+      ]
+    },
+    "108-x5": {
+      "id": "108-x5",
+      "icons": [
+        "hidaya"
+      ],
+      "badge": null,
+      "claim": "دعوى تجريبية لاختبار الواجهة",
+      "status_text": "نص حالة تجريبي",
+      "depth_min": 0,
+      "evidence": [
+        {
+          "icon": "hidaya",
+          "source_title": "مصدر تجريبي",
+          "author": "قائل تجريبي",
+          "locator": "موضع تجريبي",
+          "quote": "اقتباس تجريبي قصير",
+          "url": null,
+          "rulings": [],
+          "link_strength": null
+        }
+      ]
+    }
+  }
+}
