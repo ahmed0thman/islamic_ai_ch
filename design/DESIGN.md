@@ -26,7 +26,7 @@ Hard rules from the research (apply to every component below):
 - **No naive filtering by ayah or passage.** Block tags (`ayahs`, `passage`) do not describe complete explanatory scope (for example the glance paragraph of Al-Duha is tagged `p1` and `93:3` but summarizes the whole surah). Reading-unit selection is navigation and focus, never a filter that hides content (section 3.1).
 - **Dark mode has its own tested colors**, not an automatic inversion (section 1.1).
 
-Design read: reading app for non-specialist Arabic readers, calm and premium, editorial-manuscript leaning, cold ink-teal neutrals (not beige/brass), `DESIGN_VARIANCE 6 / MOTION_INTENSITY 5 / VISUAL_DENSITY 4`.
+Design read: reading app for non-specialist Arabic readers, calm and premium, editorial-manuscript leaning, dark green primary with one calm gold accent on warm neutrals in light and Kimi-style dark greys in dark (owner decision of 4 Oct 2026, decision 072 in `docs/decisions.md`; no sky blue and no teal anywhere in the interface), `DESIGN_VARIANCE 6 / MOTION_INTENSITY 5 / VISUAL_DENSITY 4`.
 
 ## 1. Tokens
 
@@ -37,35 +37,44 @@ Tailwind 4: put the raw variables in `app/src/styles/tokens.css` (`:root` plus d
 ```css
 :root {
   color-scheme: light dark;
-  --bg:        #e7eded;   /* page ground */
-  --surface:   #f6f9f8;   /* cards, sheets, doors */
-  --surface-2: #ecf2f1;   /* quotes, evidence blocks, track */
-  --ink:       #0e1c1f;   /* primary text */
-  --ink-2:     #405559;   /* secondary text */
-  --ink-3:     #5f7377;   /* tertiary, labels, captions */
-  --line:        rgba(14,28,31,.13);
-  --line-strong: rgba(14,28,31,.24);
-  --accent:      #0a5b69; /* the only accent: threads, links, terms, selected */
+  --bg:        #f1eee4;   /* page ground (warm neutral) */
+  --surface:   #fbf9f3;   /* cards, sheets, doors */
+  --surface-2: #f3efe3;   /* quotes, evidence blocks, track */
+  --ink:       #1c2420;   /* primary text */
+  --ink-2:     #46514a;   /* secondary text */
+  --ink-3:     #5e6962;   /* tertiary, labels, captions (12.5px and up only) */
+  --line:        rgba(28,36,32,.13);
+  --line-strong: rgba(28,36,32,.26);   /* thread, dividers */
+  --border-ui:   rgba(28,36,32,.5);    /* borders of controls (3:1 against the ground) */
+  --accent:      #14472f;  /* dark green, the primary: stage, hook card, doors' branches, terms, links, selected */
   --accent-soft: color-mix(in srgb, var(--accent) 12%, transparent);
-  --on-accent:   #f2fbfa;
-  --stage-a: #0c2a31;     /* ayah stage + hero gradient, dark teal in both modes */
-  --stage-b: #0a4350;
-  --stage-ink:  #eaf5f2;
-  --stage-mute: #8dbbbb;
-  --scrim: rgba(6,18,20,.5);
+  --on-accent:   #f4f0e2;
+  --gold:        #9f7d27;  /* the one accent: ayah-number ring, thread progress, current bead, depth underline, progress pips. Strokes and fills only, never small text */
+  --gold-strong: #7a5c12;  /* gold when it must be text on a light ground (ayah number in the medal) */
+  --on-gold:     #1c1608;
+  --gold-stage:  #d9bc77;  /* gold on the dark green stage (ayah gem) */
+  --stage-a: #14402f;      /* ayah stage + hero card gradient, dark green in both modes */
+  --stage-b: #0b271c;
+  --stage-ink:  #f2eddd;
+  --stage-mute: #a9c4b0;
+  --shadow: 0 1px 0 rgba(28,36,32,.04), 0 14px 28px -18px rgba(16,51,37,.45);
+  --scrim: rgba(8,16,12,.55);
   /* source types: values come from ui.icons.<key>.color at runtime and are set inline as --tone */
   /* badges: ui.badges.<key>.color, set inline as --tone */
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg:#071113; --surface:#0e1c1f; --surface-2:#14272b;
-    --ink:#e7f1ef; --ink-2:#a9bfbd; --ink-3:#7f9695;
-    --line:rgba(231,241,239,.14); --line-strong:rgba(231,241,239,.28);
-    --accent:#5ec8d6; --on-accent:#04242a;
-    --stage-a:#0b2229; --stage-b:#0d3a45; --scrim:rgba(0,0,0,.62);
+    --bg:#14161a; --surface:#1a1d22; --surface-2:#1f232a;
+    --ink:#ece8de; --ink-2:#a9aeb6; --ink-3:#8a9098;
+    --line:rgba(236,232,222,.14); --line-strong:rgba(236,232,222,.3); --border-ui:rgba(236,232,222,.5);
+    --accent:#7fc49c; --on-accent:#0b271c;
+    --gold:#c9a95c; --gold-strong:#d9bc77; --on-gold:#1a1608; --gold-stage:#d9bc77;
+    --stage-a:#133b2b; --stage-b:#0b271c; --scrim:rgba(0,0,0,.62);
   }
 }
 ```
+
+Palette provenance: dark green and warm paper from the Codex entry, dark greys (`#14161A` family) and the gold pair (`#A9852E` / `#C9A95C` family, darkened in light for contrast) from the Kimi entry, per the owner's choice (4 Oct 2026). The dark `--accent` is a lighter green because a dark green cannot be text or a branch on a dark ground; the stage and hero card stay deep green in both modes.
 
 Roles:
 
@@ -73,18 +82,20 @@ Roles:
 |---|---|
 | `--bg`, `--surface`, `--surface-2` | ground, raised card/sheet, inset block (quote, evidence) |
 | `--ink`, `--ink-2`, `--ink-3` | body, secondary, labels |
-| `--line`, `--line-strong` | hairline, control border and thread |
-| `--accent`, `--accent-soft`, `--on-accent` | thread fill, terms, selected states, primary button |
-| `--stage-*` | dark ayah stage and hero question card (same dark teal in both modes) |
+| `--line`, `--line-strong` | hairline and thread/dividers |
+| `--border-ui` | border of controls (pills, round buttons, beads, deep items): meets 3:1 |
+| `--accent`, `--accent-soft`, `--on-accent` | primary: next card, branches and dots, terms, links, kicker and passage titles, selected scope, focus ring |
+| `--gold`, `--gold-strong`, `--on-gold`, `--gold-stage` | the single accent, used sparingly: ayah-number ring and number, thread progress fill, current bead, depth-dial underline, progress pips, evidence quote bar, ayah gem on the stage, glow on the hero card |
+| `--stage-*` | dark ayah stage and hero question card (same deep green in both modes) |
 | `--tone` (runtime) | per-source color from `ui.icons`/`ui.badges`; never hard-code the six hex values |
 
 Source-tone rule (keeps the six colors legible in both modes): chip background `color-mix(in srgb, var(--tone) 22%, transparent)`, glyph/text `color-mix(in srgb, var(--tone) 55%, var(--ink))`, beat rail `color-mix(in srgb, var(--tone) 70%, transparent)`. The mix target is `--ink`, so it darkens in light mode and lightens in dark mode.
 
-Contrast: `--ink` on `--surface` and `--on-accent` on `--accent` were chosen for AA, but I did not run a contrast tool (ب, verify with Playwright axe or similar). `--ink-3` on `--bg` is the weakest pair, keep it for 12.5px+ labels only.
+Contrast: computed with `design/bakeoff/claude/contrast.py` (WCAG 2.x ratios, sRGB mixes like CSS `color-mix`); run `python3 design/bakeoff/claude/contrast.py`. Result 4 Oct 2026: 0 failing pairs in light and in dark over 45 pairs each. Requirements used: 4.5 for text and for source-badge text, 3 for UI strokes and icon glyphs. Lowest passing text pairs: light `--ink-3` on `--bg` 4.93, dark `--ink-3` on `--surface-2` 4.90, dark `--gold-stage` on `--stage-a` 6.76. `--gold` against `--bg` in light is just over 3 (stroke or fill, never text; text uses `--gold-strong`, 5.4 or more). The six source-type tones (from `ui.ar.json`) keep their values and pass through the tone rule above (lowest: dark athar glyph on its chip 4.39, glyph only, 3 needed).
 
-Mapping for shadcn/ui variable names (so copied components pick up our tokens): `--background:var(--bg); --foreground:var(--ink); --card:var(--surface); --card-foreground:var(--ink); --popover:var(--surface); --primary:var(--accent); --primary-foreground:var(--on-accent); --secondary:var(--surface-2); --muted:var(--surface-2); --muted-foreground:var(--ink-3); --border:var(--line-strong); --input:var(--line-strong); --ring:var(--accent); --radius:18px`.
+Mapping for shadcn/ui variable names (so copied components pick up our tokens): `--background:var(--bg); --foreground:var(--ink); --card:var(--surface); --card-foreground:var(--ink); --popover:var(--surface); --primary:var(--accent); --primary-foreground:var(--on-accent); --secondary:var(--surface-2); --muted:var(--surface-2); --muted-foreground:var(--ink-3); --border:var(--border-ui); --input:var(--border-ui); --ring:var(--accent); --radius:18px; --accent-foreground:var(--on-accent)`, plus our own `--gold`, `--gold-strong`, `--on-gold`, `--gold-stage`, `--border-ui` (no shadcn equivalent).
 
-Current app note: `globals.css` is grey-neutral with `--accent: var(--text-primary)`. The proposal replaces it with the teal accent and the cool neutrals above (ج, owner has seen the prototype palette but has not approved it as the palette).
+Current app note: `globals.css` is grey-neutral with `--accent: var(--text-primary)`; the palette above replaces it (owner decision, Q4). The earlier teal/sky-blue prototype palette was rejected by the owner and must not be used.
 
 ### 1.2 Typography
 
@@ -100,7 +111,7 @@ Type scale (px at 16px root; use `rem` in code, i.e. divide by 16), line-height 
 
 | Token | Size / line-height | Use |
 |---|---|---|
-| `--text-cover` | `clamp(54px,17vw,72px)` / 1.55, Amiri Quran | surah name on the header |
+| `--text-cover` | `clamp(54px,17vw,72px)` / 1.95, Amiri Quran, `padding-top: 6px` | surah name on the header (diacritics need the extra leading; 1.55 pushed them onto the tagline line) |
 | `--text-stage` | 30 / 2.2, Amiri Quran | ayah on the scene stage |
 | `--text-verse` | 28 / 2.15, Amiri Quran | ayah on the thread |
 | `--text-inline-ayah` | 25 / 2.1, Amiri Quran | ayah inside the explanation |
@@ -117,7 +128,7 @@ Arabic needs generous leading (never below 1.5 for UI, 1.8 for reading). Use `te
 
 ### 1.3 Spacing, radius, shadow, layers
 
-- Spacing scale (px): 4, 8, 12, 16, 20, 24, 32, 48. Page gutter 20 (14 inside the thread), reading column padding 22, section gap 24-28.
+- Spacing scale (px): 4, 8, 12, 16, 20, 24, 32, 48. Page gutter 20 on every screen (header, strip, thread, scene, sheets), the thread starts 20 from the start edge, reading column padding 20, section gap 24-28. Ribbon: one equal grid track per ayah (4px gap, 6px spacer between passages), pin row min-height 14px.
 - Radius (one scale): `--radius-s` 12 (inputs, quotes, evidence), `--radius` 18 (cards, doors, stage, sheets top is 26), `--radius-pill` 999 (buttons, chips, dial notch uses 12), circle 50% (medal, round buttons). Do not introduce other radii.
 - Shadow: `--shadow: 0 1px 0 rgba(14,28,31,.04), 0 14px 28px -18px rgba(10,70,82,.45)` (tinted, not black). Dark: `0 1px 0 rgba(255,255,255,.03), 0 14px 28px -16px rgba(0,0,0,.8)`. Sheet: `0 -20px 50px -20px rgba(0,0,0,.5)`.
 - Z-index: sticky strip 5, scene 20, scrim 30, sheet 31. No other z-index.
@@ -156,6 +167,8 @@ Reduced motion (mandatory): under `prefers-reduced-motion: reduce` set `animatio
   --color-ink: var(--ink); --color-ink-2: var(--ink-2); --color-ink-3: var(--ink-3);
   --color-line: var(--line); --color-line-strong: var(--line-strong);
   --color-accent: var(--accent); --color-on-accent: var(--on-accent);
+  --color-gold: var(--gold); --color-gold-strong: var(--gold-strong); --color-on-gold: var(--on-gold); --color-gold-stage: var(--gold-stage);
+  --color-border-ui: var(--border-ui);
   --color-stage-a: var(--stage-a); --color-stage-b: var(--stage-b); --color-stage-ink: var(--stage-ink);
   --font-quran: var(--font-quran); --font-quote: var(--font-quote); --font-ui: var(--font-ui);
   --radius-s: 12px; --radius-card: 18px;
@@ -233,7 +246,7 @@ Conventions for every component: server component unless it holds state or event
 
 **DepthDial** (client). Purpose: choose depth. Props: `{ depth: Depth; levels: Ui["levels"]; label: string /* ui.reader.choose_depth */; counts?: Record<Depth, number>; onChange: (d: Depth) => void }`. Four notches with `levels[i].name`; a sliding thumb (`translateX(calc(var(--i) * -100%))` in RTL) and a bottom fill bar. The research says depth must not look like a rank ladder and no numbers: **`counts` is optional and off by default** (the prototype showed the number of doors above each name, which can read as a score; the owner decides, Q4b). The fill bar is likewise decorative only and may be dropped. States: selected, focus, hover; at enlarged text sizes the four names wrap to two rows instead of truncating. Behavior: Radix RadioGroup semantics; arrows move by visual direction (Left = deeper in RTL), Home/End jump. Default depth: understanding (index 1). Changing depth never claims to keep the same concept: if a scene is open it closes to the map (research: stop identity across depths is not in the data; the doors that animate in place at a new depth are matched by ayah + exact title only for presentation, never as a claim). Replaces: `fieldset.depth-switch` in `Reader`.
 
-**MiniStrip** (client, new). Purpose: the whole surah in one glance and the navigator, sticky under the header. Props: `{ groups: MapGroup[]; depthPins: Record<string, number> /* stationKey -> count of doors+pins at current depth */; current: string | null; scope: Scope; onJump: (stationKey: string) => void; onScope: (s: Scope) => void; ariaLabel: string /* ui.reader.ayahs_title */ }`. Beads are flex children with `flex-grow = max(1.4, sqrt(text.length)/3.2)`, min 24px wide, 32px tall, ayah number inside. Above each passage a 4px rail tinted by `color-mix(var(--accent) 16/30/44%, var(--surface-2))` (rail is a button that sets passage scope when the surah has passages; plain otherwise). Under each bead, pins: 6px dots (round for stops, 45deg square for depth items), animated in/out. `aria-current="true"` on the bead of the station crossing the middle of the viewport (IntersectionObserver with `rootMargin: -38% 0 -52% 0`, no scroll listener). Sticky with blur, `prefers-reduced-transparency` fallback. The strip and DepthDial share one sticky `Console` wrapper.
+**MiniStrip** (client, new). Purpose: the whole surah in one glance and the navigator, sticky under the header. Props: `{ groups: MapGroup[]; depthPins: Record<string, number> /* stationKey -> count of doors+pins at current depth */; current: string | null; scope: Scope; onJump: (stationKey: string) => void; onScope: (s: Scope) => void; ariaLabel: string /* ui.reader.ayahs_title */ }`. Beads sit on a CSS grid with one equal `1fr` track per ayah (4px column gap, a 6px spacer track between passages; widths proportional to text length crowded 11 ayahs and made pin spacing uneven), 32px tall, ayah number inside. Above each passage a 4px rail tinted by `color-mix(var(--accent) 16/30/44%, var(--surface-2))` (rail is a button that sets passage scope when the surah has passages; plain otherwise). Under each bead, pins: 6px dots (round for stops, 45deg square for depth items), animated in/out. `aria-current="true"` on the bead of the station crossing the middle of the viewport (IntersectionObserver with `rootMargin: -38% 0 -52% 0`, no scroll listener). Sticky with blur, `prefers-reduced-transparency` fallback. The strip and DepthDial share one sticky `Console` wrapper.
 
 **ReadingUnitSheet** (client, new; replaces the prototype's ScopePicker). Purpose: choose what to read. Opened from the reading-unit button in SurahHeader. A bottom sheet with: (1) one ayah (list of ayah numbers with text previews, `AyahText`), (2) a range (start and end pickers, ayah numbers only, validated start <= end, filtered to the current surah's own ayahs because `surah.ayahs` also holds cross-surah ayahs), (3) a passage (titles and ranges from `surah.passages`), (4) the whole surah. Props: `{ surah: Surah; scope: Scope; ui: Ui; onChoose: (s: Scope) => void; onClose: () => void }`. `type Scope = { kind: "surah" } | { kind: "passage"; id: string } | { kind: "range"; from: number; to: number } | { kind: "ayah"; key: string }`. **Semantics (research): choosing a unit is navigation and focus, not a filter.** It scrolls the thread to that place, dims what is outside it (to .55, not .3, text stays readable), starts the hero question at the first stop at or after it, and shows the unit in the header button. It never removes content, and Next/Previous in the scene keep walking the whole level in order. At the last stop of a passage, NextCard shows the next passage's title and range as an explicit continuation, plus a return-to-overview action. Tapping an ayah medal also opens this sheet pre-set to that ayah (tap an ayah number, then choose range start/end). Clear = choose whole surah. Labels: whole surah uses the surah name; passages use `ui.reader.passages_title`; ayahs use `ui.reader.ayahs_title`; a word for "range" and for "read" are missing from `ui.ar.json` (Q8). Not in v1: saved daily portion, Juz and other canonical divisions (no boundary data, no coverage data) (research, left out).
 
@@ -410,7 +423,7 @@ Every phase: `pnpm typecheck` and `pnpm test` stay green; verify visually at 390
 - **Q1.** Approve Hugeicons (free tier) as the single icon library for the interface? (Names in section 2 are unverified until installed.)
 - **Q2.** Do you want the six source-type symbols (the text glyphs and their colors) kept as they are, or replaced by library icons in shaped chips (section 2.1)? This is part of your decision on the markers.
 - **Q3.** At depth 3 there are no titled stops. May the map hang each `details` item from the earliest ayah that its source records point to (`ayah_keys`), and show the untitled sections on a shelf? Otherwise depth 3 stays a continuous page as it is now.
-- **Q4.** Adopt the ink-teal palette and IBM Plex Sans Arabic + Amiri Quran type in place of today's grey palette and Readex Pro? (The research suggested a warm-paper palette with teal and Amiri for the body; I kept cool neutrals. Compare on a device before locking, including Amiri for the explanation text.) **Q4b.** Show the number of doors above each depth name, or no numbers (the research says no numbers; default off)?
+- **Q4 (closed on colors, 4 Oct 2026, owner).** The sky-blue/teal palette is rejected. Decided palette: dark green primary, one calm gold accent, warm neutrals in light and Kimi-style dark greys in dark (section 1.1). Still open: IBM Plex Sans Arabic + Amiri Quran type in place of Readex Pro (compare on a device, including Amiri for the explanation text). **Q4b.** Show the number of doors above each depth name, or no numbers? Decision applied in the prototype: no numbers.
 - **Q5.** Allow a "deeper on this stop" jump to the same stop at the next depth? Off in v1: it needs a reviewed cross-depth mapping, which the data lacks.
 - **Q6.** Passage bars: expand all with scope (proposed), or keep today's collapse-a-passage behavior?
 - **Q7.** Desktop: centered reading column only (proposed), or a two-pane layout later?
@@ -423,4 +436,4 @@ Taken: the "thread of meaning" concept (close to this prototype) with continuous
 
 Changed in my prototype because of it: sentence-per-row pulses are no longer the default (flow by default, stacked only for dense multi-claim paragraphs, boundaries only at `mark`); the ripple animation and per-pulse stagger are removed; motion durations shortened; depth counts off by default; "deeper on this stop" removed; scope no longer limits Next/Previous or hides content.
 
-Left out, with reasons: the lens (concept-map) concept and a global graph (needs relation data that does not exist); the illustrated-atlas concept (illustrations risk carrying interpretation); saved daily portion and Juz divisions (no boundary or coverage data, and no labels); an opening region of reviewed introduction blocks (no designated opening metadata in the content yet); cross-depth stop identity and exact range lessons (need reviewed metadata, listed in Q9); the research palette (warm paper family) because it is the beige family I avoid as a default, pending Q4.
+Left out, with reasons: the lens (concept-map) concept and a global graph (needs relation data that does not exist); the illustrated-atlas concept (illustrations risk carrying interpretation); saved daily portion and Juz divisions (no boundary or coverage data, and no labels); an opening region of reviewed introduction blocks (no designated opening metadata in the content yet); cross-depth stop identity and exact range lessons (need reviewed metadata, listed in Q9); the research's exact palette values (the owner's own palette decision, section 1.1, took the warm paper and green/gold direction).

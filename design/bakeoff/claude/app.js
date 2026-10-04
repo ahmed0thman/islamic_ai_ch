@@ -231,26 +231,31 @@ function buildMap() {
   // console: ribbon + scope + dial
   const groups = d.passages && d.passages.length ? d.passages.map((p, i) => ({ i, p, keys: d.main.filter(a => d.passIdx.get(a.key) === i) })) : [{ i: null, p: null, keys: d.main }];
   R.ribbon = h('nav', { class: 'ribbon', 'aria-label': ui.reader.ayahs_title });
-  groups.forEach(g => {
-    const weights = g.keys.map(a => Math.max(1.4, Math.sqrt(a.text.length) / 3.2));
-    const rail = h('button', { class: 'rail', type: 'button', tabindex: g.p ? null : '-1', 'aria-hidden': g.p ? null : 'true', 'aria-label': g.p ? g.p.title : null, dataset: { p: g.i == null ? '' : g.i }, onclick: () => g.p && (setScope({ kind: 'passage', id: g.i }), scrollToKey(g.keys[0].key)) });
+  // one grid track per ayah (equal widths), a spacer track between passages
+  const tracks = [];
+  groups.forEach((g, gi) => {
+    const start = tracks.length + 1;
+    g.keys.forEach(() => tracks.push('1fr'));
+    if (gi < groups.length - 1) tracks.push('6px');
+    const rail = h('button', { class: 'rail', type: 'button', tabindex: g.p ? null : '-1', 'aria-hidden': g.p ? null : 'true', 'aria-label': g.p ? g.p.title : null, dataset: { p: g.i == null ? '' : g.i }, style: `grid-column:${start} / span ${g.keys.length};grid-row:1`, onclick: () => g.p && (setScope({ kind: 'passage', id: g.i }), scrollToKey(g.keys[0].key)) });
     const beads = h('div', { class: 'beads' }, g.keys.map((a, k) => {
       const bead = h('button', { class: 'bead', type: 'button', 'aria-label': ui.reader.ayahs_title + ' ' + dig(a.no), onclick: () => scrollToKey(a.key) }, dig(a.no));
       const pins = h('div', { class: 'pins' });
-      const col = h('div', { class: 'col', style: `flex:${weights[k]} 1 0` }, bead, pins);
+      const col = h('div', { class: 'col', style: `grid-column:${start + k};grid-row:2` }, bead, pins);
       R.cols.set(a.key, col); R.beads.set(a.key, bead); R.pins.set(a.key, pins);
       return col;
     }));
-    const rp = h('div', { class: 'rp' + (g.p ? '' : ' plain'), style: `flex:${weights.reduce((x, y) => x + y, 0)} 1 0` }, rail, beads);
+    const rp = h('div', { class: 'rp' + (g.p ? '' : ' plain') }, rail, beads);
     if (g.i != null) rp.style.setProperty('--pt', [16, 30, 44][g.i] ? [16, 30, 44][g.i] + '%' : '24%');
     R.ribbon.append(rp);
   });
+  R.ribbon.style.gridTemplateColumns = tracks.join(' ');
   R.scopeText = h('span');
   R.scopeRow = h('div', { class: 'scope-row', hidden: true }, R.scopeText, h('button', { class: 'round-btn', type: 'button', 'aria-label': ui.reader.back, onclick: () => setScope(S.scope) }, h('i', { class: 'x', 'aria-hidden': 'true' })));
   R.dial = h('div', { class: 'dial', role: 'radiogroup', 'aria-label': ui.reader.choose_depth, onkeydown: dialKeys },
     h('i', { class: 'thumb' }), h('i', { class: 'fill' }),
     ui.levels.map(l => h('button', { class: 'notch', type: 'button', role: 'radio', 'aria-checked': 'false', dataset: { depth: l.depth }, onclick: () => setDepth(l.depth) },
-      h('span', { class: 'n' }, dig(d.model[l.depth] ? d.model[l.depth].count : 0)), h('span', { class: 'nm' }, l.name))));
+      h('span', { class: 'nm' }, l.name))));
   R.dial.style.setProperty('--i', S.depth);
   const consoleEl = h('div', { class: 'console' }, R.ribbon, R.scopeRow, R.dial);
 
@@ -279,6 +284,7 @@ function buildMap() {
   const fine = h('footer', { class: 'fine' }, h('p', null, ui.disclosure.ai), h('p', null, ui.disclosure.scripture), h('p', null, ui.disclosure.limits), h('p', null, ui.privacy_line));
 
   sc.replaceChildren(appbar, cover, consoleEl, thread, R.empty, R.shelf, fine);
+  { const cur = chips.querySelector('[aria-pressed="true"]'); if (cur) chips.scrollLeft = cur.offsetLeft - (chips.clientWidth - cur.offsetWidth) / 2 - 0; }
 
   if (S.io) S.io.disconnect();
   S.io = new IntersectionObserver(es => es.forEach(en => {
@@ -441,11 +447,24 @@ function renderBeat(segs, idx) {
   let afterBlock = false;
   for (let k = 0; k < segs.length; k++) {
     const s = segs[k];
-    if (s.t === 'text') { b.append(h('span', { class: 't' }, afterBlock ? s.v.replace(LEAD_PUNCT, '') : s.v)); afterBlock = false; }
+    if (s.t === 'text') {
+      const v = afterBlock ? s.v.replace(LEAD_PUNCT, '') : s.v;
+      const nx = segs[k + 1];
+      if (nx && nx.t === 'mark') {
+        // keep the last word glued to its source marker so the marker never sits alone on a line
+        const m = v.match(/^([\s\S]*?)(\S+\s*)$/);
+        if (m) { if (m[1]) b.append(h('span', { class: 't' }, m[1])); b.append(h('span', { class: 'claim-end' }, m[2].trimEnd(), markBtn(nx))); k++; afterBlock = false; continue; }
+      }
+      b.append(h('span', { class: 't' }, v)); afterBlock = false;
+    }
     else if (s.t === 'ayah') { b.append(ayahInline(s.key)); afterBlock = true; }
     else if (s.t === 'quote') {
-      const q = h('span', { class: 'quote' }, s.v);
-      if (segs[k + 1] && segs[k + 1].t === 'mark') { q.append(markBtn(segs[k + 1])); k++; }
+      const q = h('span', { class: 'quote' });
+      if (segs[k + 1] && segs[k + 1].t === 'mark') {
+        const m = s.v.match(/^([\s\S]*?)(\S+)$/);
+        if (m) { q.append(m[1], h('span', { class: 'claim-end' }, m[2], markBtn(segs[k + 1]))); } else { q.append(s.v, markBtn(segs[k + 1])); }
+        k++;
+      } else q.append(s.v);
       b.append(q); afterBlock = true;
     } else if (s.t === 'mark') { b.append(markBtn(s)); afterBlock = false; }
     else if (s.t === 'term') { b.append(termBtn(s)); afterBlock = false; }
