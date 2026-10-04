@@ -98,28 +98,57 @@ export function validateSurah(value: unknown): asserts value is Surah {
     string(key, at);
     if (!ayahKeys.has(key)) fail(at, `missing ayah key "${key}"`);
   };
+  const validateSegments = (value: unknown, at: string, depth: number, title = false) => {
+    const segments = array(value, at);
+    if (!segments.length) fail(at, "expected nonempty segments");
+    let hasMarker = false;
+    segments.forEach((value, s) => {
+      const location = `${at}[${s}]`, segment = object(value, location);
+      if (title && !["text", "term", "mark"].includes(segment.t as string)) fail(location, "invalid title segment");
+      const reference = (id: unknown, here: string) => {
+        requireRecord(id, here);
+        if ((object(records[id as string], here).depth_min as number) > depth) fail(here, "record exceeds level depth");
+      };
+      if (segment.t === "text") string(segment.v, `${location}.v`);
+      else if (segment.t === "ayah") requireAyah(segment.key, `${location}.key`);
+      else if (segment.t === "quote" || segment.t === "term") {
+        string(segment.v, `${location}.v`);
+        if (segment.t === "term" && !segment.v.trim()) fail(location, "expected nonempty term text");
+        reference(segment.record, `${location}.record`);
+      } else if (segment.t === "mark") {
+        hasMarker = true;
+        const ids = array(segment.records, `${location}.records`);
+        if (!ids.length) fail(location, "marker must refer to at least one record");
+        ids.forEach((id) => reference(id, `${location}.records`));
+      } else fail(location, "unknown segment type");
+    });
+    if (!hasMarker) fail(at, "expected at least one marker");
+    if (title && object(segments[segments.length - 1], at).t !== "mark") fail(at, "title must end with a marker");
+  };
+  const validateParagraph = (block: Record<string, unknown>, at: string, depth: number) => {
+    if (block.type !== "paragraph") fail(at, "expected a paragraph; details cannot nest");
+    if (block.role !== "claim" && block.role !== "transmission") fail(at, "unknown paragraph role");
+    validateSegments(block.segments, `${at}.segments`, depth);
+  };
   const levels = array(data.levels, `${prefix}.levels`);
   if (levels.length !== 4) fail(`${prefix}.levels`, "expected four complete levels");
   levels.forEach((value, d) => {
     const at = `${prefix}.levels[${d}]`, level = object(value, at);
     if (level.depth !== d) fail(at, `expected depth ${d} in legend order`);
-    array(level.blocks, `${at}.blocks`).forEach((value, b) => {
+    const blocks = array(level.blocks, `${at}.blocks`);
+    blocks.forEach((value, b) => {
       const here = `${at}.blocks[${b}]`, block = object(value, here);
-      if (block.type === "heading") string(block.text, `${here}.text`);
-      else if (block.type === "ayah") array(block.keys, `${here}.keys`).forEach((key) => requireAyah(key, `${here}.keys`));
-      else if (block.type === "paragraph") {
-        if (block.role !== "claim" && block.role !== "transmission") fail(here, "unknown paragraph role");
-        array(block.segments, `${here}.segments`).forEach((value, s) => {
-          const location = `${here}.segments[${s}]`, segment = object(value, location);
-          if (segment.t === "text") string(segment.v, `${location}.v`);
-          else if (segment.t === "ayah") requireAyah(segment.key, `${location}.key`);
-          else if (segment.t === "quote") { string(segment.v, `${location}.v`); requireRecord(segment.record, `${location}.record`); }
-          else if (segment.t === "mark") {
-            const ids = array(segment.records, `${location}.records`);
-            if (!ids.length) fail(location, "marker must refer to at least one record");
-            ids.forEach((id) => requireRecord(id, `${location}.records`));
-          } else fail(location, "unknown segment type");
-        });
+      if (block.type === "heading") {
+        string(block.text, `${here}.text`);
+        if (Object.hasOwn(block, "kind")) {
+          if (block.kind !== "question") fail(here, "unknown heading kind");
+          if (b + 1 >= blocks.length || object(blocks[b + 1], here).type !== "paragraph") fail(here, "question must be followed by its answer paragraph");
+        }
+      } else if (block.type === "ayah") array(block.keys, `${here}.keys`).forEach((key) => requireAyah(key, `${here}.keys`));
+      else if (block.type === "paragraph") validateParagraph(block, here, d);
+      else if (block.type === "details") {
+        validateSegments(block.title, `${here}.title`, d, true);
+        array(block.blocks, `${here}.blocks`).forEach((value, i) => validateParagraph(object(value, `${here}.blocks[${i}]`), `${here}.blocks[${i}]`, d));
       } else fail(here, "unknown block type");
     });
   });

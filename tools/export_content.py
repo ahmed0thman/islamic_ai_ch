@@ -70,40 +70,55 @@ def validate_shape(nasij, private, no):
     require(isinstance(nasij.get("levels"), list), "levels: expected list")
     require(isinstance(nasij.get("held", []), list), "held: expected list")
 
+    def segment_shape(segments, title=False):
+        require(isinstance(segments, list) and segments, "segments: expected nonempty list")
+        allowed = ("text", "term", "mark") if title else ("text", "ayah", "quote", "mark", "term")
+        for seg in segments:
+            require(isinstance(seg, dict), "segment: expected object")
+            t = seg.get("t")
+            require(t in allowed, f"unknown segment type {t!r}")
+            if t in ("text", "quote", "term"):
+                text(seg.get("v"), "segment.v", t != "text")
+            if t == "ayah":
+                text(seg.get("key"), "segment.key", True)
+            if t in ("quote", "term"):
+                text(seg.get("record"), f"{t}.record", True)
+            if t == "mark":
+                require(isinstance(seg.get("records"), list) and seg["records"], "mark.records: expected nonempty list")
+                for ident in seg["records"]:
+                    text(ident, "mark record", True)
+
     def block_shape(block):
         require(isinstance(block, dict), "block: expected object")
         kind = block.get("type")
         if kind == "heading":
             text(block.get("text"), "heading.text", True)
+            require("kind" not in block or block["kind"] == "question", "unknown heading kind")
         elif kind == "ayah":
             require(isinstance(block.get("keys"), list) and block["keys"], "ayah.keys: expected nonempty list")
             for ref in block["keys"]:
                 text(ref, "ayah key", True)
         elif kind == "paragraph":
             require(block.get("role") in ("claim", "transmission"), "unknown paragraph role")
-            require(isinstance(block.get("segments"), list) and block["segments"], "segments: expected nonempty list")
-            for seg in block["segments"]:
-                require(isinstance(seg, dict), "segment: expected object")
-                t = seg.get("t")
-                require(t in ("text", "ayah", "quote", "mark"), f"unknown segment type {t!r}")
-                if t in ("text", "quote"):
-                    text(seg.get("v"), "segment.v", t == "quote")
-                if t == "ayah":
-                    text(seg.get("key"), "segment.key", True)
-                if t == "quote":
-                    text(seg.get("record"), "quote.record", True)
-                if t == "mark":
-                    require(isinstance(seg.get("records"), list) and seg["records"], "mark.records: expected nonempty list")
-                    for ident in seg["records"]:
-                        text(ident, "mark record", True)
+            segment_shape(block.get("segments"))
+        elif kind == "details":
+            segment_shape(block.get("title"), title=True)
+            require(isinstance(block.get("blocks"), list), "details.blocks: expected list")
+            for inner in block["blocks"]:
+                require(isinstance(inner, dict) and inner.get("type") == "paragraph",
+                        "details.blocks: only paragraphs allowed")
+                block_shape(inner)
         else:
             raise ValueError(f"unknown block type {kind!r}")
 
     for level in nasij["levels"]:
         require(isinstance(level, dict) and type(level.get("depth")) is int, "level.depth: expected integer")
         require(isinstance(level.get("blocks"), list), "level.blocks: expected list")
-        for block in level["blocks"]:
+        for i, block in enumerate(level["blocks"]):
             block_shape(block)
+            if block.get("kind") == "question":
+                require(i + 1 < len(level["blocks"]) and level["blocks"][i + 1].get("type") == "paragraph",
+                        "question heading must be followed by its answer paragraph")
     for held in nasij.get("held", []):
         require(isinstance(held, dict) and type(held.get("depth")) is int and isinstance(held.get("block"), dict), "invalid held entry")
         # Held content is not validated as publishable text: it may be unfinished.
@@ -133,6 +148,46 @@ def run_checks(nasij, records, quran, no):
         check("C2", "﴿" not in value and "﴾" not in value and found is None,
               f"{where}: Quran brackets or four-word match {found!r}")
 
+    def check_segments(segments, role, depth, where, refs, title=False):
+        check("C4", any(s["t"] == "mark" for s in segments), f"{where}: no marker")
+        if title:
+            check("C4", segments[-1]["t"] == "mark", f"{where}: title must end with a marker")
+        # Also scan adjacent system-text segments together to prevent splitting a citation.
+        pending = []
+        for seg in segments + [{"t": "end"}]:
+            if seg["t"] in ("text", "term"):
+                pending.append(seg["v"])
+            else:
+                if pending:
+                    check_text("".join(pending), where)
+                    pending = []
+        for snum, seg in enumerate(segments, 1):
+            location = f"{where}, segment {snum}, role {role}"
+            if seg["t"] == "term":
+                check_text(seg["v"], location)
+            if seg["t"] == "ayah":
+                refs.append(seg["key"])
+            ids = seg.get("records", []) if seg["t"] == "mark" else [seg["record"]] if seg["t"] in ("quote", "term") else []
+            for ident in ids:
+                check("C3", ident in records, f"{location}: unknown record {ident}")
+                uses[ident].append(location)
+                if ident not in records:
+                    continue
+                r = records[ident]
+                display = r.get("display", {})
+                if role == "claim" or seg["t"] == "term":
+                    check("C5", r.get("build_permission", {}).get("decision") == "نعم", f"{location}: {ident} build permission is not نعم")
+                else:
+                    check("C6", display.get("decision") == "نعم", f"{location}: {ident} display permission is not نعم")
+                if seg["t"] == "quote":
+                    check("C6", any(seg["v"] in e.get("quote", "") for e in r["evidence"]),
+                          f"{location}: quote is not an exact substring of {ident} evidence")
+                minimum = r.get("depth_min")
+                check("C7", type(minimum) is int and 0 <= minimum <= depth and
+                      (display.get("depth") != "depth3" or depth == 3),
+                      f"{location}: {ident} violates depth_min/depth3")
+                check("C8", display.get("decision") == "نعم", f"{location}: {ident} display permission is not نعم")
+
     levels = nasij["levels"]
     check("C9", len(levels) == 4 and sorted(l["depth"] for l in levels) == [0, 1, 2, 3]
           and all(l["blocks"] for l in levels), "expected exactly depths 0..3 with nonempty blocks")
@@ -146,41 +201,13 @@ def run_checks(nasij, records, quran, no):
                 check_text(block["text"], where)
             refs = block.get("keys", []) if block["type"] == "ayah" else []
             if block["type"] == "paragraph":
-                segments = block["segments"]
-                check("C4", any(s["t"] == "mark" for s in segments), f"{where}: no marker")
-                # Also scan adjacent system-text segments together to prevent splitting a citation.
-                pending = []
-                for seg in segments + [{"t": "end"}]:
-                    if seg["t"] == "text":
-                        pending.append(seg["v"])
-                    else:
-                        if pending:
-                            check_text("".join(pending), where)
-                            pending = []
-                for snum, seg in enumerate(segments, 1):
-                    location = f"{where}, segment {snum}, role {block['role']}"
-                    if seg["t"] == "ayah":
-                        refs.append(seg["key"])
-                    ids = seg.get("records", []) if seg["t"] == "mark" else [seg["record"]] if seg["t"] == "quote" else []
-                    for ident in ids:
-                        check("C3", ident in records, f"{location}: unknown record {ident}")
-                        uses[ident].append(location)
-                        if ident not in records:
-                            continue
-                        r = records[ident]
-                        display = r.get("display", {})
-                        if block["role"] == "claim":
-                            check("C5", r.get("build_permission", {}).get("decision") == "نعم", f"{location}: {ident} build permission is not نعم")
-                        else:
-                            check("C6", display.get("decision") == "نعم", f"{location}: {ident} display permission is not نعم")
-                        if seg["t"] == "quote":
-                            check("C6", any(seg["v"] in e.get("quote", "") for e in r["evidence"]),
-                                  f"{location}: quote is not an exact substring of {ident} evidence")
-                        minimum = r.get("depth_min")
-                        check("C7", type(minimum) is int and 0 <= minimum <= depth and
-                              (display.get("depth") != "depth3" or depth == 3),
-                              f"{location}: {ident} violates depth_min/depth3")
-                        check("C8", display.get("decision") == "نعم", f"{location}: {ident} display permission is not نعم")
+                check_segments(block["segments"], block["role"], depth, where, refs)
+            elif block["type"] == "details":
+                check_segments(block["title"], "claim", depth, f"{where}, title", refs, title=True)
+                for inner_num, inner in enumerate(block["blocks"], 1):
+                    inner_where = f"{where}, inner block {inner_num}"
+                    check("C10", inner not in held, f"{inner_where}: block is also listed under held")
+                    check_segments(inner["segments"], inner["role"], depth, inner_where, refs)
             for ref in refs:
                 ayah_refs.add(ref)
                 check("C1", ref in quran, f"{where}: unknown ayah {ref}")

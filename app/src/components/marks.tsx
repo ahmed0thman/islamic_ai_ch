@@ -16,7 +16,7 @@ export function Marker({ records, ui, onOpen }: { records: SourceRecord[]; ui: U
     (kind): kind is "la_yathbut" | "khilaf_mutabar" => kind === "la_yathbut" || kind === "khilaf_mutabar",
   );
   const label = [ui.panel.title, ...kinds.map((kind) => ui.icons[kind].label), ...badges.map((kind) => ui.badges[kind].label), ...records.map((record) => record.claim)].join(" — ");
-  return <button type="button" className="marker" aria-label={label} aria-haspopup="dialog" onClick={onOpen}>
+  return <button type="button" className="marker" aria-label={label} aria-haspopup="dialog" onClick={(event) => { event.stopPropagation(); onOpen(); }}>
     <span className="marker-symbols">{kinds.map((kind) => <Icon key={kind} kind={kind} ui={ui} />)}</span>
     {badges.map((kind) => <Badge key={kind} kind={kind} ui={ui} />)}
   </button>;

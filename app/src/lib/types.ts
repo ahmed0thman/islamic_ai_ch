@@ -9,11 +9,15 @@ export type Segment =
   | { t: "text"; v: string }
   | { t: "ayah"; key: string }
   | { t: "quote"; v: string; record: string }
+  | { t: "term"; v: string; record: string }
   | { t: "mark"; records: string[] };
+export type TitleSegment = Extract<Segment, { t: "text" | "term" | "mark" }>;
+export type ParagraphBlock = { type: "paragraph"; role: "claim" | "transmission"; segments: Segment[] };
 export type Block =
-  | { type: "heading"; text: string }
+  | { type: "heading"; text: string; kind?: "question" }
   | { type: "ayah"; keys: string[] }
-  | { type: "paragraph"; role: "claim" | "transmission"; segments: Segment[] };
+  | ParagraphBlock
+  | { type: "details"; title: TitleSegment[]; blocks: ParagraphBlock[] };
 export interface Ruling { text: string; ruler: string; where: string }
 export interface Evidence {
   icon: IconKey; source_title: string; author: string; locator: string;

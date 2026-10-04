@@ -126,6 +126,14 @@ ul { list-style: none; padding: 0; margin: 0; }
 .depth-option.is-selected { background: var(--paper); color: var(--text); box-shadow: var(--shadow-sm); font-weight: 600; }
 .reading-body { min-height: 12rem; padding-bottom: var(--space-xl); }
 .reading-heading { color: var(--accent); font-size: var(--size-heading); margin-block: var(--space-7) var(--space-4); line-height: 1.8; }
+.reading-question { border-inline-start: var(--space-xs) solid var(--color-link); padding-inline-start: var(--space-md); }
+.reading-details { margin-block: var(--space-lg); border: 1px solid var(--rule); border-radius: var(--radius-md); background: var(--surface-soft); }
+.reading-summary { min-height: var(--control-height); padding: var(--space-sm) var(--space-md); cursor: pointer; font-weight: 600; touch-action: manipulation; }
+.reading-summary::marker { color: var(--color-link); }
+.reading-details[open] > .reading-summary { border-bottom: 1px solid var(--rule); }
+.reading-details-body { padding-inline: var(--space-md); }
+.reading-term { display: inline-flex; align-items: center; justify-content: center; min-width: var(--control-height); min-height: var(--control-height); padding: var(--space-sm) 0; border: 0; background: transparent; color: var(--color-link); font: inherit; text-align: inherit; text-decoration: underline dotted; text-underline-offset: .25em; white-space: normal; }
+.reading-term:hover { color: var(--text-primary); }
 .reading-paragraph { margin-block: var(--space-lg); text-align: justify; overflow-wrap: break-word; }
 .claim-ending { white-space: nowrap; overflow-wrap: normal; word-break: normal; }
 .quran { font-family: var(--font-quran), var(--font-body), serif; font-weight: 400; line-height: var(--leading-quran); font-synthesis: none; }

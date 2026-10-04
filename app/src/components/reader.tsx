@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
-import type { Ayah, Block, Depth, SourceRecord, Surah, Ui } from "@/lib/types";
+import type { Ayah, Block, Depth, Segment, SourceRecord, Surah, Ui } from "@/lib/types";
 import { Marker } from "./marks";
 import { SourcePanel } from "./source-panel";
 import { numeral } from "@/lib/numerals";
@@ -36,14 +36,25 @@ function AyahText({ ayah, inline = false, part = "whole" }: { ayah: Ayah; inline
     {part !== "start" ? <>{"\u00a0"}<span className="ayah-number">{numeral(ayah.no)}</span></> : null}
   </span>;
 }
-function ContentBlock({ block, ayahs, records, ui, onOpen }: {
-  block: Block; ayahs: Map<string, Ayah>; records: Surah["records"]; ui: Ui; onOpen: (records: SourceRecord[]) => void;
-}) {
-  if (block.type === "heading") return <h2 className="reading-heading">{block.text}</h2>;
+type ReadingProps = {
+  ayahs: Map<string, Ayah>; records: Surah["records"]; ui: Ui; onOpen: (records: SourceRecord[]) => void;
+};
+function ContentBlock({ block, ...props }: ReadingProps & { block: Block }) {
+  const { ayahs, ui } = props;
+  if (block.type === "heading") return <h2 className={block.kind === "question" ? "reading-heading reading-question" : "reading-heading"}>{block.text}</h2>;
   if (block.type === "ayah") return <section className="ayah-block" aria-label={ui.reader.ayahs_title}>
     {block.keys.map((key) => <AyahText key={key} ayah={ayahs.get(key)!} />)}
   </section>;
-  const segments = [...block.segments];
+  if (block.type === "details") return <details className="reading-details">
+    <summary className="reading-summary"><ReadingSegments segments={block.title} {...props} /></summary>
+    <div className="reading-details-body">{block.blocks.map((inner, i) => <ContentBlock key={i} block={inner} {...props} />)}</div>
+  </details>;
+  return <p className={block.role === "transmission" ? "reading-paragraph transmission" : "reading-paragraph"}>
+    <ReadingSegments segments={block.segments} {...props} />
+  </p>;
+}
+function ReadingSegments({ segments: input, ayahs, records, ui, onOpen }: ReadingProps & { segments: Segment[] }) {
+  const segments = [...input];
   const nodes: ReactNode[] = [];
   segments.forEach((segment, i) => {
     const followedByMarker = segments[i + 1]?.t === "mark";
@@ -59,6 +70,11 @@ function ContentBlock({ block, ayahs, records, ui, onOpen }: {
     } else if (segment.t === "ayah") {
       if (followedByMarker) nodes.push(<AyahText key={`${i}-start`} ayah={ayahs.get(segment.key)!} inline part="start" />);
       nodes.push(<AyahText key={i} ayah={ayahs.get(segment.key)!} inline part={followedByMarker ? "end" : "whole"} />);
+    } else if (segment.t === "term") {
+      // Keep the interactive term attached to the following marker and punctuation.
+      nodes.push(<button key={i} type="button" className="reading-term" aria-haspopup="dialog" onClick={(event) => {
+        event.stopPropagation(); onOpen([records[segment.record]]);
+      }}>{segment.v}</button>);
     } else {
       const sources = [...new Set(segment.records)].map((id) => records[id]);
       const preceding = nodes.pop();
@@ -68,7 +84,7 @@ function ContentBlock({ block, ayahs, records, ui, onOpen }: {
       nodes.push(<span key={`claim-${i}`} className="claim-ending">{preceding}<Marker records={sources} ui={ui} onOpen={() => onOpen(sources)} />{punctuation}</span>);
     }
   });
-  return <p className={block.role === "transmission" ? "reading-paragraph transmission" : "reading-paragraph"}>{nodes}</p>;
+  return <>{nodes}</>;
 }
 export function Reader({ surah, ui }: { surah: Surah; ui: Ui }) {
   const [depth, setDepth] = useState<Depth>(1);

@@ -65,6 +65,14 @@ class ExportTests(unittest.TestCase):
 
     def refused(self, code):
         before = (self.content / "export/surah-108.json").read_bytes()
+        review = self.records / "108/review.md"
+        review_before = review.read_bytes() if review.exists() else None
+        # A previous passing case may already have published this surah.
+        expected_index = sorted(
+            value["surah"]["no"]
+            for path in (self.content / "export").glob("surah-*.json")
+            if not (value := exporter.read_json(path))["fixture"]
+        )
         private_before = json.dumps(self.private, ensure_ascii=False, indent=2) + "\n"
         result = self.run_export()
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
@@ -73,8 +81,11 @@ class ExportTests(unittest.TestCase):
             self.assertIn(f"108 {check} ", result.stdout)
         self.assertEqual((self.content / "export/surah-108.json").read_bytes(), before)
         self.assertEqual((self.records / "108/records.v2.json").read_text(), private_before)
-        self.assertFalse((self.records / "108/review.md").exists())
-        self.assertEqual([s["no"] for s in exporter.read_json(self.content / "export/index.json")["surahs"]], [111])
+        if review_before is None:
+            self.assertFalse(review.exists())
+        else:
+            self.assertEqual(review.read_bytes(), review_before)
+        self.assertEqual([s["no"] for s in exporter.read_json(self.content / "export/index.json")["surahs"]], expected_index)
 
     def paragraph(self, depth=0):
         return self.nasij["levels"][depth]["blocks"][0]
@@ -239,6 +250,222 @@ class ExportTests(unittest.TestCase):
         self.assertIn("## sample (1)", (self.records / "108/review.md").read_text())
         self.assertEqual(exporter.trim_quote("x" * 201), "«…»")
         self.assertEqual(exporter.trim_quote("x" * 196 + " " + "y" * 10), "x" * 196 + "«…»")
+
+
+class ContentShapeTests(unittest.TestCase):
+    setUp = ExportTests.setUp
+    save = ExportTests.save
+    run_export = ExportTests.run_export
+    refused = ExportTests.refused
+    paragraph = ExportTests.paragraph
+    def details(self):
+        block = {"type": "details", "title": [
+            {"t": "text", "v": "Short answer"}, {"t": "term", "v": "Term", "record": "108-s0"},
+            {"t": "mark", "records": ["108-r1"]}], "blocks": [deepcopy(self.paragraph())]}
+        self.nasij["levels"][0]["blocks"].append(block)
+        return block
+
+    def term(self, role="claim"):
+        self.paragraph()["role"] = role
+        segment = {"t": "term", "v": "Term", "record": "108-s0"}
+        self.paragraph()["segments"].insert(0, segment)
+        return segment
+
+    def passes(self):
+        result = self.run_export()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        value = exporter.read_json(self.content / "export/surah-108.json")
+        self.assertEqual(value["levels"], self.nasij["levels"])
+        return value
+
+    def input_refused(self):
+        result = self.run_export("--check-only")
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("INPUT FAIL", result.stdout)
+
+    def quran_text(self):
+        return next(a["aya_text"] for a in exporter.read_json(exporter.QURAN)
+                    if a["sura_no"] == 108 and len(exporter.normalize(a["aya_text"])) >= 4)
+
+    def test_question_kind_and_answer(self):
+        question = {"type": "heading", "kind": "question", "text": "Question?"}
+        self.nasij["levels"][0]["blocks"].insert(0, question)
+        self.passes()
+        for kind in ("other", None):
+            with self.subTest(kind=kind):
+                question["kind"] = kind
+                self.input_refused()
+        question["kind"] = "question"
+        self.nasij["levels"][0]["blocks"].reverse()
+        self.input_refused()
+
+    def test_question_C2(self):
+        question = {"type": "heading", "kind": "question", "text": "Question?"}
+        self.nasij["levels"][0]["blocks"].insert(0, question)
+        self.passes()
+        question["text"] = self.quran_text()
+        self.refused("C2")
+
+    def test_details_title_segment_types(self):
+        block = self.details()
+        self.passes()
+        for segment in ({"t": "ayah", "key": "108:1"},
+                        {"t": "quote", "v": "Quote", "record": "108-r1"}):
+            with self.subTest(segment=segment):
+                block["title"][0] = segment
+                self.input_refused()
+
+    def test_details_title_C2(self):
+        block = self.details()
+        self.passes()
+        block["title"][0]["v"] = self.quran_text()
+        self.refused("C2")
+
+    def test_details_title_C3(self):
+        block = self.details()
+        self.passes()
+        block["title"][-1]["records"] = ["missing"]
+        self.refused("C3")
+
+    def test_details_title_C4(self):
+        block = self.details()
+        self.passes()
+        block["title"].pop()
+        self.refused("C4")
+
+    def test_details_title_ends_with_mark(self):
+        block = self.details()
+        self.passes()
+        block["title"].append({"t": "text", "v": "Trailing text"})
+        self.refused("C4")
+
+    def test_details_title_permissions_and_depth(self):
+        for code, field, value in (("C5", "build_permission", None), ("C8", "display", None),
+                                   ("C7", "depth_min", 1), ("C7", "display", "depth3")):
+            with self.subTest(code=code, field=field, value=value):
+                self.nasij, self.private = fixtures()
+                block = self.details()
+                block["title"][-1]["records"] = ["108-s1", "108-s2"]
+                self.passes()
+                r = next(r for r in self.private["records"] if r["id"] == "108-s2")
+                if field == "depth_min":
+                    r[field] = value
+                else:
+                    r[field]["depth" if value == "depth3" else "decision"] = value
+                self.refused(code)
+
+    def test_details_inner_blocks_only_paragraphs(self):
+        block = self.details()
+        self.passes()
+        for inner in ({"type": "heading", "text": "Heading"}, {"type": "ayah", "keys": ["108:1"]},
+                      deepcopy(block)):
+            with self.subTest(type=inner["type"]):
+                block["blocks"] = [inner]
+                self.input_refused()
+
+    def test_details_inner_claim_checks(self):
+        for code in ("C1", "C2", "C3", "C4", "C5", "C7", "C8"):
+            with self.subTest(code=code):
+                self.nasij, self.private = fixtures()
+                block = self.details()
+                inner = block["blocks"][0]
+                inner["segments"][-1]["records"] = ["108-s1"]
+                r = next(r for r in self.private["records"] if r["id"] == "108-s1")
+                self.passes()
+                if code == "C1": inner["segments"][1]["key"] = "108:99"
+                elif code == "C2": inner["segments"][0]["v"] = self.quran_text()
+                elif code == "C3": inner["segments"][-1]["records"] = ["missing"]
+                elif code == "C4": inner["segments"].pop()
+                elif code == "C5": r["build_permission"]["decision"] = None
+                elif code == "C7": r["depth_min"] = 1
+                elif code == "C8": r["display"]["decision"] = None
+                self.refused(code)
+
+    def test_details_inner_transmission(self):
+        block = self.details()
+        inner = block["blocks"][0]
+        inner["role"] = "transmission"
+        inner["segments"][-1]["records"] = ["108-s1"]
+        r = next(r for r in self.private["records"] if r["id"] == "108-s1")
+        inner["segments"].insert(0, {"t": "quote", "v": r["evidence"][0]["quote"], "record": r["id"]})
+        self.passes()
+        allowed = r["build_permission"]["decision"]
+        r["build_permission"]["decision"] = None
+        records, _ = exporter.validate_shape(self.nasij, self.private, 108)
+        quran = {f"{a['sura_no']}:{a['aya_no']}": a for a in exporter.read_json(exporter.QURAN)}
+        counts, _, _ = exporter.run_checks(self.nasij, records, quran, 108)
+        self.assertTrue(all(not failures for _, failures in counts.values()), counts)
+        r["build_permission"]["decision"] = allowed
+        inner["segments"][0]["v"] = "Not verbatim"
+        self.refused("C6")
+        inner["segments"][0]["v"] = r["evidence"][0]["quote"]
+        r["display"]["decision"] = None
+        self.refused("C6")
+
+    def test_term_C2(self):
+        term = self.term()
+        self.passes()
+        term["v"] = self.quran_text()
+        self.refused("C2")
+
+    def test_term_C2_adjacent_text(self):
+        term = self.term()
+        self.passes()
+        words = self.quran_text().split()
+        term["v"] = " ".join(words[:2]) + " "
+        self.paragraph()["segments"][1]["v"] = " ".join(words[2:])
+        self.refused("C2")
+
+    def test_term_C3(self):
+        term = self.term()
+        self.passes()
+        term["record"] = "missing"
+        self.refused("C3")
+
+    def test_term_not_a_marker(self):
+        self.term()
+        self.passes()
+        self.paragraph()["segments"].pop()
+        self.refused("C4")
+
+    def test_term_permissions_and_depth_in_both_roles(self):
+        for role in ("claim", "transmission"):
+            for code, field, value in (("C5", "build_permission", None), ("C8", "display", None),
+                                       ("C7", "depth_min", 1), ("C7", "display", "depth3")):
+                with self.subTest(role=role, code=code, value=value):
+                    self.nasij, self.private = fixtures()
+                    self.term(role)
+                    self.passes()
+                    r = next(r for r in self.private["records"] if r["id"] == "108-s0")
+                    if field == "depth_min": r[field] = value
+                    else: r[field]["depth" if value == "depth3" else "decision"] = value
+                    self.refused(code)
+
+    def test_held_new_shapes_excluded(self):
+        block = self.details()
+        question = {"type": "heading", "kind": "question", "text": "Question?"}
+        shapes = [question, deepcopy(block), {"type": "paragraph", "role": "claim", "segments": [
+            {"t": "term", "v": "Held term", "record": "missing"}]}]
+        self.nasij["levels"][0]["blocks"].remove(block)
+        for shape in shapes:
+            self.nasij["held"].append({"depth": 0, "block": shape, "reason": "Held"})
+        value = self.passes()
+        self.assertNotIn("missing", value["records"])
+        self.assertNotIn("108-s0", value["records"])
+        for shape in shapes[:2]:
+            with self.subTest(type=shape["type"]):
+                self.nasij["levels"][0]["blocks"].insert(0, shape)
+                self.refused("C10")
+                self.nasij["levels"][0]["blocks"].remove(shape)
+        held_term = shapes[2]
+        self.nasij["levels"][0]["blocks"].append(held_term)
+        self.refused("C10")
+
+    def test_held_inner_paragraph_excluded(self):
+        block = self.details()
+        self.passes()
+        self.nasij["held"].append({"depth": 0, "block": deepcopy(block["blocks"][0]), "reason": "Held"})
+        self.refused("C10")
 
 
 if __name__ == "__main__":
