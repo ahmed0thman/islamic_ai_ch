@@ -6,7 +6,7 @@
   color: var(--text);
 }
 .ask-box h2, .ask-box h3 { font-size: var(--size-heading); margin-block: 0 var(--space-md); }
-.ask-note { color: var(--muted); font-size: var(--size-sm); }
+.ask-note { color: var(--ink-muted); font-size: var(--size-sm); }
 .ask-box form { display: grid; gap: var(--space-sm); }
 .ask-box textarea {
   inline-size: 100%; box-sizing: border-box; resize: vertical;
