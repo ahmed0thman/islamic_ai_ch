@@ -1,9 +1,19 @@
 {
   "surahs": [
     {
+      "no": 93,
+      "name": "الضُّحى",
+      "ayah_count": 11
+    },
+    {
       "no": 108,
       "name": "الكَوثر",
       "ayah_count": 3
+    },
+    {
+      "no": 111,
+      "name": "المَسَد",
+      "ayah_count": 5
     }
   ]
 }
