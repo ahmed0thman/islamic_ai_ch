@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>هُدًى - Reader Mock</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Readex+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #FAFAFA;
+            --bg-secondary: #F0F0F0;
+            --bg-tertiary: #E5E5EA;
+            --text-primary: #1C1C1E;
+            --text-secondary: #6C6C70;
+            --border-color: #E5E5EA;
+            
+            --color-ayah: #2E7D32;
+            --color-hadith: #1565C0;
+            --color-athar: #6A1B9A;
+            --color-scholar: #546E7A;
+            --color-link: #B26A00;
+            --color-hidaya: #AD1457;
+            
+            --badge-thabit-bg: #607D8B;
+            --badge-layathbut-bg: #B23B2E;
+            --badge-khilaf-bg: #00838F;
+
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-2xl: 48px;
+
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 16px;
+            --radius-full: 999px;
+
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+
+            --text-xs: 0.75rem;
+            --text-sm: 0.875rem;
+            --text-base: 1rem;
+            --text-lg: 1.25rem;
+            --text-xl: 1.75rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-primary: #121212;
+                --bg-secondary: #1E1E1E;
+                --bg-tertiary: #2C2C2E;
+                --text-primary: #E5E5E7;
+                --text-secondary: #8E8E93;
+                --border-color: #38383A;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Readex Pro', sans-serif;
+            background-color: #E5E5EA; /* Darker background to show the frames */
+            color: var(--text-primary);
+            line-height: 1.8;
+            font-size: var(--text-base);
+            padding: var(--space-xl);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-2xl);
+        }
+
+        /* Mock Frame */
+        .mock-frame {
+            background-color: var(--bg-primary);
+            width: 100%;
+            max-width: 440px; /* Mobile width */
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            border: 8px solid #333;
+            height: 850px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: var(--space-lg) var(--space-md) var(--space-md);
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-primary);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .level-label {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: var(--space-sm);
+        }
+
+        .depth-switch {
+            display: flex;
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-full);
+            padding: 2px;
+        }
+
+        .depth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 6px var(--space-xs);
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .depth-tab.active {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+            font-weight: 600;
+        }
+
+        .content-area {
+            padding: var(--space-lg) var(--space-md);
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* Quran Block */
+        .ayah-block {
+            font-family: 'Amiri', serif;
+            font-size: var(--text-xl);
+            text-align: center;
+            line-height: 2.2;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xl);
+        }
+
+        .ayah-number {
+            color: var(--color-ayah);
+            font-size: var(--text-lg);
+            margin: 0 var(--space-xs);
+        }
+
+        /* Paragraphs */
+        .paragraph {
+            margin-bottom: var(--space-lg);
+            text-align: justify;
+        }
+
+        /* Distinct Quotes & Ayahs in text */
+        .inline-ayah {
+            font-family: 'Amiri', serif;
+            color: var(--color-ayah);
+            font-size: 1.15em;
+        }
+
+        .inline-quote {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* Markers */
+        .marker-wrapper {
+            display: inline-flex;
+            align-items: center;
+            vertical-align: middle;
+            margin: 0 4px;
+            cursor: pointer;
+        }
+
+        .marker-icons {
+            display: inline-flex;
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            padding: 2px 6px;
+            min-height: 28px;
+            min-width: 44px; /* Touch target */
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            border: 1px solid var(--border-color);
+        }
+
+        .icon-scholar { color: var(--color-scholar); }
+        .icon-hadith { color: var(--color-hadith); }
+        .icon-athar { color: var(--color-athar); }
+        .icon-link { color: var(--color-link); }
+
+        .marker-ref {
+            font-size: var(--text-xs);
+            color: var(--text-secondary);
+            margin-right: 4px;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            font-size: var(--text-xs);
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
+            margin-right: 6px;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        .badge-khilaf {
+            border: 1px solid var(--badge-khilaf-bg);
+            color: var(--badge-khilaf-bg);
+        }
+        
+        .badge-layathbut {
+            background-color: var(--badge-layathbut-bg);
+            color: white;
+        }
+
+        .badge-thabit {
+            border: 1px solid var(--badge-thabit-bg);
+            color: var(--badge-thabit-bg);
+        }
+
+        /* Bottom Sheet (State B) */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.4);
+            z-index: 20;
+        }
+
+        .bottom-sheet {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background-color: var(--bg-primary);
+            border-radius: 24px 24px 0 0;
+            padding: var(--space-md);
+            z-index: 30;
+            box-shadow: var(--shadow-lg);
+            max-height: 90%;
+            overflow-y: auto;
+        }
+
+        .drag-handle {
+            width: 40px;
+            height: 4px;
+            background-color: var(--border-color);
+            border-radius: var(--radius-full);
+            margin: 0 auto var(--space-md);
+        }
+
+        .sheet-title {
+            font-size: var(--text-lg);
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-btn {
+            color: var(--text-secondary);
+            font-size: var(--text-sm);
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .claim-box {
+            background-color: var(--bg-secondary);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-lg);
+            font-weight: 500;
+        }
+
+        .source-card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+        
+        .source-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .source-type {
+            font-weight: 600;
+            font-size: var(--text-sm);
+            color: var(--color-scholar);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .source-detail {
+            font-size: var(--text-sm);
+            margin-bottom: 4px;
+        }
+
+        .source-quote {
+            font-family: 'Amiri', serif;
+            font-size: var(--text-base);
+            color: var(--text-secondary);
+            border-right: 2px solid var(--color-scholar);
+            padding-right: var(--space-sm);
+            margin-top: var(--space-sm);
+            background-color: var(--bg-secondary);
+            padding: var(--space-sm);
+            border-radius: var(--radius-sm);
+        }
+
+        /* Footer & Legend (State C) */
+        .footer-section {
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: var(--space-lg) var(--space-md);
+            margin-top: auto;
+        }
+
+        .legend-container {
+            margin-bottom: var(--space-xl);
+        }
+
+        .legend-title {
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+        }
+
+        .legend-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-sm);
+            font-size: var(--text-sm);
+        }
+        
+        .legend-icon-col {
+            min-width: 24px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        
+        .legend-text-col span {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .legend-text-col p {
+            color: var(--text-secondary);
+            font-size: var(--text-xs);
+            line-height: 1.5;
+        }
+
+        .disclosure-box {
+            font-size: var(--text-xs);
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: var(--space-md);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .privacy-line {
+            font-size: var(--text-xs);
+            color: var(--text-secondary);
+            text-align: center;
+        }
+        
+        /* Desktop Adaptation */
+        @media (min-width: 1024px) {
+            body {
+                flex-direction: row;
+                justify-content: center;
+                align-items: flex-start;
+                flex-wrap: wrap;
+            }
+            .mock-frame {
+                height: 800px;
+                margin: 0 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- State A: The Reader (Level 1) -->
+    <div class="mock-frame">
+        <div class="header">
+            <div class="level-label">اختر درجة القراءة</div>
+            <div class="depth-switch">
+                <div class="depth-tab">اللمحة</div>
+                <div class="depth-tab active">الفهم</div>
+                <div class="depth-tab">التدبر</div>
+                <div class="depth-tab">التعمق</div>
+            </div>
+        </div>
+        
+        <div class="content-area">
+            <div class="ayah-block">
+                ﴿إنا أعطيناك الكوثر﴾ <span class="ayah-number">١</span> · 
+                ﴿فصل لربك وانحر﴾ <span class="ayah-number">٢</span> · 
+                ﴿إن شانئك هو الأبتر﴾ <span class="ayah-number">٣</span>
+            </div>
+
+            <div class="paragraph">
+                تجيب سورة الكوثر، وهي ثلاث آيات فقط، عن سؤال: من المقطوع حقًّا؟ وجوابها: هو من حُرم الخير، لا من لم يبقَ له ابن
+                <span class="marker-wrapper">
+                    <span class="marker-icons"><span class="icon-scholar">■</span><span class="marker-ref">⁽¹⁾</span></span>
+                </span>.
+            </div>
+
+            <div class="paragraph">
+                وكثير من الناس يقيسون قيمة الإنسان بما يتركه بعده: أبناء يحملون اسمه، ومال يرثونه. وبهذه الطريقة في الحكم كانت العرب تسمّي من لا ابن له «الأبتر»، أي المقطوع، كأن ذكره ينتهي بموته. وبهذه الكلمة وصف بعض أعدائه النبيَّ ﷺ، والسورة ترد على من وصفه بذلك
+                <span class="marker-wrapper">
+                    <span class="marker-icons"><span class="icon-scholar">■</span><span class="marker-ref">⁽²⁾</span></span>
+                </span>.
+            </div>
+
+            <div class="paragraph">
+                ولا تبدأ السورة بالرد، بل بالعطاء: <span class="inline-ayah">﴿إنا أعطيناك الكوثر﴾</span>. والكوثر يعني الخير الكثير جدًّا. ومن هذا الخير نهر في الجنة وعد الله به نبيه، فالنهر جزء من هذا الخير، والكوثر أوسع منه
+                <span class="marker-wrapper">
+                    <span class="marker-icons">
+                        <span class="icon-hadith">◆</span>
+                        <span class="icon-athar">▲</span>
+                        <span class="icon-scholar">■</span>
+                        <span class="marker-ref">⁽⁶⁾</span>
+                    </span>
+                </span>.
+            </div>
+
+            <div class="paragraph">
+                وعظمة هذا الخير تتضح أيضًا من طريقة الحديث عنه. فلم تقل الآية «أعطيتك»، بل «إنا أعطيناك»: فالله يتكلم عن نفسه بلفظ يدل على العظمة، ليُفهم أن العطاء عظيم بعظمة من أعطاه. وبهذه الكلمات يبشّر الله نبيه ويمنحه الخير، فهي ليست مجرد خبر عن عطاء مضى
+                <span class="marker-wrapper">
+                    <span class="marker-icons"><span class="icon-scholar">■</span><span class="marker-ref">⁽⁷⁾</span></span>
+                </span>.
+            </div>
+            
+            <div class="paragraph">
+                ثم تبدأ الآية الثانية بحرف الفاء: <span class="inline-ayah">﴿فصل لربك وانحر﴾</span>، أي: ما دمت قد أُعطيت هذا كله، فاشكر ربك عليه. والشكر هنا عبادتان: الصلاة، والنحر، وهو ذبح الإبل أو غيرها تقرّبًا إلى الله. وكلمة «لربك» تجعلهما لله وحده، لا لأحد سواه
+                <span class="marker-wrapper">
+                    <span class="marker-icons"><span class="icon-scholar">■</span><span class="marker-ref">⁽⁸⁾</span></span>
+                    <span class="badge badge-khilaf">خلاف معتبر</span>
+                </span>.
+            </div>
+            
+            <!-- Removed remaining paragraphs for brevity in the mock while preserving the core layout -->
+        </div>
+    </div>
+
+    <!-- State B: Sources Panel Open -->
+    <div class="mock-frame">
+        <div class="header">
+            <div class="level-label">اختر درجة القراءة</div>
+            <div class="depth-switch">
+                <div class="depth-tab">اللمحة</div>
+                <div class="depth-tab active">الفهم</div>
+                <div class="depth-tab">التدبر</div>
+                <div class="depth-tab">التعمق</div>
+            </div>
+        </div>
+        
+        <div class="content-area" style="overflow: hidden;">
+            <div class="ayah-block">
+                ﴿إنا أعطيناك الكوثر﴾ <span class="ayah-number">١</span> · 
+                ﴿فصل لربك وانحر﴾ <span class="ayah-number">٢</span> · 
+                ﴿إن شانئك هو الأبتر﴾ <span class="ayah-number">٣</span>
+            </div>
+            <div class="paragraph">
+                تجيب سورة الكوثر، وهي ثلاث آيات فقط، عن سؤال: من المقطوع حقًّا؟ وجوابها: هو من حُرم الخير، لا من لم يبقَ له ابن...
+            </div>
+        </div>
+        
+        <!-- Bottom Sheet -->
+        <div class="overlay"></div>
+        <div class="bottom-sheet">
+            <div class="drag-handle"></div>
+            <div class="sheet-title">
+                <span>من أين جاءت هذه المعلومة؟</span>
+                <span class="close-btn">إغلاق</span>
+            </div>
+            
+            <div class="claim-box">
+                المقطوع حقًّا من حُرم الخير، أو قلّ نصيبه منه، لا من لم يبقَ له ابن
+            </div>
+            
+            <div class="source-card">
+                <div class="source-header">
+                    <span class="source-type"><span class="icon-scholar">■</span> قول مفسر</span>
+                    <span class="badge badge-thabit">ثابت</span>
+                </div>
+                <div class="source-detail">
+                    <strong>القائل:</strong> ابن عاشور
+                </div>
+                <div class="source-detail">
+                    <strong>المصدر:</strong> التحرير والتنوير
+                </div>
+                <div class="source-detail">
+                    <strong>الموضع:</strong> 30/576–577
+                </div>
+                <div class="source-quote">
+                    «ومعنى الأبتر في الآية: الذي لا خير فيه... بصرف مراد القائل عن الأبتر الذي هو عديم الابن الذكر إلى ما هو أجدر بالاعتبار وهو الناقص حظ الخير»
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- State C: Legend and Footer Expanded -->
+    <div class="mock-frame" style="overflow-y: auto;">
+        <div class="content-area" style="flex: none; min-height: 400px; padding-bottom: 0;">
+            <div class="paragraph" style="opacity: 0.5;">
+                ...وهذا يوضح لماذا لا يعني فقد الأبناء انقطاع الخير: فقد بقيت رسالته ﷺ، وجعل الله له ذكرًا حسنًا لم يجعل مثله لأحد...
+            </div>
+        </div>
+        
+        <div class="footer-section">
+            <div class="legend-container">
+                <div class="legend-title">من أين جاءت المعلومة؟</div>
+                <div class="legend-grid">
+                    <div class="legend-item">
+                        <div class="legend-icon-col icon-ayah">۞</div>
+                        <div class="legend-text-col">
+                            <span>آية</span>
+                            <p>نص من القرآن الكريم</p>
+                        </div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon-col icon-hadith">◆</div>
+                        <div class="legend-text-col">
+                            <span>قول النبي ﷺ</span>
+                            <p>حديث عن النبي ﷺ</p>
+                        </div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon-col icon-athar">▲</div>
+                        <div class="legend-text-col">
+                            <span>قول صحابي أو تابعي</span>
+                            <p>من كلام أصحاب النبي ﷺ، أو من تعلّموا على أيديهم</p>
+                        </div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon-col icon-scholar">■</div>
+                        <div class="legend-text-col">
+                            <span>قول عالم</span>
+                            <p>شرح عالم معتمد لمعنى أو كلمة أو أسلوب، أو خبر من السيرة ينقله</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="legend-title" style="margin-top: var(--space-lg);">هل ثبتت؟</div>
+                <div class="legend-grid">
+                    <div class="legend-item">
+                        <div class="legend-icon-col"><span class="badge badge-thabit" style="margin:0;">ثابت</span></div>
+                        <div class="legend-text-col">
+                            <p>تحققنا من النص في مصدره: آية، أو حديث أو أثر صحيح، أو قول ثابت عن قائله</p>
+                        </div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon-col"><span class="badge badge-layathbut" style="margin:0;">لا يثبت</span></div>
+                        <div class="legend-text-col">
+                            <p>رواية نُقل الحكم بعدم ثبوتها، تُذكر للبيان ولا يُبنى عليها</p>
+                        </div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon-col"><span class="badge badge-khilaf" style="margin:0;">خلاف معتبر</span></div>
+                        <div class="legend-text-col">
+                            <p>للعلماء في المسألة قولان أو أكثر، وكلها معتبرة</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="disclosure-box">
+                هذا الشرح صاغه ذكاء اصطناعي من مصادر مسماة، ولم يراجعه متخصص بعد.<br><br>
+                نص القرآن والحديث وكلام العلماء يظهر مميَّزًا كما هو في مصدره، وما سواه صياغة هُدًى.<br><br>
+                نقلل الخطأ بالفحص ولا ندّعي انعدامه. إن رأيت خطأً فأخبرنا.
+            </div>
+            
+            <div class="privacy-line">
+                اختياراتك تبقى على جهازك. لا نحفظ عنك شيئًا عندنا.
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
