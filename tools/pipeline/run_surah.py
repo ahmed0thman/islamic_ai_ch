@@ -21,6 +21,8 @@ STOP = threading.Event()
 EXPORT_LOCK = threading.Lock()
 SCORES = ('support', 'attribution', 'quote_fidelity', 'narration_handling', 'reader_pull')
 SAMPLED = ('sentences', 'titles', 'terms', 'narrations', 'depth_items')
+FINDING_KINDS = {'unsupported', 'attribution', 'quote', 'narration', 'opening', 'review-status', 'other'}
+IGNORED_REVIEW_KINDS = {'review-status'}
 DECISIONS = {'\u0646\u0639\u0645': 'yes', '\u0645\u0639\u0644\u0651\u0642': 'pending', '\u0644\u0627': 'no'}
 
 
@@ -96,15 +98,75 @@ def parse_review(report, no):
     for f in d['findings']:
         if not isinstance(f, dict) or f.get('severity') not in ('critical', 'major', 'minor'):
             raise ValueError('invalid severity')
+        # Older reviewer reports did not include kind.
+        if 'kind' in f and (not isinstance(f['kind'], str) or f['kind'] not in FINDING_KINDS):
+            raise ValueError('invalid finding kind')
         if type(f.get('level')) is not int or not 0 <= f['level'] <= 3:
             raise ValueError('invalid level')
         if any(not isinstance(f.get(k), str) for k in ('where', 'problem', 'fix')):
             raise ValueError('invalid finding text')
         if not isinstance(f.get('records'), list) or any(not isinstance(x, str) for x in f['records']):
             raise ValueError('invalid records')
-    if any(f['severity'] == 'critical' for f in d['findings']) and d['verdict'] != 'do-not-ship':
-        raise ValueError('critical verdict mismatch')
     return d
+
+
+def fixable_findings(review):
+    return [f for f in review['findings'] if
+            (f['kind'] not in IGNORED_REVIEW_KINDS if 'kind' in f
+             else 'completion status' not in f['where'].casefold())]
+
+
+def needs_review_fix(review):
+    findings = fixable_findings(review)
+    return (any(f['severity'] in ('critical', 'major') for f in findings) or
+            (review['verdict'] != 'ship' and (findings or not review['findings'])))
+
+
+def review_passed(review):
+    return review['verdict'] == 'ship' and not any(
+        f['severity'] in ('critical', 'major') for f in review['findings'])
+
+
+def usage_limited(text):
+    return bool(re.search(r'usage[ _-]*limit|rate[ _-]*limit|quota|hit (?:your |the )?limit|'
+                          r'limit (?:reached|exceeded)|insufficient_quota', text, re.I))
+
+
+def relay_usage_limited(out, diagnostics):
+    if usage_limited(diagnostics):
+        return True
+    stderr = out / 'stderr.txt'
+    if stderr.is_file() and usage_limited(stderr.read_text(encoding='utf-8')):
+        return True
+    events = out / 'events.jsonl'
+    if events.is_file():
+        # Codex can leave finalMessage and stderr empty on usage exhaustion.
+        # Inspect error events only, not the source text sampled by the reviewer.
+        with events.open(encoding='utf-8') as stream:
+            for line in stream:
+                try:
+                    event = json.loads(line)
+                except ValueError:
+                    continue
+                if isinstance(event, dict) and event.get('type') in ('error', 'turn.failed'):
+                    if usage_limited(json.dumps(event, ensure_ascii=False)):
+                        return True
+    return False
+
+
+class DispatchLog(io.StringIO):
+    """Capture dispatch diagnostics while keeping the run log live."""
+    def __init__(self, log):
+        super().__init__()
+        self.log = log
+
+    def write(self, text):
+        self.log.write(text)
+        return super().write(text)
+
+    def flush(self):
+        self.log.flush()
+        super().flush()
 
 
 def lane_command(spec, brief, root, out, timeout, review=False):
@@ -150,7 +212,7 @@ def run_surah(no, args, *, root=ROOT, command_factory=lane_command, executor=exe
     directory = root / f'.cache/pipeline/{no}'
     directory.mkdir(parents=True, exist_ok=True)
     previous = read(directory / 'eval.json', {})
-    if previous.get('status') == 'passed' and not args.force:
+    if previous.get('status') == 'passed' and not args.force and args.stages != 'review':
         print(f'{no}: skipped (passed)'); return previous
     rows = [r for r in read(root / 'tools/data/qurancomplex/hafsData_v2-0.json') if int(r['sura_no']) == no]
     if not rows:
@@ -158,11 +220,25 @@ def run_surah(no, args, *, root=ROOT, command_factory=lane_command, executor=exe
     values = dict(surah_no=str(no), surah_name=rows[0]['sura_name_ar'], ayah_count=str(len(rows)), gate_output='')
     stages = args.stages.split(',')
     evaluation = dict(surah=no, ayah_count=len(rows), builder=args.builder, reviewer=args.reviewer,
-                      started_at=now(), stages={}, fix_rounds=0, gates=[], review_status='not-run', status='failed-dispatch')
+                      started_at=now(), stages={}, fix_rounds=0, review_fix_rounds=0,
+                      review_rounds=[], gates=[], review_status='not-run', status='failed-dispatch')
+    if stages == ['review']:
+        # Retain the build's result and history when retrying only the reviewer.
+        for key in ('builder', 'build_status', 'fix_rounds'):
+            if key in previous:
+                evaluation[key] = previous[key]
+        evaluation['stages'] = {k: v for k, v in previous.get('stages', {}).items()
+                                if k == 'build' or k.startswith('fix-review')}
+        evaluation['gates'] = previous.get('gates', [])
+        evaluation['review_rounds'] = previous.get('review_rounds', [])
+        if 'review' in previous:
+            evaluation['review'] = previous['review']
     serial = 0
+    dispatch_limited = False
     def brief(stage, output=''):
         values['gate_output'] = output[-6000:]
-        template = root / f"tools/pipeline/prompts/{stage}-surah.{'en' if stage == 'review' else 'ar'}.md"
+        filename = 'fix-review.ar.md' if stage == 'fix-review' else f"{stage}-surah.{'en' if stage == 'review' else 'ar'}.md"
+        template = root / 'tools/pipeline/prompts' / filename
         text = template.read_text(encoding='utf-8')
         for key, value in values.items():
             text = text.replace('{{' + key + '}}', value)
@@ -170,7 +246,8 @@ def run_surah(no, args, *, root=ROOT, command_factory=lane_command, executor=exe
         path.write_text(text, encoding='utf-8')
         return path
     def dispatch(stage, log, output=''):
-        nonlocal serial
+        nonlocal serial, dispatch_limited
+        dispatch_limited = False
         if STOP.is_set():
             return False, ''
         serial += 1
@@ -179,9 +256,12 @@ def run_surah(no, args, *, root=ROOT, command_factory=lane_command, executor=exe
                                   brief(stage, output), root, out, args.timeout_min, stage == 'review')
         if args.dry_run:
             print(shlex.join(command)); return True, ''
-        rc = executor(command, root, log, args.timeout_min)
+        capture = DispatchLog(log)
+        rc = executor(command, root, capture, args.timeout_min)
         result = read(out / 'result.json', {})
         ok = rc == 0 and result.get('status') == 'completed' and result.get('exitCode', 0) == 0 and not result.get('readOnlyViolation')
+        dispatch_limited = not ok and not result.get('readOnlyViolation') and relay_usage_limited(
+            out, capture.getvalue() + json.dumps(result, ensure_ascii=False))
         return ok, result.get('finalMessage', '')
     def gates(log):
         output, results = [], []
@@ -211,6 +291,16 @@ def run_surah(no, args, *, root=ROOT, command_factory=lane_command, executor=exe
         return time.monotonic()
     def stage_end(stage, start):
         evaluation['stages'][stage].update(ended_at=now(), minutes=round((time.monotonic()-start)/60, 4))
+    def export(log):
+        command = ['python3', '-B', 'tools/export_content.py', str(no)]
+        if args.dry_run:
+            print(shlex.join(command)); return True
+        # The exporter also updates its shared export/index.json.
+        with EXPORT_LOCK:
+            rc = 130 if STOP.is_set() else executor(command, root, log, args.timeout_min)
+        if rc != 0:
+            evaluation['status'] = 'failed-gates'
+        return rc == 0
     with (directory / 'run.log').open('a', encoding='utf-8') as log:
         try:
             passed = False
@@ -229,36 +319,63 @@ def run_surah(no, args, *, root=ROOT, command_factory=lane_command, executor=exe
                         passed, output = gates(log)
                     evaluation['status'] = 'passed' if passed else ('failed-gates' if ok else 'failed-dispatch')
                     if passed or args.dry_run:
-                        command = ['python3', '-B', 'tools/export_content.py', str(no)]
-                        if args.dry_run:
-                            print(shlex.join(command))
-                        else:
-                            # The exporter also updates its shared export/index.json.
-                            with EXPORT_LOCK:
-                                rc = 130 if STOP.is_set() else executor(command, root, log, args.timeout_min)
-                            if rc != 0:
-                                evaluation['status'] = 'failed-gates'; passed = False
+                        passed = export(log)
                 stage_end('build', start)
+                evaluation['build_status'] = evaluation['status']
             else:
                 passed, _ = gates(log)
                 evaluation['status'] = 'passed' if passed else 'failed-gates'
+                evaluation.setdefault('build_status', evaluation['status'])
             if 'review' in stages and (passed or args.dry_run):
-                start = stage_start('review')
-                ok, report = dispatch('review', log)
-                if not args.dry_run:
+                while True:
+                    round_no = len(evaluation['review_rounds'])
+                    stage = 'review' if round_no == 0 else f'review-{round_no}'
+                    start = stage_start(stage)
+                    ok, report = dispatch('review', log)
+                    stage_end(stage, start)
+                    if args.dry_run:
+                        break
                     (directory / 'review.txt').write_text(report, encoding='utf-8')
+                    (directory / f'review-{round_no}.txt').write_text(report, encoding='utf-8')
+                    round_result = dict(round=round_no, **evaluation['stages'][stage])
+                    evaluation['review_rounds'].append(round_result)
                     if not ok:
-                        evaluation['status'] = 'failed-dispatch'
+                        status = 'review-pending' if dispatch_limited else 'failed-dispatch'
+                        evaluation.update(status=status, review_status='pending' if dispatch_limited else 'failed')
+                        round_result['status'] = status
+                        break
+                    try:
+                        review = parse_review(report, no)
+                    except (ValueError, TypeError, KeyError):
+                        evaluation.update(review_status='unparsed', status='review-unparsed')
+                        round_result['status'] = 'review-unparsed'
+                        break
+                    save(directory / 'review.json', review)
+                    round_result.update(review, status='parsed')
+                    evaluation['review_status'] = 'parsed'
+                    evaluation['review'] = dict(scores=review['scores'], verdict=review['verdict'],
+                        findings={s: sum(f['severity'] == s for f in review['findings']) for s in ('critical', 'major', 'minor')})
+                    evaluation['status'] = 'passed' if review_passed(review) else 'review-failed'
+                    if (stages == ['review'] or not needs_review_fix(review) or STOP.is_set() or
+                            evaluation['review_fix_rounds'] >= args.max_review_rounds):
+                        break
+                    evaluation['review_fix_rounds'] += 1
+                    fix_stage = f"fix-review-{evaluation['review_fix_rounds']}"
+                    start = stage_start(fix_stage)
+                    values['findings_json'] = json.dumps(fixable_findings(review), ensure_ascii=False, indent=2)
+                    ok, _ = dispatch('fix-review', log)
+                    if ok:
+                        passed, _ = gates(log)
+                        evaluation['status'] = 'passed' if passed else 'failed-gates'
+                        if passed:
+                            passed = export(log)
                     else:
-                        try:
-                            review = parse_review(report, no)
-                            save(directory / 'review.json', review)
-                            evaluation['review_status'] = 'parsed'
-                            evaluation['review'] = dict(scores=review['scores'], verdict=review['verdict'],
-                                findings={s: sum(f['severity'] == s for f in review['findings']) for s in ('critical', 'major', 'minor')})
-                        except (ValueError, TypeError, KeyError):
-                            evaluation.update(review_status='unparsed', status='review-unparsed')
-                stage_end('review', start)
+                        passed = False
+                        evaluation['status'] = 'failed-dispatch'
+                    stage_end(fix_stage, start)
+                    evaluation['build_status'] = evaluation['status']
+                    if not passed:
+                        break
         except (OSError, ValueError, subprocess.SubprocessError) as exc:
             evaluation['error'] = str(exc)
             evaluation['status'] = 'failed-dispatch'
@@ -290,6 +407,8 @@ def parser():
     p.add_argument('--reviewer', default='codex:review')
     p.add_argument('--stages', default='build,review')
     p.add_argument('--max-fix-rounds', type=int, default=2)
+    p.add_argument('--max-review-rounds', type=int, default=1,
+                   help='Maximum builder repairs after review (review-only never dispatches the builder)')
     p.add_argument('--parallel', type=int, default=1)
     p.add_argument('--timeout-min', type=int, default=60)
     p.add_argument('--force', action='store_true')
@@ -299,7 +418,7 @@ def parser():
 
 def main(argv=None):
     p = parser(); args = p.parse_args(argv)
-    if args.parallel < 1 or args.timeout_min < 1 or args.max_fix_rounds < 0:
+    if args.parallel < 1 or args.timeout_min < 1 or args.max_fix_rounds < 0 or args.max_review_rounds < 0:
         p.error('invalid concurrency, timeout or fix limit')
     if args.stages not in ('build', 'review', 'build,review') or any(not 1 <= n <= 114 for n in args.surahs):
         p.error('invalid stages or surah')

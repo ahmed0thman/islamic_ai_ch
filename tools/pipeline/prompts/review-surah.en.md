@@ -24,10 +24,12 @@ Return, as the LAST thing in your report, one fenced JSON block exactly in this 
   "sampled": {"sentences": 0, "titles": 0, "terms": 0, "narrations": 0, "depth_items": 0},
   "scores": {"support": 0, "attribution": 0, "quote_fidelity": 0, "narration_handling": 0, "reader_pull": 0},
   "findings": [
-    {"severity": "major", "level": 1, "where": "block index or title", "records": ["{{surah_no}}-r00"], "problem": "…", "fix": "…"}
+    {"kind": "unsupported", "severity": "major", "level": 1, "where": "block index or title", "records": ["{{surah_no}}-r00"], "problem": "…", "fix": "…"}
   ],
   "verdict": "ship" 
 }
 ```
 
 Scores are 0–5 (5 = no problem found in the sample). `verdict` is one of "ship", "fix-then-ship", "do-not-ship" ("do-not-ship" whenever a critical finding exists: an unsupported meaning, a wrong attribution, a fabricated or altered quote, or a pending narration used as a basis). Before the JSON, write a short prose summary in English. Quote Arabic only as short excerpts needed to identify the spot.
+
+Each finding must include `kind`: "unsupported", "attribution", "quote", "narration", "opening", "review-status", or "other". Use "review-status" for systemic completion status issues (such as records awaiting human review) that the builder cannot fix. These remain in the verdict and report, but are excluded from builder repair rounds. Use the content kinds for problems the builder can fix; do not classify an unsupported sentence or definition as "review-status".
