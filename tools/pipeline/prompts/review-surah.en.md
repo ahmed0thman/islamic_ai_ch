@@ -13,7 +13,7 @@ For each sampled item decide:
 2. ATTRIBUTION: is the statement attributed to the right author, and is the author's wording not cut in a way that changes its meaning?
 3. QUOTE: is every `quote` segment verbatim from its record's evidence?
 4. NARRATIONS: is any narration used as the basis of a constructed sentence without build permission «نعم»? Is a sira/historical report stated on a scholar's word alone?
-5. QURAN: any Quran wording inside system text or titles?
+5. QURAN: any Quran wording inside system text or titles? (A single Quran word named as the word under discussion, such as a lemma in a question title, is allowed. Two or more consecutive Quran words in system text or a title are a finding.)
 6. READER: does each level open in a way that makes a stranger want to continue (not necessarily a question), are stop titles clear and short, is each question answered where it appears, is level 0 short?
 
 Return, as the LAST thing in your report, one fenced JSON block exactly in this shape (numbers are integers; severities are "critical", "major", "minor"):
