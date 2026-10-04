@@ -2,6 +2,8 @@
 
 Status: (ب) research finding extracted from the bake-off prototype `design/bakeoff/claude/` (author: Claude Sonnet 5.5). Nothing here is an owner decision except where the owner's words are quoted. Items marked (ج) are proposals waiting for the owner.
 
+Update 5 Oct 2026 (decision ق-074): section 9 (wide-screen layout) is new, section 2.1 now carries verified Hugeicons names for the six source types, Q2 and Q7 are closed. The prototype changed accordingly: `design/bakeoff/claude/` gained `icons.js` (the copied icon paths) and `wide.css` (everything from 768px up); below 768px the phone design is untouched.
+
 Second input: the UI research report (`.cache/delegate/m-006-ui-research/final.txt`, private, 4 Oct 2026). Its decisions are folded in below and summarized in section 8. Where it contradicts my prototype, the research wins, and the places are marked "(research)".
 
 Audience: a coding lane that builds the real reader in `app/` (Next.js 16.0.10, React 19.2, Tailwind 4.1, pnpm). Read this file, then `content/SCHEMA.md`, `app/src/lib/types.ts`, `app/src/lib/map.ts`. **Never write Arabic strings in code**: every Arabic string comes from `content/ui.ar.json` (keys are cited below as `ui.<group>.<key>`) or from `content/export/*.json`. If a label is missing, leave the control icon-only with an English `aria-label` and list it.
@@ -155,7 +157,7 @@ Reduced motion (mandatory): under `prefers-reduced-motion: reduce` set `animatio
 
 - Mobile first, designed at 390x844. Up to 430px: full bleed, no frame.
 - The phone frame (40px radius) in the prototype is a demo device only. In production use a centered reading column: `max-width: 34rem` from 48rem (`md`) up, with the page ground visible around it. Do not render a fake phone.
-- Tailwind default breakpoints are fine (`sm 640`, `md 768`, `lg 1024`). A two-pane desktop layout (thread left, scene right) is (ج), not part of v1.
+- Tailwind default breakpoints are fine (`sm 640`, `md 768`, `lg 1024`). The wide-screen layout is decided (ق-074) and specified in section 9: from 1024px the thread sits on the start side (right in RTL), the reading platform beside it, the source as a third column, and a fixed key bar at the bottom. 768-1023px keeps the phone design in one calm column.
 - Use CSS logical properties everywhere (`ms-*`, `me-*`, `ps-*`, `pe-*`, `start-*`, `end-*`, `border-s`, `text-start`). Never `left`/`right`/`ml`/`mr` (except the physical chevron geometry noted in 2.3).
 
 ### 1.6 `@theme` sketch
@@ -183,48 +185,47 @@ Proposal (ج, needs owner approval): move all interface icons to one library, Hu
 
 Wrap it once in `components/ui/icon.tsx` (`<Icon icon={...} size?: 16|20|24 />`, `aria-hidden` by default) so swapping the library later is one file. RTL: arrows are directional, so "forward" in the reading direction points left. Use the left/right chevron by meaning, not a mirror flag, and check each icon visually.
 
-I am not sure of most Hugeicons names. Names in the table are the ones I am reasonably confident exist in the free pack; every row says to verify, because I could not install or browse the package. Do not invent a name: search the package at install time and record the final name here.
+Names were verified on 5 Oct 2026 against the installed `app/node_modules/@hugeicons/core-free-icons` (version 4.3.5): every name below was imported from `dist/esm/<Name>Icon.js` and its paths were copied to `design/bakeoff/claude/icons.js`. Do not invent a name: search the package and record the final name here. All icons draw at 24px on a 1.5 stroke; the prototype sets one width for all of them (`--sw: 1.75`, section 9.8).
 
-| Need | Meaning / where | Proposed Hugeicons name |
+| Need | Meaning / where | Hugeicons name (verified, free pack) |
 |---|---|---|
-| Close | sheets, scope chip clear | `Cancel01Icon` (verify) |
-| Back / map | scene back button, back link | arrow pointing in reading-forward direction on the right side: `ArrowRight01Icon` (verify, direction) |
-| Next | NextCard, scene next | `ArrowLeft01Icon` (verify, RTL meaning) |
-| Previous | scene previous | `ArrowRight01Icon` (verify) |
-| Door chevron | StopDoor affordance | `ArrowLeft01Icon` (verify) |
-| Legend / key | LegendSheet trigger | verify at install (a key or info-in-circle; `InformationCircleIcon` is a candidate) |
-| Map / thread | map view toggle | verify at install (route or map pin) |
-| Continuous reading | continuous view toggle | verify at install (open book or text lines; `BookOpen01Icon` is a candidate) |
-| Open source | external link in SourceSheet | verify at install (arrow up-right or external link; `Link01Icon` is a candidate) |
-| Term | optional hint next to a term | none needed (dotted underline is the affordance) |
-| Passage | PassageBar play/scope | verify at install (a play triangle or a layers glyph) |
-| Depth | DepthDial | none needed (names and counts are text) |
-| Question | HeroQuestion, scene title accent | none needed (accent bar), or `HelpCircleIcon` (verify) |
-| Details open / close | DetailsItem | `PlusSignIcon` / `MinusSignIcon` (verify) |
-| Visited | StopDoor seen state | `Tick02Icon` (verify) or the existing 8px dot |
-| Ask | AskBox | verify at install (search or chat-question) |
-| Offline | Offline notice | verify at install |
+| Close | sheets, scope chip clear | `Cancel01Icon` |
+| Next | scene next, door chevron, hook go, next card (points left = reading-forward in RTL) | `ArrowLeft01Icon` |
+| Previous | scene previous (points right) | `ArrowRight01Icon` |
+| Back / map | scene back is a text pill (`ui.reader.back`), no icon | none |
+| Key / legend | key bar title, mobile key button keeps its six color dots | `Key01Icon` |
+| Key details | key bar details button (`ui.legend.open_details`) | `InformationCircleIcon` |
+| Continuous reading | `ui.reader.read_continuous` | `BookOpen01Icon` |
+| Open source | external link in the source view | `ArrowUpRight01Icon` |
+| Reading unit | the unit pill under the surah name (wide) | `Bookmark01Icon` |
+| Passage play | PassageBar scope button (mirrored with `scaleX(-1)` to point reading-forward) | `PlayIcon` |
+| Details open / close | DetailsItem | `PlusSignIcon` / `MinusSignIcon` |
+| Selected unit | reading-unit menu | `Tick02Icon` |
+| Retry | error state | `ArrowReloadHorizontalIcon` |
+| Term | none needed (dotted underline is the affordance) | none |
+| Depth | none needed (names are text) | none |
+| Ask, Offline | not built in the prototype | open (search at build time) |
 
-### 2.1 The six source-type icons (owner's decision area)
+### 2.1 The six source-type icons (decided: ق-074, 5 Oct 2026)
 
-Currently `ui.icons.<key>.symbol` (text glyphs) plus `.color`: ayah is the ornamental flower sign, hadith `◆`, athar `▲`, scholar `■`, link `⇄`, hidaya `✦`. They are already distinguishable by shape and color together, which is the property the legend relies on ("what makes a claim trustworthy, at a glance, even for color-blind readers"). Those symbols and colors are part of the owner's decision on the markers, so changing them is a proposal only.
+The owner decided that the type icons become professional icons from the approved library, not text symbols (Q2 closed). The colors do not change: they still come from `ui.icons.<key>.color`. The text `symbol` values stay in `ui.ar.json` only as a fallback if an icon fails to load. The property the legend relies on is kept and strengthened: the type is told by **icon + color + chip silhouette** together, so it still reads for color-blind readers.
 
-Proposal (ج): keep the symbol + color mechanism as the source of truth (it comes from `ui.ar.json`) and, only if the owner wants Hugeicons here, use one icon per type inside a chip whose silhouette also differs, so shape and color both carry the type:
+| Type (`IconKey`) | Hugeicons name (verified) | Why this one | Chip silhouette | Short label |
+|---|---|---|---|---|
+| `ayah` | `Quran03Icon` | a closed book with a crescent: the Quran, recognizable at 16px | circle | `icons.ayah.short` |
+| `hadith` | `QuoteDownIcon` | the quotation mark: a saying that is transmitted | rounded square | `icons.hadith.short` |
+| `athar` | `FootprintsIcon` | an *athar* is literally a footprint: what the companions and successors left behind | hexagon | `icons.athar.short` |
+| `scholar` | `QuillWrite01Icon` | the scholar's pen: written explanation | book-spine corners (small corners on the start side, large on the end side) | `icons.scholar.short` |
+| `link` | `Link01Icon` | two chain links: a connection between two things | capsule (wider) | `icons.link.short` |
+| `hidaya` | `CompassIcon` | a navigation compass: guidance | leaf-diamond (two large and two small corners) | `icons.hidaya.short` |
 
-| Type (`IconKey`) | Chip silhouette | Icon idea (name: verify at install) |
-|---|---|---|
-| `ayah` | circle | open Quran/book |
-| `hadith` | diamond (rotated square) | speech/quote bubble |
-| `athar` | triangle | person/companion or a chain link |
-| `scholar` | square | book or pen |
-| `link` | double-arrow capsule | two-way arrows or link |
-| `hidaya` | four-point star | light/star/compass |
+Candidates looked at and left: `Quran01Icon` and `Quran02Icon` (less readable small), `MessageSquareQuoteIcon` and `TextQuoteIcon` for hadith (a chat or a block quote reads as "a quotation in general"), `WalkingIcon` and `StudentIcon` for athar (a walker or a student does not say "left behind"), `Pen01Icon` and `BookUserIcon` for scholar, `Link02Icon` and `ArrowLeftRightIcon` for link (the arrows suggest a causal exchange, and the old text symbol was the one to move away from), `LighthouseIcon`, `LanternIcon` and `SunriseIcon` for hidaya.
 
-Never replace color-only; the silhouette is mandatory. Do not change anything until the owner approves (question Q2).
+Implementation (copy this): chip size comes from one custom property `--s` (26 normal, 22 small, 40 legend) and every radius is a multiple of it, so the silhouettes scale; the glyph is `.62 * --s`. Chip background `color-mix(in srgb, var(--tone) 22%, transparent)`, glyph `color-mix(in srgb, var(--tone) 55%, var(--ink))` (section 1.1 tone rule, unchanged). The hexagon uses `clip-path`, so a chip never carries a border or focus ring itself (the marker button around it does). The same six glyphs replace the text symbols everywhere: the cover count line, the end-of-thread ornament, the ayah reference under an inline ayah, the scope label, the badge-like chips in the source view, and the legend.
 
 ### 2.2 Source chip anatomy (used by SourceMarker, StopDoor, legend)
 
-Chip: min 22 (small) / 26 / 40 (legend) px square, radius 7-12, tinted by `--tone`. A marker shows the union of the icons of its records in `ui.icon_order`, then one badge pill if any record has badge `la_yathbut` or `khilaf_mutabar` (label from `ui.badges.<key>.label`). `thabit` shows only inside the sheet.
+Chip: 22 (small) / 26 / 40 (legend) px, silhouette per type (section 2.1), tinted by `--tone`; the glyph is the type's Hugeicons icon. A marker shows the union of the icons of its records in `ui.icon_order`, then one badge pill if any record has badge `la_yathbut` or `khilaf_mutabar` (label from `ui.badges.<key>.label`). `thabit` shows only inside the sheet.
 
 ### 2.3 Physical geometry exception
 
@@ -421,12 +422,12 @@ Every phase: `pnpm typecheck` and `pnpm test` stay green; verify visually at 390
 ## 7. Open questions for the owner
 
 - **Q1.** Approve Hugeicons (free tier) as the single icon library for the interface? (Names in section 2 are unverified until installed.)
-- **Q2.** Do you want the six source-type symbols (the text glyphs and their colors) kept as they are, or replaced by library icons in shaped chips (section 2.1)? This is part of your decision on the markers.
+- **Q2 (closed, 5 Oct 2026, owner, ق-074).** The six source-type symbols become Hugeicons icons in shaped chips, colors unchanged (section 2.1).
 - **Q3.** At depth 3 there are no titled stops. May the map hang each `details` item from the earliest ayah that its source records point to (`ayah_keys`), and show the untitled sections on a shelf? Otherwise depth 3 stays a continuous page as it is now.
 - **Q4 (closed on colors, 4 Oct 2026, owner).** The sky-blue/teal palette is rejected. Decided palette: dark green primary, one calm gold accent, warm neutrals in light and Kimi-style dark greys in dark (section 1.1). Still open: IBM Plex Sans Arabic + Amiri Quran type in place of Readex Pro (compare on a device, including Amiri for the explanation text). **Q4b.** Show the number of doors above each depth name, or no numbers? Decision applied in the prototype: no numbers.
 - **Q5.** Allow a "deeper on this stop" jump to the same stop at the next depth? Off in v1: it needs a reviewed cross-depth mapping, which the data lacks.
 - **Q6.** Passage bars: expand all with scope (proposed), or keep today's collapse-a-passage behavior?
-- **Q7.** Desktop: centered reading column only (proposed), or a two-pane layout later?
+- **Q7 (closed, 5 Oct 2026, owner, ق-074).** Desktop is not the phone in the middle: the thread on the start side, the reading platform beside it, the source as a third column, a fixed key bar below (section 9).
 - **Q8.** Missing labels in `ui.ar.json`: retry, "range", "read this passage", "sources of this stop", reading preferences (text size, theme). Add them? Until then the controls are icon-only with English `aria-label`, or reuse `ui.panel.title`.
 - **Q9.** Reading unit: confirm that selecting an ayah or range is navigation and focus only (it never hides text), because the content's ayah and passage tags are not complete scope. A real "lesson for this range only" needs reviewed scope metadata (stable stop IDs, scope, required context) added to the content.
 
@@ -437,3 +438,94 @@ Taken: the "thread of meaning" concept (close to this prototype) with continuous
 Changed in my prototype because of it: sentence-per-row pulses are no longer the default (flow by default, stacked only for dense multi-claim paragraphs, boundaries only at `mark`); the ripple animation and per-pulse stagger are removed; motion durations shortened; depth counts off by default; "deeper on this stop" removed; scope no longer limits Next/Previous or hides content.
 
 Left out, with reasons: the lens (concept-map) concept and a global graph (needs relation data that does not exist); the illustrated-atlas concept (illustrations risk carrying interpretation); saved daily portion and Juz divisions (no boundary or coverage data, and no labels); an opening region of reviewed introduction blocks (no designated opening metadata in the content yet); cross-depth stop identity and exact range lessons (need reviewed metadata, listed in Q9); the research's exact palette values (the owner's own palette decision, section 1.1, took the warm paper and green/gold direction).
+
+## 9. Wide-screen layout (decision ق-074, 5 Oct 2026)
+
+Status: the concept is the owner's decision (ق-074); the details below are (ب) and come from the prototype (`design/bakeoff/claude/`: `wide.css` plus the wide branch in `app.js`). Owner words: "when I open the web I find the mobile version, everything centered in the text. No: we have a big web space. We can put the surah map on the right and use the space on the left, and put something fixed below for the keys, with each icon's name beside it in a very short form, and when we press, the keys window appears... the same method you used for the mobile design."
+
+### 9.1 Concept: the open Mushaf
+
+Two pages side by side instead of one column in the middle.
+
+1. **Start page (right in RTL): the thread, a live index.** Surah identity (name, count, tagline, surah chips, the reading-unit pill), the depth dial with the strip, then the thread itself: ayahs, doors, passage chapters. It has its own scroll. It stays usable while a stop is open: clicking another door replaces the open stop.
+2. **End page (left, the main space): the reading platform.** The chosen stop is shown as a **fixed panel, not a dialog on top of the page**: ayah stage, question, the text with its markers, the next card. With no stop chosen, the platform shows the opening: the ayahs of the first stop in the reading unit above its question, then "read continuous".
+3. **Source: a third column on the far end** while a marker (or a term) is open, beside the text so the reader sees the sentence and its source together. Nothing overlaps: the platform makes room for it.
+4. **A fixed key bar below, full width:** the six source icons each with its very short name, then the three standing badges. Pressing any item, or the details button, opens the key window.
+
+### 9.2 Breakpoints
+
+| Width | Arrangement |
+|---|---|
+| under 768 | the approved phone design, unchanged (a centered 390px demo frame from 431 to 767, full bleed up to 430) |
+| 768 to 1023 (tablet) | **still one column**: the phone design, unframed, 34rem wide, bottom sheets, the key button on the cover, no key bar (section 9.9, decision 2) |
+| 1024 to 1279 | two pages plus the source column. Thread `clamp(300px, 27vw, 340px)`, source 304px. Key bar captions are hidden |
+| 1280 to 1439 | thread `clamp(340px, 27vw, 420px)`, source 340px |
+| 1440 and up | source 360px; the reading page never grows past 680px (text 640px) and is centered in the space that is left |
+
+Text measure (characters per line of the explanation, estimated from the column widths at 18px, not counted): about 70 with no source open at 1440; about 62 with a source open at 1280; about 44 with a source open at 1024 (the weakest point, section 9.10). Layout: `.phone` becomes a full-viewport grid, columns `[thread-w, 1fr]`, rows `[1fr, 60px]`; the source is absolutely positioned at the end edge and the platform gets `padding-inline-end` equal to its width (animated 320ms), so text and source never overlap. The key window and the reading-unit menu are centered dialogs with a scrim. The page itself never scrolls; the thread, the platform and the source scroll separately (thin scrollbars on wide, since there is a mouse).
+
+### 9.3 What changes per component
+
+| Component | On wide screens |
+|---|---|
+| SurahHeader | identity block at the top of the thread column: name 56px, count, tagline, the surah chips (a scroll row), the reading-unit pill. The legend button is gone (the key bar replaces it) |
+| Reading unit | a pill under the name (`Bookmark01Icon` + the current unit: surah name, passage title, or `ui.reader.ayahs_title` + number). It opens a centered menu titled `ui.reader.read_this`: the whole surah, then the passages (`ui.reader.passages_title`) with title and range. Choosing is **navigation and focus only** (scroll and dim, never hide text), as everywhere. The old scope row is hidden |
+| DepthDial, MiniStrip | the sticky console at the top of the thread column, unchanged. Changing depth with a stop open returns to the opening (stop identity is not kept across depths, as before). A strip of more than 14 ayahs is "dense": 1px gaps, 3px radius, and only the numerals of the first, every fifth and the last ayah (every bead keeps its full aria-label) |
+| SurahThread | the same component. Ayah text 24px (`--text-verse-thread`) instead of 28, because the column is narrow. **The open stop is marked in the thread:** its door gets the accent border and a tint, `aria-current="true"`, and its ayah medal gets an outer accent ring; the column scrolls to show it only if it is not already in the comfortable band (the ayah and its doors if they fit, otherwise the door) |
+| StopScene | a region (`role="region"`, `aria-modal="false"`), not a dialog; it shares one grid cell with the opening and cross-fades (200ms). Top bar (back pill, pips, previous and next) is sticky; content is centered, 680px at most. Focus moves to the title on every stop, including when the stop changes by arrow keys. "Back" returns to the opening |
+| HeroQuestion | on the opening page: the ayah stage of the first stop above the question card, then "read continuous" |
+| SourceSheet, TermSheet | **SourceColumn**: no scrim, nothing is made inert, focus moves to its close button and returns to the marker on close; the sentence the marker belongs to is marked (`.run-on`, a soft accent background) while it is open; it closes by itself when the stop changes, so a source never sits beside text it does not belong to |
+| LegendSheet | **KeyDialog**: a centered dialog, two columns (types, then badges), with the pressed bar item highlighted |
+| KeyBar | new, section 9.4 |
+| NextCard, relation cards, details items | unchanged |
+
+### 9.4 The key bar
+
+60px high, `--surface`, one hairline above it, always visible on wide screens. From the start edge: the title (`ui.legend.show` with `Key01Icon`); the caption `ui.legend.icons_title`; the six types in `ui.icon_order`, each a button with its chip and `icons.<k>.short` (`title` attribute = `icons.<k>.meaning`); a separator; the caption `ui.legend.badges_title`; the three badges as pills (`badges.<k>.label`, color from `badges.<k>.color`); at the end edge the details button (`ui.legend.open_details` with `InformationCircleIcon`). Every item is a real button, 44px tall. Pressing an item opens the KeyDialog and highlights that item; the details button opens it without a highlight. Below 1200px the two captions are hidden and gaps shrink so the bar stays on one line down to 1024px; it scrolls horizontally if anything still does not fit. No Arabic is in the code: the bar is built from `ui.ar.json`.
+
+### 9.5 Keyboard and focus
+
+- **Left arrow = next stop, right arrow = previous stop** (RTL). With no stop open, the left arrow opens the first stop of the reading unit. Ignored while a modal dialog is open, and inside the depth dial, inputs and text fields (they own the arrows).
+- **Esc** closes the source column, or the key window or reading-unit menu, and returns focus to what opened it. It does nothing else on wide screens.
+- Focus ring: 3px `--accent`, 2px offset, everywhere; on the dark green stage it is `--gold-stage` (the accent is invisible there in light mode). Focus order follows the DOM: thread, platform, key bar; opening the source moves focus into it and Esc returns it.
+- Checked: the arrow-key and Esc flow (scripted), and the focus ring on a key-bar item and a door (screenshots). Not checked: the full Tab order (section 9.10).
+
+### 9.6 State rules on wide screens
+
+Depth change or surah change with a stop open: the stop closes and the opening shows. Reading unit change with a stop open: the stop list of the scene follows the unit (the open stop stays open even if it is outside the unit). Resizing across 1024px with a stop open keeps it open (the same nodes move between arrangements, `applyLayout()` in `app.js`); an open source or dialog is closed on the switch. The seen dot, scope, depth keys and URL parameters are as in 5.3.
+
+### 9.7 New tokens
+
+`--bar-h: 60px`, `--thread-w` and `--src-w` per breakpoint (9.2), `--page-w: 680px`, `--text-verse-thread: 24px`, `--pad-end` (set to `--src-w` while a source is open), `--sw: 1.75` (icon stroke), `--s` (chip size, 26 / 22 / 40). On wide the thread column uses `--bg` and the platform `--surface`, so the reading page is the lighter "paper". No new color, no new radius, spacing from the existing scale.
+
+### 9.8 Icons everywhere
+
+One family, one stroke width (`--sw: 1.75` on the 24px grid) for every icon in the prototype: type chips (glyph 62% of the chip), 14px in the badge pills, 18px in inline buttons, 20px in round buttons and chevrons, 24px on the opening card. Arrows follow reading direction by meaning (left = forward in RTL), never by a mirror flag, except the play triangle, which is `PlayIcon` mirrored once with `scaleX(-1)`. The old CSS-drawn chevrons, x and plus, and every text symbol, are gone.
+
+### 9.9 What I changed from the coordinator's idea, and why
+
+1. **The source is a column from 1024, not only from 1280.** The idea was a slide-over between 1024 and 1279. At 1024 the platform is 684px wide and Arabic lines start on its right edge, so a 340px slide-over still covered about half of every line (seen in a screenshot). The platform now makes room (padding) at every wide size, and below 1280 the thread and the source are narrower (300px and 304px) to keep a readable measure. The cost is a short line (about 44 characters) at 1024 while a source is open.
+2. **Tablet (768 to 1023) is the phone design in one column,** not two pages. Two pages there leave under 45 characters for the text even with no source, which breaks the 60 to 70 target; the phone design is approved and already has everything.
+3. **No separate "glance card" on the opening.** At depth 0 the glance paragraphs are themselves the stops in the thread, so a second card would repeat them. The opening instead puts the ayahs of the first stop above its question, so the platform is never an empty page.
+4. **The key window opens on the item that was pressed** (highlighted), not just open.
+5. **The source closes when the stop changes** (see the SourceColumn row in 9.3), and the sentence it belongs to stays marked.
+6. **The scope row is hidden** on wide; the reading-unit pill and its menu replace it.
+7. **The thread's ayah text is 24px** (28px on phones) because the column is 300 to 420px; this is the only type size that differs between phone and wide.
+
+### 9.10 Weakest points and what was not verified
+
+- **Weakest: long surahs in the strip.** A 40-ayah surah (Al-Naba) gives 5px beads in a 346px column. Dense mode keeps it legible by hiding most numerals, but a strip with one bead per ayah does not work past about 25 ayahs; passage segments or a scrubber would. The phone strip has the same limit (it was only validated on short surahs, as note in 3.2 says).
+- Second weakest: 1024px with a source open (about 44 characters per line).
+- Not verified: a real tablet or touch device; hover-less behavior of the key bar `title` tooltips; 1920px and ultra-wide; a screen reader; Tab order beyond the key bar and doors; print; text enlarged to 150% on wide; Firefox and Safari (`clip-path`, `color-mix`, `inset-inline` shorthand and animating `padding-inline-end` were seen only in Chromium); the long-surah thread (Al-Naba) was seen only on its first screen. Contrast was recomputed with `contrast.py` (0 failing pairs in light and dark; the chip and glyph colors did not change, so those numbers still hold).
+
+### 9.11 Build order for the app (after phases 1 to 10; each phase is one coding task, `pnpm typecheck` and `pnpm test` stay green)
+
+| Phase | Build | Acceptance test |
+|---|---|---|
+| W1 Icons | Add the six type icons (section 2.1) and replace every text arrow, x, plus and symbol (section 2) through `components/ui/icon.tsx`; chip silhouettes with `--s` | Legend, markers and opening card show six different silhouettes with the original colors; markers have no text glyphs; at 390 nothing else moved; `contrast.py` still 0 failing |
+| W2 Shell | The grid shell at 1024px and up (Tailwind `lg:`), the thread in its own scroll area, an empty platform, a key bar placeholder, 768 to 1023 as one 34rem column | 1440x900 `/s/93`: the thread at the start edge about 389px wide with its own scroll, the platform filling the rest, the page itself not scrolling; at 390 unchanged; at 820 one column |
+| W3 Platform | StopScene as a panel (region, not modal), the opening page with the stage above the question, thread marking of the open stop, arrow keys, back, depth and surah change close the stop | Clicking a door shows its stop in the platform while the thread stays clickable; the open door has `aria-current`; left and right arrows move through stops; back shows the opening; changing depth closes the stop; explanation lines are 60 to 70 characters at 1440 |
+| W4 Source column | Source and term views as the third column from 1024, the run marking, close on stop change | At 1280 the text and the source are side by side with no overlapping boxes and the sentence is marked; Esc closes and focus returns to the marker; changing the stop closes it; at 390 it is still the bottom sheet |
+| W5 Key bar and dialog | KeyBar (9.4), KeyDialog with item highlight | At 1024, 1280 and 1440 the bar shows six icons with their `short` names and three badges on one line; pressing an item opens the dialog with it highlighted; the details button opens it; Esc closes and focus returns; under 1024 the bar is absent and the cover button works |
+| W6 Reading unit and polish | The unit pill and menu, the dense strip, focus rings, dark mode, keyboard pass, screenshots at 1024, 1280, 1440 and 1920 | The menu offers the surah and its passages and choosing one scrolls and dims without hiding text; a 19-ayah and a 40-ayah surah have a legible strip; every control is reachable by keyboard with a visible ring in light and dark |
+

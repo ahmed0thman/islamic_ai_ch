@@ -1,0 +1,155 @@
+/* Huda reading screen: wide-screen layout (decision ق-074). Loaded after style.css.
+   Below 768px nothing here applies. 768-1023: one reading column (the phone design, unframed).
+   From 1024px: "the open Mushaf" - the surah thread on the start side (right in RTL), the reading platform beside it,
+   the source as a third column from 1280px, and a fixed key bar at the bottom. */
+
+/* ---------- 768-1023: tablet = the approved phone design in a calm 34rem column, no frame, no panes ---------- */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .phone { width: min(34rem, 100vw); height: 100dvh; border-radius: 0; box-shadow: 0 0 0 1px var(--line-strong); }
+}
+
+/* ---------- 1024 and up ---------- */
+@media (min-width: 1024px) {
+  :root {
+    --bar-h: 60px;
+    --thread-w: clamp(300px, 27vw, 340px);
+    --src-w: 304px;
+    --page-w: 680px;
+    --text-verse-thread: 24px;
+  }
+  .backdrop { display: none; }
+  body { display: block; }
+  .phone {
+    display: grid; grid-template-columns: var(--thread-w) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) var(--bar-h);
+    width: 100vw; height: 100dvh; border-radius: 0; box-shadow: none; background: var(--bg);
+  }
+
+  /* start page: the thread (live index) */
+  .screen { position: relative; inset: auto; grid-column: 1; grid-row: 1; min-height: 0; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; border-inline-end: 1px solid var(--line-strong); }
+  .screen::-webkit-scrollbar { display: block; width: 8px; }
+  .screen::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 8px; }
+  .appbar { padding: 14px 24px 0; }
+  .appbar .key-btn { display: none; }
+  .cover { padding: 4px 24px 14px; }
+  .cover::before { animation: none; }
+  .cover-name { font-size: 56px; }
+  .surah-chips { margin-inline: -24px; padding: 14px 24px 4px; scroll-padding-inline: 24px; }
+  .unit-btn { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; margin-top: 12px; padding: 0 16px; border: 1px solid var(--border-ui); border-radius: var(--pill); background: var(--surface); font-size: 15px; font-weight: 600; transition: transform .2s var(--ease), background .2s; }
+  .unit-btn:hover { background: var(--surface-2); }
+  .unit-btn:active { transform: scale(.985); }
+  .unit-btn .hi { color: var(--accent); }
+  .unit-t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .unit-btn[data-scope="surah"] .unit-t { font-weight: 500; color: var(--ink-2); }
+  .console { padding: 12px 24px 8px; background: color-mix(in srgb, var(--bg) 88%, transparent); }
+  .phone.wide .scope-row { display: none; }
+  /* long surahs: the strip shows the numerals of the 1st, every 5th and the last ayah; every bead keeps its full aria-label */
+  .ribbon[data-dense] { column-gap: 1px; }
+  .ribbon[data-dense] .bead { font-size: 11px; overflow: visible; border-radius: 3px; }
+  .ribbon[data-dense] .pin { width: 4px; height: 4px; }
+  .ribbon[data-dense] .bn:not([data-show]) { display: none; }
+  .thread { padding: 12px 18px 0 24px; }
+  .verse { font-size: var(--text-verse-thread); line-height: 2.1; }
+  .fine { margin-inline: 24px; }
+
+  /* the open stop, marked in the thread */
+  .door-wrap[data-cur] .door { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 11%, var(--surface)); box-shadow: 0 0 0 1px var(--accent); }
+  .door-wrap[data-cur] .door-title { color: var(--accent); }
+  .station.cur .medal { box-shadow: 0 0 0 5px var(--bg), 0 0 0 7px var(--accent), inset 0 0 0 2px var(--gold), inset 0 0 0 5px var(--surface), inset 0 0 0 6px color-mix(in srgb, var(--gold) 45%, transparent); }
+  .station.cur .medal[aria-pressed="true"] { box-shadow: 0 0 0 5px var(--bg), 0 0 0 7px var(--accent), inset 0 0 0 2px var(--accent), inset 0 0 0 5px var(--accent), inset 0 0 0 6px var(--on-accent); }
+
+  /* end page: the reading platform. Home and scene share one cell; one is visible at a time. */
+  .platform { display: grid; grid-column: 2; grid-row: 1; position: relative; min-width: 0; min-height: 0; overflow: hidden; background: var(--surface); padding-inline-end: var(--pad-end, 0px); transition: padding-inline-end .32s var(--ease); }
+  .home, .scene { grid-area: 1 / 1; min-width: 0; min-height: 0; }
+  .home { display: grid; align-content: center; justify-items: center; gap: 16px; padding: 48px 32px; overflow-y: auto; transition: opacity .2s var(--ease), visibility 0s; }
+  .home-stage { width: 100%; max-width: 620px; }
+  .home-stage:empty { display: none; }
+  .home-stage .stage { margin: 0; }
+  .home .hook { max-width: 620px; margin-top: 0; min-height: 200px; display: grid; align-content: space-between; padding: 28px 30px 24px; }
+  .home .hook-q { font-size: 28px; min-height: 0; }
+  .home .read-flow { justify-content: center; }
+  .phone.reading .home { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .2s var(--ease), visibility 0s .2s; }
+
+  .scene { position: relative; inset: auto; z-index: auto; height: 100%; background: transparent; border-radius: 0; transform: none; opacity: 0; visibility: hidden; transition: opacity .2s var(--ease), visibility 0s .2s; overflow: hidden; }
+  .scene.open { opacity: 1; visibility: visible; transition: opacity .2s var(--ease), visibility 0s; border-radius: 0; }
+  .scene-top { padding: 14px max(24px, calc((100% - var(--page-w)) / 2 + 20px)); background: color-mix(in srgb, var(--surface) 90%, transparent); }
+  .scene-scroll { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+  .scene-scroll::-webkit-scrollbar { display: block; width: 8px; }
+  .scene-scroll::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 8px; }
+  .scene-body { max-width: var(--page-w); margin-inline: auto; padding-bottom: 96px; }
+  .scene-title { font-size: 30px; }
+  .phone.wide .beat.run-on, .phone.wide .sum-text.run-on { background: var(--accent-soft); box-shadow: 0 0 0 6px var(--accent-soft); border-radius: 6px; }
+  .beat, .sum-text { transition: background .2s var(--ease), box-shadow .2s var(--ease); }
+  .deep summary:hover { background: var(--surface-2); }
+
+  /* source / term: a column beside the text from 1280, a slide-over before that */
+  .sheet.side {
+    top: 0; bottom: var(--bar-h); inset-inline: auto 0; width: var(--src-w); max-height: none; border-radius: 0;
+    background: var(--surface); border-inline-end: 1px solid var(--line-strong);
+    box-shadow: 18px 0 40px -26px rgba(0, 0, 0, .55);
+    transform: translateX(-104%); transition: transform .32s var(--ease), visibility 0s .32s;
+  }
+  .sheet.side.open { transform: none; transition: transform .32s var(--ease), visibility 0s; }
+  .sheet.side .sheet-head { padding: 20px 20px 12px; border-bottom: 1px solid var(--line); }
+  .sheet.side .sheet-head::before { display: none; }
+  .sheet.side .sheet-scroll { padding-top: 8px; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+  .sheet.side .sheet-scroll::-webkit-scrollbar { display: block; width: 8px; }
+  .sheet.side .sheet-scroll::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 8px; }
+
+  /* the key window and the reading-unit menu: a centered dialog */
+  .sheet.modal {
+    top: 0; bottom: 0; inset-inline: 0; margin: auto; width: min(780px, calc(100vw - 64px)); height: fit-content; max-height: min(82vh, 760px);
+    border-radius: var(--r); transform: translateY(14px) scale(.985); opacity: 0;
+    box-shadow: var(--shadow), 0 40px 90px -30px rgba(0, 0, 0, .6); transition: transform .28s var(--ease), opacity .2s var(--ease), visibility 0s .28s;
+  }
+  .sheet.modal.open { transform: none; opacity: 1; transition: transform .28s var(--ease), opacity .2s var(--ease), visibility 0s; }
+  .sheet.modal .sheet-head::before { display: none; }
+  .sheet.modal .sheet-head { padding: 22px 28px 8px; }
+  .sheet.modal .sheet-scroll { padding: 0 28px 28px; }
+  .sheet.modal .lg { display: grid; grid-template-columns: 1.35fr 1fr; gap: 0 40px; align-items: start; }
+  .lg-item { border-radius: 12px; padding-inline: 12px; margin-inline: -12px; transition: background .2s; }
+  .lg-item.hl { background: var(--accent-soft); }
+  .unit-list { display: grid; gap: 8px; }
+  .unit-list h3 { font-size: 15px; font-weight: 700; margin: 14px 0 4px; color: var(--ink-2); }
+  .unit-item { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 16px; border: 1px solid var(--line); border-radius: var(--r-s); background: var(--surface-2); line-height: 1.6; transition: border-color .2s, background .2s; }
+  .unit-item:hover { border-color: var(--accent); }
+  .unit-item b { font-weight: 600; font-size: 16px; flex: 1; }
+  .unit-item span { color: var(--ink-3); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .unit-item[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+  .scrim { position: absolute; }
+
+  /* bottom key bar: six types with their short names, the three standing badges, details */
+  .keybar { display: block; grid-column: 1 / -1; grid-row: 2; background: var(--surface); border-top: 1px solid var(--line-strong); position: relative; z-index: 4; }
+  .kb-in { height: 100%; display: flex; align-items: center; gap: 18px; padding-inline: 24px; overflow-x: auto; scrollbar-width: none; }
+  .kb-in::-webkit-scrollbar { display: none; }
+  .kb-title { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--ink); white-space: nowrap; }
+  .kb-title .hi { color: var(--gold-strong); }
+  .kb-group { display: flex; align-items: center; gap: 2px; }
+  .kb-cap { font-size: 12.5px; color: var(--ink-3); margin-inline-end: 8px; white-space: nowrap; }
+  .kb-item { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 10px; border-radius: var(--pill); font-size: 14px; font-weight: 600; color: var(--ink-2); white-space: nowrap; transition: background .2s, transform .2s var(--ease); }
+  .kb-item:hover { background: var(--surface-2); color: var(--ink); }
+  .kb-item:active { transform: scale(.97); }
+  .kb-sep { width: 1px; align-self: stretch; margin-block: 14px; background: var(--line-strong); flex: none; }
+  .kb-more { margin-inline-start: auto; display: inline-flex; align-items: center; gap: 8px; flex: none; }
+  .kb-more .hi { color: var(--accent); }
+}
+
+/* the third column: while a source is open the platform makes room for it (padding), so the sentence and its source are always side by side.
+   Narrower thread and source below 1280 keep the text measure above ~44 characters. */
+@media (min-width: 1024px) {
+  .phone.src-open { --pad-end: var(--src-w); }
+}
+@media (min-width: 1280px) {
+  :root { --thread-w: clamp(340px, 27vw, 420px); --src-w: 340px; }
+}
+@media (min-width: 1440px) {
+  :root { --src-w: 360px; }
+}
+/* the key bar stays one line; the captions go first when space is short */
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .kb-cap { display: none; }
+  .kb-in { gap: 12px; padding-inline: 16px; }
+  .kb-item { padding: 0 6px; }
+}
+@media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
+  .platform, .sheet.side, .sheet.modal, .home, .scene { transition-duration: .01ms !important; transition-delay: 0s !important; }
+}

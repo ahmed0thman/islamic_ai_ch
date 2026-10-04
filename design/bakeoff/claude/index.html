@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="wide.css">
 </head>
 <body>
 <div class="backdrop" aria-hidden="true"></div>
@@ -23,19 +24,24 @@
     </div>
   </div>
 
+  <!-- wide screens only (>= 1024px): the reading platform. #scene is moved in here by app.js; #home holds the opening question -->
+  <section class="platform" id="platform"><div class="home" id="home"></div></section>
+
   <div class="scene" id="scene" role="dialog" aria-modal="true" aria-hidden="true" inert>
     <header class="scene-top">
       <button class="pill-btn" id="sceneBack" type="button"></button>
       <div class="pips" id="pips" aria-hidden="true"></div>
       <div class="scene-nav">
-        <button class="round-btn" id="scenePrev" type="button"><i class="arrow fwd"></i></button>
-        <button class="round-btn" id="sceneNext" type="button"><i class="arrow back"></i></button>
+        <button class="round-btn" id="scenePrev" type="button"></button>
+        <button class="round-btn" id="sceneNext" type="button"></button>
       </div>
     </header>
     <div class="scene-scroll" id="sceneScroll">
       <div class="scene-body" id="sceneBody"></div>
     </div>
   </div>
+
+  <footer class="keybar" id="keybar"></footer>
 
   <div class="scrim" id="scrim" aria-hidden="true"></div>
   <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-hidden="true" inert>
@@ -47,6 +53,7 @@
   </section>
 </main>
 
+<script src="icons.js"></script>
 <script src="app.js" defer></script>
 </body>
 </html>
