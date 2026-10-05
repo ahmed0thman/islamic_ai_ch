@@ -12,6 +12,7 @@ import json
 import math
 from pathlib import Path
 import random
+import re
 import sys
 
 from quran_scan import normalize, key
@@ -30,10 +31,43 @@ CHECKS = {
     "C13": "passages", "C14": "map size", "C15": "examples",
     "C16": "summary",
     "W12": "stop ayahs carried by the stop's records (warning)",
+    "W17": "talk about the source or the state stays short in displayed text (warning)",
 }
 # Reported but never refuse an export: half of the built surahs still trip W12.
-WARNINGS = {"W12"}
+WARNINGS = {"W12", "W17"}
 APPROVED = "\u0646\u0639\u0645"
+# Decision 083: a state of the information that the badge does not say. A closed list, copied from
+# the private record with its ready sentence (status_note); never derived or generated here.
+STATES = ("report_unjudged",)
+
+# W17 (decision 083, as corrected by the owner on 5 Oct): displayed text carries the meaning. A
+# scholar's name stays where it helps, in its shortest form; what must not happen is a sentence
+# about the source or the state. The measure, per sentence of system wording (quotes excluded):
+#   1. it holds none of STATUS_PHRASES (the long disclosure formulas; their place is the record);
+#   2. it holds at most SOURCE_WORD_LIMIT "source words": words of a sayer, author, grader or book
+#      title taken from the surah's own records, plus the transmission vocabulary in ISNAD_WORDS.
+SOURCE_WORD_LIMIT = 6
+STATUS_PHRASES = (
+    "لم نحكم علي ثبوت", "محكوم علي", "خبر من قول", "خبر من اقوال", "اخبار من اقوال",
+    "من كلامه", "من كلامهما", "من كلامهم", "من كلام الموسوعه", "من قوله", "من قولهما", "من قولهم",
+    "من وضعه", "ليس روايه", "ليست روايه", "حال كل روايه", "في لوحتها", "لفظه في",
+)
+# "لم نرجح" is a state only when it stands alone as a sentence; inside a sentence it is two words.
+STANDALONE_STATUS = ("لم نرجح",)
+ISNAD_WORDS = frozenset((
+    "رواه يرويه يروي روي يرويها روايه الروايه روايات الروايات اورد يورد اورده اوردها اخرجه "
+    "نقل ينقل نقله بنقل حكي يحكيه حكاه لفظه بلفظه اسناد اسناده الاسناد سند سنده سندها السند "
+    "ضعفه ضعيف صححه كتابه كتاب تفسيره الموسوعه موسوعه مصدره المصدر لوحتها اللوحه محكوم "
+    "ثبوته ثبوتها نحكم نرجح حديث الحديث حديثا").split())
+KUNYA = {"ابن": "ابن", "بن": "ابن", "ابو": "ابو", "ابي": "ابو", "ابا": "ابو", "ام": "ام"}
+# Words of a name field that are not a name by themselves.
+NAME_GENERIC = frozenset((
+    "الله عبد النبي من في عن حديث روايه بنقل بواسطه غير مسمي قيل ومنهم قال وذكر القراء مرفوعا طريق "
+    "محمد علي ابراهيم الدين القران الكريم العظيم التفسير تفسير الشريف الاحاديث عنوان السوره الباب "
+    "الطبعه كتاب الفضايل مولف بعض السلف").split())
+LEAD_WORDS = frozenset("و من حديث روايه بنقل عن بواسطه في".split())
+# A name field holding one of these is a description, not a bare name: no one-word key from it.
+NAME_FUNCTION = frozenset("لا في من عن علي الي غير او ثم".split())
 
 
 def read_json(path):
@@ -138,15 +172,157 @@ def validate_shape(nasij, private, no):
     return records, sources
 
 
-def run_checks(nasij, records, quran, no, ui=None):
+def bare(word):
+    """Candidate forms of a normalized word with its leading particles removed."""
+    forms = [word]
+    for cut in (1, 2):
+        head, rest = word[:cut], word[cut:]
+        if len(rest) < 2:
+            continue
+        if cut == 1 and head in "وفبلك":
+            forms.append(rest)
+        if cut == 2 and head[0] in "وف" and head[1] in "بلك":
+            forms.append(rest)
+        if head == "لل" or (cut == 1 and head == "ل" and rest.startswith("ل")):
+            forms.append("ال" + word[2:])
+    if word.startswith(("ولل", "فلل")):
+        forms.append("ال" + word[3:])
+    return forms
+
+
+def source_names(records, sources):
+    """Name keys derived from the record fields: (phrases, singles, kunyas, title_words).
+
+    phrases: word tuples matched as they stand (a full sayer, author, grader or title string).
+    singles: one-word names (a nisba such as the last word of an author's name).
+    kunyas: ("ابن" | "ابو" | "ام", next word[, word after "عبد"]) with the particle folded.
+    title_words: every word of a book title or work-like sayer, article removed, used to
+    recognise a title written between guillemets in the text.
+    """
+    phrases, singles, kunyas, title_words = set(), set(), set(), set()
+
+    def pieces(value):
+        for index, part in enumerate(re.split(r"[()\[\]،؛:]", value or "")):
+            words = normalize(part)
+            # "مجاهد، وقتادة": the conjunction of a later item is not part of the name.
+            if index and words and words[0].startswith("و") and len(words[0]) > 3:
+                words[0] = words[0][1:]
+            while words and words[0] in LEAD_WORDS:
+                words = words[1:]
+            if words:
+                yield words
+
+    def article(word):
+        return word[2:] if word.startswith("ال") and len(word) > 4 else word
+
+    titles = [s.get("title") for s in (sources or {}).values()]
+    for title in titles:
+        for words in pieces(title):
+            if len(words) >= 2:
+                phrases.add(tuple(words))
+        # Only the main title (before any bracket) decides what counts as a work below.
+        title_words.update(article(w) for w in normalize(re.split(r"[(\[]", title or "")[0]))
+    people = [s.get("author") for s in (sources or {}).values()]
+    for r in records.values():
+        for e in r.get("evidence") or []:
+            people.append(e.get("sayer"))
+            people.extend(x.get("grader") for x in e.get("rulings") or [])
+    for value in people:
+        for words in pieces(value):
+            if all(w in NAME_GENERIC for w in words):
+                continue
+            if len(words) >= 2:
+                phrases.add(tuple(words))
+            work = sum(article(w) in title_words for w in words) * 2 >= len(words)
+            if work:
+                title_words.update(article(w) for w in words)
+                continue
+            has_kunya = False
+            for i, w in enumerate(words[:-1]):
+                if w in KUNYA and words[i + 1] not in KUNYA:
+                    has_kunya = True
+                    nxt = words[i + 1:i + 3] if words[i + 1] == "عبد" else words[i + 1:i + 2]
+                    kunyas.add((KUNYA[w],) + tuple(nxt))
+            plain = len(words) <= 3 and not any(w in NAME_FUNCTION for w in words)
+            for i, w in enumerate(words):
+                after_kunya = i > 0 and words[i - 1] in KUNYA
+                if w in NAME_GENERIC or w in KUNYA or after_kunya or len(w) < 4:
+                    continue
+                nisba = w.startswith("ال") and w.endswith("ي") and len(w) >= 5
+                first_of_two = i == 0 and len(words) == 2 and w.startswith("ال")
+                last = i == len(words) - 1 and (not has_kunya or w.startswith("ال"))
+                if nisba or (plain and (first_of_two or last)):
+                    singles.add(w)
+    return phrases, singles, kunyas, title_words
+
+
+def source_talk(value, names):
+    """Split system wording into sentences and measure the talk about sources in each.
+
+    Yields (sentence, source_word_count, status_phrase or None).
+    """
+    phrases, singles, kunyas, title_words = names
+    for sentence in re.split(r"[.!?\u061f\u2026\u2029]+", value):
+        if not sentence.strip():
+            continue
+        count = 0
+
+        def titled(match):
+            nonlocal count
+            words = normalize(match.group(1))
+            if len(words) >= 2 and all((w[2:] if w.startswith("ال") and len(w) > 4 else w) in title_words
+                                       or w in LEAD_WORDS for w in words):
+                count += len(words)
+                return " "
+            return match.group(0)
+
+        rest = re.sub(r"«([^»]*)»", titled, sentence)
+        words = normalize(rest)
+        hit = [False] * len(words)
+        for i, word in enumerate(words):
+            forms = bare(word)
+            for phrase in phrases:
+                n = len(phrase)
+                if i + n <= len(words) and phrase[0] in forms and tuple(words[i + 1:i + n]) == phrase[1:]:
+                    hit[i:i + n] = [True] * n
+            kunya = next((KUNYA[f] for f in forms if f in KUNYA), None)
+            if kunya:
+                for n in (3, 2):
+                    if i + n <= len(words) and (kunya,) + tuple(words[i + 1:i + n]) in kunyas:
+                        hit[i:i + n] = [True] * n
+                        break
+            if any(f in singles or f in ISNAD_WORDS for f in forms):
+                hit[i] = True
+        count += sum(hit)
+        joined = " ".join(normalize(sentence))
+        status = next((p for p in STATUS_PHRASES if p in joined), None)
+        if status is None and len(joined.split()) <= 5:
+            status = next((p for p in STANDALONE_STATUS if p in joined), None)
+        yield sentence.strip(), count, status
+
+
+def run_checks(nasij, records, quran, no, ui=None, sources=None):
     counts = {c: [0, []] for c in CHECKS}
     uses = defaultdict(list)
     ayah_refs = set()
+    names = source_names(records, sources)
 
     def check(c, ok, reason):
         counts[c][0] += 1
         if not ok:
             counts[c][1].append(reason)
+
+    def check_talk(value, where):
+        """W17. `value` is system wording; a quote is passed as U+2029 so it ends the sentence."""
+        for sentence, count, status in source_talk(value, names):
+            short = sentence if len(sentence) <= 70 else sentence[:67] + "…"
+            check("W17", status is None, f"{where}: status phrase «{status}» in «{short}»")
+            check("W17", count <= SOURCE_WORD_LIMIT,
+                  f"{where}: {count} source words (limit {SOURCE_WORD_LIMIT}) in «{short}»")
+
+    def talk_of(segments):
+        return "".join(s["v"] if s["t"] in ("text", "term") else "\u2029" if s["t"] == "quote" else " "
+                       for s in segments if s["t"] != "mark")
 
     windows = set()
     for ref, ayah in quran.items():
@@ -178,6 +354,7 @@ def run_checks(nasij, records, quran, no, ui=None):
         check("C15", sentence_count(joined) <= 2, f"{where}: example longer than two sentences")
         # C2 still applies to the whole joined example text, not segment by segment.
         check_text(joined, where)
+        check_talk(joined, where)
 
     def check_paragraph_kind(block, where):
         kind = block.get("kind")
@@ -211,6 +388,7 @@ def run_checks(nasij, records, quran, no, ui=None):
             check("C6", any(s["t"] == "quote" for s in segments), f"{where}: transmission paragraph has no quote segment")
         if title:
             check("C4", segments[-1]["t"] == "mark", f"{where}: title must end with a marker")
+        check_talk(talk_of(segments), where)
         # Also scan adjacent system-text segments together to prevent splitting a citation.
         pending = []
         for seg in segments + [{"t": "end"}]:
@@ -265,6 +443,7 @@ def run_checks(nasij, records, quran, no, ui=None):
             followers_last[depth] = bnum == len(blocks)
             if block["type"] == "heading":
                 check_text(block["text"], where)
+                check_talk(block["text"], where)
             refs = block.get("keys", []) if block["type"] == "ayah" else []
             if block["type"] == "paragraph":
                 check_paragraph_kind(block, where)
@@ -327,6 +506,7 @@ def run_checks(nasij, records, quran, no, ui=None):
                           f"passage {p['id']}: record {ident!r} build permission is not approved")
                     uses[ident].append(f"passage {p['id']}")
             check_text(p["title"], f"passage {p['id']}, title")
+            check_talk(p["title"], f"passage {p['id']}, title")
         check("C13", covered == own_keys, "passages must cover the surah consecutively, in order, without gaps or overlaps")
     for level in levels:
         stops = 0
@@ -344,6 +524,7 @@ def run_checks(nasij, records, quran, no, ui=None):
                     before = len(counts["C2"][1])
                     check_text(title, f"{where}, stop title")
                     check("C11", len(counts["C2"][1]) == before, f"{where}: stop title contains Quran")
+                    check_talk(title, f"{where}, stop title")
             if is_stop:
                 stops += 1
             if "ayahs" in block or is_stop:
@@ -493,6 +674,14 @@ def public_record(r, sources, ui, quran):
             if reason not in reasons:
                 reasons.append(reason)
         status = "\n".join(reasons)
+    # Decision 083: what the text no longer says about the state of the information is said here.
+    note = r.get("status_note")
+    if note:
+        status = "\n".join(filter(None, (status, text(note, f"{ident}.status_note", True))))
+    state = r.get("state")
+    if state:
+        require(state in STATES, f"{ident}: unknown state {state!r}")
+        require(bool(note), f"{ident}: state without status_note")
     science = r.get("science")
     if science:
         require(isinstance(science, str), f"{ident}: science must be a string")
@@ -508,6 +697,8 @@ def public_record(r, sources, ui, quran):
         out_record["science"] = science
     if term:
         out_record["term"] = term
+    if state:
+        out_record["state"] = state
     return out_record
 
 
@@ -535,7 +726,7 @@ def export_surah(no, records_root, content_root, quran, ui, check_only=False):
         private = read_json(records_root / str(no) / "records.v2.json")
         nasij = read_json(content_root / "nasij" / f"{no}.json")
         records, sources = validate_shape(nasij, private, no)
-        counts, uses, refs = run_checks(nasij, records, quran, no, ui)
+        counts, uses, refs = run_checks(nasij, records, quran, no, ui, sources)
     except (OSError, ValueError, TypeError, KeyError) as exc:
         print(f"{no} INPUT FAIL checked=1 failed=1: {exc}")
         return False
