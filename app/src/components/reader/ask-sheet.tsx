@@ -4,9 +4,11 @@ import { Fragment, useEffect, useId, useRef, useState, type FormEvent, type Keyb
 import { Search01Icon } from "@hugeicons/core-free-icons";
 import type { AskResponse, PublicAtom } from "@/lib/ask/types";
 import { composedView, type ComposedItem } from "@/lib/ask-composed-view";
+import { mergeQuestion } from "@/lib/voice-client";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { BottomSheet } from "./bottom-sheet";
+import { VoiceButton } from "./voice-button";
 import { ParagraphView } from "./paragraph-view";
 import { useReading } from "./reading-context";
 import { useAsk } from "./ask-state";
@@ -25,6 +27,9 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AskResponse | null>(null);
   const active = useRef<AbortController | null>(null);
+  const textarea = useRef<HTMLTextAreaElement>(null);
+  const voiceBase = useRef("");
+  const [voiceActive, setVoiceActive] = useState(false);
   useEffect(() => () => active.current?.abort(), []);
   async function submit(event?: FormEvent) {
     event?.preventDefault();
@@ -51,8 +56,9 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
       if (!controller.signal.aborted) setLoading(false);
     }
   }
-  // Enter sends; Shift+Enter breaks the line. Never while an input method is composing.
+  // Enter sends; Shift+Enter breaks the line. Never while an input method is composing, never while the mic owns the box.
   function onKey(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (voiceActive) return;
     if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); void submit(); }
   }
   /** One verified sentence, drawn exactly as the reading draws it. */
@@ -85,10 +91,24 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
       <p className="ask-context"><span>{ui.ask.about_stop}</span>: <b>{ask.stop?.title ?? ui.ask.whole_surah}</b></p>
       <form className="ask-form" onSubmit={submit} aria-busy={loading}>
         <label className="sr-only" htmlFor={`${id}-q`}>{ui.ask.placeholder}</label>
-        <textarea id={`${id}-q`} className="ask-input" name="question" rows={3} minLength={3} maxLength={300} required
+        <textarea ref={textarea} id={`${id}-q`} className="ask-input" name="question" rows={3} minLength={3} maxLength={300} required
           value={question} placeholder={ui.ask.placeholder} aria-describedby={`${id}-note`}
+          readOnly={voiceActive} aria-busy={voiceActive || undefined}
           onChange={(event) => setQuestion(event.target.value)} onKeyDown={onKey} />
-        <Button variant="primary" type="submit" disabled={loading || !longEnough(question)}><Icon icon={Search01Icon} />{ui.ask.submit}</Button>
+        <Button variant="primary" type="submit" disabled={loading || voiceActive || !longEnough(question)}><Icon icon={Search01Icon} />{ui.ask.submit}</Button>
+        <VoiceButton surah={surahNo} depth={ask.depth} stop={ask.stop?.number ?? null} ui={ui} disabled={loading}
+          onStart={() => { voiceBase.current = question.trim(); setVoiceActive(true); }}
+          onLive={(text) => setQuestion(mergeQuestion(voiceBase.current, text))}
+          onFinal={(text) => {
+            if (text !== null) setQuestion(mergeQuestion(voiceBase.current, text));
+            setVoiceActive(false);
+            requestAnimationFrame(() => {
+              const el = textarea.current;
+              if (!el) return;
+              el.focus();
+              el.setSelectionRange(el.value.length, el.value.length);
+            });
+          }} />
       </form>
       <div className="ask-result" aria-live="polite" aria-atomic="false" aria-busy={loading}>
         {loading ? <p className="ask-loading">{ui.ask.loading}</p>
