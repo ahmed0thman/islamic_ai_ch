@@ -20,7 +20,10 @@ For each sampled item decide:
 1. SUPPORT: do the cited records actually carry what the sentence/title says (nothing added, generalised, or made more certain than the source)?
 2. ATTRIBUTION: is the statement attributed to the right author, and is the author's wording not cut in a way that changes its meaning?
 3. QUOTE: is every `quote` segment verbatim from its record's evidence?
-4. NARRATIONS: is any narration used as the basis of a constructed sentence without build permission «نعم»? Is a sira/historical report stated on a scholar's word alone?
+4. NARRATIONS: is any narration used as the basis of a constructed sentence without build permission «نعم»? A sira/historical report carried by a scholar's word with no graded narration is judged by the owner's rule (decisions ق-079, ق-080), not rejected outright:
+   - ACCEPTABLE in levels 1-2 when the ayah itself attests the underlying event (it denies something that was said, or affirms a favour or a state) AND the sentence is explicitly attributed to the scholar AND a disclosure sentence says it is his statement, not a graded narration.
+   - ACCEPTABLE in level 3 only (details), attributed, with the phrase «لم نحكم على ثبوته», when the ayah does not attest the event, or when the report affirms a merit or a prophetic distinction.
+   - CRITICAL when: an unattributed sentence is built on such a report; it appears in level 0; a report the ayah does not attest, or a merit/distinction report, appears in levels 0-2; the attribution or the disclosure is missing.
 5. QURAN: any Quran wording inside system text or titles? (A single Quran word named as the word under discussion, such as a lemma in a question title, is allowed. Two or more consecutive Quran words in system text or a title are a finding.)
 6. READER: does each level open in a way that makes a stranger want to continue (not necessarily a question), are stop titles clear and short, is each question answered where it appears, is level 0 short?
 
