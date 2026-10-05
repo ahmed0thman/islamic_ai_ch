@@ -263,35 +263,49 @@ function termBtn(s) {
 /* a paragraph's segments. Each sentence (the text up to its marker) is one "run", so the marker can light the sentence it supports */
 function renderSegs(segs, o) {
   const d = S.d, frag = document.createDocumentFragment();
-  let run = null, afterMark = false, glue = null;
+  let run = null, glue = null, prev = null, lastText = '';
   const R = () => { if (!run) { run = h('span', { class: 'run' }); frag.append(run); } return run; };
   for (const s of segs) {
     if (s.t === 'text') {
       let v = s.v;
-      if (afterMark) { const m = v.match(LEAD_PUNCT); if (m) { (glue || frag).append(m[0].trim()); if (/\s$/.test(m[0])) frag.append(' '); v = v.slice(m[0].length); } }
+      /* punctuation that follows a marker or a term stays on the word before it: it is shown before the marker,
+         and never starts a line. Display order only; the text itself is not changed */
+      if (glue && (prev === 'mark' || prev === 'term')) {
+        const m = v.match(LEAD_PUNCT);
+        if (m) {
+          const p = document.createTextNode(m[0].trim());
+          if (prev === 'mark') glue.insertBefore(p, glue.lastChild); else glue.append(p);
+          v = v.slice(m[0].length);
+          if (/\s$/.test(m[0])) { if (prev === 'mark') frag.append(' '); else v = ' ' + v; }
+        }
+      }
       if (v) R().append(s.q ? h('b', { class: 'dq' }, v) : v);
+      glue = null;
     } else if (s.t === 'ayah') {
       const a = d.ayahMap.get(s.key); if (a) R().append(h('span', { class: 'ay-in' }, a.text));
+      glue = null;
     } else if (s.t === 'quote') {
-      const blk = s.v.length > 90;
-      R().append(h('span', { class: 'q' + (blk ? ' blk' : /^["«“]/.test(s.v) ? '' : ' mark') }, s.v));
+      /* quotation marks are drawn only when neither the quote nor the sentence around it already has them */
+      const blk = s.v.length > 90, has = /^["«“]/.test(s.v) || /["«“]\s*$/.test(lastText);
+      R().append(h('span', { class: 'q' + (blk ? ' blk' : has ? '' : ' mark') }, s.v));
+      glue = null;
     } else if (s.t === 'term') {
-      R().append(termBtn(s));
+      glue = h('span', { class: 'nw' }, termBtn(s));
+      R().append(glue);
     } else if (s.t === 'mark') {
       const r = R(), mk = markBtn(s.records, r, o);
-      glue = null;
       if (mk) {
-        /* the marker stays on the line of the last word it follows */
-        glue = h('span', { class: 'nw' });
-        const last = r.lastChild;
-        if (last && last.nodeType === 3) { const m = last.nodeValue.match(/^([\s\S]*\s)?(\S+)\s*$/); if (m) { last.nodeValue = m[1] || ''; glue.append(m[2]); } }
-        else if (last && last.classList && last.classList.contains('term')) glue.append(last);
-        glue.append(mk); r.append(glue);
-      }
+        if (!(glue && prev === 'term')) {
+          glue = h('span', { class: 'nw' });
+          const last = r.lastChild;
+          if (last && last.nodeType === 3) { const m = last.nodeValue.match(/^([\s\S]*\s)?(\S+)\s*$/); if (m) { last.nodeValue = m[1] || ''; glue.append(m[2]); } }
+          r.append(glue);
+        }
+        glue.append(mk);
+      } else glue = null;
       run = null;
     }
-    afterMark = s.t === 'mark';
-    if (!afterMark) glue = null;
+    prev = s.t; lastText = s.t === 'text' ? s.v : '';
   }
   return frag;
 }
@@ -353,10 +367,10 @@ function renderToc() {
   const d = S.d, ui = S.ui, m = S.model, toc = $('#toc');
   toc.setAttribute('aria-label', STR.toc);
   const head = h('div', { class: 'toc-head' },
-    h('div', { class: 'toc-title' }, h('span', { class: 'toc-name' }, d.surah.name), h('span', { class: 'toc-count num' }, countLabel(d.main.length))));
+    h('div', { class: 'toc-title' }, h('span', { class: 'toc-lbl' }, STR.toc), h('span', { class: 'toc-count num' }, countLabel(d.main.length))));
   if (d.purpose) {
     const run = h('span', { class: 'run' }, d.purpose.claim);
-    put(head, h('p', { class: 'toc-lbl' }, STR.purpose), h('p', { class: 'toc-purpose' }, run, ' ', markBtn([d.purpose.id], run)));
+    put(head, h('p', { class: 'toc-lbl', style: 'margin-top:10px' }, STR.purpose), h('p', { class: 'toc-purpose' }, run, ' ', markBtn([d.purpose.id], run)));
   }
   const ol = h('div', { class: 'ol' });
   for (const sec of m.sections) {
@@ -446,7 +460,7 @@ function toggleAllDets() {
 }
 
 /* ---------------------------------------------------------------- position: what is being read now */
-const lineY = () => BAR + 150;
+const lineY = () => BAR + Math.round(window.innerHeight * 0.28);
 function watch() {
   if (S.io) S.io.disconnect();
   if (S.slabIO) S.slabIO.disconnect();
@@ -526,7 +540,7 @@ function setDepth(n) {
     const us = S.model.units;
     let t = null;
     if (wasSummary) t = us.find(u => u.kind === 'summary');
-    if (!t && key) t = us.find(u => u.ayahs.includes(key)) || us.find(u => u.ayahs[0] && ayNo(u.ayahs[0]) >= ayNo(key));
+    if (!t && key) t = us.find(u => u.ayahs[0] === key) || us.find(u => u.ayahs.includes(key)) || us.find(u => u.ayahs[0] && ayNo(u.ayahs[0]) >= ayNo(key));
     const el = t ? t.el : (key && (S.model.sections.find(s => s.keys.includes(key)) || {}).el) || null;
     if (el) scrollToY(el.getBoundingClientRect().top + window.scrollY - Math.min(Math.max(off, BAR + 70), window.innerHeight * 0.5), true);
     else scrollToY(0, true);
@@ -662,7 +676,7 @@ function clearSource() {
 }
 function openSource(o) {
   clearSource();
-  S.ctx.source = { ids: o.ids, book: o.book || null, forEl: o.run ? runClone(o.run) : null, mk: o.mk || null };
+  S.ctx.source = { ids: o.ids, book: o.book || null, forEl: o.run && !o.run.querySelector('.q.blk') && o.run.textContent.length <= 220 ? runClone(o.run) : null, mk: o.mk || null };
   S.ctx.back = o.from === 'ask' ? 'ask' : null;
   if (o.from !== 'ask') { if (o.run) o.run.classList.add('on'); if (o.mk) o.mk.classList.add('on'); }
   setCtxOpen(true); setTab('source');
@@ -790,7 +804,7 @@ function buildLegend(el, hl) {
   const st = (o) => h('div', { class: 'lg st' }, pill({ label: o.label, tone: o.color }), h('span', { class: 'd' }, o.meaning));
   put(el, h('div', { class: 'lg-cols' },
     h('div', null, h('h3', null, ui.legend.icons_title), ui.icon_order.map(k => h('div', { class: 'lg' + (hl === k ? ' hl' : '') }, chip(k), h('div', null, h('b', null, ui.icons[k].label), h('span', { class: 'd' }, ui.icons[k].meaning))))),
-    h('div', null, h('h3', null, ui.legend.badges_title), Object.values(ui.badges).map(st), Object.values(ui.states).map(st), st({ label: ui.panel.no_badge, color: 'var(--ink-3)', meaning: ui.link_strength.note }))));
+    h('div', null, h('h3', null, ui.legend.badges_title), Object.values(ui.badges).map(st), Object.values(ui.states).map(st))));
 }
 function buildShortcuts(el) {
   const ui = S.ui, k = (...a) => h('span', { class: 'k' }, a.map(x => h('kbd', null, x)));
