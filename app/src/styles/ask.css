@@ -1,0 +1,51 @@
+/* «اسأل»: the button, the question sheet, what the reader asked, and the deeper questions under a stop. Tokens only; no Arabic here. */
+
+/* The dock sits in the flow where the reading ends and sticks to the bottom edge of its scroller (the page on the map, the scene's scroller in a scene).
+   It never lies over the next-card: at the end of the scroll it rests in its own row above it. The row itself lets taps through; only the button takes them. */
+.ask-dock { --fab: 3.5rem; position: sticky; inset-block-end: calc(var(--space-md) + env(safe-area-inset-bottom)); z-index: var(--z-sticky); display: flex; justify-content: flex-start; min-block-size: var(--fab); margin-block-start: var(--space-lg); pointer-events: none; }
+.ask-fab.huda-button { pointer-events: auto; inline-size: var(--fab); block-size: var(--fab); min-inline-size: var(--fab); min-block-size: var(--fab); box-shadow: 0 0 0 3px var(--bg), var(--shadow); }
+/* The global `button { color: inherit }` outranks the variant's utility class, so the primary buttons here set their own text color. */
+.ask-fab.huda-button, .ask-form .huda-button[data-variant="primary"] { color: var(--on-accent); }
+.ask-fab.huda-button:focus-visible { outline-offset: 5px; }
+
+.ask-sheet { display: grid; gap: var(--space-md); padding-block-end: var(--space-sm); }
+.ask-context { color: var(--ink-2); font-size: var(--text-ui); line-height: var(--leading-ui); }
+.ask-context b { color: var(--ink); font-weight: 600; }
+.ask-form { display: grid; gap: var(--space-sm); justify-items: start; }
+.ask-input { inline-size: 100%; min-block-size: 5.5rem; padding: var(--space-md); border: 1px solid var(--border-ui); border-radius: var(--radius-s); background: var(--surface); color: var(--ink); font: inherit; font-size: var(--text-body); line-height: 1.8; resize: vertical; }
+.ask-input::placeholder { color: var(--ink-3); }
+.ask-input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.ask-result:empty { display: none; }
+.ask-loading, .ask-fixed { color: var(--ink-2); font-size: var(--text-door); line-height: 1.8; }
+.ask-link { display: inline-block; margin-block-start: var(--space-sm); color: var(--accent); font-size: var(--text-ui); text-decoration: underline; text-underline-offset: .25em; }
+.ask-link:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.ask-answer-title { margin-block-end: var(--space-xs); color: var(--ink-3); font-size: var(--text-label); font-weight: 600; line-height: var(--leading-ui); }
+.ask-atom { padding-block: var(--space-xs); border-block-end: 1px solid var(--line); }
+.ask-atom:last-child { border-block-end: 0; }
+.ask-atom .claim-text { margin-block: var(--space-sm) var(--space-xs); font-size: var(--text-details); }
+.ask-note { color: var(--ink-3); font-size: var(--text-label); line-height: 1.8; }
+
+/* The depth a sentence or a deeper question comes from: a small neutral pill, none of the six source shapes. */
+.level-chip { display: inline-flex; align-items: center; min-block-size: 1.5rem; padding-inline: var(--space-md); border: 1px solid var(--line-strong); border-radius: var(--radius-pill); background: var(--surface-2); color: var(--ink-2); font-size: var(--text-label); font-weight: 600; line-height: 1.5; }
+.ask-atom .level-chip { margin-block-end: var(--space-sm); }
+
+/* What the reader asked themself: a continuous gold edge and a small title. No card, no shadow, no fill (a quote has a fill, an example a dashed edge). */
+.asked { margin-block: var(--space-xl) var(--space-lg); padding-inline-start: var(--space-md); border-inline-start: 2px solid var(--gold); }
+.asked-title { color: var(--gold-strong); font-size: var(--text-label); font-weight: 700; line-height: var(--leading-ui); }
+.asked-title:focus { outline: none; }
+.asked-item { padding-block: var(--space-md); }
+.asked-item + .asked-item { border-block-start: 1px solid var(--line); }
+.asked-label { color: var(--ink-3); font-size: var(--text-label); font-weight: 600; line-height: var(--leading-ui); }
+.asked-text { margin-block-start: var(--space-xs); font-size: var(--text-door); font-weight: 600; line-height: var(--leading-door); text-wrap: balance; }
+.asked-item .claim-text { margin-block: var(--space-sm); font-size: var(--text-details); }
+.asked-remove.huda-button { color: var(--ink-2); font-size: var(--text-label); }
+.asked-note { color: var(--ink-3); font-size: var(--text-label); line-height: 1.8; }
+
+/* The door of a stop with questions of the reader's own: a gold dot and their number. */
+.stop-door-asked { display: inline-flex; align-items: center; gap: var(--space-xs); color: var(--gold-strong); font-size: var(--text-label); font-weight: 700; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.stop-door-asked i { inline-size: .5625rem; block-size: .5625rem; border-radius: 50%; background: var(--gold); }
+
+/* Deeper questions under a stop: depth items that open in place. */
+.followups { margin-block: var(--space-lg); }
+.followups-title { margin-block-start: var(--space-md); color: var(--ink-3); font-size: var(--text-label); font-weight: 600; line-height: var(--leading-ui); }
+.details-summary-text { display: grid; justify-items: start; gap: var(--space-xs); min-inline-size: 0; }

@@ -1,6 +1,7 @@
+import { providerFromEnv } from "@/lib/ask/providers";
 import { getIndex, getSurah } from "@/lib/content";
-import { deriveAtoms } from "@/lib/ask/atoms";
-import { anthropicProvider, select } from "@/lib/ask/select";
+import { deriveAtoms, resolveReaderContext } from "@/lib/ask/atoms";
+import { select } from "@/lib/ask/select";
 import type { AskResponse } from "@/lib/ask/types";
 
 export const runtime = "nodejs";
@@ -26,15 +27,16 @@ export async function POST(request: Request) {
   let body: unknown;
   try { body = await request.json(); } catch { return reply("insufficient", 400); }
   if (!body || typeof body !== "object" || Array.isArray(body)) return reply("insufficient", 400);
-  const { surah, question } = body as Record<string, unknown>;
+  const { surah, question, depth, stop } = body as Record<string, unknown>;
   if (typeof surah !== "number" || !Number.isInteger(surah) || typeof question !== "string") return reply("insufficient", 400);
   const trimmed = question.trim();
   if ([...trimmed].length < 3 || [...trimmed].length > 300) return reply("insufficient", 400);
   try {
     if (!(await getIndex()).surahs.some((item) => item.no === surah)) return reply("insufficient", 400);
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) return reply("unavailable");
-    const result = await select(trimmed, deriveAtoms(await getSurah(surah)), anthropicProvider(apiKey));
+    const provider = providerFromEnv(process.env);
+    if (!provider) return reply("unavailable");
+    const source = await getSurah(surah);
+    const result = await select(trimmed, deriveAtoms(source), provider, 20_000, resolveReaderContext(source, depth, stop));
     return Response.json(result, { headers: { "Cache-Control": "no-store" } });
   } catch { return reply("insufficient"); }
 }

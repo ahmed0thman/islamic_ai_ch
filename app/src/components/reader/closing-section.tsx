@@ -1,6 +1,6 @@
 "use client";
 
-import type { Ref } from "react";
+import type { ReactNode, Ref } from "react";
 import type { SceneUnit } from "@/lib/depth-items";
 import type { ClosingPart } from "@/lib/closing";
 import type { ParagraphBlock, SurahSummary } from "@/lib/types";
@@ -11,6 +11,7 @@ import type { ReadingProps } from "./reading-context";
 import { ParagraphView } from "./paragraph-view";
 import { TermsSummary } from "./terms-summary";
 import { NextCard } from "./next-card";
+import { AskedSection } from "./asked-section";
 
 export type ClosingSectionProps = ReadingProps & {
   surahName: string; summary: ParagraphBlock; parts: ClosingPart<SceneUnit>[]; termsSummary?: Summary | null; nextSurah?: SurahSummary;
@@ -20,13 +21,15 @@ export type ClosingSectionProps = ReadingProps & {
   previous?: SceneUnit; onPrevious?: () => void; onMap?: () => void;
   /** Set on the closing screen: its title is the dialog's title and takes focus on open. In the continuous text it is a plain heading. */
   headingRef?: Ref<HTMLHeadingElement>;
+  /** Rendered between the reader's own questions and the next-card (the ask dock, on the closing screen). */
+  beforeNext?: ReactNode;
 };
 /**
  * The surah in one look: the unified view of the surah (the owner's note, 5 October). The same section closes the closing screen
  * and the continuous text. Everything on it comes from the content: the title and labels from the dictionary, the parts from the passages,
  * the summary from the level's closing paragraph. It is never a stop and never counts as one.
  */
-export function ClosingSection({ surahName, summary, parts, termsSummary, nextSurah, onPart, previous, onPrevious, onMap, headingRef, ...reading }: ClosingSectionProps) {
+export function ClosingSection({ surahName, summary, parts, termsSummary, nextSurah, onPart, previous, onPrevious, onMap, headingRef, beforeNext, ...reading }: ClosingSectionProps) {
   const { ui } = reading;
   const title = <h2 className="closing-title" ref={headingRef} tabIndex={headingRef ? -1 : undefined} data-scene-heading={headingRef ? "" : undefined}>{ui.summary.title}</h2>;
   return <section className="closing">
@@ -40,6 +43,8 @@ export function ClosingSection({ surahName, summary, parts, termsSummary, nextSu
       })}</ol></div> : null}
     <div className="closing-summary"><ParagraphView block={summary} runPrefix="closing-summary" {...reading} /></div>
     {termsSummary ? <TermsSummary summary={termsSummary} ui={ui} onOpen={reading.onOpen} /> : null}
+    <AskedSection stop={null} />
+    {beforeNext}
     <NextCard nextSurah={nextSurah} previous={previous} records={reading.records} onOpen={reading.onOpen} onPrevious={onPrevious} onBack={onMap} ui={ui} />
   </section>;
 }

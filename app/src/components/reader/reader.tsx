@@ -9,6 +9,7 @@ import { deriveTermsSummary } from "@/lib/terms-summary";
 import { scopeContains, scopeStart, type Scope } from "@/lib/scope";
 import { jumpToAyah } from "@/lib/reader-dom";
 import { closingParts, lastStop } from "@/lib/closing";
+import { deriveFollowups } from "@/lib/followups";
 import { useSheets } from "./sheet-provider";
 import { ReadingProvider } from "./reading-context";
 import { SurahHeader } from "./surah-header";
@@ -24,6 +25,9 @@ import { ClosingSection } from "./closing-section";
 import { ClosingEntry } from "./closing-entry";
 import { ContinuousView } from "./continuous-view";
 import { TermsSummary } from "./terms-summary";
+import { AskProvider } from "./ask-context";
+import { AskDock } from "./ask-dock";
+import { AskedSection } from "./asked-section";
 
 const storageKey = "huda:depth:v1";
 const viewStorageKey = "huda:reader-view:v1";
@@ -49,7 +53,7 @@ function updateUrl(depth: Depth, stop: number | "summary" | null, text: boolean,
   if (push) window.history.pushState(state, "", url);
   else window.history.replaceState(state, "", url);
 }
-export function Reader({ surah, ui, nextSurah, surahs }: { surah: Surah; ui: Ui; surahs: SurahSummary[]; nextSurah?: SurahSummary }) {
+export function Reader({ surah, ui, nextSurah, surahs, ask = false }: { surah: Surah; ui: Ui; surahs: SurahSummary[]; nextSurah?: SurahSummary; /** «اسأل» is on (`HUDA_ASK=1`); the static export leaves it off and carries no trace of it. */ ask?: boolean }) {
   const [depth, setDepth] = useState<Depth>(1);
   const [currentAyah, setCurrentAyah] = useState<string | null>(null);
   const [scope, setScope] = useState<Scope>({ kind: "surah" });
@@ -161,9 +165,11 @@ export function Reader({ surah, ui, nextSurah, surahs }: { surah: Surah; ui: Ui;
   const startNumber = Number(scopeStart(surah, scope).split(":")[1]);
   const passages = surah.passages ?? [];
   const hero: SceneUnit | undefined = map.stops.length ? heroStop(map.stops, (key) => scopeContains(key, scope, passages), startNumber) : depthHero(items, startNumber, scope.kind === "surah");
+  // Deeper questions under the open stop: derived from the content alone, no model.
+  const followups = useMemo(() => stop ? deriveFollowups(surah, depth, { title: stop.title, ayahKeys: stop.ayahKeys }, maps.map((model) => model.stops)) : [], [surah, depth, stop, maps]);
   const passage = stop ? surah.passages?.find((item) => item.id === stop.passage) : undefined;
   const nextPassage = neighbours.next && neighbours.next.passage !== stop?.passage ? surah.passages?.find((item) => item.id === neighbours.next!.passage) : undefined;
-  return <ReadingProvider value={reading}><div className="huda-reader">
+  return <ReadingProvider value={reading}><AskProvider enabled={ask} surah={surah} depth={depth} stop={stop ? { number: stop.number, title: stop.sceneTitle ?? stop.title } : null}><div className="huda-reader">
     <SurahHeader surah={surah} surahs={surahs} scope={scope} ui={ui} onOpenUnit={() => openUnit(surah, scope, chooseScope)} onMap={mapped && (view === "text" || stop || closing) ? (stop || closing ? backToMap : () => chooseView("map")) : undefined} />
     {showMap && hero ? <div className="hero-area"><HeroQuestion stop={hero} ui={ui} animate={settled} onOpen={openStop} /></div> : null}
     <div className="console">
@@ -174,14 +180,16 @@ export function Reader({ surah, ui, nextSurah, surahs }: { surah: Surah; ui: Ui;
     <article className="reading-body" aria-label={ui.levels.find((item) => item.depth === depth)!.name}>
       {showMap ? <><SurahThread map={map} items={items} scope={scope} onScope={chooseScope} onAyah={(key) => openUnit(surah, { kind: "ayah", key }, chooseScope)} ui={ui} visited={visitedNumbers} currentStop={currentStops[depth] ?? null} hidden={Boolean(stop || closing)} onOpen={openStop} />
           {summary ? <ClosingEntry ui={ui} threaded={!items.shelf.length} hidden={Boolean(stop || closing)} onOpen={openClosing} /> : null}
-          {termsSummary ? <TermsSummary summary={termsSummary} ui={ui} hidden={Boolean(stop || closing)} onOpen={openSource} /> : null}</>
+          {termsSummary ? <TermsSummary summary={termsSummary} ui={ui} hidden={Boolean(stop || closing)} onOpen={openSource} /> : null}
+          {!summary && !stop ? <AskedSection stop={null} /> : null}</>
         : level.blocks.length ? <div className="reader-text"><ContinuousView key={depth} blocks={map.continuousBlocks} {...reading} />
           {summary ? <ClosingSection surahName={surah.surah.name} summary={summary} parts={mapped ? parts : parts.map(({ passage }) => ({ passage }))} termsSummary={termsSummary} nextSurah={nextSurah} onPart={openPart} onMap={mapped ? () => chooseView("map") : undefined} {...reading} />
-            : termsSummary ? <TermsSummary summary={termsSummary} ui={ui} onOpen={openSource} /> : null}</div> : <p className="reader-text">{ui.reader.empty_level}</p>}
+            : <>{termsSummary ? <TermsSummary summary={termsSummary} ui={ui} onOpen={openSource} /> : null}<AskedSection stop={null} /></>}</div> : <p className="reader-text">{ui.reader.empty_level}</p>}
     </article>
     {stop || closing ? <SceneShell onBack={backToMap}>
-      {stop ? <StopScene stop={stop} stops={playlist} passage={passage} nextPassage={nextPassage} termsSummary={termsSummary} {...neighbours} nextSurah={nextSurah} onClosing={summary ? openClosing : undefined} onNavigate={openStop} onBack={backToMap} {...reading} />
+      {stop ? <StopScene stop={stop} followups={followups} stops={playlist} passage={passage} nextPassage={nextPassage} termsSummary={termsSummary} {...neighbours} nextSurah={nextSurah} onClosing={summary ? openClosing : undefined} onNavigate={openStop} onBack={backToMap} {...reading} />
         : <ClosingScene surahName={surah.surah.name} summary={closing!} parts={parts} termsSummary={termsSummary} nextSurah={nextSurah} onPart={openPart} previous={lastUnit} onPrevious={lastUnit ? () => openStop(lastUnit) : undefined} onMap={backToMap} onBack={backToMap} {...reading} />}
     </SceneShell> : null}
-  </div></ReadingProvider>;
+    <AskDock />
+  </div></AskProvider></ReadingProvider>;
 }

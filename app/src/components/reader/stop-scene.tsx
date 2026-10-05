@@ -15,10 +15,14 @@ import { NextCard } from "./next-card";
 import { TermsSummary } from "./terms-summary";
 import type { TermsSummary as Summary } from "@/lib/terms-summary";
 import { SourceMarker } from "./source-marker";
+import type { Followup } from "@/lib/followups";
+import { AskedSection } from "./asked-section";
+import { AskDock } from "./ask-dock";
+import { FollowupsSection } from "./followups-section";
 
-export type StopSceneProps = ReadingProps & { stop: SceneUnit; stops: SceneUnit[]; previous?: SceneUnit; next?: SceneUnit; passage?: Passage; nextPassage?: Passage; nextSurah?: SurahSummary; termsSummary?: Summary | null; /** The level closes with a summary screen: the last stop leads to it instead of ending on the next surah. */ onClosing?: () => void; onNavigate: (stop: SceneUnit) => void; onBack: () => void };
+export type StopSceneProps = ReadingProps & { stop: SceneUnit; stops: SceneUnit[]; previous?: SceneUnit; next?: SceneUnit; passage?: Passage; nextPassage?: Passage; nextSurah?: SurahSummary; termsSummary?: Summary | null; /** Deeper questions that share an ayah with this stop, from `deriveFollowups`; none at the deepest level. */ followups?: Followup[]; /** Ids among them to show first and open (the server fills it later from the reader's own questions). */ promoted?: string[]; /** The level closes with a summary screen: the last stop leads to it instead of ending on the next surah. */ onClosing?: () => void; onNavigate: (stop: SceneUnit) => void; onBack: () => void };
 /** The body of a stop scene; `SceneShell` holds the dialog around it. */
-export function StopScene({ stop, stops, previous, next, passage, nextPassage, nextSurah, termsSummary, onClosing, onNavigate, onBack, ...reading }: StopSceneProps) {
+export function StopScene({ stop, stops, previous, next, passage, nextPassage, nextSurah, termsSummary, followups = [], promoted, onClosing, onNavigate, onBack, ...reading }: StopSceneProps) {
   const heading = useRef<HTMLHeadingElement>(null);
   const scroll = useRef<HTMLDivElement>(null);
   const position = stops.indexOf(stop);
@@ -45,7 +49,7 @@ export function StopScene({ stop, stops, previous, next, passage, nextPassage, n
       <div className="huda-scene-scroll" ref={scroll}><div key={stop.blockIndex} className={`huda-scene-body ${direction}`}>
         <AyahStage ayahs={stop.ayahKeys.map((key) => reading.ayahs.get(key)!)} ui={reading.ui} selected={shown[0]} onSelect={(key) => setPicked({ number: stop.number, key })} />
         <div className="scene-heading">{passage ? <p className="scene-kicker" data-run={`scene-passage-${passage.id}`}>{passage.title}<SourceMarker records={passage.records.map((id) => reading.records[id])} ui={reading.ui} onOpen={() => reading.onOpen(passage.records.map((id) => reading.records[id]))} /></p> : null}<DialogTitle asChild><h2 ref={heading} data-scene-heading tabIndex={-1} className={`huda-scene-title${stop.question ? " is-question" : ""}`}>{stop.sceneTitle ?? stop.title}</h2></DialogTitle></div>
-        <div className="scene-reading"><ContinuousView blocks={stop.scene} showTitles={false} openIndex={stop.openIndex} stageKeys={stop.kind === "pin" ? undefined : shown} {...reading} /><StopSources records={sources} ui={reading.ui} onOpen={reading.onOpen} />{!next && !onClosing && stop.kind !== "pin" && termsSummary ? <TermsSummary summary={termsSummary} ui={reading.ui} onOpen={reading.onOpen} /> : null}<NextCard next={next} previous={previous} nextPassage={nextPassage} nextSurah={nextSurah} closing={!next && onClosing ? onClosing : undefined} ui={reading.ui} records={reading.records} onOpen={reading.onOpen} onNext={() => { if (next) onNavigate(next); }} onPrevious={() => { if (previous) onNavigate(previous); }} onBack={onBack} /></div>
+        <div className="scene-reading"><ContinuousView blocks={stop.scene} showTitles={false} openIndex={stop.openIndex} stageKeys={stop.kind === "pin" ? undefined : shown} {...reading} /><AskedSection stop={stop.number} /><StopSources records={sources} ui={reading.ui} onOpen={reading.onOpen} /><FollowupsSection candidates={followups} promoted={promoted} />{!next && !onClosing && stop.kind !== "pin" && termsSummary ? <TermsSummary summary={termsSummary} ui={reading.ui} onOpen={reading.onOpen} /> : null}<AskDock /><NextCard next={next} previous={previous} nextPassage={nextPassage} nextSurah={nextSurah} closing={!next && onClosing ? onClosing : undefined} ui={reading.ui} records={reading.records} onOpen={reading.onOpen} onNext={() => { if (next) onNavigate(next); }} onPrevious={() => { if (previous) onNavigate(previous); }} onBack={onBack} /></div>
       </div></div>
   </>;
 }

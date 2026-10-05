@@ -62,4 +62,5 @@ export interface Ui {
   phrases: Record<"insufficient_sources" | "out_of_scope" | "arabic_only" | "fatwa", string>;
   links: Record<"fatwa" | "shubuhat", { label: string; url: string }>;
   privacy_line: string;
+  ask: Record<"title" | "placeholder" | "submit" | "loading" | "answer_title" | "note" | "unavailable" | "open" | "title_stop" | "about_stop" | "whole_surah" | "from_level" | "your_questions" | "your_question" | "saved_on_device" | "remove" | "followups_title" | "followups_from_you", string>;
 }

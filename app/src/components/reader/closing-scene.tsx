@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
+import { AskDock } from "./ask-dock";
 import { ClosingSection, type ClosingSectionProps } from "./closing-section";
 
 export type ClosingSceneProps = Omit<ClosingSectionProps, "headingRef"> & { onBack: () => void };
@@ -16,6 +17,6 @@ export function ClosingScene({ onBack, ...section }: ClosingSceneProps) {
   return <>
     <header className="scene-topbar"><Button variant="quiet" onClick={onBack}><Icon icon={ArrowRight01Icon} />{ui.reader.back}</Button><div className="scene-pips" aria-hidden="true" />
       {section.previous && section.onPrevious ? <div className="scene-nav"><Button variant="round" size="icon" aria-label={ui.reader.previous_stop} onClick={section.onPrevious}><Icon icon={ArrowRight01Icon} /></Button></div> : null}</header>
-    <div className="huda-scene-scroll" ref={scroll}><div className="huda-scene-body scene-body-enter"><div className="scene-reading"><ClosingSection headingRef={heading} {...section} /></div></div></div>
+    <div className="huda-scene-scroll" ref={scroll}><div className="huda-scene-body scene-body-enter"><div className="scene-reading"><ClosingSection headingRef={heading} beforeNext={<AskDock />} {...section} /></div></div></div>
   </>;
 }
