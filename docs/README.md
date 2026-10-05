@@ -254,6 +254,8 @@
 - الأسطر 801–811، «10. قبل الإرسال»: [`07-competition/before-submission.md`](07-competition/before-submission.md)
 - الأسطر 813–879، «11. ما اتُّفق عليه مع Codex (27 سبتمبر)»: [`07-competition/codex-agreements.md`](07-competition/codex-agreements.md)
 - الأسطر 881–938، «قرارات تحتاج صاحب الفكرة»: [`08-open/owner-decisions.md`](08-open/owner-decisions.md)
+- [`status-audit-core.md`](08-open/status-audit-core.md): **جرد 5 أكتوبر (ب):** عناصر الجوهر والميزات مقابل المبني، بدليل لكل صف، وإثبات تغطية لسجل القرارات (137 صفًّا).
+- [`status-audit-submission.md`](08-open/status-audit-submission.md): **جرد 5 أكتوبر (ب):** متطلبات التسليم ومعايير التحكيم ومقارناتنا وقياساتنا ومنهجية ورشة المنظمين، مقابل الموجود.
 
 ### `references/competition/registration-form.md`
 
