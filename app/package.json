@@ -15,7 +15,8 @@
     "postbuild": "node scripts/check-scene-css.mjs && node scripts/build-offline.mjs",
     "typecheck": "tsc --noEmit",
     "ask-eval": "node scripts/ask-eval.mjs",
-    "test": "node --test src/lib/ask/*.test.ts src/lib/*.test.ts"
+    "rag:ingest": "node --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/rag-ingest.mts",
+    "test": "node --test src/lib/ask/*.test.ts src/lib/*.test.ts src/lib/rag/*.test.ts"
   },
   "dependencies": {
     "@hugeicons/core-free-icons": "^4.3.5",
