@@ -1,11 +1,11 @@
 import { createContext, useContext } from "react";
-import type { Depth } from "@/lib/types";
+import type { Depth, SurahSummary } from "@/lib/types";
 import type { AskedQuestion } from "@/lib/asked";
-import type { Atom, AskResponse } from "@/lib/ask/types";
+import type { AskExtra, AskResponse, PublicAtom } from "@/lib/ask/types";
 
 /** The stop the reader has open, as «اسأل» needs it: its number at the current depth (the `?stop=N` of the URL) and the title the scene shows. */
 export interface AskStop { number: number; title: string }
-export type AskedEntry = { item: AskedQuestion; atoms: Atom[] };
+export type AskedEntry = { item: AskedQuestion; atoms: PublicAtom[] };
 
 export interface AskTurn {
   id: number;
@@ -20,9 +20,13 @@ export interface AskState {
   /** Questions this device holds for the surah whose sentences still exist, newest first. */
   entries: AskedEntry[];
   open: () => void;
-  save: (entry: { question: string; atomIds: string[] }) => void;
+  save: (entry: { question: string; atomIds: string[]; held?: PublicAtom[]; heldContext?: AskExtra }) => void;
   remove: (id: string) => void;
   
+  /** The published surahs, for naming the surah of a sentence that is not the open one. */
+  surahs: SurahSummary[];
+  /** The server weaves from book passages (known when the page was built); a reply can also say so. */
+  sources: boolean;
   turns: AskTurn[];
   starters: string[];
   addTurn: (question: string) => number;

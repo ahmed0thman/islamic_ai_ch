@@ -11,6 +11,7 @@ import { Icon } from "@/components/ui/icon";
 import { SourceBadge } from "@/components/ui/source-badge";
 import { SourceTypeBadge } from "@/components/ui/source-chip";
 import { BottomSheet } from "./bottom-sheet";
+import { VerbatimQuote } from "./verbatim-quote";
 
 export type SourceSheetProps = { records: SourceRecord[]; ui: Ui; term?: string; phrase?: string; onClose: () => void };
 function EvidenceContent({ evidence, ui }: { evidence: SourceRecord["evidence"][number]; ui: Ui }) {
@@ -33,7 +34,24 @@ function EvidenceContent({ evidence, ui }: { evidence: SourceRecord["evidence"][
     {evidence.url !== null ? <Button variant="primary" size="lg" asChild><a href={evidence.url} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer">{ui.panel.open_source}<Icon icon={ArrowUpRight01Icon} /></a></Button> : null}
   </article>;
 }
+/** A book excerpt the assistant retrieved: no claim and no record of ours, only where the words are from, and that nobody reviewed them yet. */
+function SourceDirectContent({ record, ui }: { record: SourceRecord; ui: Ui }) {
+  const evidence = record.evidence[0];
+  return <section className="sheet-record sheet-source-direct">
+    <div className="sheet-status"><SourceBadge state="source_direct" ui={ui} /><p>{ui.states.source_direct.meaning}</p></div>
+    {evidence ? <article className="sheet-evidence" style={{ "--tone": ui.states.source_direct.color } as CSSProperties}>
+      <dl className="sheet-facts">
+        <div><dt>{ui.panel.source}</dt><dd>{evidence.source_title}</dd></div>
+        <div><dt>{ui.panel.author}</dt><dd>{evidence.author}</dd></div>
+        {evidence.locator ? <div><dt>{ui.panel.locator}</dt><dd>{arabicDigits(evidence.locator)}</dd></div> : null}
+      </dl>
+      <div><p className="sheet-label">{ui.panel.quote}</p><p className="sheet-evidence-quote"><VerbatimQuote text={evidence.quote} /></p></div>
+      {evidence.url !== null ? <Button variant="primary" size="lg" asChild><a href={evidence.url} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer">{ui.panel.open_source}<Icon icon={ArrowUpRight01Icon} /></a></Button> : null}
+    </article> : null}
+  </section>;
+}
 function RecordContent({ record, ui }: { record: SourceRecord; ui: Ui }) {
+  if (record.state === "source_direct") return <SourceDirectContent record={record} ui={ui} />;
   return <section className="sheet-record" aria-labelledby={`source-claim-${record.id}`}>
     <div className="sheet-record-types">{ui.icon_order.filter((kind) => record.icons.includes(kind)).map((kind) => <SourceTypeBadge key={kind} kind={kind} ui={ui} />)}</div>
     <p className="sheet-label">{ui.panel.claim}</p>

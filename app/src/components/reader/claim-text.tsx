@@ -38,7 +38,8 @@ function RunSegments({ segments, ...reading }: ReadingProps & { segments: Segmen
   const { ayahs, records, ui, onOpen } = reading;
   const nodes: ReactNode[] = [];
   const marker = (segment: Extract<Segment, { t: "mark" }>, key: string) => {
-    const sources = [...new Set(segment.records)].map((id) => records[id]);
+    const sources = [...new Set(segment.records)].map((id) => records[id]).filter((record) => record !== undefined);
+    if (!sources.length) return null;
     return <SourceMarker key={key} records={sources} ui={ui} onOpen={() => onOpen(sources)} />;
   };
   function followingMarkers(index: number) {

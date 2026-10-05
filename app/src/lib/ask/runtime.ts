@@ -40,7 +40,10 @@ export async function runStage(request: Omit<SelectionRequest, "signal">, provid
       const result = await Promise.race([provider.choose({ ...request, signal: controller.signal }), timeout, cancelled]);
       outcome = "ok";
       return result;
-    } catch { /* The next provider tries the same schema and data. */ }
+    } catch (error) {
+      // The next provider tries the same schema and data. A fixed code (never upstream text) says why this one failed.
+      if (outcome === "provider_error" && error instanceof Error && /^(http_\d{3}|provider_output)$/.test(error.message)) outcome = error.message;
+    }
     finally {
       clearTimeout(timer);
       if (onParentAbort) parentSignal?.removeEventListener("abort", onParentAbort);

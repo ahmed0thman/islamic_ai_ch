@@ -10,7 +10,7 @@ import { SourceSheet } from "./source-sheet";
 
 export type SourceOptions = { term?: string; phrase?: string };
 type Selection = { kind: "source"; records: SourceRecord[]; term?: string; phrase?: string } | { kind: "legend" } | { kind: "unit"; surah: Surah; scope: Scope; onChoose: (scope: Scope) => void } | null;
-type SheetActions = { openUnit: (surah: Surah, scope: Scope, onChoose: (scope: Scope) => void) => void; legendOpen: boolean; openSource: (records: SourceRecord[], options?: SourceOptions) => void; openLegend: () => void; closeSheet: () => void };
+type SheetActions = { openUnit: (surah: Surah, scope: Scope, onChoose: (scope: Scope) => void) => void; legendOpen: boolean; /** The id of the record the open source sheet is about (its firmest), or null. */ openRecord: string | null; openSource: (records: SourceRecord[], options?: SourceOptions) => void; openLegend: () => void; closeSheet: () => void };
 const SheetContext = createContext<SheetActions | null>(null);
 /** The words the reader pressed a mark after: the text of the marked run it sits in, without the marks and ayah references. */
 function pressedPhrase(): string | undefined {
@@ -29,7 +29,8 @@ export function SheetProvider({ ui, children }: { ui: Ui; children: ReactNode })
   const openUnit = useCallback((surah: Surah, scope: Scope, onChoose: (scope: Scope) => void) => setSelection({ kind: "unit", surah, scope, onChoose }), []);
   const openLegend = useCallback(() => setSelection({ kind: "legend" }), []);
   const closeSheet = useCallback(() => setSelection(null), []);
-  const actions = useMemo(() => ({ legendOpen: selection?.kind === "legend", openSource, openUnit, openLegend, closeSheet }), [selection, openSource, openUnit, openLegend, closeSheet]);
+  const openRecord = selection?.kind === "source" ? selection.records[0]?.id ?? null : null;
+  const actions = useMemo(() => ({ legendOpen: selection?.kind === "legend", openRecord, openSource, openUnit, openLegend, closeSheet }), [selection, openRecord, openSource, openUnit, openLegend, closeSheet]);
   return <Direction.Provider dir="rtl"><SheetContext.Provider value={actions}>
     {children}
     {selection?.kind === "legend" ? <LegendSheet ui={ui} onClose={closeSheet} /> : null}

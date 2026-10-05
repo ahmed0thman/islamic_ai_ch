@@ -12,7 +12,8 @@ export type ComposedResponse = Omit<AskResponse, "composed"> & { composed?: { ki
 function unionRecords(atoms: PublicAtom[]): string[] {
   const records: string[] = [];
   const seen = new Set<string>();
-  for (const atom of atoms) for (const record of atom.records) {
+  for (const atom of atoms) // A book excerpt has no record of ours: its marker opens the stand-in record made from the atom itself (see ask-client.ts).
+  for (const record of atom.role === "source" ? [atom.id] : atom.records) {
     if (seen.has(record)) continue;
     seen.add(record);
     records.push(record);

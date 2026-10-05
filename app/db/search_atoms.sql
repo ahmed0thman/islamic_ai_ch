@@ -50,10 +50,16 @@ open_stop AS (
 hist AS (
   SELECT id FROM rag.atoms WHERE published AND id = ANY ($8::text[])
 ),
+-- The open surah's glance sentences (depth 0) always go in: a question about the surah as a whole
+-- ("explain it briefly") has no content words for either leg to match.
+overview AS (
+  SELECT id FROM rag.atoms WHERE published AND surah_no = $3::int AND depth = 0 AND role <> 'definition'
+),
 chosen AS (
   SELECT id, 0 AS grp FROM open_stop
   UNION ALL SELECT id, 1 FROM top
   UNION ALL SELECT id, 2 FROM hist
+  UNION ALL SELECT id, 2 FROM overview
 ),
 defs AS (
   SELECT d.id, 3 AS grp

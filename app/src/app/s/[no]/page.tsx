@@ -29,5 +29,5 @@ export default async function SurahPage({ params }: { params: Promise<{ no: stri
   const position = index.surahs.findIndex((item) => item.no === surah.surah.no);
   const nextSurah = index.surahs[position + 1];
   // «اسأل» is a runtime feature: the static export carries no button and no trace of it.
-  return <Reader key={surah.surah.no} surah={surah} ui={ui} surahs={index.surahs} nextSurah={nextSurah} ask={process.env.HUDA_ASK === "1"} />;
+  return <Reader key={surah.surah.no} surah={surah} ui={ui} surahs={index.surahs} nextSurah={nextSurah} ask={process.env.HUDA_ASK === "1"} sources={process.env.HUDA_ASK_SOURCES !== "0" && Boolean(process.env.DATABASE_URL)} />;
 }

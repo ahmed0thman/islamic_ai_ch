@@ -53,7 +53,7 @@ function updateUrl(depth: Depth, stop: number | "summary" | null, text: boolean,
   if (push) window.history.pushState(state, "", url);
   else window.history.replaceState(state, "", url);
 }
-export function Reader({ surah, ui, nextSurah, surahs, ask = false }: { surah: Surah; ui: Ui; surahs: SurahSummary[]; nextSurah?: SurahSummary; /** «اسأل» is on (`HUDA_ASK=1`); the static export leaves it off and carries no trace of it. */ ask?: boolean }) {
+export function Reader({ surah, ui, nextSurah, surahs, ask = false, sources = false }: { surah: Surah; ui: Ui; surahs: SurahSummary[]; nextSurah?: SurahSummary; /** «اسأل» is on (`HUDA_ASK=1`); the static export leaves it off and carries no trace of it. */ ask?: boolean; /** «اسأل» also weaves from book passages. */ sources?: boolean }) {
   const [depth, setDepth] = useState<Depth>(1);
   const [currentAyah, setCurrentAyah] = useState<string | null>(null);
   const [scope, setScope] = useState<Scope>({ kind: "surah" });
@@ -175,7 +175,7 @@ export function Reader({ surah, ui, nextSurah, surahs, ask = false }: { surah: S
     return map.stops.map((item) => item.title)
       .filter((title): title is string => typeof title === "string" && title.endsWith("\u061F") && title !== open).slice(0, 3);
   }, [map.stops, stop]);
-  return <ReadingProvider value={reading}><AskProvider enabled={ask} surah={surah} depth={depth} stop={stop ? { number: stop.number, title: stop.sceneTitle ?? stop.title } : null} starters={starters}><div className="huda-reader">
+  return <ReadingProvider value={reading}><AskProvider enabled={ask} surah={surah} depth={depth} stop={stop ? { number: stop.number, title: stop.sceneTitle ?? stop.title } : null} starters={starters} surahs={surahs} sources={sources}><div className="huda-reader">
     <SurahHeader surah={surah} surahs={surahs} scope={scope} ui={ui} onOpenUnit={() => openUnit(surah, scope, chooseScope)} onMap={mapped && (view === "text" || stop || closing) ? (stop || closing ? backToMap : () => chooseView("map")) : undefined} />
     {showMap && hero ? <div className="hero-area"><HeroQuestion stop={hero} ui={ui} animate={settled} onOpen={openStop} /></div> : null}
     <div className="console">

@@ -3,7 +3,9 @@
 import { useId, useRef } from "react";
 import { askedAt } from "@/lib/asked";
 import { Button } from "@/components/ui/button";
+import { blockRole, displaySegments, drawingFor } from "@/lib/ask-client";
 import { ParagraphView } from "./paragraph-view";
+import { SourceAtomRow } from "./source-atom-row";
 import { useReading } from "./reading-context";
 import { useAsk } from "./ask-state";
 
@@ -33,7 +35,13 @@ export function AskedSection({ stop }: { stop: number | null }) {
     <ul className="asked-list">{entries.map(({ item, atoms }) => <li className="asked-item" key={item.id}>
       <p className="asked-label">{ui.ask.your_question}</p>
       <p className="asked-text">{item.question}</p>
-      {atoms.map((atom) => <ParagraphView key={atom.id} block={{ type: "paragraph", role: atom.role, segments: atom.segments }} mode="flow" runPrefix={`asked:${item.id}:${atom.id}`} {...reading} />)}
+      {atoms.map((atom) => {
+        // Book excerpts and sentences of other surahs come from what was held with the answer.
+        const drawing = drawingFor(reading, atoms, item.heldContext);
+        const shown = { ...reading, records: drawing.records, ayahs: drawing.ayahs };
+        return atom.role === "source" ? <SourceAtomRow key={atom.id} atom={atom} ui={ui} onOpen={reading.onOpen} />
+          : <ParagraphView key={atom.id} block={{ type: "paragraph", role: blockRole(atom), segments: displaySegments(atom) }} mode="flow" runPrefix={`asked:${item.id}:${atom.id}`} {...shown} />;
+      })}
       <Button className="asked-remove" variant="quiet" size="sm" onClick={() => remove(item.id, entries.length === 1)}>{ui.ask.remove}</Button>
     </li>)}</ul>
     <p className="asked-note">{ui.ask.saved_on_device}</p>

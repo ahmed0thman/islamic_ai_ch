@@ -1,9 +1,13 @@
 import quran from "../../content/quran-plain.json" with { type: "json" };
 // @ts-expect-error -- Node requires source extensions.
 import { normalize } from "./normalize.ts";
+// @ts-expect-error -- Node requires source extensions.
+import { REPORT_MARKERS, guardTokens, hasMarker } from "./source-guard.ts";
+// @ts-expect-error -- Node requires source extensions.
+import { surahOf } from "./public-atom.ts";
 import type { Atom, ComposedSentence, Composition, ReaderContext } from "./types";
 
-export type VerifyReason = "shape" | "quran_text" | "quotation" | "grading" | "numbers" | "names";
+export type VerifyReason = "shape" | "quran_text" | "quotation" | "grading" | "numbers" | "names" | "report";
 export type Verification = { ok: true; value: Composition } | { ok: false; reason: VerifyReason };
 export const GRADING_WORDS = ["\u0635\u062d\u064a\u062d", "\u062d\u0633\u0646", "\u0636\u0639\u064a\u0641", "\u0645\u0648\u0636\u0648\u0639", "\u0645\u0646\u0643\u0631", "\u0645\u062a\u0648\u0627\u062a\u0631", "\u062b\u0627\u0628\u062a", "\u0644\u0627 \u064a\u062b\u0628\u062a", "\u0644\u0645 \u064a\u062b\u0628\u062a", "\u0644\u064a\u0633 \u0628\u062b\u0627\u0628\u062a"] as const;
 export const ATTRIBUTION_WORDS = ["\u0642\u0627\u0644", "\u064a\u0642\u0648\u0644", "\u0630\u0643\u0631", "\u064a\u0631\u0649", "\u0639\u0646\u062f", "\u0639\u0646", "\u062d\u0633\u0628", "\u0648\u0641\u0642\u0627 \u0644\u0640", "\u0648\u0641\u0642\u0627 \u0644"] as const;
@@ -49,7 +53,7 @@ export function parseComposition(value: unknown, atoms: Atom[]): Composition | u
       || typeof item.text !== "string" || !item.text.trim() || [...item.text].length > 220
       || !Array.isArray(item.cites) || item.cites.length < 1 || item.cites.length > 3
       || item.cites.some((id: unknown) => typeof id !== "string" || !byId.has(id)) || new Set(item.cites).size !== item.cites.length
-      || !item.cites.some((id: string) => byId.get(id)?.role === "claim")) return;
+      || !item.cites.some((id: string) => byId.get(id)?.role === "claim" || byId.get(id)?.role === "source")) return;
   }
   if (claims < 1 || claims > 5) return;
   return value as Composition;
@@ -77,10 +81,13 @@ export function verifyEach(value: unknown, atoms: Atom[], context?: ReaderContex
 }
 
 function checkSentence(item: ComposedSentence, byId: Map<string, Atom>, context: ReaderContext | undefined, grams: ReadonlySet<string>): VerifyReason | undefined {
-  const cited = item.cites.map((id) => byId.get(id)!.text);
+  const citedAtoms = item.cites.map((id) => byId.get(id)!);
+  const cited = citedAtoms.map((atom) => atom.text);
   const normalizedCites = cited.map(normalize);
   const tokens = words(item.text);
   if (containsQuran(item.text, grams)) return ("quran_text");
+  // A narration is never relayed from a book excerpt: it may come only from a verified sentence, which carries its ruling.
+  if (citedAtoms.some((atom) => atom.role === "source") && hasMarker(guardTokens(item.text), REPORT_MARKERS)) return ("report");
   // An unmatched quote delimiter also fails closed.
   const quoted = [...item.text.matchAll(/\u00ab([^\u00bb]*)\u00bb|"([^"]*)"/gu)];
   const withoutQuotes = item.text.replace(/\u00ab([^\u00bb]*)\u00bb|"([^"]*)"/gu, "");
@@ -99,13 +106,21 @@ function checkSentence(item: ComposedSentence, byId: Map<string, Atom>, context:
     }
   }
   const numbers = new Set(cited.flatMap(digitRuns));
+  // Sentences now come from several surahs: the number of the surah a verified sentence belongs to is its own.
+  for (const atom of citedAtoms) if (atom.role !== "source") { const surah = surahOf(atom); if (surah !== undefined) numbers.add(String(surah)); }
   if (context?.surah !== undefined) numbers.add(String(context.surah));
   for (const number of context?.ayah_numbers || []) numbers.add(String(number));
   for (const ayah of context?.stop_ayahs || []) for (const number of digitRuns(ayah.key)) numbers.add(number);
   if (digitRuns(item.text).some((number) => !numbers.has(number))) return ("numbers");
-  const content = new Set(cited.flatMap(words).filter((word) => word.length >= 3));
+  // Compared by stem (attached particle and article dropped, first three letters), so a paraphrase that changes a word's form is not read as an invented name.
+  const stem = (word: string) => word.replace(/^[\u0648\u0641\u0628\u0644\u0643](?=\u0627\u0644)/u, "").replace(/^\u0627\u0644/u, "").slice(0, 3);
+  const content = new Set(cited.flatMap(words).map(stem).filter((word) => word.length >= 3));
   const triggers = ATTRIBUTION_WORDS.map(normalize).join("|");
   const runs = normalize(item.text).matchAll(new RegExp(`(?:^|[^\\p{L}])(?:${triggers})(?=\\s|\\p{L})([^.!?\\u061f\\u060c,;\\u061b:\\n]*)`, "gu"));
-  for (const run of runs) if (!words(run[1]).some((word) => word.length >= 3 && content.has(word))) return ("names");
+  for (const run of runs) {
+    // A trigger with nothing name-like after it (an attached pronoun, as in the preposition with its pronoun) attributes nothing.
+    const named = words(run[1]).map(stem).filter((word) => word.length >= 3);
+    if (named.length && !named.some((word) => content.has(word))) return ("names");
+  }
   return undefined;
 }

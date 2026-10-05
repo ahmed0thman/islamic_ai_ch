@@ -10,11 +10,15 @@ import { splitExamples, pickExample } from "./example.ts";
 import { buildPrompt, SYSTEM_PROMPT, CHOICE_SCHEMA, validateChoice } from "./select.ts";
 // @ts-expect-error -- Node requires source extensions.
 import { runStage } from "./runtime.ts";
+// @ts-expect-error -- Node requires source extensions.
+import { publicAtom } from "./public-atom.ts";
 import type { Observer, StageEvent } from "./runtime";
-import type { AskResponse, Atom, ComposedItem, ComposedSentence, ChoiceProvider, HistoryTurn, ReaderContext } from "./types";
+import type { AskResponse, Atom, ComposedItem, ComposedSentence, ChoiceProvider, ExamplePair, HistoryTurn, ReaderContext } from "./types";
 
 /** The whole request, from the first model call to the reply. */
 export const REQUEST_DEADLINE_MS = 28_000;
+/** The repair round runs only when fewer written sentences than this survived the first round (or all of them, when it wrote fewer). */
+export const REPAIR_BELOW = 2;
 export interface AnswerOptions {
   mode?: "composed" | "extractive";
   support?: boolean;
@@ -24,6 +28,12 @@ export interface AnswerOptions {
   timeouts?: { compose: number; support: number; select: number; repair?: number };
   observe?: Observer;
   log?: (line: string) => void;
+  /** Illustrations for the writer (a verified sentence and its source quote); never material. */
+  examples?: readonly ExamplePair[];
+  /** Stage events made before this call (the retrieval), written first in the request's log line. */
+  preface?: readonly StageEvent[];
+  /** Fixed-code counts to add to the log line (for example what the source-atom guard dropped). */
+  logExtra?: Record<string, unknown>;
 }
 
 /** The written sentences of one answer, with what the two checks said about each, in the order written. */
@@ -33,7 +43,8 @@ const unique = <T,>(items: T[]) => [...new Set(items)];
 
 export async function answer(question: string, atoms: Atom[], context: ReaderContext | undefined, providers: ChoiceProvider | ChoiceProvider[], options: AnswerOptions = {}): Promise<AskResponse> {
   const start = Date.now(), deadline = start + REQUEST_DEADLINE_MS;
-  const events: StageEvent[] = [];
+  const events: StageEvent[] = [...(options.preface || [])];
+  let cited: { verified: number; source: number; both: number } | undefined;
   const observe: Observer = (event) => { events.push(event); options.observe?.(event); };
   const note = (stage: string, outcome: string) => observe({ stage, provider: "server", outcome, ms: 0 });
   const chain = Array.isArray(providers) ? providers : [providers];
@@ -49,7 +60,7 @@ export async function answer(question: string, atoms: Atom[], context: ReaderCon
   try {
     if ((options.mode || process.env.HUDA_ASK_MODE) !== "extractive") {
       try {
-        const prompt = compose(question, atoms, context, history);
+        const prompt = compose(question, atoms, context, history, options.examples || []);
         const first = await stage(prompt.request, budgets.compose, budgets.select);
         // Fixed statuses do not need Quran indexing, mechanical checks, or support.
         const parsed = parseComposition(first, prompt.atoms);
@@ -84,14 +95,20 @@ export async function answer(question: string, atoms: Atom[], context: ReaderCon
           const failed = reasons.filter((reason): reason is VerifyReason => reason !== undefined);
           note("verify", failed.length ? unique(failed).join(",") : "ok");
           reasons.forEach((reason, i) => { if (reason) problems.push({ index: draft.claimAt[i], problem: reason }); });
-          if (!failed.length) {
-            draft.flags = await supported(draft, draft.claims.map(() => true));
+          // Support is checked for every sentence that passed the mechanical checks, so a slow or failed repair never costs the reader the sound ones.
+          const pass = reasons.map((reason) => reason === undefined);
+          if (pass.some(Boolean)) {
+            draft.flags = await supported(draft, pass);
             const count = kept(draft);
             note("support", count === draft.claims.length ? "supported" : count ? "partial" : "unsupported");
-            draft.flags.forEach((ok, i) => { if (!ok) problems.push({ index: draft.claimAt[i], problem: "unsupported" }); });
+            draft.flags.forEach((ok, i) => { if (pass[i] && !ok) problems.push({ index: draft.claimAt[i], problem: "unsupported" }); });
             best = draft;
           }
         }
+
+        // Enough of the first answer stands: return it now rather than spend a second model round the reader waits for.
+        const enough = best !== undefined && kept(best) >= Math.min(REPAIR_BELOW, best.claims.length);
+        if (enough && problems.length) { note("repair", "skipped"); problems.length = 0; }
 
         // One repair round, and only one: the model gets its own answer back with what is wrong in each place.
         if (problems.length) {
@@ -135,8 +152,14 @@ export async function answer(question: string, atoms: Atom[], context: ReaderCon
         // Every atom any item cites, each once, in first-use order.
         const byId = new Map(prompt.atoms.map((atom) => [atom.id, atom]));
         const used = unique(composed.flatMap((item) => item.kind === "example" ? [] : item.atom_ids)).map((id) => byId.get(id)!);
-        return { status: "answer", mode: "composed", composed,
-          atoms: used.map(({ id, level, role, segments, records }) => ({ id, level, role, segments, records })) };
+        // How many written sentences rest on verified sentences only, on book excerpts only, or on both (a count, never text).
+        cited = { verified: 0, source: 0, both: 0 };
+        for (const item of composed) {
+          if (item.kind === "example" || item.text === undefined) continue;
+          const kinds = new Set(item.atom_ids.map((id) => byId.get(id)?.role === "source"));
+          if (kinds.size === 2) cited.both++; else if (kinds.has(true)) cited.source++; else cited.verified++;
+        }
+        return { status: "answer", mode: "composed", composed, atoms: used.map(publicAtom) };
       } catch { note("fallback", "extractive"); }
     }
     try {
@@ -148,6 +171,6 @@ export async function answer(question: string, atoms: Atom[], context: ReaderCon
     } catch { note("fallback", "insufficient"); return { status: "insufficient", atoms: [] }; }
   } finally {
     // One structured line per request; only fixed codes, names and elapsed times.
-    (options.log || console.info)(JSON.stringify({ event: "ask", stages: events, ms: Date.now() - start }));
+    (options.log || console.info)(JSON.stringify({ event: "ask", stages: events, ms: Date.now() - start, ...(options.logExtra || {}), ...(cited ? { cited } : {}) }));
   }
 }

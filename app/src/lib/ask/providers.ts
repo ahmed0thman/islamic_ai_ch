@@ -86,6 +86,8 @@ export function openaiCompatibleProvider({ baseUrl, apiKey, model }: { baseUrl: 
   } };
 }
 export const OPENAI_BASE_URL = "https://api.openai.com/v1";
+/** Groq serves open-weight models through the chat-completions dialect; listed only when named in HUDA_ASK_PROVIDER. */
+export const GROQ_BASE_URL = "https://api.groq.com/openai/v1";
 /** Any endpoint that speaks the OpenAI Responses API; the session header is only for OpenCode Go. */
 export function responsesProvider({ name, baseUrl, apiKey, model, sessionHeader }: { name: string; baseUrl: string; apiKey: string; model: string; sessionHeader: boolean }): ChoiceProvider {
   return { name, async choose({ system, message, signal, schema }) {
@@ -106,7 +108,7 @@ export function responsesProvider({ name, baseUrl, apiKey, model, sessionHeader 
       if (!/schema|text[. _]format|response[ _]format/i.test(error)) throw new Error("provider_http");
       response = await send(false);
     }
-    if (!response.ok) throw new Error("provider_http");
+    if (!response.ok) throw new Error(`http_${response.status}`);
     const data = await response.json();
     if (data.status !== "completed" || data.error || data.incomplete_details || !Array.isArray(data.output)) throw new Error("provider_output");
     const parts = data.output.flatMap((item: { type?: string; content?: unknown[] }) => item.type === "message" && Array.isArray(item.content) ? item.content : []);
@@ -129,6 +131,7 @@ export function providersFromEnv(env: Readonly<Record<string, string | undefined
   return [...new Set(names)].flatMap((name) => {
     if (name === "opencode-go" && env.OPENCODE_GO_API_KEY) return [opencodeGoProvider(env.OPENCODE_GO_API_KEY, env.HUDA_ASK_MODEL || "gpt-6-luna")];
     if (name === "openai" && env.OPENAI_API_KEY) return [openaiProvider(env.OPENAI_API_KEY, env.HUDA_ASK_MODEL || "gpt-6-luna")];
+    if (name === "groq" && env.GROQ_API_KEY) return [{ ...openaiCompatibleProvider({ baseUrl: GROQ_BASE_URL, apiKey: env.GROQ_API_KEY, model: env.HUDA_ASK_GROQ_MODEL || "openai/gpt-oss-120b" }), name: "groq" }];
     if (name === "gemini" && env.GEMINI_API_KEY) return [geminiProvider(env.GEMINI_API_KEY, env.HUDA_ASK_MODEL || DEFAULT_GEMINI_MODEL)];
     if (name === "anthropic" && env.ANTHROPIC_API_KEY) return [anthropicProvider(env.ANTHROPIC_API_KEY, env.HUDA_ASK_MODEL || "claude-sonnet-5-5")];
     if (name === "lexical" && env.NODE_ENV !== "production") return [lexicalProvider()];

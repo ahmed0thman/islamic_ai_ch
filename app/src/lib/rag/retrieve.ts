@@ -21,6 +21,8 @@ export interface Retrieved {
   mode: "hybrid" | "lexical" | "dense" | "fallback";
   ms: number;
   candidates: { lexical: number; dense: number };
+  /** Ids of the atoms that won by rank (fusion score), best first; empty in fallback. */
+  top: string[];
 }
 export interface RetrievedPassage {
   id: string; source_id: string; source_title: string; author: string;
@@ -89,10 +91,10 @@ export async function retrieveAtoms(input: RetrieveInput, loadSurahAtoms: (surah
   const elapsed = () => Math.round(performance.now() - started);
   try {
     const { rows, mode, candidates } = await within(searchAtoms(input), TOTAL_TIMEOUT_MS);
-    return { atoms: rows.map((row) => row.atom), mode, ms: elapsed(), candidates };
+    return { atoms: rows.map((row) => row.atom), mode, ms: elapsed(), candidates, top: rows.filter((row) => row.score !== null).sort((a, b) => b.score! - a.score!).map((row) => row.atom.id) };
   } catch {
     const atoms = await loadSurahAtoms(input.surah);
-    return { atoms, mode: "fallback", ms: elapsed(), candidates: { lexical: 0, dense: 0 } };
+    return { atoms, mode: "fallback", ms: elapsed(), candidates: { lexical: 0, dense: 0 }, top: [] };
   }
 }
 

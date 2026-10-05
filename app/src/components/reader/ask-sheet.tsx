@@ -5,12 +5,15 @@ import { ArrowUp02Icon, Mic01Icon, StopIcon } from "@hugeicons/core-free-icons";
 import type { AskResponse, PublicAtom } from "@/lib/ask/types";
 import { composedView, type ComposedItem } from "@/lib/ask-composed-view";
 import { historyFromTurns } from "@/lib/ask/history";
+import { blockRole, displaySegments, drawingFor } from "@/lib/ask-client";
 import { mergeQuestion, clock } from "@/lib/voice-client";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { BottomSheet } from "./bottom-sheet";
 import { useVoice } from "./voice-button";
 import { ParagraphView } from "./paragraph-view";
+import { SourceAtomRow } from "./source-atom-row";
+import { useSheets } from "./sheet-provider";
 import { ExampleParagraph } from "./example-paragraph";
 import { useReading } from "./reading-context";
 import { useAsk, type AskTurn } from "./ask-state";
@@ -20,6 +23,7 @@ const longEnough = (text: string) => [...text.trim()].length >= 3 && [...text.tr
 
 export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () => void }) {
   const ask = useAsk()!;
+  const { openRecord } = useSheets();
   const { relations: _relations, ...reading } = useReading();
   const { ui } = reading;
   const id = useId();
@@ -104,6 +108,8 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
   }, []);
 
   const loadingTurn = ask.turns.some((t) => t.loading);
+  // The note under the composer says books are woven in when the page knew it or a reply showed it.
+  const booksOn = ask.sources || ask.turns.some((turn) => turn.result?.sources || turn.result?.atoms.some((atom) => atom.role === "source"));
 
   const performSubmit = (text: string): boolean => {
     if (loadingTurn || !longEnough(text)) return false;
@@ -123,7 +129,7 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
     const history = historyFromTurns(ask.turns);
     const send = () => fetch("/api/ask/", {
       method: "POST", signal: controller.signal, headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ surah: surahNo, question: text, depth: ask.depth, ...(ask.stop ? { stop: ask.stop.number } : {}), ...(history.length ? { history } : {}) }),
+      body: JSON.stringify({ surah: surahNo, question: text, depth: ask.depth, ...(ask.stop ? { stop: ask.stop.number } : {}), ...(history.length ? { history } : {}), ...(openRecord && /^\d{1,3}-r\d{2,4}$/.test(openRecord) ? { open_record: openRecord } : {}) }),
     });
     // A request lost on the way (a dropped connection, a gateway error) is sent once more before the reader is told.
     send().then((response) => response.status >= 500 ? send() : response, () => send()).then(async response => {
@@ -132,7 +138,11 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
       active.current = null;
       if (body && typeof body.status === "string" && Array.isArray(body.atoms)) {
         ask.settleTurn(turnId, body);
-        if (body.status === "answer" && body.atoms.length) ask.save({ question: text, atomIds: body.atoms.map((atom) => atom.id) });
+        if (body.status === "answer" && body.atoms.length) {
+          // What this surah's content cannot give back by id (a book excerpt, a sentence of another surah) is kept with the answer, as it was shown.
+          const held = body.atoms.filter((atom) => atom.role === "source" || (atom.surah !== undefined && atom.surah !== surahNo));
+          ask.save({ question: text, atomIds: body.atoms.map((atom) => atom.id), ...(held.length ? { held, ...(body.extra ? { heldContext: body.extra } : {}) } : {}) });
+        }
       } else {
         ask.settleTurn(turnId, { status: "unavailable", atoms: [] });
       }
@@ -169,24 +179,32 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
 
   const levelName = (depth: number) => ui.levels.find((level) => level.depth === depth)?.name ?? "";
 
-  function atomRows(atoms: PublicAtom[], turnId: number) {
-    return <>{atoms.map((atom) => <div className="ask-atom" key={atom.id}>
-      <ParagraphView block={{ type: "paragraph", role: atom.role, segments: atom.segments }} mode="flow" runPrefix={`ask:${turnId}:${atom.id}`} {...reading} />
-      {atom.level !== ask.depth ? <span className="level-chip">{ui.ask.from_level} {levelName(atom.level)}</span> : null}
-    </div>)}</>;
+  const surahName = (no: number) => ask.surahs.find((item) => item.no === no)?.name ?? "";
+  type Drawing = ReturnType<typeof drawingFor>;
+
+  function atomRows(atoms: PublicAtom[], turnId: number, drawing: Drawing) {
+    const shown = { ...reading, records: drawing.records, ayahs: drawing.ayahs };
+    return <>{atoms.map((atom) => atom.role === "source"
+      ? <div className="ask-atom" key={atom.id}><SourceAtomRow atom={atom} ui={ui} onOpen={reading.onOpen} /></div>
+      : <div className="ask-atom" key={atom.id}>
+        <ParagraphView block={{ type: "paragraph", role: blockRole(atom), segments: displaySegments(atom) }} mode="flow" runPrefix={`ask:${turnId}:${atom.id}`} {...shown} />
+        {atom.level !== ask.depth ? <span className="level-chip">{ui.ask.from_level} {levelName(atom.level)}</span> : null}
+        {atom.surah !== undefined && atom.surah !== surahNo && surahName(atom.surah) ? <p className="ask-from-surah">{ui.ask.from_surah.replace("{name}", surahName(atom.surah))}</p> : null}
+      </div>)}</>;
   }
 
-  function composedItems(items: ComposedItem[], turnId: number) {
-    return <>{items.map((item, index) => item.kind === "verbatim" ? <Fragment key={index}>{atomRows(item.atoms, turnId)}</Fragment>
+  function composedItems(items: ComposedItem[], turnId: number, drawing: Drawing) {
+    const shown = { ...reading, records: drawing.records, ayahs: drawing.ayahs };
+    return <>{items.map((item, index) => item.kind === "verbatim" ? <Fragment key={index}>{atomRows(item.atoms, turnId, drawing)}</Fragment>
       : item.kind === "example" ? <div className="ask-example" key={index}>
         <ExampleParagraph block={{ type: "paragraph", role: "example", segments: [{ t: "text", v: item.text }] }} ui={ui} />
         <p className="ask-example-note">{ui.ask.example_note}</p>
       </div>
       : <div className="ask-composed" key={index}>
-        <div className="ask-written"><ParagraphView block={{ type: "paragraph", role: "claim", segments: [{ t: "text", v: item.text }, { t: "mark", records: item.records }] }} mode="flow" runPrefix={`ask-composed:${turnId}:${index}`} {...reading} /></div>
+        <div className="ask-written"><ParagraphView block={{ type: "paragraph", role: "claim", segments: [{ t: "text", v: item.text }, { t: "mark", records: item.records }] }} mode="flow" runPrefix={`ask-composed:${turnId}:${index}`} {...shown} /></div>
         <details className="ask-verified">
           <summary><span className="ask-verified-open">{ui.ask.show_verified}</span><span className="ask-verified-close">{ui.ask.hide_verified}</span></summary>
-          <div className="ask-verified-body">{atomRows(item.atoms, turnId)}</div>
+          <div className="ask-verified-body">{atomRows(item.atoms, turnId, drawing)}</div>
         </details>
       </div>)}</>;
   }
@@ -194,6 +212,7 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
   function renderResult(turn: AskTurn) {
     const result = turn.result!;
     const composed = composedView(result);
+    const drawing = drawingFor(reading, result.atoms, result.extra);
     const fixed = result.status === "unavailable" ? ui.ask.unavailable
       : result.status === "fatwa" ? ui.phrases.fatwa
       : result.status === "out_of_scope" ? ui.phrases.out_of_scope
@@ -206,8 +225,8 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
           <h3 className="ask-answer-title"><AskOrb size="sm" state="idle" /> {ui.ask.answer_title}</h3>
           {composed ? <>
              <p className="ask-composed-note">{ui.ask.composed_note}</p>
-             {composedItems(composed, turn.id)}
-           </> : atomRows(result.atoms, turn.id)}
+             {composedItems(composed, turn.id, drawing)}
+           </> : atomRows(result.atoms, turn.id, drawing)}
         </>
       ) : (
         <>
@@ -234,7 +253,7 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
           <div className="ask-empty">
              <AskOrb size="lg" state="idle" />
              <p className="ask-context">{ui.ask.about_stop}: <b>{ask.stop?.title ?? ui.ask.whole_surah}</b></p>
-             <p className="ask-note">{ui.ask.note}</p>
+             <p className="ask-note">{booksOn ? ui.ask.note_sources : ui.ask.note}</p>
              {ask.starters.length > 0 && <div>
                 <p className="ask-starters-label">{ui.ask.starters_title}</p>
                 <div className="ask-starters">

@@ -122,7 +122,7 @@ export function AskBox({ surah, ui: baseUi }: { surah: Surah; ui: Ui }) {
                   key={atom.id}
                   block={{
                     type: "paragraph",
-                    role: atom.role,
+                    role: atom.role === "source" ? "claim" : atom.role,
                     segments: atom.segments,
                   }}
                   ayahs={ayahs}

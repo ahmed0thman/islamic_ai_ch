@@ -8,6 +8,17 @@ export const HISTORY_TEXT_CHARS = 600;
 const HISTORY_ATOMS = 8;
 const clip = (text: string) => [...text.trim()].slice(0, HISTORY_TEXT_CHARS).join("");
 
+/** The sentence ids the earlier turns cited, as far as they look like ids, before retrieval (so retrieval can keep them); `resolveHistory` checks them again against the final list. */
+export function historyAtomIds(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  const ids: string[] = [];
+  for (const item of value.slice(-HISTORY_TURNS)) {
+    const list = item && typeof item === "object" && !Array.isArray(item) ? (item as Record<string, unknown>).atom_ids : undefined;
+    if (Array.isArray(list)) for (const id of list) if (typeof id === "string" && id.length <= 100 && !id.startsWith("src:")) ids.push(id);
+  }
+  return [...new Set(ids)].slice(0, 40);
+}
+
 /** The request's `history`, checked and clipped. It is context for reading references ("this", "clearer"), never a source, so anything malformed is skipped, never an error:
  * only the last two entries are looked at, each text is cut at 600 characters, and an atom id that is not a sentence of this surah is dropped. */
 export function resolveHistory(value: unknown, atoms: readonly { id: string }[]): HistoryTurn[] {

@@ -1,8 +1,10 @@
 import { providersFromEnv } from "@/lib/ask/providers";
 import { getIndex, getSurah } from "@/lib/content";
-import { deriveAtoms, resolveReaderContext } from "@/lib/ask/atoms";
+import { resolveReaderContext } from "@/lib/ask/atoms";
 import { answer } from "@/lib/ask/answer";
-import { resolveHistory } from "@/lib/ask/history";
+import { extraFor, gatherAtoms } from "@/lib/ask/gather";
+import { historyAtomIds, resolveHistory } from "@/lib/ask/history";
+import { logQuestion } from "@/lib/rag/log";
 import type { AskResponse } from "@/lib/ask/types";
 
 export const runtime = "nodejs";
@@ -36,7 +38,7 @@ export async function POST(request: Request) {
     let body: unknown;
     try { body = await request.json(); } catch { return reply("insufficient", 400); }
     if (!body || typeof body !== "object" || Array.isArray(body)) return reply("insufficient", 400);
-    const { surah, question, depth, stop, history } = body as Record<string, unknown>;
+    const { surah, question, depth, stop, history, open_record } = body as Record<string, unknown>;
     if (typeof surah !== "number" || !Number.isInteger(surah) || typeof question !== "string") return reply("insufficient", 400);
     const trimmed = question.trim();
     if ([...trimmed].length < 3 || [...trimmed].length > 300) return reply("insufficient", 400);
@@ -47,10 +49,21 @@ export async function POST(request: Request) {
       const source = await getSurah(surah);
       const reader = resolveReaderContext(source, depth, stop);
       const context = { depth: reader?.depth ?? 0, ...reader, surah, ayah_numbers: source.ayahs.map((ayah) => Number(ayah.key.split(":")[1])) };
-      const atoms = deriveAtoms(source);
-      // Optional and only context: a malformed history is ignored, never an error.
-      const result = await answer(trimmed, atoms, context, provider, { history: resolveHistory(history, atoms), log: (line) => { flowLog = line; } });
-      return Response.json(result, { headers: { "Cache-Control": "no-store" } });
+      // Optional: a malformed value is ignored, never an error.
+      const openRecord = typeof open_record === "string" && /^\d{1,3}-r\d{2,4}$/.test(open_record) ? open_record : undefined;
+      const gathered = await gatherAtoms({
+        question: trimmed, surah, depth: context.depth, stop: reader?.stop, stopAyahs: reader?.stop_ayahs?.map((ayah) => ayah.key),
+        openRecord, historyAtomIds: historyAtomIds(history),
+      }, getSurah);
+      const atoms = gathered.atoms;
+      const result = await answer(trimmed, atoms, context, provider, {
+        history: resolveHistory(history, atoms), examples: gathered.examples, preface: [gathered.event], logExtra: { dropped: gathered.dropped },
+        log: (line) => { flowLog = line; },
+      });
+      const extra = await extraFor(result.atoms, surah, getSurah);
+      logQuestion({ question: trimmed, surah, depth: context.depth, stop: reader?.stop ?? null, status: result.status, atomIds: result.atoms.map((atom) => atom.id),
+        retrieval: { mode: gathered.event.provider, counts: gathered.event.outcome, dropped: gathered.dropped } });
+      return Response.json({ ...result, ...(gathered.sources ? { sources: true } : {}), ...(extra ? { extra } : {}) }, { headers: { "Cache-Control": "no-store" } });
     } catch { return reply("insufficient"); }
   } finally {
     console.info(flowLog || JSON.stringify({ event: "ask", stages: [{ stage: "request", provider: "server", outcome, ms: Date.now() - started }], ms: Date.now() - started }));

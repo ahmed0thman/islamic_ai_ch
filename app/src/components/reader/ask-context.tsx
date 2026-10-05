@@ -1,12 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, useRef, type ReactNode } from "react";
-import type { Depth, Surah } from "@/lib/types";
+import type { Depth, Surah, SurahSummary } from "@/lib/types";
 import { addAsked, askedStorageKey, parseAsked, removeAsked, resolveAsked, serializeAsked, type AskedQuestion } from "@/lib/asked";
 import { deriveAtoms } from "@/lib/ask/atoms";
 import { AskContext, type AskState, type AskStop, type AskTurn } from "./ask-state";
 import { AskSheet } from "./ask-sheet";
-import type { AskResponse } from "@/lib/ask/types";
+import type { AskExtra, AskResponse, PublicAtom } from "@/lib/ask/types";
 
 function readStored(surahNo: number): AskedQuestion[] {
   try { return parseAsked(localStorage.getItem(askedStorageKey(surahNo))); } catch { return []; }
@@ -14,11 +14,11 @@ function readStored(surahNo: number): AskedQuestion[] {
 function writeStored(surahNo: number, list: AskedQuestion[]) {
   try { localStorage.setItem(askedStorageKey(surahNo), serializeAsked(list)); } catch { /* Optional: the answer still shows when the device refuses storage. */ }
 }
-export function AskProvider({ enabled, surah, depth, stop, starters = [], children }: { enabled: boolean; surah: Surah; depth: Depth; stop: AskStop | null; starters?: string[]; children: ReactNode }) {
+export function AskProvider({ enabled, surah, depth, stop, starters = [], surahs = [], sources = false, children }: { enabled: boolean; surah: Surah; depth: Depth; stop: AskStop | null; starters?: string[]; surahs?: SurahSummary[]; sources?: boolean; children: ReactNode }) {
   if (!enabled) return <>{children}</>;
-  return <Enabled surah={surah} depth={depth} stop={stop} starters={starters}>{children}</Enabled>;
+  return <Enabled surah={surah} depth={depth} stop={stop} starters={starters} surahs={surahs} sources={sources}>{children}</Enabled>;
 }
-function Enabled({ surah, depth, stop, starters, children }: { surah: Surah; depth: Depth; stop: AskStop | null; starters: string[]; children: ReactNode }) {
+function Enabled({ surah, depth, stop, starters, surahs, sources, children }: { surah: Surah; depth: Depth; stop: AskStop | null; starters: string[]; surahs: SurahSummary[]; sources: boolean; children: ReactNode }) {
   const surahNo = surah.surah.no;
   const [list, setList] = useState<AskedQuestion[]>([]);
   const [sheet, setSheet] = useState(false);
@@ -30,9 +30,9 @@ function Enabled({ surah, depth, stop, starters, children }: { surah: Surah; dep
   const atoms = useMemo(() => new Map(deriveAtoms(surah).map((atom) => [atom.id, atom])), [surah]);
   const entries = useMemo(() => resolveAsked(list, atoms), [list, atoms]);
   const open = useCallback(() => setSheet(true), []);
-  const save = useCallback(({ question, atomIds }: { question: string; atomIds: string[] }) => {
+  const save = useCallback(({ question, atomIds, held, heldContext }: { question: string; atomIds: string[]; held?: PublicAtom[]; heldContext?: AskExtra }) => {
     // Merge with what storage holds now, so a second tab's questions are not overwritten.
-    const next = addAsked(readStored(surahNo), { question, atomIds, depth, stop: stop?.number ?? null, at: Date.now() });
+    const next = addAsked(readStored(surahNo), { question, atomIds, depth, stop: stop?.number ?? null, at: Date.now(), ...(held?.length ? { held, ...(heldContext ? { heldContext } : {}) } : {}) });
     writeStored(surahNo, next);
     setList(next);
   }, [surahNo, depth, stop?.number]);
@@ -61,8 +61,8 @@ function Enabled({ surah, depth, stop, starters, children }: { surah: Surah; dep
 
   const value = useMemo<AskState>(() => ({
     depth, stop, entries, open, save, remove,
-    turns, starters, addTurn, settleTurn, dropTurn
-  }), [depth, stop, entries, open, save, remove, turns, starters, addTurn, settleTurn, dropTurn]);
+    surahs, sources, turns, starters, addTurn, settleTurn, dropTurn
+  }), [depth, stop, entries, open, save, remove, surahs, sources, turns, starters, addTurn, settleTurn, dropTurn]);
 
   return <AskContext.Provider value={value}>
     {children}

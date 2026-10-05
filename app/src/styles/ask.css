@@ -2,146 +2,722 @@
 
 /* The dock sits in the flow where the reading ends and sticks to the bottom edge of its scroller (the page on the map, the scene's scroller in a scene).
    It never lies over the next-card: at the end of the scroll it rests in its own row above it. The row itself lets taps through; only the button takes them. */
-.ask-dock { --fab: 3.5rem; position: sticky; inset-block-end: calc(var(--space-md) + env(safe-area-inset-bottom)); z-index: var(--z-sticky); display: flex; justify-content: flex-start; min-block-size: var(--fab); margin-block-start: var(--space-lg); pointer-events: none; }
-.ask-fab.huda-button { pointer-events: auto; inline-size: var(--fab); block-size: var(--fab); min-inline-size: var(--fab); min-block-size: var(--fab); box-shadow: 0 0 0 3px var(--bg), var(--shadow); }
+.ask-dock {
+  --fab: 3.5rem;
+  position: sticky;
+  inset-block-end: calc(var(--space-md) + env(safe-area-inset-bottom));
+  z-index: var(--z-sticky);
+  display: flex;
+  justify-content: flex-start;
+  min-block-size: var(--fab);
+  margin-block-start: var(--space-lg);
+  pointer-events: none;
+  padding-inline-start: 0.5rem;
+}
+.ask-fab.huda-button {
+  pointer-events: auto;
+  inline-size: var(--fab);
+  block-size: var(--fab);
+  min-inline-size: var(--fab);
+  min-block-size: var(--fab);
+  box-shadow:
+    0 0 0 3px var(--bg),
+    var(--shadow);
+}
 /* The global `button { color: inherit }` outranks the variant's utility class, so the primary buttons here set their own text color. */
-.ask-fab.huda-button, .ask-form .huda-button[data-variant="primary"] { color: var(--on-accent); }
-.ask-fab.huda-button:focus-visible { outline-offset: 5px; }
+.ask-fab.huda-button,
+.ask-form .huda-button[data-variant="primary"] {
+  color: var(--on-accent);
+}
+.ask-fab.huda-button:focus-visible {
+  outline-offset: 5px;
+}
 
-.ask-sheet { display: flex; flex-direction: column; flex: 1; min-block-size: 0; inline-size: 100%; max-inline-size: var(--reading-width); margin-inline: auto; }
-.ask-body { flex: 1; overflow-y: auto; padding-block: var(--space-md); }
-.ask-ai-badge { color: var(--ink-2); font-size: var(--text-label); border: 1px solid var(--line-strong); border-radius: var(--radius-pill); background: var(--surface-2); padding-inline: .5rem; line-height: 1.5; margin-inline-start: var(--space-xs); display: inline-flex; vertical-align: middle; }
+.ask-sheet {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-block-size: 0;
+  inline-size: 100%;
+  max-inline-size: var(--reading-width);
+  margin-inline: auto;
+}
+.ask-body {
+  flex: 1;
+  overflow-y: auto;
+  padding-block: var(--space-md);
+}
+.ask-ai-badge {
+  color: var(--ink-2);
+  font-size: var(--text-label);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  padding-inline: 0.5rem;
+  line-height: 1.5;
+  margin-inline-start: var(--space-xs);
+  display: inline-flex;
+  vertical-align: middle;
+}
 
 /* The composer */
-.ask-composer { flex: none; display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: end; gap: var(--space-sm); margin-block: var(--space-sm) calc(var(--space-md) + env(safe-area-inset-bottom)); padding-block: var(--space-sm); padding-inline: var(--space-md) var(--space-sm); border: 1px solid var(--border-ui); border-radius: 1.5rem; background: var(--bg); transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
-.ask-composer:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-.ask-input { grid-column: 1; inline-size: 100%; min-block-size: 2.75rem; max-block-size: 9.5rem; padding-block: .375rem; border: 0; outline: none; background: transparent; color: var(--ink); font: inherit; font-size: max(1rem, var(--text-body)); line-height: 1.7; resize: none; overflow-y: auto; field-sizing: content; }
+.ask-composer {
+  flex: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: var(--space-sm);
+  margin-block: var(--space-sm)
+    calc(var(--space-md) + env(safe-area-inset-bottom));
+  padding-block: var(--space-sm);
+  padding-inline: var(--space-md) var(--space-sm);
+  border: 1px solid var(--border-ui);
+  border-radius: 1.5rem;
+  background: var(--bg);
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+.ask-composer:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.ask-input {
+  grid-column: 1;
+  inline-size: 100%;
+  min-block-size: 2.75rem;
+  max-block-size: 9.5rem;
+  padding-block: 0.375rem;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: max(1rem, var(--text-body));
+  line-height: 1.7;
+  resize: none;
+  overflow-y: auto;
+  field-sizing: content;
+}
 /* the capsule shows the focus (:focus-within); the field itself carries no ring */
-.ask-input:focus, .ask-input:focus-visible { outline: none; box-shadow: none; }
-.ask-input::placeholder { color: var(--ink-3); }
-.ask-input[readonly] { opacity: .7; }
+.ask-input:focus,
+.ask-input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.ask-input::placeholder {
+  color: var(--ink-3);
+}
+.ask-input[readonly] {
+  opacity: 0.7;
+}
 
 /* Actions */
-.ask-actions { grid-column: 2; display: flex; gap: var(--space-xs); }
-.ask-actions .huda-button { inline-size: 2.75rem; block-size: 2.75rem; border-radius: var(--radius-pill); padding: 0; display: grid; place-items: center; }
-.ask-actions .huda-button[type="submit"] { background: var(--accent); color: var(--on-accent); }
-.ask-actions .huda-button[type="submit"]:disabled { opacity: .4; }
-.ask-actions .huda-button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.ask-actions {
+  grid-column: 2;
+  display: flex;
+  gap: var(--space-xs);
+}
+.ask-actions .huda-button {
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border-radius: var(--radius-pill);
+  padding: 0;
+  display: grid;
+  place-items: center;
+}
+.ask-actions .huda-button[type="submit"] {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.ask-actions .huda-button[type="submit"]:disabled {
+  opacity: 0.4;
+}
+.ask-actions .huda-button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
 
 /* Voice button (ghost inside actions unless listening) */
-.ask-voice .huda-button { background: transparent; color: var(--ink-2); border: 0; }
-@media (hover: hover) { .ask-voice .huda-button:hover { background: var(--accent-soft); } }
-.ask-voice .huda-button[data-state="listening"] { background: var(--accent); color: var(--on-accent); border-color: transparent; }
+.ask-voice .huda-button {
+  background: transparent;
+  color: var(--ink-2);
+  border: 0;
+}
+@media (hover: hover) {
+  .ask-voice .huda-button:hover {
+    background: var(--accent-soft);
+  }
+}
+.ask-voice .huda-button[data-state="listening"] {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: transparent;
+}
 
 /* The voice orb: a glass sphere, light turning inside it. HTML and CSS only. --level (0..1) is the reader's voice. */
-.ask-orb { --level: 0; --orb: 7.5rem; --orb-deep: color-mix(in srgb, var(--accent) 62%, black); --orb-glow: color-mix(in srgb, var(--accent) 55%, white); position: relative; flex: none; display: inline-grid; place-items: center; inline-size: var(--orb); block-size: var(--orb); }
-.ask-orb[data-size="sm"] { --orb: 1.75rem; }
-.ask-stage .ask-orb { --orb: 9rem; }
-.ask-stage .ask-orb, .ask-empty .ask-orb { margin-block: var(--space-lg); }
+.ask-orb {
+  --level: 0;
+  --orb: 7.5rem;
+  --orb-deep: color-mix(in srgb, var(--accent) 62%, black);
+  --orb-glow: color-mix(in srgb, var(--accent) 55%, white);
+  position: relative;
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  inline-size: var(--orb);
+  block-size: var(--orb);
+}
+.ask-orb[data-size="sm"] {
+  --orb: 1.75rem;
+}
+.ask-stage .ask-orb {
+  --orb: 9rem;
+}
+.ask-stage .ask-orb,
+.ask-empty .ask-orb {
+  margin-block: var(--space-lg);
+}
 /* the glow around the ball opens with the voice */
-.ask-orb::before { content: ""; position: absolute; inset: -18%; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--gold) 42%, transparent) 0%, color-mix(in srgb, var(--orb-glow) 22%, transparent) 45%, transparent 70%); transform: scale(calc(.9 + var(--level) * .55)); opacity: calc(.35 + var(--level) * .65); transition: transform 110ms linear, opacity 110ms linear; pointer-events: none; }
+.ask-orb::before {
+  content: "";
+  position: absolute;
+  inset: -18%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--gold) 42%, transparent) 0%,
+    color-mix(in srgb, var(--orb-glow) 22%, transparent) 45%,
+    transparent 70%
+  );
+  transform: scale(calc(0.9 + var(--level) * 0.55));
+  opacity: calc(0.35 + var(--level) * 0.65);
+  transition:
+    transform 110ms linear,
+    opacity 110ms linear;
+  pointer-events: none;
+}
 /* the soft shadow under the ball */
-.ask-orb::after { content: ""; position: absolute; inset: auto 20% -9% 20%; block-size: 12%; border-radius: 50%; background: color-mix(in srgb, black 30%, transparent); filter: blur(calc(var(--orb) * .06)); pointer-events: none; }
-.ask-orb-sphere { position: relative; inline-size: 100%; block-size: 100%; border-radius: 50%; overflow: hidden; clip-path: circle(50%); isolation: isolate; background: radial-gradient(circle at 50% 42%, var(--accent) 0%, var(--orb-deep) 78%); transform: scale(calc(1 + var(--level) * .14)); transition: transform 110ms linear; animation: ask-orb-breathe 5s ease-in-out infinite; }
+.ask-orb::after {
+  content: "";
+  position: absolute;
+  inset: auto 20% -9% 20%;
+  block-size: 12%;
+  border-radius: 50%;
+  background: color-mix(in srgb, black 30%, transparent);
+  filter: blur(calc(var(--orb) * 0.06));
+  pointer-events: none;
+}
+.ask-orb-sphere {
+  position: relative;
+  inline-size: 100%;
+  block-size: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  clip-path: circle(50%);
+  isolation: isolate;
+  background: radial-gradient(
+    circle at 50% 42%,
+    var(--accent) 0%,
+    var(--orb-deep) 78%
+  );
+  transform: scale(calc(1 + var(--level) * 0.14));
+  transition: transform 110ms linear;
+  animation: ask-orb-breathe 5s ease-in-out infinite;
+}
 /* two ribbons of light, turning against each other, blurred into each other */
-.ask-orb-light { position: absolute; inset: -30%; border-radius: 50%; filter: blur(calc(var(--orb) * .13)); }
-.ask-orb-light[data-layer="a"] { background: conic-gradient(from 0deg, var(--orb-glow) 0turn, transparent .22turn, var(--gold) .4turn, transparent .6turn, var(--orb-glow) .82turn, transparent 1turn); animation: ask-orb-turn 11s linear infinite; }
-.ask-orb-light[data-layer="b"] { inset: -10%; background: conic-gradient(from .5turn, color-mix(in srgb, var(--gold) 70%, white) 0turn, transparent .18turn, var(--accent) .5turn, transparent .7turn, color-mix(in srgb, var(--gold) 70%, white) 1turn); mix-blend-mode: screen; opacity: .75; animation: ask-orb-turn 17s linear infinite reverse; }
+.ask-orb-light {
+  position: absolute;
+  inset: -30%;
+  border-radius: 50%;
+  filter: blur(calc(var(--orb) * 0.13));
+}
+.ask-orb-light[data-layer="a"] {
+  background: conic-gradient(
+    from 0deg,
+    var(--orb-glow) 0turn,
+    transparent 0.22turn,
+    var(--gold) 0.4turn,
+    transparent 0.6turn,
+    var(--orb-glow) 0.82turn,
+    transparent 1turn
+  );
+  animation: ask-orb-turn 11s linear infinite;
+}
+.ask-orb-light[data-layer="b"] {
+  inset: -10%;
+  background: conic-gradient(
+    from 0.5turn,
+    color-mix(in srgb, var(--gold) 70%, white) 0turn,
+    transparent 0.18turn,
+    var(--accent) 0.5turn,
+    transparent 0.7turn,
+    color-mix(in srgb, var(--gold) 70%, white) 1turn
+  );
+  mix-blend-mode: screen;
+  opacity: 0.75;
+  animation: ask-orb-turn 17s linear infinite reverse;
+}
 /* what makes it a ball: a dark limb, a warm bounce from below, a thin lit rim */
-.ask-orb-shade { position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 50% 46%, transparent 48%, color-mix(in srgb, black 42%, transparent) 100%), radial-gradient(circle at 68% 82%, color-mix(in srgb, var(--gold) 50%, transparent) 0%, transparent 40%); box-shadow: inset 0 0 0 1px color-mix(in srgb, white 20%, transparent), inset 0 calc(var(--orb) * -.06) calc(var(--orb) * .14) color-mix(in srgb, black 30%, transparent); }
+.ask-orb-shade {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle at 50% 46%,
+      transparent 48%,
+      color-mix(in srgb, black 42%, transparent) 100%
+    ),
+    radial-gradient(
+      circle at 68% 82%,
+      color-mix(in srgb, var(--gold) 50%, transparent) 0%,
+      transparent 40%
+    );
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, white 20%, transparent),
+    inset 0 calc(var(--orb) * -0.06) calc(var(--orb) * 0.14)
+      color-mix(in srgb, black 30%, transparent);
+}
 /* the glass highlight: a soft cap on top and a small hard spark */
-.ask-orb-gloss { position: absolute; inset: 5% 16% 54% 16%; border-radius: 50%; background: linear-gradient(to bottom, color-mix(in srgb, white 62%, transparent), transparent 85%); opacity: .85; }
-.ask-orb-gloss::after { content: ""; position: absolute; inset: 18% auto auto 22%; inline-size: 16%; block-size: 22%; border-radius: 50%; background: color-mix(in srgb, white 85%, transparent); filter: blur(calc(var(--orb) * .012)); }
+.ask-orb-gloss {
+  position: absolute;
+  inset: 5% 16% 54% 16%;
+  border-radius: 50%;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, white 62%, transparent),
+    transparent 85%
+  );
+  opacity: 0.85;
+}
+.ask-orb-gloss::after {
+  content: "";
+  position: absolute;
+  inset: 18% auto auto 22%;
+  inline-size: 16%;
+  block-size: 22%;
+  border-radius: 50%;
+  background: color-mix(in srgb, white 85%, transparent);
+  filter: blur(calc(var(--orb) * 0.012));
+}
 /* states */
-.ask-orb[data-state="listening"] .ask-orb-sphere { animation: none; }
-.ask-orb[data-state="listening"] .ask-orb-light[data-layer="a"] { animation-duration: 5s; }
-.ask-orb[data-state="listening"] .ask-orb-light[data-layer="b"] { animation-duration: 7s; }
-.ask-orb[data-state="listening"][data-level="off"] .ask-orb-sphere { animation: ask-orb-breathe 1.4s ease-in-out infinite; }
-.ask-orb[data-state="thinking"] .ask-orb-light[data-layer="a"] { animation-duration: 2.2s; }
-.ask-orb[data-state="thinking"] .ask-orb-light[data-layer="b"] { animation-duration: 3.1s; }
-.ask-orb[data-state="thinking"] .ask-orb-sphere { animation-duration: 1.6s; }
+.ask-orb[data-state="listening"] .ask-orb-sphere {
+  animation: none;
+}
+.ask-orb[data-state="listening"] .ask-orb-light[data-layer="a"] {
+  animation-duration: 5s;
+}
+.ask-orb[data-state="listening"] .ask-orb-light[data-layer="b"] {
+  animation-duration: 7s;
+}
+.ask-orb[data-state="listening"][data-level="off"] .ask-orb-sphere {
+  animation: ask-orb-breathe 1.4s ease-in-out infinite;
+}
+.ask-orb[data-state="thinking"] .ask-orb-light[data-layer="a"] {
+  animation-duration: 2.2s;
+}
+.ask-orb[data-state="thinking"] .ask-orb-light[data-layer="b"] {
+  animation-duration: 3.1s;
+}
+.ask-orb[data-state="thinking"] .ask-orb-sphere {
+  animation-duration: 1.6s;
+}
 /* the small orb beside an answer: the same ball, still unless it is thinking, no glow and no shadow */
-.ask-orb[data-size="sm"]::before, .ask-orb[data-size="sm"]::after { display: none; }
-.ask-orb[data-size="sm"] .ask-orb-sphere { animation: none; }
-.ask-orb[data-size="sm"]:not([data-state="thinking"]) .ask-orb-light { animation: none; }
-@keyframes ask-orb-breathe { 0%, 100% { scale: 1; } 50% { scale: 1.045; } }
-@keyframes ask-orb-turn { to { rotate: 1turn; } }
-@media (prefers-reduced-motion: reduce) { .ask-orb *, .ask-orb::before, .ask-orb::after { animation: none !important; transition: none !important; } }
+.ask-orb[data-size="sm"]::before,
+.ask-orb[data-size="sm"]::after {
+  display: none;
+}
+.ask-orb[data-size="sm"] .ask-orb-sphere {
+  animation: none;
+}
+.ask-orb[data-size="sm"]:not([data-state="thinking"]) .ask-orb-light {
+  animation: none;
+}
+@keyframes ask-orb-breathe {
+  0%,
+  100% {
+    scale: 1;
+  }
+  50% {
+    scale: 1.045;
+  }
+}
+@keyframes ask-orb-turn {
+  to {
+    rotate: 1turn;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ask-orb *,
+  .ask-orb::before,
+  .ask-orb::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
 
 /* Views in the body */
-.ask-stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-md); min-block-size: 100%; text-align: center; }
-.ask-stage-title { color: var(--ink); font-size: var(--text-door); font-weight: 600; line-height: var(--leading-door); }
-.ask-stage-hint { color: var(--ink-2); font-size: var(--text-ui); }
-.ask-stage-note { color: var(--ink-3); font-size: var(--text-label); max-inline-size: 28ch; }
-.ask-voice-clock { font-variant-numeric: tabular-nums; margin-inline-start: var(--space-xs); }
-.ask-voice-msg { color: var(--ink-2); font-size: var(--text-ui); text-align: center; margin-block-end: var(--space-sm); }
+.ask-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  min-block-size: 100%;
+  text-align: center;
+}
+.ask-stage-title {
+  color: var(--ink);
+  font-size: var(--text-door);
+  font-weight: 600;
+  line-height: var(--leading-door);
+}
+.ask-stage-hint {
+  color: var(--ink-2);
+  font-size: var(--text-ui);
+}
+.ask-stage-note {
+  color: var(--ink-3);
+  font-size: var(--text-label);
+  max-inline-size: 28ch;
+}
+.ask-voice-clock {
+  font-variant-numeric: tabular-nums;
+  margin-inline-start: var(--space-xs);
+}
+.ask-voice-msg {
+  color: var(--ink-2);
+  font-size: var(--text-ui);
+  text-align: center;
+  margin-block-end: var(--space-sm);
+}
 
-.ask-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-md); min-block-size: 100%; text-align: center; }
-.ask-context { display: inline-flex; align-items: center; padding-inline: var(--space-md); min-block-size: 1.5rem; border-radius: var(--radius-pill); background: var(--surface-2); color: var(--ink-2); font-size: var(--text-ui); line-height: 1.5; }
-.ask-context b { color: var(--ink); font-weight: 600; margin-inline-start: .25em; }
-.ask-note { color: var(--ink-2); font-size: var(--text-ui); max-inline-size: 32ch; }
+.ask-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  min-block-size: 100%;
+  text-align: center;
+}
+.ask-context {
+  display: inline-flex;
+  align-items: center;
+  padding-inline: var(--space-md);
+  min-block-size: 1.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font-size: var(--text-ui);
+  line-height: 1.5;
+}
+.ask-context b {
+  color: var(--ink);
+  font-weight: 600;
+  margin-inline-start: 0.25em;
+}
+.ask-note {
+  color: var(--ink-2);
+  font-size: var(--text-ui);
+  max-inline-size: 32ch;
+}
 
-.ask-thread { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--space-lg); }
-.ask-turn { display: flex; flex-direction: column; gap: var(--space-sm); }
-.ask-question { align-self: flex-end; background: var(--surface-2); border-radius: var(--radius); border-end-start-radius: .375rem; padding: var(--space-sm) var(--space-md); color: var(--ink); font-size: var(--text-body); max-inline-size: 85%; white-space: pre-wrap; overflow-wrap: anywhere; scroll-margin-block-start: var(--space-sm); }
-.ask-loading { color: var(--ink-2); font-size: var(--text-door); line-height: 1.8; display: flex; align-items: center; gap: var(--space-sm); }
+.ask-thread {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+.ask-turn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.ask-question {
+  align-self: flex-end;
+  background: var(--surface-2);
+  border-radius: var(--radius);
+  border-end-start-radius: 0.375rem;
+  padding: var(--space-sm) var(--space-md);
+  color: var(--ink);
+  font-size: var(--text-body);
+  max-inline-size: 85%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  scroll-margin-block-start: var(--space-sm);
+}
+.ask-loading {
+  color: var(--ink-2);
+  font-size: var(--text-door);
+  line-height: 1.8;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
 
 /* Starters */
-.ask-starters-label { color: var(--ink-3); font-size: var(--text-label); margin-block-end: var(--space-xs); }
-.ask-starters { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-xs); }
-.ask-starter { display: inline-flex; align-items: center; min-block-size: var(--control-height); padding-inline: var(--space-md); border: 1px solid var(--border-ui); border-radius: var(--radius-pill); background: transparent; color: var(--accent); font: inherit; font-size: var(--text-ui); font-weight: 600; cursor: pointer; transition: background var(--dur-fast) var(--ease); }
-@media (hover: hover) { .ask-starter:hover { background: var(--accent-soft); } }
-.ask-starter:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.ask-starters-label {
+  color: var(--ink-3);
+  font-size: var(--text-label);
+  margin-block-end: var(--space-xs);
+}
+.ask-starters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-xs);
+}
+.ask-starter {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--control-height);
+  padding-inline: var(--space-md);
+  border: 1px solid var(--border-ui);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: var(--text-ui);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+@media (hover: hover) {
+  .ask-starter:hover {
+    background: var(--accent-soft);
+  }
+}
+.ask-starter:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
 
 /* Same answer elements as old layout */
-.ask-answer-title { margin-block-end: var(--space-xs); color: var(--ink-3); font-size: var(--text-label); font-weight: 600; line-height: var(--leading-ui); display: flex; align-items: center; gap: var(--space-sm); }
-.ask-fixed { color: var(--ink-2); font-size: var(--text-door); line-height: 1.8; display: flex; align-items: center; gap: var(--space-sm); }
-.ask-link { display: inline-block; margin-block-start: var(--space-sm); color: var(--accent); font-size: var(--text-ui); text-decoration: underline; text-underline-offset: .25em; }
-.ask-link:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.ask-answer-title {
+  margin-block-end: var(--space-xs);
+  color: var(--ink-3);
+  font-size: var(--text-label);
+  font-weight: 600;
+  line-height: var(--leading-ui);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.ask-fixed {
+  color: var(--ink-2);
+  font-size: var(--text-door);
+  line-height: 1.8;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.ask-link {
+  display: inline-block;
+  margin-block-start: var(--space-sm);
+  color: var(--accent);
+  font-size: var(--text-ui);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+.ask-link:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
 
-.ask-atom { padding-block: var(--space-xs); border-block-end: 1px solid var(--line); }
-.ask-atom:last-child { border-block-end: 0; }
-.ask-atom .claim-text { margin-block: var(--space-sm) var(--space-xs); font-size: var(--text-details); }
+.ask-atom {
+  padding-block: var(--space-xs);
+  border-block-end: 1px solid var(--line);
+}
+.ask-atom:last-child {
+  border-block-end: 0;
+}
+.ask-atom .claim-text {
+  margin-block: var(--space-sm) var(--space-xs);
+  font-size: var(--text-details);
+}
 
 /* The written answer: the system's wording, no border and no fill, its source marker inline at the end.
    The verified sentences it rests on stay one tap away, under the summary. */
-.ask-composed-note { color: var(--ink-2); font-size: var(--text-ui); line-height: var(--leading-ui); }
-.ask-example-note { margin-block: 0 var(--space-md); color: var(--ink-3); font-size: var(--text-label); line-height: var(--leading-ui); }
-.ask-written.claim-text { margin-block: var(--space-sm) var(--space-xs); color: var(--ink); font-size: var(--text-details); }
-.ask-composed + .ask-composed, .ask-composed + .ask-atom, .ask-atom + .ask-composed { border-block-start: 1px solid var(--line); }
-.ask-verified summary { list-style: none; cursor: pointer; color: var(--ink-2); font-size: var(--text-ui); line-height: var(--leading-ui); }
-.ask-verified summary::-webkit-details-marker { display: none; }
-.ask-verified summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-.ask-verified-close { display: none; }
-.ask-verified[open] .ask-verified-close { display: inline; }
-.ask-verified[open] .ask-verified-open { display: none; }
-.ask-verified-body { margin-block-start: var(--space-xs); padding-inline-start: var(--space-md); border-inline-start: 2px solid var(--border-ui); }
-.ask-verified-body .ask-atom:last-child { border-block-end: 0; }
+.ask-composed-note {
+  color: var(--ink-2);
+  font-size: var(--text-ui);
+  line-height: var(--leading-ui);
+}
+.ask-example-note {
+  margin-block: 0 var(--space-md);
+  color: var(--ink-3);
+  font-size: var(--text-label);
+  line-height: var(--leading-ui);
+}
+.ask-written.claim-text {
+  margin-block: var(--space-sm) var(--space-xs);
+  color: var(--ink);
+  font-size: var(--text-details);
+}
+.ask-composed + .ask-composed,
+.ask-composed + .ask-atom,
+.ask-atom + .ask-composed {
+  border-block-start: 1px solid var(--line);
+}
+.ask-verified summary {
+  list-style: none;
+  cursor: pointer;
+  color: var(--ink-2);
+  font-size: var(--text-ui);
+  line-height: var(--leading-ui);
+}
+.ask-verified summary::-webkit-details-marker {
+  display: none;
+}
+.ask-verified summary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.ask-verified-close {
+  display: none;
+}
+.ask-verified[open] .ask-verified-close {
+  display: inline;
+}
+.ask-verified[open] .ask-verified-open {
+  display: none;
+}
+.ask-verified-body {
+  margin-block-start: var(--space-xs);
+  padding-inline-start: var(--space-md);
+  border-inline-start: 2px solid var(--border-ui);
+}
+.ask-verified-body .ask-atom:last-child {
+  border-block-end: 0;
+}
 
 /* The depth a sentence or a deeper question comes from: a small neutral pill, none of the six source shapes. */
-.level-chip { display: inline-flex; align-items: center; min-block-size: 1.5rem; padding-inline: var(--space-md); border: 1px solid var(--line-strong); border-radius: var(--radius-pill); background: var(--surface-2); color: var(--ink-2); font-size: var(--text-label); font-weight: 600; line-height: 1.5; }
-.ask-atom .level-chip { margin-block-end: var(--space-sm); }
+.level-chip {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 1.5rem;
+  padding-inline: var(--space-md);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font-size: var(--text-label);
+  font-weight: 600;
+  line-height: 1.5;
+}
+.ask-atom .level-chip {
+  margin-block-end: var(--space-sm);
+}
 
 /* What the reader asked themself: a continuous gold edge and a small title. No card, no shadow, no fill (a quote has a fill, an example a dashed edge). */
-.asked { margin-block: var(--space-xl) var(--space-lg); padding-inline-start: var(--space-md); border-inline-start: 2px solid var(--gold); }
-.asked-title { color: var(--gold-strong); font-size: var(--text-label); font-weight: 700; line-height: var(--leading-ui); }
-.asked-title:focus { outline: none; }
-.asked-item { padding-block: var(--space-md); }
-.asked-item + .asked-item { border-block-start: 1px solid var(--line); }
-.asked-label { color: var(--ink-3); font-size: var(--text-label); font-weight: 600; line-height: var(--leading-ui); }
-.asked-text { margin-block-start: var(--space-xs); font-size: var(--text-door); font-weight: 600; line-height: var(--leading-door); text-wrap: balance; }
-.asked-item .claim-text { margin-block: var(--space-sm); font-size: var(--text-details); }
-.asked-remove.huda-button { color: var(--ink-2); font-size: var(--text-label); }
-.asked-note { color: var(--ink-3); font-size: var(--text-label); line-height: 1.8; }
+.asked {
+  margin-block: var(--space-xl) var(--space-lg);
+  padding-inline-start: var(--space-md);
+  border-inline-start: 2px solid var(--gold);
+}
+.asked-title {
+  color: var(--gold-strong);
+  font-size: var(--text-label);
+  font-weight: 700;
+  line-height: var(--leading-ui);
+}
+.asked-title:focus {
+  outline: none;
+}
+.asked-item {
+  padding-block: var(--space-md);
+}
+.asked-item + .asked-item {
+  border-block-start: 1px solid var(--line);
+}
+.asked-label {
+  color: var(--ink-3);
+  font-size: var(--text-label);
+  font-weight: 600;
+  line-height: var(--leading-ui);
+}
+.asked-text {
+  margin-block-start: var(--space-xs);
+  font-size: var(--text-door);
+  font-weight: 600;
+  line-height: var(--leading-door);
+  text-wrap: balance;
+}
+.asked-item .claim-text {
+  margin-block: var(--space-sm);
+  font-size: var(--text-details);
+}
+.asked-remove.huda-button {
+  color: var(--ink-2);
+  font-size: var(--text-label);
+}
+.asked-note {
+  color: var(--ink-3);
+  font-size: var(--text-label);
+  line-height: 1.8;
+}
 
 /* The door of a stop with questions of the reader's own: a gold dot and their number. */
-.stop-door-asked { display: inline-flex; align-items: center; gap: var(--space-xs); color: var(--gold-strong); font-size: var(--text-label); font-weight: 700; line-height: 1.5; font-variant-numeric: tabular-nums; }
-.stop-door-asked i { inline-size: .5625rem; block-size: .5625rem; border-radius: 50%; background: var(--gold); }
+.stop-door-asked {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--gold-strong);
+  font-size: var(--text-label);
+  font-weight: 700;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+.stop-door-asked i {
+  inline-size: 0.5625rem;
+  block-size: 0.5625rem;
+  border-radius: 50%;
+  background: var(--gold);
+}
 
 /* Deeper questions under a stop: depth items that open in place. */
-.followups { margin-block: var(--space-lg); }
+.followups {
+  margin-block: var(--space-lg);
+}
 /* The second way onward, after the deeper questions: small and quiet, the arrow only. */
-.next-mini { display: flex; justify-content: flex-end; margin-block: var(--space-sm) var(--space-lg); }
-.next-mini .huda-button { gap: var(--space-xs); color: var(--accent); font-size: var(--text-ui); font-weight: 600; }
-.followups-title { margin-block-start: var(--space-md); color: var(--ink-3); font-size: var(--text-label); font-weight: 600; line-height: var(--leading-ui); }
-.details-summary-text { display: grid; justify-items: start; gap: var(--space-xs); min-inline-size: 0; }
+.next-mini {
+  display: flex;
+  justify-content: flex-end;
+  margin-block: var(--space-sm) var(--space-lg);
+}
+.next-mini .huda-button {
+  gap: var(--space-xs);
+  color: var(--accent);
+  font-size: var(--text-ui);
+  font-weight: 600;
+}
+.followups-title {
+  margin-block-start: var(--space-md);
+  color: var(--ink-3);
+  font-size: var(--text-label);
+  font-weight: 600;
+  line-height: var(--leading-ui);
+}
+.details-summary-text {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-xs);
+  min-inline-size: 0;
+}
+
+/* A book excerpt the assistant retrieved: its words verbatim, and the title of the book under them. A caption names the surah of a sentence that is not the open one. */
+.ask-source-title,
+.ask-from-surah {
+  margin-block: 0 var(--space-sm);
+  color: var(--ink-3);
+  font-size: var(--text-label);
+  line-height: var(--leading-ui);
+}
+.ask-source .claim-text {
+  margin-block: var(--space-sm) var(--space-xs);
+  font-size: var(--text-details);
+}

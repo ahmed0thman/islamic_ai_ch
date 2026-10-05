@@ -1,7 +1,7 @@
 export type Depth = 0 | 1 | 2 | 3;
 export type IconKey = "ayah" | "hadith" | "athar" | "scholar" | "link" | "hidaya";
 export type BadgeKey = "thabit" | "la_yathbut" | "khilaf_mutabar";
-export type StateKey = "report_unjudged";
+export type StateKey = "report_unjudged" | "source_direct";
 export type LinkStrength = "strong" | "medium" | "weak" | "unrated";
 export interface SurahSummary { no: number; name: string; ayah_count: number }
 export interface ContentIndex { surahs: SurahSummary[] }
@@ -68,5 +68,5 @@ export interface Ui {
   ask: Record<"title" | "placeholder" | "submit" | "loading" | "answer_title" | "note" | "unavailable" | "open" | "title_stop" | "about_stop" | "whole_surah" | "from_level" | "your_questions" | "your_question" | "saved_on_device" | "remove" | "followups_title" | "followups_from_you" | "composed_note" | "show_verified" | "hide_verified" | "example_note"
     | "voice_start" | "voice_stop" | "voice_recording" | "voice_listening" | "voice_live_note" | "voice_transcribing" | "voice_review" | "voice_partial" | "voice_denied" | "voice_failed" | "voice_privacy"
     | "voice_hint_intro" | "voice_hint_stop" | "voice_hint_scholars" | "voice_hint_terms" | "voice_hint_words"
-    | "ai_badge" | "starters_title" | "voice_listening_title" | "voice_listening_hint", string>;
+    | "ai_badge" | "starters_title" | "voice_listening_title" | "voice_listening_hint" | "from_surah" | "note_sources", string>;
 }
