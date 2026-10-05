@@ -230,7 +230,11 @@ export function validateSurah(value: unknown): asserts value is Surah {
       return;
     }
     if (block.role !== "claim" && block.role !== "transmission") fail(at, "unknown paragraph role");
-    if (Object.hasOwn(block, "kind")) {
+    if (block.kind === "misconception") {
+      // A stop that corrects a common misreading: a titled top-level paragraph, never inside details.
+      if (typeof block.title !== "string" || !block.title) fail(at, "a misconception is a titled stop");
+      if (inDetails) fail(at, "a misconception never sits inside details");
+    } else if (Object.hasOwn(block, "kind")) {
       // The closing summary: a top-level claim of its own screen, so no stop title and no ayahs.
       if (block.kind !== "summary") fail(at, "unknown paragraph kind");
       if (block.role !== "claim") fail(at, "a summary is a claim");
@@ -267,7 +271,12 @@ export function validateSurah(value: unknown): asserts value is Surah {
     });
   });
 }
-export const getUi = cache(async (): Promise<Ui> => await readJson("ui.ar.json") as Ui);
+export const getUi = cache(async (): Promise<Ui> => {
+  // `clerk` holds our wording for Clerk's screens. Only the server reads it (getClerkStrings), so it stays out of the dictionary sent to the browser.
+  const { clerk: _clerk, ...ui } = await readJson("ui.ar.json") as Ui & { clerk?: unknown };
+  return ui;
+});
+export const getClerkStrings = cache(async () => (await readJson("ui.ar.json") as { clerk?: Record<string, unknown> }).clerk ?? {});
 export const getIndex = cache(async (): Promise<ContentIndex> => {
   const data = object(await readJson("index.json"), "index"), seen = new Set<number>();
   array(data.surahs, "index.surahs").forEach((value, i) => {
