@@ -469,7 +469,8 @@
               "t": "text",
               "v": "."
             }
-          ]
+          ],
+          "kind": "misconception"
         },
         {
           "type": "paragraph",
@@ -920,7 +921,8 @@
               "t": "text",
               "v": "."
             }
-          ]
+          ],
+          "kind": "misconception"
         },
         {
           "type": "paragraph",
