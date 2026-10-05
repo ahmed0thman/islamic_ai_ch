@@ -63,7 +63,8 @@ for (const surah of surahs) {
         const expected = [level.blocks[stop.blockIndex]];
         for (let index = stop.blockIndex + 1; index < level.blocks.length; index++) {
           const block = level.blocks[index];
-          if (block.type !== "paragraph" || block.title) break;
+          // The closing summary is the surah's, never part of the last stop's scene.
+          if (block.type !== "paragraph" || block.title || block.kind === "summary") break;
           expected.push(block);
         }
         assert.deepEqual(stop.scene, expected);
@@ -78,8 +79,10 @@ for (const surah of surahs) {
       }
       const duplicateHeadings = level.blocks.filter((block, index) => block.type === "heading" && block.kind === "question"
         && isTitled(level.blocks[index + 1]) && block.text === (level.blocks[index + 1] as ParagraphBlock).title);
-      assert.deepEqual(map.unassignedBlocks, level.blocks.filter((block) => !assigned.has(block) && !duplicateHeadings.includes(block)));
-      assert.deepEqual(map.continuousBlocks, level.blocks.filter((block) => !duplicateHeadings.includes(block)));
+      const isSummary = (block: Block) => block.type === "paragraph" && block.kind === "summary";
+      assert.deepEqual(map.unassignedBlocks, level.blocks.filter((block) => !assigned.has(block) && !duplicateHeadings.includes(block) && !isSummary(block)));
+      assert.deepEqual(map.continuousBlocks, level.blocks.filter((block) => !duplicateHeadings.includes(block) && !isSummary(block)));
+      assert.equal(map.summary, level.blocks.find(isSummary));
     }
   });
 

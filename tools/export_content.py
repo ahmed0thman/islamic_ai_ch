@@ -366,7 +366,8 @@ def run_checks(nasij, records, quran, no, ui=None):
                     keys = stop_ayahs(block, records, own_keys)
                     check("C13", isinstance(keys, list) and all(isinstance(ref, str) and ref in passages[ident] for ref in keys),
                           f"{where}: stop ayahs outside its passage")
-            elif (is_stop or is_summary) and "passages" in nasij:
+            # The summary belongs to the whole surah, so it names no passage (C16 forbids the key).
+            elif is_stop and "passages" in nasij:
                 check("C13", False, f"{where}: stop must identify its passage")
         if level["depth"] in (0, 1, 2):
             check("C14", stops <= 12, f"level {level['depth']}: {stops} stops exceeds 12")
