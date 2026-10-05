@@ -85,13 +85,14 @@ export function openaiCompatibleProvider({ baseUrl, apiKey, model }: { baseUrl: 
     return JSON.parse(data.choices[0].message.content);
   } };
 }
-/** OpenCode Go's Luna model uses Responses, not chat completions. */
-export function opencodeGoProvider(apiKey: string, model = "gpt-6-luna"): ChoiceProvider {
-  return { name: "opencode-go", async choose({ system, message, signal, schema }) {
+export const OPENAI_BASE_URL = "https://api.openai.com/v1";
+/** Any endpoint that speaks the OpenAI Responses API; the session header is only for OpenCode Go. */
+export function responsesProvider({ name, baseUrl, apiKey, model, sessionHeader }: { name: string; baseUrl: string; apiKey: string; model: string; sessionHeader: boolean }): ChoiceProvider {
+  return { name, async choose({ system, message, signal, schema }) {
     const outputSchema = withoutUniqueItems(schema || CHOICE_SCHEMA);
-    const send = (structured: boolean) => fetchRetry(`${OPENCODE_GO_BASE_URL}/responses`, {
+    const send = (structured: boolean) => fetchRetry(`${baseUrl}/responses`, {
       method: "POST", signal,
-      headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json", "user-agent": "huda-ask/1.0", "x-opencode-session": PROCESS_SESSION },
+      headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json", "user-agent": "huda-ask/1.0", ...(sessionHeader ? { "x-opencode-session": PROCESS_SESSION } : {}) },
       body: JSON.stringify({ model, input: message,
         instructions: structured ? system : `${system}\nReturn ONLY valid JSON matching this schema, with no markdown fences:\n${JSON.stringify(outputSchema)}`,
         ...(structured ? { text: { format: { type: "json_schema", name: "ask_response", strict: true, schema: outputSchema } } } : {}),
@@ -113,12 +114,21 @@ export function opencodeGoProvider(apiKey: string, model = "gpt-6-luna"): Choice
     return JSON.parse(parts.map((part: { text: string }) => part.text).join(""));
   } };
 }
+/** OpenCode Go's Luna model uses Responses, not chat completions. */
+export function opencodeGoProvider(apiKey: string, model = "gpt-6-luna"): ChoiceProvider {
+  return responsesProvider({ name: "opencode-go", baseUrl: OPENCODE_GO_BASE_URL, apiKey, model, sessionHeader: true });
+}
+/** Direct OpenAI, the fallback when OpenCode Go fails. */
+export function openaiProvider(apiKey: string, model = "gpt-6-luna"): ChoiceProvider {
+  return responsesProvider({ name: "openai", baseUrl: OPENAI_BASE_URL, apiKey, model, sessionHeader: false });
+}
 export function providersFromEnv(env: Readonly<Record<string, string | undefined>>): ChoiceProvider[] {
   const names = env.HUDA_ASK_PROVIDER?.split(",").map((name) => name.trim()) || [
-    ...(env.OPENCODE_GO_API_KEY ? ["opencode-go"] : []), ...(env.GEMINI_API_KEY ? ["gemini"] : []), ...(env.ANTHROPIC_API_KEY ? ["anthropic"] : []),
+    ...(env.OPENCODE_GO_API_KEY ? ["opencode-go"] : []), ...(env.OPENAI_API_KEY ? ["openai"] : []), ...(env.GEMINI_API_KEY ? ["gemini"] : []), ...(env.ANTHROPIC_API_KEY ? ["anthropic"] : []),
   ];
   return [...new Set(names)].flatMap((name) => {
     if (name === "opencode-go" && env.OPENCODE_GO_API_KEY) return [opencodeGoProvider(env.OPENCODE_GO_API_KEY, env.HUDA_ASK_MODEL || "gpt-6-luna")];
+    if (name === "openai" && env.OPENAI_API_KEY) return [openaiProvider(env.OPENAI_API_KEY, env.HUDA_ASK_MODEL || "gpt-6-luna")];
     if (name === "gemini" && env.GEMINI_API_KEY) return [geminiProvider(env.GEMINI_API_KEY, env.HUDA_ASK_MODEL || DEFAULT_GEMINI_MODEL)];
     if (name === "anthropic" && env.ANTHROPIC_API_KEY) return [anthropicProvider(env.ANTHROPIC_API_KEY, env.HUDA_ASK_MODEL || "claude-sonnet-5-5")];
     if (name === "lexical" && env.NODE_ENV !== "production") return [lexicalProvider()];

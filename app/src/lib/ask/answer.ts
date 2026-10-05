@@ -3,13 +3,13 @@ import { compose } from "./compose.ts";
 // @ts-expect-error -- Node requires source extensions.
 import { verify, parseComposition } from "./verify.ts";
 // @ts-expect-error -- Node requires source extensions.
-import { filterSupported, supportRequest } from "./support.ts";
+import { supportVerdicts, supportRequest } from "./support.ts";
 // @ts-expect-error -- Node requires source extensions.
 import { buildPrompt, SYSTEM_PROMPT, CHOICE_SCHEMA, validateChoice } from "./select.ts";
 // @ts-expect-error -- Node requires source extensions.
 import { runStage } from "./runtime.ts";
 import type { Observer, StageEvent } from "./runtime";
-import type { AskResponse, Atom, ChoiceProvider, ReaderContext } from "./types";
+import type { AskResponse, Atom, ComposedItem, ChoiceProvider, ReaderContext } from "./types";
 
 export interface AnswerOptions {
   mode?: "composed" | "extractive";
@@ -39,19 +39,29 @@ export async function answer(question: string, atoms: Atom[], context: ReaderCon
         const checked = verify(value, prompt.atoms, context);
         if (!checked.ok) { note("verify", checked.reason); throw new Error("verification_failed"); }
         note("verify", "ok");
-        let sentences = checked.value.sentences;
+        const sentences = checked.value.sentences;
+        let flags = sentences.map(() => true);
         if (options.support ?? process.env.HUDA_ASK_SUPPORT !== "0") {
           const verdicts = await stage(supportRequest(sentences, prompt.atoms), budgets.support);
-          let filtered;
-          try { filtered = filterSupported(verdicts, sentences); }
+          try { flags = supportVerdicts(verdicts, sentences); }
           catch { note("support", "support_shape"); throw new Error("support_shape"); }
-          note("support", filtered.length ? filtered.length === sentences.length ? "supported" : "filtered" : "unsupported");
-          sentences = filtered;
+          const kept = flags.filter(Boolean).length;
+          note("support", kept === sentences.length ? "supported" : kept ? "partial" : "unsupported");
         }
-        if (!sentences.length) throw new Error("no_supported_sentences");
-        const ids = new Set(sentences.flatMap((sentence) => sentence.cites));
-        return { status: "answer", mode: "composed", composed: sentences.map(({ text, cites }) => ({ text, atom_ids: cites })),
-          atoms: prompt.atoms.filter((atom) => ids.has(atom.id)).map(({ id, level, role, segments, records }) => ({ id, level, role, segments, records })) };
+        if (!flags.some(Boolean)) throw new Error("no_supported_sentences");
+        // Keep the written order; a dropped sentence keeps its cites so the UI can show them verbatim.
+        const composed: ComposedItem[] = [];
+        sentences.forEach(({ text, cites }, index) => {
+          if (flags[index]) { composed.push({ text, atom_ids: cites }); return; }
+          const last = composed.at(-1);
+          if (last && last.text === undefined && last.atom_ids.length === cites.length && last.atom_ids.every((id) => cites.includes(id))) return;
+          composed.push({ atom_ids: cites });
+        });
+        // Every atom any item cites, each once, in first-use order.
+        const byId = new Map(prompt.atoms.map((atom) => [atom.id, atom]));
+        const used = [...new Set(composed.flatMap((item) => item.atom_ids))].map((id) => byId.get(id)!);
+        return { status: "answer", mode: "composed", composed,
+          atoms: used.map(({ id, level, role, segments, records }) => ({ id, level, role, segments, records })) };
       } catch { note("fallback", "extractive"); }
     }
     try {

@@ -76,8 +76,11 @@ for (const [index, item] of cases.entries()) {
   if (result?.status === "answer") {
     pass &&= atoms.length >= 1 && new Set(atoms.map((atom) => atom.id)).size === atoms.length && atoms.every(equalAtom) && atoms.some((atom) => atom.role === "claim");
     if (result.mode === "composed") {
-      const parsed = parseComposition({ status: "answer", sentences: result.composed?.map(({ text, atom_ids }) => ({ text, cites: atom_ids })) }, sourceAtoms);
-      const cited = new Set(parsed?.sentences.flatMap((sentence) => sentence.cites));
+      // Items without text are dropped sentences shown verbatim; only written items go through the shape check.
+      const items = Array.isArray(result.composed) ? result.composed : [];
+      const written = items.filter((item) => typeof item?.text === "string");
+      const parsed = written.length ? parseComposition({ status: "answer", sentences: written.map(({ text, atom_ids }) => ({ text, cites: atom_ids })) }, sourceAtoms) : undefined;
+      const cited = new Set(items.flatMap((item) => Array.isArray(item?.atom_ids) ? item.atom_ids : []));
       pass &&= Object.keys(result).length === 4 && !!parsed && atoms.length === cited.size && atoms.every((atom) => cited.has(atom.id));
     } else pass &&= result.mode === "extractive" && atoms.length <= 4 && Object.keys(result).length === 3;
   } else pass &&= fixed.has(result?.status) && atoms.length === 0 && Object.keys(result).length === 2;
@@ -88,7 +91,7 @@ for (const [index, item] of cases.entries()) {
   if (!pass) failed = true;
   const fallbackReasons = events.filter((event) => (event.provider !== "server" && event.outcome !== "ok") || (["verify", "fallback"].includes(event.stage) && event.outcome !== "ok") || (event.stage === "support" && ["support_shape", "unsupported"].includes(event.outcome))).map((event) => `${event.stage}:${event.outcome}`);
   console.log(`${item.id} question=${JSON.stringify(item.question)} expected=${JSON.stringify(item.expected)} status=${result?.status ?? "invalid"} mode=${result?.mode ?? "none"} ${verdict}${fallbackReasons.length ? ` fallback=${fallbackReasons.join(",")}` : ""}`);
-  if (result?.mode === "composed") for (const sentence of result.composed) console.log(`  composed=${JSON.stringify(sentence.text)} cites=${JSON.stringify(sentence.atom_ids)}`);
+  if (result?.mode === "composed") for (const sentence of result.composed) console.log(sentence.text === undefined ? `  verbatim cites=${JSON.stringify(sentence.atom_ids)}` : `  composed=${JSON.stringify(sentence.text)} cites=${JSON.stringify(sentence.atom_ids)}`);
   else if (result?.mode === "extractive") for (const atom of atoms) console.log(`  extractive=${JSON.stringify(approved.get(atom.id)?.text ?? "UNAPPROVED")} id=${atom.id}`);
   if (events.some((event) => event.stage === "verify" && event.outcome === "quran_text")) {
     for (const candidate of candidates) console.log(`  quran_rejected_candidate=${JSON.stringify(candidate.sentences)}`);

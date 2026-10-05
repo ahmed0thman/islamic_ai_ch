@@ -142,12 +142,42 @@ test("flow falls back on compose failure, verification failure, support failure 
   }
 });
 
-test("flow filters supported sentences, preserves order and prunes unused atoms", async () => {
-  const other = { ...atoms[0], id: "other" };
-  const result = await answer("q", [...atoms, other], undefined, fake({ status: "answer", sentences: [value().sentences[0], { text: fixture.unrelated, cites: ["other"] }] }, { verdicts: [{ index: 1, supported: false }, { index: 0, supported: true }] }), options);
+const trio: Atom[] = [...atoms, { ...atoms[0], id: "b" }, { ...atoms[0], id: "c" }];
+const written = (...cites: string[][]) => ({ status: "answer", sentences: cites.map((c, i) => ({ text: i % 2 ? fixture.unrelated : fixture.ordinary, cites: c })) });
+const verdicts = (...supported: boolean[]) => ({ verdicts: supported.map((flag, index) => ({ index, supported: flag })) });
+const run = async (compose: unknown, support: unknown, log?: (line: string) => void) => answer("q", trio, undefined, fake(compose, support), log ? { ...options, log } : options);
+
+test("flow keeps the written order: all supported stays text with cites, atoms in first-use order and unique", async () => {
+  const result = await run(written(["c"], ["a", "c"], ["b"]), verdicts(true, true, true));
   assert.equal(result.mode, "composed");
-  assert.equal(result.composed?.length, 1);
-  assert.deepEqual(result.atoms.map((atom) => atom.id), ["a"]);
+  assert.deepEqual(result.composed, [{ text: fixture.ordinary, atom_ids: ["c"] }, { text: fixture.unrelated, atom_ids: ["a", "c"] }, { text: fixture.ordinary, atom_ids: ["b"] }]);
+  assert.deepEqual(result.atoms.map((atom) => atom.id), ["c", "a", "b"]);
+});
+
+test("flow turns a dropped first or middle sentence into a text-less item with the same cites", async () => {
+  let line = "";
+  const first = await run(written(["b"], ["a"]), verdicts(false, true), (value) => { line = value; });
+  assert.deepEqual(first.composed, [{ atom_ids: ["b"] }, { text: fixture.unrelated, atom_ids: ["a"] }]);
+  assert.deepEqual(first.atoms.map((atom) => atom.id), ["b", "a"]);
+  assert.ok(JSON.parse(line).stages.some((event: { stage: string; outcome: string }) => event.stage === "support" && event.outcome === "partial"));
+  const middle = await run(written(["a"], ["c"], ["b"]), verdicts(true, false, true));
+  assert.deepEqual(middle.composed, [{ text: fixture.ordinary, atom_ids: ["a"] }, { atom_ids: ["c"] }, { text: fixture.ordinary, atom_ids: ["b"] }]);
+  assert.deepEqual(middle.atoms.map((atom) => atom.id), ["a", "c", "b"]);
+});
+
+test("flow merges neighbouring text-less items with the same cites, and only neighbours", async () => {
+  const merged = await run(written(["a"], ["b", "c"], ["c", "b"], ["a"]), verdicts(true, false, false, true));
+  assert.deepEqual(merged.composed, [{ text: fixture.ordinary, atom_ids: ["a"] }, { atom_ids: ["b", "c"] }, { text: fixture.unrelated, atom_ids: ["a"] }]);
+  assert.deepEqual(merged.atoms.map((atom) => atom.id), ["a", "b", "c"]);
+  const apart = await run(written(["b"], ["a"], ["b"]), verdicts(false, true, false));
+  assert.deepEqual(apart.composed, [{ atom_ids: ["b"] }, { text: fixture.unrelated, atom_ids: ["a"] }, { atom_ids: ["b"] }]);
+  assert.deepEqual(apart.atoms.map((atom) => atom.id), ["b", "a"]);
+});
+
+test("flow falls back to extractive when every written sentence is dropped", async () => {
+  const result = await run(written(["a"], ["b"]), verdicts(false, false));
+  assert.equal(result.mode, "extractive");
+  assert.ok(!Object.hasOwn(result, "composed"));
 });
 
 test("fixed compose statuses return without a second call; forced extractive and final failure", async () => {

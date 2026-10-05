@@ -13,8 +13,8 @@ export function supportRequest(sentences: ComposedSentence[], atoms: Atom[]) {
     message: JSON.stringify({ items: sentences.map((sentence, index) => ({ index, text: sentence.text,
       cited_sentences: sentence.cites.map((id) => ({ id, text: byId.get(id) })) })) }) };
 }
-/** Require complete, unique verdict coverage; partial or malformed output fails closed. */
-export function filterSupported(value: unknown, sentences: ComposedSentence[]): ComposedSentence[] {
+/** Require complete, unique verdict coverage; partial or malformed output fails closed. Returns one flag per sentence, in order. */
+export function supportVerdicts(value: unknown, sentences: ComposedSentence[]): boolean[] {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("support_shape");
   const record = value as Record<string, unknown>;
   if (Object.keys(record).length !== 1 || !Array.isArray(record.verdicts) || record.verdicts.length !== sentences.length) throw new Error("support_shape");
@@ -26,5 +26,9 @@ export function filterSupported(value: unknown, sentences: ComposedSentence[]): 
     seen.add(item.index);
     if (item.supported) accepted.add(item.index);
   }
-  return sentences.filter((_, index) => accepted.has(index));
+  return sentences.map((_, index) => accepted.has(index));
+}
+export function filterSupported(value: unknown, sentences: ComposedSentence[]): ComposedSentence[] {
+  const flags = supportVerdicts(value, sentences);
+  return sentences.filter((_, index) => flags[index]);
 }

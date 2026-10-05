@@ -29,7 +29,16 @@ test("duplicates across levels keep the lowest level even when levels are reorde
   const atoms = deriveAtoms(copy);
   assert.ok(atoms.length > 0);
   assert.ok(atoms.every((atom) => atom.level === 0));
-  assert.deepEqual(atoms.map((atom) => atom.segments).flat(), paragraph.segments.slice(0, paragraph.segments.findLastIndex((part) => part.t === "mark") + 1));
+  // Segments are unchanged except that stray punctuation at the very start of a sentence is stripped (a reference loop, independent of the implementation).
+  let atStart = true;
+  const expected: Segment[] = [];
+  for (const part of paragraph.segments.slice(0, paragraph.segments.findLastIndex((part) => part.t === "mark") + 1)) {
+    if (part.t === "text" && atStart) {
+      const v = part.v.replace(/^[\s.\u060C\u061B:\u061F!\u2026]+/, "");
+      if (v) { expected.push({ ...part, v }); atStart = false; }
+    } else { expected.push(part); atStart = part.t === "mark"; }
+  }
+  assert.deepEqual(atoms.map((atom) => atom.segments).flat(), expected);
 });
 
 test("details title, inner paragraphs, consecutive closing markers and ayah text", () => {
@@ -55,4 +64,40 @@ test("an example paragraph is never a sentence the ask box can choose", () => {
   const atoms = deriveAtoms(copy);
   assert.equal(atoms.length, before);
   assert.ok(atoms.every((atom) => !atom.text.includes("example text")));
+});
+
+test("stray punctuation at the start of an atom's first text segment is stripped; nothing else changes", () => {
+  const word = String.fromCodePoint(0x627, 0x628, 0x62C), other = String.fromCodePoint(0x62F, 0x647, 0x648);
+  const marks = [0x2E, 0x60C, 0x61B, 0x3A, 0x61F, 0x21, 0x2026].map((code) => String.fromCodePoint(code));
+  const mark: Segment = { t: "mark", records: [] };
+  const key = surah.ayahs[0].key;
+  const build = (...paragraphs: Segment[][]) => {
+    const copy = structuredClone(surah);
+    copy.levels = [{ depth: 0, blocks: paragraphs.map((segments) => ({ type: "paragraph" as const, role: "claim" as const, segments })) }];
+    return deriveAtoms(copy);
+  };
+  const [stripped] = build([{ t: "text", v: ` ${marks.join(" ")}  ${word}.` }, mark]);
+  assert.deepEqual(stripped.segments, [{ t: "text", v: `${word}.` }, mark]);
+  assert.equal(stripped.text, `${word}.`);
+  assert.equal(stripped.id, "108:0:blocks.0:0");
+  for (const lead of marks) assert.equal(build([{ t: "text", v: `${lead} ${word}` }, mark])[0].text, word);
+  // A segment that becomes empty is dropped and the next text segment is cleaned in turn; an ayah or term first segment is left alone.
+  assert.deepEqual(build([{ t: "text", v: ". " }, { t: "text", v: `${marks[1]} ${other}` }, mark])[0].segments, [{ t: "text", v: other }, mark]);
+  const ayahFirst: Segment[] = [{ t: "ayah", key }, { t: "text", v: `. ${word}` }, mark];
+  assert.deepEqual(build(ayahFirst)[0].segments, ayahFirst);
+  // The strip never reaches past the first segment, and clean atoms come out byte-identical, two in a row included.
+  const clean: Segment[][] = [[{ t: "text", v: `${word} ${other}.` }, mark], [{ t: "text", v: `${other}, ${word}.` }, { t: "text", v: `. ${other}` }, mark]];
+  const atoms = build(...clean);
+  assert.deepEqual(atoms.map((atom) => atom.segments), clean);
+  assert.deepEqual(atoms.map((atom) => atom.text), [`${word} ${other}.`, `${other}, ${word}.. ${other}`]);
+  assert.deepEqual(atoms.map((atom) => atom.id), ["108:0:blocks.0:0", "108:0:blocks.1:0"]);
+  // A second sentence of one paragraph that starts with the previous full stop loses it and keeps its id.
+  const two = build([{ t: "text", v: word }, mark, { t: "text", v: `. ${other}` }, mark]);
+  assert.deepEqual(two.map((atom) => atom.text), [word, other]);
+  assert.deepEqual(two.map((atom) => atom.id), ["108:0:blocks.0:0", "108:0:blocks.0:1"]);
+  // The real export carries no leading stray punctuation in any atom.
+  for (const atom of deriveAtoms(surah)) {
+    const first = atom.segments[0];
+    if (first.t === "text") assert.ok(!/^[\s.\u060C\u061B:\u061F!\u2026]/.test(first.v), atom.id);
+  }
 });
