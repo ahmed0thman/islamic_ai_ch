@@ -617,6 +617,126 @@ class ContentShapeTests(unittest.TestCase):
         block["segments"][0]["v"] = self.quran_text()
         self.refused("C2")
 
+    def summary(self, depth=0, role="claim"):
+        blocks = self.nasij["levels"][depth]["blocks"]
+        block = {"type": "paragraph", "role": role, "kind": "summary", "segments": [
+            {"t": "text", "v": "Recap."}, {"t": "mark", "records": ["108-r1"]}]}
+        blocks.append(block)
+        return block
+
+    def test_C16_summary_valid(self):
+        self.nasij, self.private = fixtures()
+        block = self.summary()
+        value = self.passes()
+        exported = value["levels"][0]["blocks"][-1]
+        self.assertEqual(exported, block)
+        self.assertEqual(exported["kind"], "summary")
+
+    def test_C16_role_and_not_a_stop(self):
+        for label, build in (
+                ("role transmission", lambda b: b.update(role="transmission")),
+                ("title", lambda b: b.update(title="Stop title")),
+                ("ayahs", lambda b: b.update(ayahs=["108:1"])),
+                ("passage", lambda b: b.update(passage="p1"))):
+            with self.subTest(label=label):
+                self.nasij, self.private = fixtures()
+                block = self.summary()
+                if build:
+                    build(block)
+                self.refused("C16")
+
+    def test_C16_must_be_last(self):
+        self.nasij, self.private = fixtures()
+        block = self.summary()
+        self.nasij["levels"][0]["blocks"].append({"type": "heading", "text": "Heading"})
+        self.refused("C16")
+
+    def test_C16_one_per_level(self):
+        self.nasij, self.private = fixtures()
+        self.summary()
+        self.summary()
+        self.refused("C16")
+
+    def test_C16_known_checks_still_apply(self):
+        for code, field, value in (("C2", None, None), ("C4", None, None), ("C5", "build_permission", None),
+                                   ("C7", "depth_min", 1), ("C7", "display", "depth3"), ("C8", "display", None)):
+            with self.subTest(code=code):
+                self.nasij, self.private = fixtures()
+                self.summary()
+                if code == "C2":
+                    self.nasij["levels"][0]["blocks"][-1]["segments"][0]["v"] = self.quran_text()
+                elif code == "C4":
+                    self.nasij["levels"][0]["blocks"][-1]["segments"].pop()
+                else:
+                    r = next(r for r in self.private["records"] if r["id"] == "108-r1")
+                    if field == "depth_min":
+                        r[field] = value
+                    else:
+                        r[field]["depth" if value == "depth3" else "decision"] = value
+                self.refused(code)
+
+    def test_C16_inside_details(self):
+        block = self.details()
+        block["blocks"].append({"type": "paragraph", "role": "claim", "kind": "summary", "segments": [
+            {"t": "text", "v": "Recap."}, {"t": "mark", "records": ["108-r1"]}]})
+        self.refused("C16")
+
+    def test_C16_unknown_paragraph_kind(self):
+        for kind in ("recap", "example", None, "summary extra"):
+            with self.subTest(kind=kind):
+                self.nasij, self.private = fixtures()
+                self.paragraph()["kind"] = kind
+                self.refused("C16")
+
+    def test_C16_unknown_paragraph_kind_details(self):
+        block = self.details()
+        self.nasij["levels"][0]["blocks"][0]["kind"] = "other"
+        self.refused("C16")
+        block["blocks"][0]["kind"] = "other"
+        self.refused("C16")
+
+    def test_C16_example_then_summary_passes(self):
+        self.nasij, self.private = fixtures()
+        self.example(depth=1)
+        self.summary(depth=1)
+        result = self.run_export()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_C16_not_a_stop_on_map(self):
+        self.summary()
+        value = self.passes()
+        exported = value["levels"][0]["blocks"][-1]
+        self.assertEqual(exported, self.summary_block_zero())
+        self.assertEqual(exported["kind"], "summary")
+        self.assertNotIn("ayahs", exported)
+
+    def summary_block_zero(self):
+        return self.nasij["levels"][0]["blocks"][-1]
+
+    def test_term_present(self):
+        self.term()
+        r = next(r for r in self.private["records"] if r["id"] == "108-s0")
+        r["term"] = "Test term"
+        value = self.passes()
+        self.assertEqual(value["records"]["108-s0"]["term"], "Test term")
+        self.assertNotIn("term", value["records"]["108-r1"])
+
+    def test_term_absent(self):
+        self.term()
+        value = self.passes()
+        self.assertNotIn("term", value["records"]["108-s0"])
+        self.assertNotIn("term", value["records"]["108-r1"])
+
+    def test_term_null_and_empty(self):
+        for value in (None, ""):
+            with self.subTest(value=value):
+                self.nasij, self.private = fixtures()
+                self.term()
+                r = next(r for r in self.private["records"] if r["id"] == "108-s0")
+                r["term"] = value
+                out = self.passes()
+                self.assertNotIn("term", out["records"]["108-s0"])
+
 
 class MapTests(unittest.TestCase):
     setUp = ExportTests.setUp

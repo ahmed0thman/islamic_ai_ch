@@ -8142,7 +8142,8 @@
           "link_strength": null
         }
       ],
-      "science": "lugha"
+      "science": "lugha",
+      "term": "القَسَم"
     },
     "93-r124": {
       "id": "93-r124",
@@ -8178,7 +8179,8 @@
           "link_strength": null
         }
       ],
-      "science": "lugha"
+      "science": "lugha",
+      "term": "الشكر"
     },
     "93-r125": {
       "id": "93-r125",
@@ -8224,7 +8226,8 @@
           "link_strength": null
         }
       ],
-      "science": "ulum_quran"
+      "science": "ulum_quran",
+      "term": "المفصَّل"
     },
     "93-r126": {
       "id": "93-r126",
@@ -9111,7 +9114,8 @@
           "link_strength": null
         }
       ],
-      "science": "balagha"
+      "science": "balagha",
+      "term": "الاستعارة"
     },
     "93-r158": {
       "id": "93-r158",
@@ -9149,7 +9153,8 @@
           "link_strength": null
         }
       ],
-      "science": "balagha"
+      "science": "balagha",
+      "term": "التعريض"
     },
     "93-r159": {
       "id": "93-r159",
@@ -9198,7 +9203,8 @@
           "link_strength": null
         }
       ],
-      "science": "balagha"
+      "science": "balagha",
+      "term": "الإيجاز"
     },
     "93-r160": {
       "id": "93-r160",
@@ -9234,7 +9240,8 @@
           "link_strength": null
         }
       ],
-      "science": "nahw"
+      "science": "nahw",
+      "term": "المفعول به"
     },
     "93-r161": {
       "id": "93-r161",
@@ -9272,7 +9279,8 @@
           "link_strength": null
         }
       ],
-      "science": "ulum_quran"
+      "science": "ulum_quran",
+      "term": "الفواصل"
     },
     "93-r162": {
       "id": "93-r162",
@@ -9320,7 +9328,8 @@
           "link_strength": null
         }
       ],
-      "science": "balagha"
+      "science": "balagha",
+      "term": "الاستفهام التقريري"
     },
     "93-r163": {
       "id": "93-r163",
@@ -9368,7 +9377,8 @@
           "link_strength": null
         }
       ],
-      "science": "nahw"
+      "science": "nahw",
+      "term": "جواب القسم"
     },
     "93-r164": {
       "id": "93-r164",
@@ -9405,7 +9415,8 @@
           "link_strength": null
         }
       ],
-      "science": "nahw"
+      "science": "nahw",
+      "term": "لام الابتداء"
     },
     "93-r165": {
       "id": "93-r165",
@@ -9452,7 +9463,8 @@
           "link_strength": null
         }
       ],
-      "science": "nahw"
+      "science": "nahw",
+      "term": "لام جواب القسم"
     },
     "93-r166": {
       "id": "93-r166",
@@ -9480,7 +9492,8 @@
           "link_strength": null
         }
       ],
-      "science": "ulum_quran"
+      "science": "ulum_quran",
+      "term": "سبب النزول"
     },
     "93-r167": {
       "id": "93-r167",
@@ -9526,7 +9539,8 @@
           "link_strength": null
         }
       ],
-      "science": "ulum_quran"
+      "science": "ulum_quran",
+      "term": "المكي"
     },
     "93-r168": {
       "id": "93-r168",
@@ -9567,7 +9581,8 @@
           "link_strength": null
         }
       ],
-      "science": "balagha"
+      "science": "balagha",
+      "term": "اللف والنشر"
     },
     "93-r169": {
       "id": "93-r169",

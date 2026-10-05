@@ -28,6 +28,7 @@ CHECKS = {
     "C9": "four nonempty levels", "C10": "held blocks excluded",
     "C11": "stop titles", "C12": "stop ayahs",
     "C13": "passages", "C14": "map size", "C15": "examples",
+    "C16": "summary",
     "W12": "stop ayahs carried by the stop's records (warning)",
 }
 # Reported but never refuse an export: half of the built surahs still trip W12.
@@ -178,6 +179,20 @@ def run_checks(nasij, records, quran, no, ui=None):
         # C2 still applies to the whole joined example text, not segment by segment.
         check_text(joined, where)
 
+    def check_paragraph_kind(block, where):
+        kind = block.get("kind")
+        check("C16", "kind" not in block or kind == "summary",
+              f"{where}: unknown paragraph kind {kind!r}")
+
+    def check_summary(block, depth, where):
+        check("C16", block.get("role") == "claim", f"{where}: summary must be a claim paragraph")
+        check("C16", "title" not in block and "ayahs" not in block and "passage" not in block,
+              f"{where}: summary must not be a stop")
+        check("C16", followers_last.get(depth, False),
+              f"{where}: summary must be the last block of the level")
+        summaries[depth] += 1
+        check("C16", summaries[depth] <= 1, f"level {depth}: more than one summary")
+
     def sentence_count(value):
         ends = 0
         saw_text = bool(value.strip())
@@ -238,16 +253,23 @@ def run_checks(nasij, records, quran, no, ui=None):
     held = [h["block"] for h in nasij.get("held", [])]
     examples = defaultdict(int)
     followers = {}
+    summaries = defaultdict(int)
+    followers_last = {}
     for level in levels:
         depth = level["depth"]
+        blocks = level["blocks"]
         prev_kind, prev_role, inside_details = None, None, False
-        for bnum, block in enumerate(level["blocks"], 1):
+        for bnum, block in enumerate(blocks, 1):
             where = f"level {depth}, block {bnum}"
             check("C10", block not in held, f"{where}: block is also listed under held")
+            followers_last[depth] = bnum == len(blocks)
             if block["type"] == "heading":
                 check_text(block["text"], where)
             refs = block.get("keys", []) if block["type"] == "ayah" else []
             if block["type"] == "paragraph":
+                check_paragraph_kind(block, where)
+                if block.get("kind") == "summary":
+                    check_summary(block, depth, where)
                 if block["role"] == "example":
                     check_example(block, depth, where)
                 else:
@@ -259,8 +281,11 @@ def run_checks(nasij, records, quran, no, ui=None):
                 for inner_num, inner in enumerate(block["blocks"], 1):
                     inner_where = f"{where}, inner block {inner_num}"
                     check("C10", inner not in held, f"{inner_where}: block is also listed under held")
+                    check_paragraph_kind(inner, inner_where)
                     if inner["role"] == "example":
                         check("C15", False, f"{inner_where}: example inside details")
+                    elif inner.get("kind") == "summary":
+                        check("C16", False, f"{inner_where}: summary inside details")
                     else:
                         check_segments(inner["segments"], inner["role"], depth, inner_where, refs)
             else:
@@ -307,7 +332,9 @@ def run_checks(nasij, records, quran, no, ui=None):
         stops = 0
         for block in map_blocks(level["blocks"]):
             where = f"level {level['depth']}, map block"
-            is_stop = block["type"] == "paragraph" and "title" in block and block.get("role") != "example"
+            is_summary = block["type"] == "paragraph" and block.get("kind") == "summary"
+            is_example = block["type"] == "paragraph" and block.get("role") == "example"
+            is_stop = block["type"] == "paragraph" and "title" in block and not (is_example or is_summary)
             if "title" in block and block["type"] != "details":
                 title = block["title"]
                 valid = (block["type"] == "paragraph" and isinstance(title, str)
@@ -325,7 +352,7 @@ def run_checks(nasij, records, quran, no, ui=None):
                          and all(isinstance(ref, str) and ref in own_set for ref in keys))
                 check("C12", valid and (not is_stop or bool(keys)),
                       f"{where}: ayahs must be own keys; a stop needs at least one")
-            if block["type"] == "paragraph" and block.get("role") != "example" and isinstance(block.get("ayahs"), list):
+            if block["type"] == "paragraph" and not (is_example or is_summary) and isinstance(block.get("ayahs"), list):
                 carried = stop_carry(block, records)
                 if carried:
                     for ref in block["ayahs"]:
@@ -339,7 +366,7 @@ def run_checks(nasij, records, quran, no, ui=None):
                     keys = stop_ayahs(block, records, own_keys)
                     check("C13", isinstance(keys, list) and all(isinstance(ref, str) and ref in passages[ident] for ref in keys),
                           f"{where}: stop ayahs outside its passage")
-            elif is_stop and "passages" in nasij:
+            elif (is_stop or is_summary) and "passages" in nasij:
                 check("C13", False, f"{where}: stop must identify its passage")
         if level["depth"] in (0, 1, 2):
             check("C14", stops <= 12, f"level {level['depth']}: {stops} stops exceeds 12")
@@ -469,12 +496,17 @@ def public_record(r, sources, ui, quran):
     if science:
         require(isinstance(science, str), f"{ident}: science must be a string")
         require(science in sciences, f"{ident}: unknown science {science!r}")
+    term = r.get("term")
+    if term:
+        require(isinstance(term, str) and bool(term), f"{ident}: term must be a nonempty string")
     out_record = {"id": ident, "icons": [i for i in ui["icon_order"] if i in icons],
                   "badge": badge, "claim": r["claim"], "status_text": status,
                   "depth_min": r["depth_min"], "ayah_keys": list(r["ayah_keys"]),
                   "evidence": out}
     if science:
         out_record["science"] = science
+    if term:
+        out_record["term"] = term
     return out_record
 
 
