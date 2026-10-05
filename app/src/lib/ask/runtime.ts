@@ -1,5 +1,24 @@
 import { setTimeout as sleep } from "node:timers/promises";
-import type { ChoiceProvider, SelectionRequest } from "./types";
+import type { AskResponse, ChoiceProvider, SelectionRequest } from "./types";
+
+export const MAX_QUESTION_CHARS = 300;
+export const questionWithinLimit = (text: string) => [...text].length <= MAX_QUESTION_CHARS;
+
+const requests = new Map<string, { count: number; expires: number }>();
+/** Ask and weave share the same per-IP quota. The proxy must overwrite forwarding headers. */
+export function requestAllowed(request: Request): boolean {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() || request.headers.get("x-real-ip") || "unknown";
+  const now = Date.now();
+  for (const [key, entry] of requests) if (entry.expires <= now) requests.delete(key);
+  const entry = requests.get(ip);
+  if (entry) { entry.count += 1; return entry.count <= 10; }
+  if (requests.size >= 10_000) return false;
+  requests.set(ip, { count: 1, expires: now + 60_000 });
+  return true;
+}
+export const responseFor = (status: AskResponse["status"], httpStatus = 200) => Response.json({ status, atoms: [] }, {
+  status: httpStatus, headers: { "Cache-Control": "no-store" },
+});
 
 /** Retries consume the caller's stage deadline, including backoff. */
 export async function fetchRetry(url: string, options: RequestInit): Promise<Response> {

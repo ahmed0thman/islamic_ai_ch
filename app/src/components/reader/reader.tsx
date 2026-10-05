@@ -9,7 +9,8 @@ import { deriveTermsSummary } from "@/lib/terms-summary";
 import { scopeContains, scopeStart, type Scope } from "@/lib/scope";
 import { jumpToAyah } from "@/lib/reader-dom";
 import { closingParts, lastStop } from "@/lib/closing";
-import { deriveFollowups } from "@/lib/followups";
+import { deriveFollowups, promoteByQuestions } from "@/lib/followups";
+import { askedStorageKey, parseAsked, type AskedQuestion } from "@/lib/asked";
 import { useSheets } from "./sheet-provider";
 import { ReadingProvider } from "./reading-context";
 import { SurahHeader } from "./surah-header";
@@ -18,7 +19,7 @@ import { DepthDial } from "./depth-dial";
 import { MiniStrip } from "./mini-strip";
 import { ViewToggle } from "./view-toggle";
 import { SurahThread } from "./surah-thread";
-import { StopScene } from "./stop-scene";
+import { StopScene, type StopSceneProps } from "./stop-scene";
 import { SceneShell } from "./scene-shell";
 import { ClosingScene } from "./closing-scene";
 import { ClosingSection } from "./closing-section";
@@ -28,6 +29,26 @@ import { TermsSummary } from "./terms-summary";
 import { AskProvider } from "./ask-context";
 import { AskDock } from "./ask-dock";
 import { AskedSection } from "./asked-section";
+import { useAsk } from "./ask-state";
+
+/** Inside AskProvider so a saved or removed question immediately updates this scene. Also works when Ask is off. */
+function SavedStopScene({ depth, ...props }: StopSceneProps & { depth: Depth }) {
+  const ask = useAsk();
+  const [questions, setQuestions] = useState<AskedQuestion[]>([]);
+  const surahNo = props.surahNo;
+  useEffect(() => {
+    function read() {
+      try { setQuestions(surahNo ? parseAsked(localStorage.getItem(askedStorageKey(surahNo))) : []); }
+      catch { setQuestions([]); }
+    }
+    read();
+    const changed = (event: StorageEvent) => { if (event.key === null || event.key === askedStorageKey(surahNo!)) read(); };
+    window.addEventListener("storage", changed);
+    return () => window.removeEventListener("storage", changed);
+  }, [surahNo, ask?.entries]);
+  const promoted = promoteByQuestions(props.followups ?? [], questions.map((item) => item.question));
+  return <StopScene {...props} depth={depth} questions={questions} promoted={promoted} />;
+}
 
 const storageKey = "huda:depth:v1";
 const viewStorageKey = "huda:reader-view:v1";
@@ -53,7 +74,7 @@ function updateUrl(depth: Depth, stop: number | "summary" | null, text: boolean,
   if (push) window.history.pushState(state, "", url);
   else window.history.replaceState(state, "", url);
 }
-export function Reader({ surah, ui, nextSurah, surahs, ask = false, sources = false }: { surah: Surah; ui: Ui; surahs: SurahSummary[]; nextSurah?: SurahSummary; /** «اسأل» is on (`HUDA_ASK=1`); the static export leaves it off and carries no trace of it. */ ask?: boolean; /** «اسأل» also weaves from book passages. */ sources?: boolean }) {
+export function Reader({ surah, ui, nextSurah, surahs, ask = false, weave = false, sources = false }: { surah: Surah; ui: Ui; surahs: SurahSummary[]; nextSurah?: SurahSummary; /** Ask is on (`HUDA_ASK=1`); static exports leave it off. */ ask?: boolean; /** Optional re-weaving is on (`HUDA_WEAVE=1`). */ weave?: boolean; /** Ask also weaves from book passages. */ sources?: boolean }) {
   const [depth, setDepth] = useState<Depth>(1);
   const [currentAyah, setCurrentAyah] = useState<string | null>(null);
   const [scope, setScope] = useState<Scope>({ kind: "surah" });
@@ -193,7 +214,7 @@ export function Reader({ surah, ui, nextSurah, surahs, ask = false, sources = fa
             : <>{termsSummary ? <TermsSummary summary={termsSummary} ui={ui} onOpen={openSource} /> : null}<AskedSection stop={null} /></>}</div> : <p className="reader-text">{ui.reader.empty_level}</p>}
     </article>
     {stop || closing ? <SceneShell onBack={backToMap}>
-      {stop ? <StopScene stop={stop} followups={followups} stops={playlist} passage={passage} nextPassage={nextPassage} termsSummary={termsSummary} {...neighbours} nextSurah={nextSurah} onClosing={summary ? openClosing : undefined} onNavigate={openStop} onBack={backToMap} {...reading} />
+      {stop ? <SavedStopScene stop={stop} followups={followups} weave={weave} depth={depth} stops={playlist} passage={passage} nextPassage={nextPassage} termsSummary={termsSummary} {...neighbours} nextSurah={nextSurah} onClosing={summary ? openClosing : undefined} onNavigate={openStop} onBack={backToMap} {...reading} />
         : <ClosingScene surahName={surah.surah.name} summary={closing!} parts={parts} termsSummary={termsSummary} nextSurah={nextSurah} onPart={openPart} previous={lastUnit} onPrevious={lastUnit ? () => openStop(lastUnit) : undefined} onMap={backToMap} onBack={backToMap} {...reading} />}
     </SceneShell> : null}
     <AskDock />

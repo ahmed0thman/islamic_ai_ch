@@ -21,6 +21,8 @@ export const REQUEST_DEADLINE_MS = 28_000;
 export const REPAIR_BELOW = 2;
 export interface AnswerOptions {
   mode?: "composed" | "extractive";
+  /** False for an optional re-weave beside an original that is already visible. Defaults to true. */
+  extractiveFallback?: boolean;
   support?: boolean;
   /** Earlier turns of the conversation, already validated (see history.ts). Context for references only. */
   history?: readonly HistoryTurn[];
@@ -131,6 +133,7 @@ export async function answer(question: string, atoms: Atom[], context: ReaderCon
           note("repair", outcome);
         }
         if (!best || !kept(best)) {
+          if (options.extractiveFallback === false) { note("fallback", "disabled"); return { status: "insufficient", atoms: [] }; }
           // Nothing written stood, but the writer did point at sentences: show those as they are (verified sentences or book excerpts, word for word), with no further model call.
           const pointed = parsed?.status === "answer" ? unique(parsed.sentences.flatMap((sentence) => sentence.kind === "example" ? [] : sentence.cites)).slice(0, 4) : [];
           if (!pointed.length) throw new Error("no_supported_sentences");
@@ -170,8 +173,9 @@ export async function answer(question: string, atoms: Atom[], context: ReaderCon
           if (kinds.size === 2) cited.both++; else if (kinds.has(true)) cited.source++; else cited.verified++;
         }
         return { status: "answer", mode: "composed", composed, atoms: used.map(publicAtom) };
-      } catch { note("fallback", "extractive"); }
+      } catch { note("fallback", options.extractiveFallback === false ? "composition_failed" : "extractive"); }
     }
+    if (options.extractiveFallback === false) { note("fallback", "disabled"); return { status: "insufficient", atoms: [] }; }
     try {
       const prompt = buildPrompt(question, atoms, 100_000, context, history);
       const value = await stage({ system: SYSTEM_PROMPT, message: prompt.message, schema: CHOICE_SCHEMA, stage: "select" }, budgets.select);

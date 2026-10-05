@@ -1,4 +1,6 @@
 import type { Block, Depth, ParagraphBlock, Surah, TitleSegment } from "./types";
+// @ts-expect-error -- Node tests require explicit source extensions.
+import { normalize } from "./ask/normalize.ts";
 
 /** A deeper stop of the surah, as `deriveSurahMap` makes it. Only what a follow-up needs. */
 export interface StopLike { blockIndex: number; title: string; ayahKeys: string[]; scene: ParagraphBlock[] }
@@ -15,6 +17,16 @@ export interface Followup {
 export const maxFollowups = 5;
 
 const flat = (title: TitleSegment[]) => title.map((segment) => segment.t === "text" || segment.t === "term" ? segment.v : "").join("").replace(/\s+/g, " ").trim();
+
+/** Two or more distinct shared words promote a candidate; content order breaks ties. */
+export function promoteByQuestions(candidates: Followup[], questions: string[]): string[] {
+  const tokens = (text: string) => (normalize(text).match(/[\p{L}\p{N}]+/gu) ?? []).filter((word) => [...word].length > 2);
+  const asked = new Set(questions.flatMap(tokens));
+  if (!asked.size) return [];
+  return candidates.map((candidate, index) => ({ id: candidate.id, index,
+    score: [...new Set(tokens(flat(candidate.title)))].filter((word) => asked.has(word)).length,
+  })).filter((item) => item.score >= 2).sort((a, b) => b.score - a.score || a.index - b.index).slice(0, 2).map((item) => item.id);
+}
 
 /**
  * Every deeper question that shares at least one ayah with the stop and is titled differently, by depth and then by its order in the content.

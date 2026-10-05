@@ -55,6 +55,7 @@ export interface Ui {
   example: { label: string };
   terms_summary: Record<"title" | "terms" | "sciences" | "other", string>;
   summary: Record<"title" | "parts" | "open", string>;
+  weave: Record<"badge" | "ready" | "open" | "back" | "note" | "from_question" | "trigger" | "instruction" | "failed", string>;
   panel: Record<"title" | "claim" | "source" | "author" | "locator" | "quote" | "ruling" | "ruler" | "open_source" | "close" | "no_badge" | "takhrij" | "for_text" | "sources_count", string> & { science_of: string };
   legend: Record<"title" | "icons_title" | "badges_title" | "show" | "hide", string>;
   reader: Record<"choose_depth" | "ayahs_title" | "surahs_title" | "back" | "empty_level"
