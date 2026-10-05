@@ -61,7 +61,7 @@ test("env selection precedence, explicit opt-in, missing keys and model override
   assert.equal(providerFromEnv({ HUDA_ASK_PROVIDER: "lexical", NODE_ENV: "production" }), undefined);
   const original = globalThis.fetch;
   let urlSeen = "", bodySeen = "";
-  globalThis.fetch = async (url, options) => { urlSeen = String(url); bodySeen = options!.body as string; return Response.json({}); };
+  globalThis.fetch = async (url, options) => { urlSeen = String(url); bodySeen = options!.body as string; return Response.json({ candidates: [{ finishReason: "STOP", content: { parts: [{ text: '{"status":"insufficient","atom_ids":[]}' }] } }] }); };
   try {
     for (const [env, expected] of [
       [{ GEMINI_API_KEY: "fake", ANTHROPIC_API_KEY: "fake" }, DEFAULT_GEMINI_MODEL],

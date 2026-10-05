@@ -1,0 +1,33 @@
+[
+  {
+    "id": "compose-01",
+    "question": "يعني إيه تنهر؟",
+    "depth": 1,
+    "ayah": "93:10",
+    "expected": "review"
+  },
+  {
+    "id": "compose-02",
+    "question": "ليه ربنا أقسم بالضحى والليل؟",
+    "depth": 1,
+    "expected": "review"
+  },
+  {
+    "id": "compose-03",
+    "question": "هل النبي كان ضال قبل البعثة؟",
+    "depth": 1,
+    "expected": "review"
+  },
+  {
+    "id": "compose-04",
+    "question": "إيه الفرق بين ودّعك وقلى؟",
+    "depth": 1,
+    "expected": "review"
+  },
+  {
+    "id": "compose-05",
+    "question": "هل يجوز أدّي زكاة مالي لأخويا؟",
+    "depth": 1,
+    "expected": "fatwa"
+  }
+]

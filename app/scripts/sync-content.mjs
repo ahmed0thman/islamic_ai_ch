@@ -1,6 +1,16 @@
 import { mkdir, readdir, readFile, writeFile, rm } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+// Keep this script runnable on the app's Node 20 minimum without TS loading.
+// The verifier test compares every generated ayah against normalize.ts.
+function normalize(text) {
+  return text.replace(/[\u0622\u0623\u0625\u0671\u0621\u0624\u0626]/gu, "\u0627").normalize("NFD")
+    .replace(/[\u064b-\u065f\u0670\u06d6-\u06ed\u0640]/gu, "")
+    .replace(/[\u0622\u0623\u0625\u0671\u0621\u0624\u0626]/gu, "\u0627")
+    .replace(/\u0649/gu, "\u064a")
+    .replace(/\u0629/gu, "\u0647")
+    .toLowerCase();
+}
 
 const app = fileURLToPath(new URL("../", import.meta.url));
 const source = path.resolve(app, "../content");
@@ -16,6 +26,9 @@ const files = await Promise.all([
   JSON.parse(bytes.toString("utf8"));
   return { name, bytes };
 }));
+const quran = JSON.parse(await readFile(path.resolve(app, "../tools/data/qurancomplex/hafsData_v2-0.json"), "utf8"));
+if (quran.length !== 6236 || quran.some((ayah) => typeof ayah.aya_text_emlaey !== "string")) throw new Error("Invalid Quran dataset");
+files.push({ name: "quran-plain.json", bytes: Buffer.from(JSON.stringify(quran.map((ayah) => normalize(ayah.aya_text_emlaey))) + "\n") });
 await mkdir(target, { recursive: true });
 for (const file of files) await writeFile(path.join(target, file.name), file.bytes);
 // Only remove stale generated JSON files inside the app.

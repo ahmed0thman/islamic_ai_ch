@@ -15,10 +15,14 @@ export interface ReaderContext {
   depth: Depth;
   stop?: number;
   stop_title?: string;
+  surah?: number;
+  ayah_numbers?: number[];
   stop_ayahs?: { key: string; text: string }[];
 }
-export interface AskResponse { status: ChoiceStatus | "unavailable"; atoms: PublicAtom[] }
+export interface ComposedSentence { text: string; cites: string[] }
+export interface Composition { status: ChoiceStatus; sentences: ComposedSentence[] }
+export interface AskResponse { status: ChoiceStatus | "unavailable"; mode?: "composed" | "extractive"; composed?: { text: string; atom_ids: string[] }[]; atoms: PublicAtom[] }
 export type AskUi = Ui & { ask: Record<"title" | "placeholder" | "submit" | "loading" | "answer_title" | "note" | "unavailable", string> };
-export interface SelectionRequest { system: string; message: string; signal: AbortSignal }
-export interface ChoiceProvider { choose(request: SelectionRequest): Promise<unknown> }
+export interface SelectionRequest { system: string; message: string; signal: AbortSignal; schema?: Record<string, unknown>; stage?: "select" | "compose" | "support" }
+export interface ChoiceProvider { name?: string; choose(request: SelectionRequest): Promise<unknown> }
 export type AtomSource = Surah;
