@@ -28,7 +28,11 @@ CHECKS = {
     "C9": "four nonempty levels", "C10": "held blocks excluded",
     "C11": "stop titles", "C12": "stop ayahs",
     "C13": "passages", "C14": "map size",
+    "W12": "stop ayahs carried by the stop's records (warning)",
 }
+# Reported but never refuse an export: half of the built surahs still trip W12.
+WARNINGS = {"W12"}
+APPROVED = "\u0646\u0639\u0645"
 
 
 def read_json(path):
@@ -153,6 +157,8 @@ def run_checks(nasij, records, quran, no):
 
     def check_segments(segments, role, depth, where, refs, title=False):
         check("C4", any(s["t"] == "mark" for s in segments), f"{where}: no marker")
+        if role == "transmission":
+            check("C6", any(s["t"] == "quote" for s in segments), f"{where}: transmission paragraph has no quote segment")
         if title:
             check("C4", segments[-1]["t"] == "mark", f"{where}: title must end with a marker")
         # Also scan adjacent system-text segments together to prevent splitting a citation.
@@ -179,7 +185,7 @@ def run_checks(nasij, records, quran, no):
                 r = records[ident]
                 display = r.get("display", {})
                 if role == "claim" or seg["t"] == "term":
-                    check("C5", r.get("build_permission", {}).get("decision") == "نعم", f"{location}: {ident} build permission is not نعم")
+                    check("C5", r.get("build_permission", {}).get("decision") == APPROVED, f"{location}: {ident} build permission is not {APPROVED}")
                 else:
                     check("C6", display.get("decision") == "نعم", f"{location}: {ident} display permission is not نعم")
                 if seg["t"] == "quote":
@@ -240,9 +246,11 @@ def run_checks(nasij, records, quran, no):
             passages[p["id"]] = set(keys)
             for ident in p["records"]:
                 valid_record = isinstance(ident, str) and ident in records
-                check("C13", valid_record and records[ident].get("display", {}).get("decision") == "\u0646\u0639\u0645",
+                check("C13", valid_record and records[ident].get("display", {}).get("decision") == APPROVED,
                       f"{p['id']}: record {ident!r} missing or display refused")
                 if valid_record:
+                    check("C13", records[ident].get("build_permission", {}).get("decision") == APPROVED,
+                          f"passage {p['id']}: record {ident!r} build permission is not approved")
                     uses[ident].append(f"passage {p['id']}")
             check_text(p["title"], f"passage {p['id']}, title")
         check("C13", covered == own_keys, "passages must cover the surah consecutively, in order, without gaps or overlaps")
@@ -268,6 +276,12 @@ def run_checks(nasij, records, quran, no):
                          and all(isinstance(ref, str) and ref in own_set for ref in keys))
                 check("C12", valid and (not is_stop or bool(keys)),
                       f"{where}: ayahs must be own keys; a stop needs at least one")
+            if block["type"] == "paragraph" and isinstance(block.get("ayahs"), list):
+                carried = stop_carry(block, records)
+                if carried:
+                    for ref in block["ayahs"]:
+                        check("W12", ref in carried,
+                              f"{where}: stop ayah {ref!r} is not carried by the stop's records")
             if "passage" in block:
                 ident = block["passage"]
                 valid = isinstance(ident, str) and ident in passages
@@ -295,18 +309,22 @@ def map_blocks(blocks):
             yield from block["blocks"]
 
 
-def stop_ayahs(block, records, own_keys):
-    if "ayahs" in block:
-        return block["ayahs"]
+def stop_carry(block, records):
+    """Union of ayah_keys over the records referenced by a map block."""
     ids = set()
     for segment in block.get("segments", []):
         if segment["t"] == "mark":
             ids.update(segment["records"])
         elif segment["t"] in ("quote", "term"):
             ids.add(segment["record"])
-    refs = {ref for ident in ids if ident in records
+    return {ref for ident in ids if ident in records
             for ref in records[ident].get("ayah_keys", [])}
-    return [ref for ref in own_keys if ref in refs]
+
+
+def stop_ayahs(block, records, own_keys):
+    if "ayahs" in block:
+        return block["ayahs"]
+    return [ref for ref in own_keys if ref in stop_carry(block, records)]
 
 
 def trim_quote(quote):
@@ -424,9 +442,10 @@ def export_surah(no, records_root, content_root, quran, ui, check_only=False):
         print(f"{no} INPUT FAIL checked=1 failed=1: {exc}")
         return False
     for code, (count, failures) in counts.items():
-        print(f"{no} {code} {'FAIL' if failures else 'PASS'} checked={count} failed={len(failures)}: {CHECKS[code]}" +
+        status = ("WARN" if code in WARNINGS else "FAIL") if failures else "PASS"
+        print(f"{no} {code} {status} checked={count} failed={len(failures)}: {CHECKS[code]}" +
               ("; " + "; ".join(failures) if failures else ""))
-    if any(failures for _, failures in counts.values()):
+    if any(failures for code, (_, failures) in counts.items() if code not in WARNINGS):
         return False
     try:
         own = sorted((a for a in quran.values() if a["sura_no"] == no), key=lambda a: a["aya_no"])

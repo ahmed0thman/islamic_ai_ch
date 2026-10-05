@@ -161,6 +161,16 @@ class ExportTests(unittest.TestCase):
         self.private["records"][0]["display"]["decision"] = "لا"
         self.refused("C6")
 
+    def test_C6_transmission_without_quote(self):
+        self.paragraph()["role"] = "transmission"
+        self.refused("C6")
+
+    def test_C6_transmission_with_quote_passes(self):
+        self.paragraph()["role"] = "transmission"
+        self.paragraph()["segments"].insert(0, {"t": "quote", "v": "اقتباس اختبار حرفي", "record": "108-r1"})
+        result = self.run_export()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
     def test_C7(self):
         self.private["records"][0]["display"]["depth"] = "depth3"
         self.refused("C7")
@@ -435,6 +445,9 @@ class ContentShapeTests(unittest.TestCase):
                 with self.subTest(role=role, code=code, value=value):
                     self.nasij, self.private = fixtures()
                     self.term(role)
+                    if role == "transmission":
+                        self.paragraph()["segments"].insert(
+                            0, {"t": "quote", "v": "اقتباس اختبار حرفي في المصدر", "record": "108-r1"})
                     self.passes()
                     r = next(r for r in self.private["records"] if r["id"] == "108-s0")
                     if field == "depth_min": r[field] = value
@@ -528,6 +541,23 @@ class MapTests(unittest.TestCase):
         self.private["records"][0]["ayah_keys"] = ["1:1"]
         self.refused("C12")
 
+    def test_C12_explicit_ayah_must_be_carried(self):
+        p = self.stop()
+        p["ayahs"] = ["108:1"]
+        self.exported()
+        p["ayahs"] = ["108:2"]
+        result = self.run_export()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("W12 WARN", result.stdout)
+
+    def test_C12_empty_carried_union_skips_membership(self):
+        self.stop()
+        self.private["records"][0]["ayah_keys"] = ["1:1"]
+        self.paragraph()["segments"][-1]["records"] = ["108-s1"]
+        self.private["records"][1]["ayah_keys"] = []
+        self.paragraph()["ayahs"] = ["108:1"]
+        self.exported()
+
     def test_C13_passages_and_records(self):
         self.passage()
         out = self.exported()
@@ -550,6 +580,15 @@ class MapTests(unittest.TestCase):
             self.refused("C13")
         self.nasij["passages"] = original
         self.private["records"][1]["display"]["decision"] = None
+        self.refused("C13")
+
+    def test_C13_passage_build_permission(self):
+        self.passage()
+        self.exported()
+        self.private["records"][0]["build_permission"]["decision"] = "معلّق"
+        self.refused("C13")
+        self.private["records"][0]["build_permission"]["decision"] = "نعم"
+        self.private["records"][1]["build_permission"]["decision"] = None
         self.refused("C13")
 
     def test_C13_block_membership(self):
