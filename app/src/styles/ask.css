@@ -139,5 +139,8 @@
 
 /* Deeper questions under a stop: depth items that open in place. */
 .followups { margin-block: var(--space-lg); }
+/* The second way onward, after the deeper questions: small and quiet, the arrow only. */
+.next-mini { display: flex; justify-content: flex-end; margin-block: var(--space-sm) var(--space-lg); }
+.next-mini .huda-button { gap: var(--space-xs); color: var(--accent); font-size: var(--text-ui); font-weight: 600; }
 .followups-title { margin-block-start: var(--space-md); color: var(--ink-3); font-size: var(--text-label); font-weight: 600; line-height: var(--leading-ui); }
 .details-summary-text { display: grid; justify-items: start; gap: var(--space-xs); min-inline-size: 0; }
