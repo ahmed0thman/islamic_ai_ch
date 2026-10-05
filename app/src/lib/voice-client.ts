@@ -8,6 +8,9 @@ export const LIVE_EVERY_MS = 2500; // cadence of provisional requests
 export const LIVE_MIN_MS = 1800; // no provisional request before this much audio
 export const MAX_RECORDING_MS = 40_000; // hard stop
 export const TIMESLICE_MS = 1000; // <= 100 ms yields empty blobs on Safari 26 (WebKit bug 301507)
+export const SILENCE_MS = 2500; // this much quiet after the reader has spoken ends the recording and sends the question
+export const VOICE_LEVEL = 0.05; // smoothed level (0..1) above which the reader is speaking
+export const SPEECH_MIN_MS = 250; // sound must last this long to count as speech (a click or a cough does not)
 export const LIVE_FOR_MP4 = true; // orchestrator flips to false if Safari rejects concatenated mp4 chunks
 export const MIME_CANDIDATES = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"] as const;
 
@@ -66,4 +69,19 @@ export function levelFrom(samples: Uint8Array): number {
     sum += v * v;
   }
   return Math.min(1, Math.sqrt(sum / samples.length) * 4);
+}
+
+export type SilenceState = { loudSince: number | null; lastVoiceAt: number | null };
+/**
+ * One step of the end-of-speech watch. `lastVoiceAt` is set once sound has lasted SPEECH_MIN_MS, and refreshed while it
+ * lasts; `done` turns true when SILENCE_MS have passed since then. Before any speech, silence never ends the recording.
+ */
+export function silenceStep(state: SilenceState, level: number, now: number): { state: SilenceState; done: boolean } {
+  if (level >= VOICE_LEVEL) {
+    const loudSince = state.loudSince ?? now;
+    const lastVoiceAt = now - loudSince >= SPEECH_MIN_MS ? now : state.lastVoiceAt;
+    return { state: { loudSince, lastVoiceAt }, done: false };
+  }
+  const next = { loudSince: null, lastVoiceAt: state.lastVoiceAt };
+  return { state: next, done: next.lastVoiceAt !== null && now - next.lastVoiceAt >= SILENCE_MS };
 }

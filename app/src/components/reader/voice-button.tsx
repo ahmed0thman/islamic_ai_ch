@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   clock, fileNameFor, LIVE_EVERY_MS, LIVE_MIN_MS, liveAllowed, MAX_RECORDING_MS,
-  nextAfterFinal, pickMimeType, TIMESLICE_MS, type VoiceState, levelFrom
+  nextAfterFinal, pickMimeType, TIMESLICE_MS, type VoiceState, levelFrom, silenceStep, type SilenceState
 } from "@/lib/voice-client";
 
 const FINAL_TIMEOUT_MS = 25_000;
@@ -127,11 +127,16 @@ export function useVoice({ surah, depth, stop, onStart, onLive, onFinal, onLevel
 
         const dataArray = new Uint8Array(analyser.fftSize);
         let smoothed = 0;
+        let silence: SilenceState = { loudSince: null, lastVoiceAt: null };
         const loop = () => {
           analyser.getByteTimeDomainData(dataArray);
           const level = levelFrom(dataArray);
           smoothed = smoothed * 0.7 + level * 0.3;
           onLevel(smoothed);
+          // The reader spoke and has now been quiet long enough: end the recording as a tap would.
+          const step = silenceStep(silence, smoothed, Date.now());
+          silence = step.state;
+          if (step.done) { rafRef.current = null; stopRecording(); return; }
           rafRef.current = requestAnimationFrame(loop);
         };
         rafRef.current = requestAnimationFrame(loop);

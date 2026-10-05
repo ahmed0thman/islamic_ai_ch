@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 // @ts-expect-error -- Node requires source extensions.
-import { clock, fileNameFor, LIVE_EVERY_MS, LIVE_FOR_MP4, LIVE_MIN_MS, liveAllowed, MAX_RECORDING_MS, mergeQuestion, MIME_CANDIDATES, nextAfterFinal, pickMimeType, TIMESLICE_MS, levelFrom } from "./voice-client.ts";
+import { clock, fileNameFor, LIVE_EVERY_MS, LIVE_FOR_MP4, LIVE_MIN_MS, liveAllowed, MAX_RECORDING_MS, mergeQuestion, MIME_CANDIDATES, nextAfterFinal, pickMimeType, TIMESLICE_MS, levelFrom, silenceStep, SILENCE_MS, SPEECH_MIN_MS, VOICE_LEVEL, type SilenceState } from "./voice-client.ts";
 
 test("the constants the button and the server rely on", () => {
   assert.equal(LIVE_EVERY_MS, 2500);
@@ -105,4 +105,24 @@ test("levelFrom: calculates the RMS level from the sample array", () => {
   assert.equal(levelFrom(new Uint8Array([0, 255, 0, 255])), 1);
   const small = levelFrom(new Uint8Array([127, 129, 127, 129]));
   assert.ok(small > 0 && small < 0.1);
+});
+
+test("silenceStep: quiet before any speech never ends; quiet after speech ends after SILENCE_MS", () => {
+  let state: SilenceState = { loudSince: null, lastVoiceAt: null };
+  const feed = (level: number, now: number) => { const step = silenceStep(state, level, now); state = step.state; return step.done; };
+  assert.equal(feed(0, 0), false);
+  assert.equal(feed(0, 60_000), false); // a minute of silence with no speech
+  assert.equal(feed(VOICE_LEVEL, 60_100), false); // a click: too short to be speech
+  assert.equal(feed(0, 60_150), false);
+  assert.equal(feed(0, 70_000), false);
+  assert.equal(feed(VOICE_LEVEL, 70_000), false);
+  assert.equal(feed(VOICE_LEVEL, 70_000 + SPEECH_MIN_MS), false); // now it is speech
+  assert.equal(feed(0.4, 71_000), false);
+  assert.equal(feed(0, 71_000 + SILENCE_MS - 1), false);
+  assert.equal(feed(0, 71_000 + SILENCE_MS), true);
+  // speaking again before the limit starts the wait over
+  state = { loudSince: null, lastVoiceAt: 1000 };
+  assert.equal(feed(0.3, 2000), false);
+  assert.equal(feed(0.3, 2000 + SPEECH_MIN_MS), false);
+  assert.equal(feed(0, 2000 + SPEECH_MIN_MS + SILENCE_MS - 1), false);
 });

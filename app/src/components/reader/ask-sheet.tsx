@@ -29,18 +29,16 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
   const bodyRef = useRef<HTMLDivElement>(null);
   const prevLen = useRef(ask.turns.length);
 
+  const submitRef = useRef<(text: string) => boolean>(() => false);
   const voice = useVoice({
     surah: surahNo, depth: ask.depth, stop: ask.stop?.number ?? null,
     onStart: () => { voiceBase.current = question.trim(); },
     onLive: (text) => setQuestion(mergeQuestion(voiceBase.current, text)),
     onFinal: (text) => {
-      if (text !== null) setQuestion(mergeQuestion(voiceBase.current, text));
-      requestAnimationFrame(() => {
-        const el = textarea.current;
-        if (!el) return;
-        el.focus();
-        el.setSelectionRange(el.value.length, el.value.length);
-      });
+      if (text === null) return; // nothing final: what was heard so far stays in the field for the reader to fix
+      // A spoken question goes out as soon as its final text is here, as in a voice chat; the field is left empty.
+      const spoken = mergeQuestion(voiceBase.current, text);
+      if (!submitRef.current(spoken)) setQuestion(spoken);
     },
     onLevel: (level) => {
       const el = orbRef.current;
@@ -54,8 +52,8 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
   const isListening = voice.state === "listening" || voice.state === "finalizing";
   const [voiceMsg, setVoiceMsg] = useState<string | null>(null);
   useEffect(() => {
-    if (voice.state === "review") setVoiceMsg(ui.ask.voice_review);
-    else if (voice.state === "partial") setVoiceMsg(ui.ask.voice_partial);
+    // "review" carries no message any more: a final transcript is sent at once.
+    if (voice.state === "partial") setVoiceMsg(ui.ask.voice_partial);
     else if (voice.state === "denied") setVoiceMsg(ui.ask.voice_denied);
     else if (voice.state === "failed") setVoiceMsg(ui.ask.voice_failed);
     else setVoiceMsg(null);
@@ -105,8 +103,8 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
 
   const loadingTurn = ask.turns.some((t) => t.loading);
 
-  const performSubmit = (text: string) => {
-    if (loadingTurn || !longEnough(text)) return;
+  const performSubmit = (text: string): boolean => {
+    if (loadingTurn || !longEnough(text)) return false;
     const turnId = ask.addTurn(text);
     setQuestion("");
     voiceBase.current = "";
@@ -119,10 +117,12 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
     const controller = new AbortController();
     active.current = { controller, turnId };
 
-    fetch("/api/ask/", {
+    const send = () => fetch("/api/ask/", {
       method: "POST", signal: controller.signal, headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ surah: surahNo, question: text, depth: ask.depth, ...(ask.stop ? { stop: ask.stop.number } : {}) }),
-    }).then(async response => {
+    });
+    // A request lost on the way (a dropped connection, a gateway error) is sent once more before the reader is told.
+    send().then((response) => response.status >= 500 ? send() : response, () => send()).then(async response => {
       const body = response.ok ? await response.json() as AskResponse : null;
       if (controller.signal.aborted) return;
       active.current = null;
@@ -138,7 +138,9 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
         ask.settleTurn(turnId, { status: "unavailable", atoms: [] });
       }
     });
+    return true;
   };
+  submitRef.current = performSubmit;
 
   const submit = (event?: FormEvent) => {
     event?.preventDefault();
