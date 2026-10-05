@@ -114,6 +114,12 @@ test("searching ayahs needs four letters and ignores where the spelling splits w
   assert.equal(many.hits[0], 110);
   assert.equal(searchAyahs(prepared, "الض", 20).total, 0);
   assert.equal(searchAyahs(prepared, "112", 20).total, 0);
+  // Two or three letters match whole words, and only when the spaced text is given.
+  const whole = searchAyahs(prepared, "\u0642\u0644\u0649", 20, plain);
+  assert.deepEqual(whole.hits, [6081]);
+  assert.equal(searchAyahs(prepared, "\u0642\u0644\u0649", 20).total, 0);
+  assert.ok(searchAyahs(prepared, "\u0646\u0648\u0631", 20, plain).total > 0);
+  assert.equal(searchAyahs(prepared, "\u0642", 20, plain).total, 0);
 });
 
 test("the display file holds a non-empty text for each of the 6236 ayahs", () => {

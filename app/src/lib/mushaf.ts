@@ -84,14 +84,22 @@ export function prepareAyahs(plain: readonly string[]): string[] {
   return plain.map((text) => text.replaceAll(" ", ""));
 }
 
-export function searchAyahs(prepared: readonly string[], query: string, limit: number): { hits: number[]; total: number } {
+/**
+ * Ayahs that hold the query. Four letters or more match anywhere in the ayah, across word breaks (the reader may type
+ * without spaces). Two or three letters match whole words only, and need `words` (the ayahs with their spaces kept):
+ * a short run of letters inside longer words would return most of the mushaf.
+ */
+export function searchAyahs(prepared: readonly string[], query: string, limit: number, words?: readonly string[]): { hits: number[]; total: number } {
   const key = searchKey(query);
   const k = compact(key);
-  if (k.length < 4 || allDigits(k)) return { hits: [], total: 0 };
+  if (k.length < 2 || allDigits(k)) return { hits: [], total: 0 };
+  const short = k.length < 4;
+  if (short && !words) return { hits: [], total: 0 };
+  const needle = ` ${key} `;
   const hits: number[] = [];
   let total = 0;
   for (let i = 0; i < prepared.length; i += 1) {
-    if (!prepared[i].includes(k)) continue;
+    if (short ? !` ${words![i]} `.includes(needle) : !prepared[i].includes(k)) continue;
     total += 1;
     if (hits.length < limit) hits.push(i);
   }

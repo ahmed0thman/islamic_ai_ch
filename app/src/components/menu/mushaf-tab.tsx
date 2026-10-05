@@ -17,7 +17,7 @@ const LEVELS = [{ level: "juz", label: "by_juz" }, { level: "hizb", label: "by_h
 const SHOWN = 20;
 
 type Target = { surah: number; ayah?: number };
-type Loaded = { prepared: string[]; uthmani: string[] };
+type Loaded = { prepared: string[]; words: string[]; uthmani: string[] };
 type AyahState = "idle" | "loading" | "failed" | Loaded;
 type Place = { position: number; surah: number; ayah: number };
 
@@ -25,7 +25,7 @@ type Place = { position: number; surah: number; ayah: number };
 let loading: Promise<Loaded> | null = null;
 function loadAyahs(): Promise<Loaded> {
   loading ??= Promise.all([import("@/content/quran-plain.json"), import("@/content/quran-uthmani.json")])
-    .then(([plain, uthmani]) => ({ prepared: prepareAyahs(plain.default as string[]), uthmani: uthmani.default as string[] }))
+    .then(([plain, uthmani]) => ({ prepared: prepareAyahs(plain.default as string[]), words: plain.default as string[], uthmani: uthmani.default as string[] }))
     .catch((error) => { loading = null; throw error; });
   return loading;
 }
@@ -87,7 +87,7 @@ export function MushafTab({ ui, current, onChoose }: MushafTabProps) {
     let more = false;
     if (typeof ayahs !== "object") return { explained, rest, more };
     // Matches in surahs with an explanation come from all positions, so earlier matches elsewhere in the mushaf cannot hide them.
-    for (const position of searchAyahs(ayahs.prepared, deferred, ayahs.prepared.length).hits) {
+    for (const position of searchAyahs(ayahs.prepared, deferred, ayahs.prepared.length, ayahs.words).hits) {
       const place = { position, ...ayahLocation(mushaf, position) };
       if (published.has(place.surah)) { if (explained.length < SHOWN) explained.push(place); }
       else if (rest.length < SHOWN) rest.push(place);
