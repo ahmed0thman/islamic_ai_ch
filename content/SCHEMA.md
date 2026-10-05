@@ -31,6 +31,8 @@ The app renders only what is in `content/`. It never writes Arabic text itself.
   "ayahs": ["108:1"],                                      // optional in the nasij source; always present on a stop in the export: the ayah station(s) the stop hangs from
   "passage": "p1",                                         // optional: the passage this block belongs to (see `passages`)
   "segments": [ /* Segment */ ] }
+{ "type": "paragraph", "role": "example",                  // an everyday example in the explainer's manner (decision 076). System wording that illustrates and proves nothing:
+  "segments": [ { "t": "text", "v": "…" } ] }              //   `text` segments only (no mark, quote, ayah or term), no `title`, no `ayahs`. The app prints the fixed label ui.ar.json -> example.label above it
 { "type": "details",                                       // an item that opens on tap; closed by default
   "title": [ /* Segment: text | term | mark */ ],          // carries the short answer; it is a claim, so it ends with a mark
   "blocks": [ /* paragraph blocks only */ ] }
@@ -57,6 +59,7 @@ The app renders only what is in `content/`. It never writes Arabic text itself.
   "status_text": "…",                     // ready sentence describing the state; may be empty
   "depth_min": 0,
   "ayah_keys": ["108:1"],                 // the ayahs this record is about; links stops to ayah stations
+  "science": "balagha",                   // optional, term records only: a key of ui.ar.json -> sciences, the science the term belongs to. Absent or null on other records
   "evidence": [
     { "icon": "scholar",
       "source_title": "…", "author": "…", "locator": "…",
@@ -72,6 +75,8 @@ Rules the app relies on:
 
 - Every `mark.records[]`, `quote.record` and `term.record` id exists in `records`.
 - A `term` is not a marker: the sentence it sits in still ends with its own `mark`. Its record needs the same build and display permission as a claim's record.
+- A term's panel shows three things from its record: the plain meaning (`claim`), the scholar's sentence that uses the term (`evidence[].quote`), and the science it belongs to (`science`, a fixed classification like the source icons, never generated text).
+- An `example` paragraph: levels 1 and 2 only; at most one per level; at most two sentences; never the first block of a level and always directly after a `claim` or `transmission` paragraph (it belongs to that stop's scene); never inside `details`. It carries no marker because it claims nothing: any conclusion about the ayah is a separate claim paragraph with its record. It never likens God's act or the Prophet's state to ours (checked by the reviewer, not by the exporter).
 - A `details` title follows the rules of a claim paragraph; its inner blocks follow the rules of their own role. `details` do not nest.
 - Every `ayah.key` and `ayah.keys[]` exists in `ayahs`.
 - A record with badge `la_yathbut` or `khilaf_mutabar` shows the badge next to the marker in the text and in the panel; `thabit` shows in the panel only.
