@@ -42,7 +42,7 @@ function RecordContent({ record, ui }: { record: SourceRecord; ui: Ui }) {
     <div className="sheet-status">
       {record.state ? <><SourceBadge state={record.state} ui={ui} /><p>{ui.states[record.state].meaning}</p></> : null}
       {record.status_text.split("\n").filter(Boolean).map((line, index) => <p key={index}>{line}</p>)}
-      {record.badge ? <><SourceBadge kind={record.badge} ui={ui} /><p>{ui.badges[record.badge].meaning}</p></> : <p>{ui.panel.no_badge}</p>}
+      {record.badge ? <><SourceBadge kind={record.badge} ui={ui} /><p>{ui.badges[record.badge].meaning}</p></> : record.status_text.trim() ? null : <p>{ui.panel.no_badge}</p>}
     </div>
     {record.evidence.map((evidence, index) => <EvidenceContent key={index} evidence={evidence} ui={ui} />)}
   </section>;

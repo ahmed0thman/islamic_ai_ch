@@ -895,6 +895,139 @@ class MapTests(unittest.TestCase):
         inner["ayahs"] = ["108:99"]
         self.refused("C12")
 
+    # ---- W17 (decision 083): talk about the source or the state stays short. A warning, never a refusal.
+    def talk(self, text, depth=0):
+        """Put `text` as the system wording of a level's paragraph and return the W17 line of a check-only run."""
+        self.paragraph(depth)["segments"][0] = {"t": "text", "v": text}
+        result = self.run_export("--check-only")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        return next(line for line in result.stdout.splitlines() if line.startswith("108 W17 "))
+
+    def named(self):
+        """Give the surah a real sayer and book title, so that W17 has names to count."""
+        self.private["sources"][0].update(title="التحرير والتنوير", author="ابن عاشور")
+        self.private["records"][0]["evidence"][0]["sayer"] = "ابن عاشور"
+
+    def test_W17_plain_text_passes(self):
+        result = self.run_export("--check-only")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("108 W17 PASS", result.stdout)
+        self.assertIn("W17", exporter.WARNINGS)
+
+    def test_W17_status_phrase_warns_and_export_still_written(self):
+        self.paragraph()["segments"][0] = {"t": "text", "v": "شرح اختبار. وهذا خبر من قوله، لم نحكم على ثبوته."}
+        result = self.run_export()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        line = next(line for line in result.stdout.splitlines() if line.startswith("108 W17 "))
+        self.assertIn("W17 WARN", line)
+        self.assertIn("failed=1", line)
+        self.assertIn("level 0, block 1: status phrase", line)
+        self.assertNotIn(" FAIL ", result.stdout)
+        # A warning never refuses: the surah is exported with the sentence as written.
+        value = exporter.read_json(self.content / "export/surah-108.json")
+        self.assertFalse(value["fixture"])
+        self.assertEqual(value["levels"], self.nasij["levels"])
+
+    def test_W17_each_status_phrase_is_reported_per_sentence(self):
+        line = self.talk("هذا من كلامه، وليس رواية. وحال كل رواية في لوحتها. شرح بلا حالة.")
+        self.assertIn("failed=2", line)
+
+    def test_W17_short_naming_passes(self):
+        self.named()
+        for text in ("عند ابن عاشور: شرح اختبار.", "قال ابن عاشور في «التحرير والتنوير»: شرح اختبار.",
+                     "اختلفوا في المعنى على قولين لم نرجّح بينهما."):
+            with self.subTest(text=text):
+                self.assertIn("W17 PASS", self.talk(text))
+
+    def test_W17_source_word_limit(self):
+        self.named()
+        long = "قال ابن عاشور في «التحرير والتنوير» ونقل الرواية بإسناده عن ابن عاشور: هذا شرح."
+        line = self.talk(long)
+        self.assertIn("W17 WARN", line)
+        # 2 + 2 (the title between guillemets) + 3 (transmission vocabulary) + 2.
+        self.assertIn("9 source words (limit 6)", line)
+        # The limit is per sentence: the same words in two sentences pass.
+        self.assertIn("W17 PASS", self.talk("قال ابن عاشور في «التحرير والتنوير». ونقل الرواية بإسناده عن ابن عاشور."))
+        # Names come from the surah's own records: without them only the transmission vocabulary counts.
+        self.nasij, self.private = fixtures()
+        self.assertIn("W17 PASS", self.talk(long))
+
+    def test_W17_standalone_tarjih(self):
+        self.assertIn("W17 WARN", self.talk("شرح اختبار. ولم نرجّح."))
+        self.assertIn("W17 PASS", self.talk("في المعنى أقوال لم نرجّح بينها في هذا الشرح."))
+
+    def test_W17_quote_is_not_measured(self):
+        r = self.private["records"][0]
+        r["evidence"][0]["quote"] = "وهذا من قوله، لم نحكم على ثبوته"
+        self.paragraph()["segments"][1:1] = [{"t": "quote", "v": "وهذا من قوله، لم نحكم على ثبوته", "record": r["id"]}]
+        self.assertIn("W17 PASS", self.talk("شرح اختبار: "))
+        # The quote ends the sentence: wording on its two sides is measured apart.
+        self.named()
+        self.paragraph()["segments"][0] = {"t": "text", "v": "قال ابن عاشور في «التحرير والتنوير»: "}
+        self.paragraph()["segments"].insert(2, {"t": "text", "v": " ونقل الرواية بإسناده عن ابن عاشور."})
+        result = self.run_export("--check-only")
+        self.assertIn("108 W17 PASS", result.stdout)
+
+    def test_W17_titles_and_headings_are_measured(self):
+        self.stop()["title"] = "وهذا من قوله"
+        self.nasij["levels"][1]["blocks"].insert(0, {"type": "heading", "text": "حال كل رواية في لوحتها"})
+        result = self.run_export("--check-only")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        line = next(line for line in result.stdout.splitlines() if line.startswith("108 W17 "))
+        self.assertIn("stop title: status phrase", line)
+        self.assertIn("level 1, block 1: status phrase", line)
+
+    # ---- state and status_note (decision 083): copied from the private record, never generated here.
+    def test_state_exported_with_its_note(self):
+        r = self.private["records"][0]
+        r.update(state="report_unjudged", status_note="جملة حالة اختبار")
+        out = self.exported()["records"][r["id"]]
+        self.assertEqual(out["state"], "report_unjudged")
+        self.assertEqual(out["status_text"], "جملة حالة اختبار")
+        self.assertEqual(out["badge"], "thabit")
+
+    def test_state_absent_by_default(self):
+        out = self.exported()["records"]["108-r1"]
+        self.assertNotIn("state", out)
+        self.assertEqual(out["status_text"], "")
+
+    def test_status_note_without_state(self):
+        # A record with no badge says what is and is not assessed in its note; no state key is exported.
+        r = self.private["records"][0]
+        r.update(badge="", status_note="القول ثابت عن قائله في كتابه.")
+        out = self.exported()["records"][r["id"]]
+        self.assertNotIn("state", out)
+        self.assertIsNone(out["badge"])
+        self.assertEqual(out["status_text"], "القول ثابت عن قائله في كتابه.")
+
+    def test_status_note_follows_the_suspension_reasons(self):
+        r = self.private["records"][0]
+        r["display"]["depth"] = "depth3"
+        r["depth_min"] = 3
+        r.update(state="report_unjudged", status_note="جملة حالة اختبار")
+        for depth in range(3):
+            self.nasij["levels"][depth]["blocks"] = [{"type": "heading", "text": "عنوان اختبار"}]
+        out = self.exported()["records"][r["id"]]
+        self.assertEqual(out["status_text"], "سبب عرض\nسبب اختبار\nجملة حالة اختبار")
+        self.assertEqual(out["state"], "report_unjudged")
+
+    def test_state_unknown_refused(self):
+        # The app indexes its dictionary by this key, so an unknown value never leaves the exporter.
+        self.assertEqual(exporter.STATES, ("report_unjudged",))
+        self.private["records"][0].update(state="link_unrated", status_note="جملة حالة اختبار")
+        self.refused("MAP")
+
+    def test_state_without_note_refused(self):
+        self.private["records"][0]["state"] = "report_unjudged"
+        self.refused("MAP")
+        self.private["records"][0]["status_note"] = ""
+        self.refused("MAP")
+
+    def test_state_of_an_unused_record_is_not_exported(self):
+        self.private["records"][1].update(state="report_unjudged", status_note="جملة حالة اختبار")
+        value = self.exported()
+        self.assertEqual(set(value["records"]), {"108-r1"})
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -65,6 +65,8 @@ The app renders only what is in `content/`. It never writes Arabic text itself.
                                           //   itself can show it. Present only with a nonempty `status_text`. Values:
                                           //   "report_unjudged" = a historical or sira report carried by a scholar's statement alone, with no
                                           //   graded narration (decisions 079, 080): his statement is verified in his book, the report is not judged
+                                          //   The app indexes ui.ar.json -> states by this key and breaks on a key it does not know, so a new value
+                                          //   is exported only after the app and ui.ar.json carry it (see "Records with no badge" below)
   "depth_min": 0,
   "ayah_keys": ["108:1"],                 // the ayahs this record is about; links stops to ayah stations
   "science": "balagha",                   // optional, term records only: a key of ui.ar.json -> sciences, the science the term belongs to. Absent or null on other records
@@ -94,6 +96,12 @@ Rules the app relies on:
   - No sentence of system wording has the source or the state as its subject (who narrated, in which book, whose wording, that it is the scholar's own statement, why it is weak, that we did not judge it). In the text this is at most a few words inside the sentence that carries the meaning; the detail is in the record: `evidence[]` (source, author, locator, rulings), `badge`, `status_text` and `state`.
   - Whatever state the text does not spell out, the record does. A record with `state` or a nonempty `status_text` is one whose marker should show that state, not only its panel. How the marker shows each state is the app's design.
   - The exporter reports sentences that break this as warning W17 (it never refuses the export): a sentence holding a long status phrase, or more than six words of sayers' names, book titles (both taken from the surah's own records) and transmission vocabulary. Verbatim `quote` segments are not measured.
+- Records with no badge: a record whose statement is verified from its sayer but which carries no `thabit` badge, because what is not
+  assessed is something else, says so in `status_text` through its `status_note`. Without it the panel shows only the fixed line
+  ui.ar.json -> panel.no_badge, which reads as if the statement itself were unverified. Three kinds, one fixed sentence each (written in the
+  surah's draft, never by the exporter): an interpretive link (the link is the scholar's own reasoning, its strength is not assessed), a
+  purpose of the surah (the purpose is his reasoning), and a view in a disagreement (we did not weigh the views). No `state` is exported for
+  them yet. Proposed keys, not adopted and not exported: `link_unrated` for the first two and `tarjih_open` for the third.
 - Level `n` shows the blocks of `levels[n]` only (levels are complete texts, not increments).
 - The surah map is drawn from the level's blocks: ayah stations in order, and under each station the stops whose `ayahs` start there. An untitled paragraph belongs to the stop before it (same scene). Changing the level redraws the same map with that level's stops. Nothing on the map is generated: every stop is a paragraph with its markers.
 - A stop's `title` is system text and claims nothing beyond what its paragraph's records carry. It holds no Quran text, except the single Quran word the title asks about, written between «». Two or more consecutive Quran words never appear in a title or in a `text` segment; they go in an `ayah` segment.
