@@ -42,6 +42,8 @@ export async function POST(request: Request) {
     if (typeof surah !== "number" || !Number.isInteger(surah) || typeof question !== "string") return reply("insufficient", 400);
     const trimmed = question.trim();
     if ([...trimmed].length < 3 || [...trimmed].length > 300) return reply("insufficient", 400);
+    // A question with no Arabic letter is answered by the fixed status, with no model call.
+    if (!/[\u0621-\u064A]/u.test(trimmed)) return reply("not_arabic");
     try {
       if (!(await getIndex()).surahs.some((item) => item.no === surah)) return reply("insufficient", 400);
       const provider = providersFromEnv(process.env);

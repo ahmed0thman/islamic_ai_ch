@@ -70,20 +70,27 @@ for (const [index, item] of cases.entries()) {
   const atoms = Array.isArray(result?.atoms) ? result.atoms : [];
   const equalAtom = (atom) => {
     const expected = approved.get(atom?.id)?.public;
-    return expected && Object.keys(atom).length === 5 && Object.keys(expected).every((key) => JSON.stringify(atom[key]) === JSON.stringify(expected[key]));
+    // A book excerpt (role "source") is not in the surah's approved set: it must carry its attribution instead.
+    if (atom?.role === "source") return typeof atom.id === "string" && atom.id.startsWith("src:") && typeof atom.source?.title === "string" && atom.source.title.length > 0;
+    // A verified sentence of another published surah (the retrieval crosses surahs) is checked for shape only.
+    if (typeof atom?.id === "string" && !atom.id.startsWith(`${surah}:`)) return /^\d{1,3}:/.test(atom.id) && Array.isArray(atom.segments) && Array.isArray(atom.records);
+    const core = Object.keys(atom).filter((key) => key !== "surah" && key !== "source");
+    return expected && core.length === 5 && Object.keys(expected).every((key) => JSON.stringify(atom[key]) === JSON.stringify(expected[key]));
   };
   let pass = transportOk && result && typeof result === "object" && Array.isArray(result.atoms);
+  // `sources` and `extra` are optional additions of the retrieval build; they do not count in the shape checks below.
+  const keyCount = result && typeof result === "object" ? Object.keys(result).filter((key) => key !== "sources" && key !== "extra").length : 0;
   if (result?.status === "answer") {
-    pass &&= atoms.length >= 1 && new Set(atoms.map((atom) => atom.id)).size === atoms.length && atoms.every(equalAtom) && atoms.some((atom) => atom.role === "claim");
+    pass &&= atoms.length >= 1 && new Set(atoms.map((atom) => atom.id)).size === atoms.length && atoms.every(equalAtom) && atoms.some((atom) => atom.role === "claim" || atom.role === "source");
     if (result.mode === "composed") {
       // Items without text are dropped sentences shown verbatim; only written items go through the shape check.
       const items = Array.isArray(result.composed) ? result.composed : [];
       const written = items.filter((item) => typeof item?.text === "string");
-      const parsed = written.length ? parseComposition({ status: "answer", sentences: written.map(({ text, atom_ids }) => ({ text, cites: atom_ids })) }, sourceAtoms) : undefined;
+      const parsed = written.length ? parseComposition({ status: "answer", sentences: written.map(({ text, atom_ids }) => ({ text, cites: atom_ids })) }, [...sourceAtoms, ...atoms.filter((atom) => !approved.has(atom?.id)).map((atom) => ({ ...atom, text: "" }))]) : undefined;
       const cited = new Set(items.flatMap((item) => Array.isArray(item?.atom_ids) ? item.atom_ids : []));
-      pass &&= Object.keys(result).length === 4 && !!parsed && atoms.length === cited.size && atoms.every((atom) => cited.has(atom.id));
-    } else pass &&= result.mode === "extractive" && atoms.length <= 4 && Object.keys(result).length === 3;
-  } else pass &&= fixed.has(result?.status) && atoms.length === 0 && Object.keys(result).length === 2;
+      pass &&= keyCount === 4 && !!parsed && atoms.length === cited.size && atoms.every((atom) => cited.has(atom.id));
+    } else pass &&= result.mode === "extractive" && atoms.length <= 4 && keyCount === 3;
+  } else pass &&= fixed.has(result?.status) && atoms.length === 0 && keyCount === 2;
   if (noAnswer.has(item.id)) pass &&= result?.status !== "answer";
   if (item.id === "rasmi-12") pass &&= result?.status === "not_arabic";
   if (item.id === "compose-05") pass &&= result?.status === "fatwa";
