@@ -1,6 +1,7 @@
 import { mkdir, readdir, readFile, writeFile, rm } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { buildMushafIndex } from "./mushaf-index.mjs";
 // Keep this script runnable on the app's Node 20 minimum without TS loading.
 // The verifier test compares every generated ayah against normalize.ts.
 function normalize(text) {
@@ -29,6 +30,9 @@ const files = await Promise.all([
 const quran = JSON.parse(await readFile(path.resolve(app, "../tools/data/qurancomplex/hafsData_v2-0.json"), "utf8"));
 if (quran.length !== 6236 || quran.some((ayah) => typeof ayah.aya_text_emlaey !== "string")) throw new Error("Invalid Quran dataset");
 files.push({ name: "quran-plain.json", bytes: Buffer.from(JSON.stringify(quran.map((ayah) => normalize(ayah.aya_text_emlaey))) + "\n") });
+const simple = JSON.parse(await readFile(path.resolve(app, "../tools/data/quran-simple-clean.json"), "utf8"));
+files.push({ name: "mushaf-index.json", bytes: Buffer.from(JSON.stringify(buildMushafIndex(quran, simple)) + "\n") });
+files.push({ name: "quran-uthmani.json", bytes: Buffer.from(JSON.stringify(quran.map((ayah) => ayah.aya_text)) + "\n") });
 await mkdir(target, { recursive: true });
 for (const file of files) await writeFile(path.join(target, file.name), file.bytes);
 // Only remove stale generated JSON files inside the app.

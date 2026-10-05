@@ -2,6 +2,7 @@
 @import "../styles/tokens.css";
 @import "../styles/reader.css";
 @import "../styles/ask.css";
+@import "../styles/menu.css";
 
 * { box-sizing: border-box; }
 html { font-size: 16px; background: var(--paper); scroll-padding-bottom: calc(var(--legend-occupied-height, var(--legend-height)) + var(--space-xl)); }
