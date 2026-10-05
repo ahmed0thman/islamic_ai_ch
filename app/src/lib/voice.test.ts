@@ -34,6 +34,16 @@ test("no key means the voice path is unavailable and nothing is fetched", async 
   assert.deepEqual(await transcribeQuestion(base({}, fetchImpl)), { status: "unavailable" });
 });
 
+test("a local STT url transcribes with no Groq key and skips repair", async () => {
+  const transcript = "\u0645\u0631\u062d\u0628\u0627 \u0639\u0627\u0644\u0645";
+  const { calls, fetchImpl } = scriptFetch([async () => Response.json({ text: transcript })]);
+  assert.deepEqual(await transcribeQuestion(base({ HUDA_VOICE_STT_URL: "http://127.0.0.1:8178/v1/" }, fetchImpl)),
+    { status: "ok", text: transcript, corrected: false });
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].url, "http://127.0.0.1:8178/v1/audio/transcriptions");
+  assert.equal((calls[0].options.headers as Record<string, string>).authorization, undefined);
+});
+
 test("speech request shape: url, bearer, verified fields, and a natural-sentence prompt", async () => {
   const { calls, fetchImpl } = scriptFetch([async () => Response.json({ text: "alpha beta gamma" })]);
   assert.deepEqual(await transcribeQuestion(base({ GROQ_API_KEY: "k" }, fetchImpl, { live: true })),

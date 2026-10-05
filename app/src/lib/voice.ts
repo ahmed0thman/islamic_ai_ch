@@ -155,13 +155,16 @@ const FIX_LIMIT_MS = 8_000;
 
 interface SpeechReply { kind: "empty" | "error" | "busy" | "text"; text?: string; segments?: unknown }
 
+/** HUDA_VOICE_STT_URL, when set, sends speech-to-text to that base URL instead of Groq. */
 export async function transcribeQuestion(input: {
   audio: Blob; filename: string; context: VoiceContext; hintText: HintText; live: boolean;
   env: Readonly<Record<string, string | undefined>>; fetchImpl?: typeof fetch; signal?: AbortSignal;
 }): Promise<VoiceResult> {
   const { audio, filename, context, hintText, live, env, fetchImpl = fetch, signal } = input;
   const apiKey = env.GROQ_API_KEY;
-  if (!apiKey) return { status: "unavailable" };
+  const sttBase = env.HUDA_VOICE_STT_URL?.replace(/\/+$/, "") || GROQ_BASE_URL;
+  const local = Boolean(env.HUDA_VOICE_STT_URL);
+  if (!apiKey && !local) return { status: "unavailable" };
   const hint = hintSentence(context, hintText);
   const sttFetch = (inner: AbortSignal, withPrompt: boolean): Promise<Response> => {
     const form = new FormData();
@@ -171,8 +174,9 @@ export async function transcribeQuestion(input: {
     form.append("response_format", "verbose_json");
     form.append("temperature", "0");
     if (withPrompt && hint) form.append("prompt", hint);
-    return fetchImpl(`${GROQ_BASE_URL}/audio/transcriptions`, {
-      method: "POST", signal: inner, headers: { authorization: `Bearer ${apiKey}` }, body: form,
+    return fetchImpl(`${sttBase}/audio/transcriptions`, {
+      method: "POST", signal: inner,
+      headers: local ? {} : { authorization: `Bearer ${apiKey}` }, body: form,
     });
   };
   const speech = await withTimeLimit(live ? 12_000 : 20_000, signal, async (inner) => {
@@ -199,7 +203,7 @@ export async function transcribeQuestion(input: {
   let transcript = speech.text.replace(/\s+/g, " ").trim();
   if (!transcript || [...transcript].length < 3) return { status: "empty" };
   if ([...transcript].length > 300) transcript = cutAtWhitespace(transcript, 300);
-  const canFix = !live && env.HUDA_VOICE_FIX_MODEL !== "0";
+  const canFix = !live && env.HUDA_VOICE_FIX_MODEL !== "0" && Boolean(apiKey);
   if (!canFix) return { status: "ok", text: transcript, corrected: false };
   const fixModel = env.HUDA_VOICE_FIX_MODEL || DEFAULT_FIX_MODEL;
   const fixBody = (extras: boolean) => JSON.stringify({
