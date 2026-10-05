@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { readFile } from "node:fs/promises";
+import { appendFile, mkdir, readFile } from "node:fs/promises";
+import path from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
 import { deriveAtoms, readerUnits, resolveReaderContext } from "../src/lib/ask/atoms.ts";
 import { answer } from "../src/lib/ask/answer.ts";
@@ -12,10 +13,11 @@ const option = (name, fallback) => {
   return at < 0 ? fallback : args[at + 1];
 };
 const direct = args.includes("--direct"), base = option("--base");
+const out = option("--out");
 const surah = Number(option("--surah", "93"));
 const rpm = Number(process.env.HUDA_ASK_EVAL_RPM || "10");
-if ((!direct && !base) || !Number.isInteger(surah) || surah < 1 || surah > 114 || !Number.isFinite(rpm) || rpm <= 0) {
-  console.error("Usage: node scripts/ask-eval.mjs (--direct | --base http://localhost:3211) [--surah 93] [--questions-only]; HUDA_ASK_EVAL_RPM defaults to 10");
+if ((!direct && !base) || (args.includes("--out") && (!out || out.startsWith("--"))) || !Number.isInteger(surah) || surah < 1 || surah > 114 || !Number.isFinite(rpm) || rpm <= 0) {
+  console.error("Usage: node scripts/ask-eval.mjs (--direct | --base http://localhost:3211) [--surah 93] [--questions-only] [--out results.jsonl]; HUDA_ASK_EVAL_RPM defaults to 10");
   process.exit(1);
 }
 // Never load a dotenv file: credentials must be supplied by the caller's environment.
@@ -34,6 +36,13 @@ const fixed = new Set(["insufficient", "fatwa", "out_of_scope", "not_arabic"]);
 const noAnswer = new Set(["rasmi-05", "huda-04", "huda-05", "huda-09", "huda-11", "huda-12", "compose-05"]);
 const mechanical = new Set([...noAnswer, "rasmi-12", "huda-10"]);
 let failed = false, composedCandidates = 0, quranRejections = 0;
+const builtAt = new Date().toISOString();
+const verdictCounts = { PASS: 0, FAIL: 0, REVIEW: 0 };
+const writeResult = async (line) => {
+  if (out) await appendFile(out, JSON.stringify({ built_at: builtAt, ...line }) + "\n");
+};
+if (out) await mkdir(path.dirname(path.resolve(out)), { recursive: true });
+const evaluationStarted = performance.now();
 for (const [index, item] of cases.entries()) {
   if (index) await sleep(Math.ceil(60_000 / rpm) + 100);
   const stop = item.ayah ? readerUnits(source, item.depth).find((unit) => unit.ayahKeys.includes(item.ayah))?.number : item.stop;
@@ -42,6 +51,7 @@ for (const [index, item] of cases.entries()) {
   const context = { depth: reader?.depth ?? 0, ...reader, surah, ayah_numbers: source.ayahs.map((ayah) => Number(ayah.key.split(":")[1])) };
   let result, transportOk = true;
   const events = [], candidates = [];
+  const caseStarted = performance.now();
   try {
     if (direct) {
       const inspected = providers.map((provider) => ({ name: provider.name, async choose(request) {
@@ -64,9 +74,12 @@ for (const [index, item] of cases.entries()) {
     }
   } catch {
     failed = true;
+    verdictCounts.FAIL++;
+    await writeResult({ type: "case", id: item.id, status: "transport_error", mode: "none", verdict: "FAIL", fallback_reasons: ["transport_error"], latency_ms: performance.now() - caseStarted, fallback_observable: direct });
     console.log(`${item.id} status=transport_error FAIL`);
     continue;
   }
+  const latencyMs = performance.now() - caseStarted;
   const atoms = Array.isArray(result?.atoms) ? result.atoms : [];
   const equalAtom = (atom) => {
     const expected = approved.get(atom?.id)?.public;
@@ -97,6 +110,8 @@ for (const [index, item] of cases.entries()) {
   const verdict = !pass ? "FAIL" : mechanical.has(item.id) ? "PASS" : "REVIEW";
   if (!pass) failed = true;
   const fallbackReasons = events.filter((event) => (event.provider !== "server" && event.outcome !== "ok") || (["verify", "fallback"].includes(event.stage) && event.outcome !== "ok") || (event.stage === "support" && ["support_shape", "unsupported"].includes(event.outcome))).map((event) => `${event.stage}:${event.outcome}`);
+  verdictCounts[verdict]++;
+  await writeResult({ type: "case", id: item.id, status: result?.status ?? "invalid", mode: result?.mode ?? "none", verdict, fallback_reasons: fallbackReasons, latency_ms: latencyMs, fallback_observable: direct });
   console.log(`${item.id} question=${JSON.stringify(item.question)} expected=${JSON.stringify(item.expected)} status=${result?.status ?? "invalid"} mode=${result?.mode ?? "none"} ${verdict}${fallbackReasons.length ? ` fallback=${fallbackReasons.join(",")}` : ""}`);
   if (result?.mode === "composed") for (const sentence of result.composed) console.log(sentence.text === undefined ? `  verbatim cites=${JSON.stringify(sentence.atom_ids)}` : `  composed=${JSON.stringify(sentence.text)} cites=${JSON.stringify(sentence.atom_ids)}`);
   else if (result?.mode === "extractive") for (const atom of atoms) console.log(`  extractive=${JSON.stringify(approved.get(atom.id)?.text ?? "UNAPPROVED")} id=${atom.id}`);
@@ -105,4 +120,5 @@ for (const [index, item] of cases.entries()) {
   }
 }
 console.log(`Summary: cases=${cases.length} composed_candidates=${composedCandidates} quran_rejections=${quranRejections}; inspect rejected candidates to distinguish ordinary-phrase false positives from actual Quran wording.${direct ? "" : " HTTP mode cannot observe server fallback reasons or rejected candidates."}`);
+await writeResult({ type: "summary", cases: cases.length, verdicts: verdictCounts, failed, composed_candidates: composedCandidates, quran_rejections: quranRejections, latency_ms: performance.now() - evaluationStarted, fallback_observable: direct });
 process.exitCode = failed ? 1 : 0;

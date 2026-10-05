@@ -14,6 +14,8 @@ export { fuse, tokenize, tsQueryText } from "./query.ts";
 export interface RetrieveInput {
   question: string; surah: number; depth: 0 | 1 | 2 | 3; stop?: number; stopAyahs?: string[];
   openRecord?: string; historyAtomIds?: string[]; k?: number;
+  /** Per-call evaluation override; omitted keeps HUDA_RAG_MODE behaviour. */
+  mode?: "lexical" | "semantic" | "hybrid";
 }
 export interface Retrieved {
   atoms: Atom[];
@@ -36,7 +38,8 @@ const ATOM_DEFAULT_K = 24, PASSAGE_DEFAULT_K = 8;
 
 type RagMode = "hybrid" | "lexical" | "dense";
 /** `HUDA_RAG_MODE=hybrid|lexical|dense` (default hybrid): which legs run, for evaluation. */
-function ragMode(): RagMode {
+export function ragMode(override?: RetrieveInput["mode"]): RagMode {
+  if (override) return override === "semantic" ? "dense" : override;
   const value = process.env.HUDA_RAG_MODE;
   return value === "lexical" || value === "dense" ? value : "hybrid";
 }
@@ -65,7 +68,7 @@ export interface AtomRow { atom: Atom; group: number; score: number | null; lex_
 export async function searchAtoms(input: RetrieveInput): Promise<{ rows: AtomRow[]; mode: Retrieved["mode"]; candidates: Retrieved["candidates"] }> {
   const pool = getPool();
   if (!pool) throw new Error("no database");
-  const { tsquery, vector, mode } = await legs(input.question, ragMode());
+  const { tsquery, vector, mode } = await legs(input.question, ragMode(input.mode));
   const history = (input.historyAtomIds ?? []).filter((id) => typeof id === "string" && id.length <= 100).slice(0, 40);
   const openRecord = typeof input.openRecord === "string" && input.openRecord.length <= 60 ? input.openRecord : null;
   const stop = Number.isInteger(input.stop) && input.stop! >= 1 ? input.stop! : null;
