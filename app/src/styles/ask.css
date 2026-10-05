@@ -25,6 +25,20 @@
 .ask-atom .claim-text { margin-block: var(--space-sm) var(--space-xs); font-size: var(--text-details); }
 .ask-note { color: var(--ink-3); font-size: var(--text-label); line-height: 1.8; }
 
+/* The written answer: the system's wording, no border and no fill, its source marker inline at the end.
+   The verified sentences it rests on stay one tap away, under the summary. */
+.ask-composed-note { color: var(--ink-2); font-size: var(--text-ui); line-height: var(--leading-ui); }
+.ask-written.claim-text { margin-block: var(--space-sm) var(--space-xs); color: var(--ink); font-size: var(--text-details); }
+.ask-composed + .ask-composed, .ask-composed + .ask-atom, .ask-atom + .ask-composed { border-block-start: 1px solid var(--line); }
+.ask-verified summary { list-style: none; cursor: pointer; color: var(--ink-2); font-size: var(--text-ui); line-height: var(--leading-ui); }
+.ask-verified summary::-webkit-details-marker { display: none; }
+.ask-verified summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.ask-verified-close { display: none; }
+.ask-verified[open] .ask-verified-close { display: inline; }
+.ask-verified[open] .ask-verified-open { display: none; }
+.ask-verified-body { margin-block-start: var(--space-xs); padding-inline-start: var(--space-md); border-inline-start: 2px solid var(--border-ui); }
+.ask-verified-body .ask-atom:last-child { border-block-end: 0; }
+
 /* The depth a sentence or a deeper question comes from: a small neutral pill, none of the six source shapes. */
 .level-chip { display: inline-flex; align-items: center; min-block-size: 1.5rem; padding-inline: var(--space-md); border: 1px solid var(--line-strong); border-radius: var(--radius-pill); background: var(--surface-2); color: var(--ink-2); font-size: var(--text-label); font-weight: 600; line-height: 1.5; }
 .ask-atom .level-chip { margin-block-end: var(--space-sm); }

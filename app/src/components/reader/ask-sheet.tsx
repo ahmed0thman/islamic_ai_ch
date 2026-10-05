@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
+import { Fragment, useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { Search01Icon } from "@hugeicons/core-free-icons";
-import type { AskResponse } from "@/lib/ask/types";
+import type { AskResponse, PublicAtom } from "@/lib/ask/types";
+import { composedView, type ComposedItem } from "@/lib/ask-composed-view";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { BottomSheet } from "./bottom-sheet";
@@ -54,12 +55,31 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
   function onKey(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); void submit(); }
   }
+  /** One verified sentence, drawn exactly as the reading draws it. */
+  function atomRows(atoms: PublicAtom[]) {
+    return <>{atoms.map((atom) => <div className="ask-atom" key={atom.id}>
+      <ParagraphView block={{ type: "paragraph", role: atom.role, segments: atom.segments }} mode="flow" runPrefix={`ask:${atom.id}`} {...reading} />
+      {atom.level !== ask.depth ? <span className="level-chip">{ui.ask.from_level} {levelName(atom.level)}</span> : null}
+    </div>)}</>;
+  }
+  /** The written sentence first, then the verified sentences it rests on, one tap below it. */
+  function composedItems(items: ComposedItem[]) {
+    return <>{items.map((item, index) => item.kind === "verbatim" ? <Fragment key={index}>{atomRows(item.atoms)}</Fragment>
+      : <div className="ask-composed" key={index}>
+        <div className="ask-written"><ParagraphView block={{ type: "paragraph", role: "claim", segments: [{ t: "text", v: item.text }, { t: "mark", records: item.records }] }} mode="flow" runPrefix={`ask-composed:${index}`} {...reading} /></div>
+        <details className="ask-verified">
+          <summary><span className="ask-verified-open">{ui.ask.show_verified}</span><span className="ask-verified-close">{ui.ask.hide_verified}</span></summary>
+          <div className="ask-verified-body">{atomRows(item.atoms)}</div>
+        </details>
+      </div>)}</>;
+  }
+  const composed = result ? composedView(result) : null;
+  const levelName = (depth: number) => ui.levels.find((level) => level.depth === depth)?.name ?? "";
   const fixed = result?.status === "unavailable" ? ui.ask.unavailable
     : result?.status === "fatwa" ? ui.phrases.fatwa
     : result?.status === "out_of_scope" ? ui.phrases.out_of_scope
     : result?.status === "not_arabic" ? ui.phrases.arabic_only
     : ui.phrases.insufficient_sources;
-  const levelName = (depth: number) => ui.levels.find((level) => level.depth === depth)?.name ?? "";
   return <BottomSheet title={ask.stop ? ui.ask.title_stop : ui.ask.title} ui={ui} onClose={onClose}>
     <div className="ask-sheet">
       <p className="ask-context"><span>{ui.ask.about_stop}</span>: <b>{ask.stop?.title ?? ui.ask.whole_surah}</b></p>
@@ -74,10 +94,11 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
         {loading ? <p className="ask-loading">{ui.ask.loading}</p>
           : result?.status === "answer" ? <>
             <h3 className="ask-answer-title">{ui.ask.answer_title}</h3>
-            {result.atoms.map((atom) => <div className="ask-atom" key={atom.id}>
-              <ParagraphView block={{ type: "paragraph", role: atom.role, segments: atom.segments }} mode="flow" runPrefix={`ask:${atom.id}`} {...reading} />
-              {atom.level !== ask.depth ? <span className="level-chip">{ui.ask.from_level} {levelName(atom.level)}</span> : null}
-            </div>)}
+            {composed ? <>
+              <p className="ask-composed-note">{ui.ask.composed_note}</p>
+              {composedItems(composed)}
+            </>
+              : atomRows(result.atoms)}
           </>
           : result ? <>
             <p className="ask-fixed">{fixed}</p>
