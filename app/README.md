@@ -1,6 +1,6 @@
 # Huda reader
 
-Arabic, RTL, mobile-first static Quran reader. It renders prepared content only.
+Arabic, RTL, mobile-first Quran reader. It renders prepared content. Setup, tests, environment variables and the repository map are in the root [`README.md`](../README.md); every variable is listed in `.env.example`.
 
 Requires Node.js >=20.9 and pnpm 10.26.1. From the repository root:
 
@@ -26,9 +26,12 @@ Build the static site:
 pnpm build
 ```
 
-Deploy the contents of `out/` at the host root, preserving directory indexes and
-all `_next` assets. There is no Node server in production. For a local production
-preview, use an existing static HTTP server (for example, Python):
+The default build is a static export: deploy the contents of `out/` at the host root,
+preserving directory indexes and all `_next` assets, with no Node server. Setting
+`HUDA_ASK=1` or `HUDA_WEAVE=1` at build time builds a Node server instead (the "ask"
+assistant and adaptive weaving; `pnpm start`); see the root README and `render.yaml`
+(the deployment has not been tried yet). For a local preview of the static build, use
+an existing static HTTP server (for example, Python):
 
 ```sh
 python3 -m http.server 4173 --directory out
@@ -50,13 +53,15 @@ router payload, asset, and font on the first successful online visit. `postbuild
 generates its cache version from output bytes. Offline readiness requires a
 completed installation; use HTTPS or localhost. An updated worker waits for
 existing tabs to close, avoiding mixed editions. Content updates require a new
-build. No analytics, external client font requests, or remote content fetching.
+build. No analytics and no external client font requests. The reader page fetches no remote
+content (only the optional server-mode "ask" calls model providers and a database).
 Source links open only when requested by the reader.
 
 All design tokens are at the top of `src/app/globals.css`, including a dark theme
 via `prefers-color-scheme`. Source icons keep their supplied shape and color;
-dark mode lifts the colors for legibility. No UI kit or state library.
+dark mode lifts the colors for legibility. Components under `src/components/ui/` come
+from shadcn/ui (Radix); icons are Hugeicons. No state library.
 
-Written without installing packages, contacting the network, or starting a
-server. Run the commands above to verify TypeScript, build, focus/keyboard and
-RTL layout, real font rendering, narrow screens, both themes, and offline reload.
+Verified on 5 October 2026: `pnpm typecheck` and `pnpm test` pass (see the root README).
+Real font rendering, narrow screens, both themes and offline reload still need checking
+on target devices.
