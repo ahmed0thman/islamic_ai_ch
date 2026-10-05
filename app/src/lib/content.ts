@@ -98,6 +98,7 @@ export function validateSurah(value: unknown): asserts value is Surah {
     string(record.claim, `${at}.claim`); string(record.status_text, `${at}.status_text`);
     integer(record.depth_min, `${at}.depth_min`, 0, 3);
     if (Object.hasOwn(record, "science") && record.science !== null) string(record.science, `${at}.science`);
+    if (Object.hasOwn(record, "term")) { string(record.term, `${at}.term`); if (!(record.term as string).trim()) fail(`${at}.term`, "expected a nonempty term name"); }
     array(record.ayah_keys, `${at}.ayah_keys`).forEach((key) => {
       string(key, `${at}.ayah_keys`);
       const match = /^([1-9]\d{0,2}):([1-9]\d{0,2})$/.exec(key);
@@ -229,6 +230,13 @@ export function validateSurah(value: unknown): asserts value is Surah {
       return;
     }
     if (block.role !== "claim" && block.role !== "transmission") fail(at, "unknown paragraph role");
+    if (Object.hasOwn(block, "kind")) {
+      // The closing summary: a top-level claim of its own screen, so no stop title and no ayahs.
+      if (block.kind !== "summary") fail(at, "unknown paragraph kind");
+      if (block.role !== "claim") fail(at, "a summary is a claim");
+      if (inDetails) fail(at, "a summary never sits inside details");
+      if (["title", "ayahs"].some((field) => Object.hasOwn(block, field))) fail(at, "a summary has no title and no ayahs");
+    }
     validateMapBlock(block, at);
     validateSegments(block.segments, `${at}.segments`, depth);
   };
@@ -248,7 +256,10 @@ export function validateSurah(value: unknown): asserts value is Surah {
           if (b + 1 >= blocks.length || object(blocks[b + 1], here).type !== "paragraph") fail(here, "question must be followed by its answer paragraph");
         }
       } else if (block.type === "ayah") array(block.keys, `${here}.keys`).forEach((key) => requireAyah(key, `${here}.keys`));
-      else if (block.type === "paragraph") validateParagraph(block, here, d);
+      else if (block.type === "paragraph") {
+        validateParagraph(block, here, d);
+        if (block.kind === "summary" && b !== blocks.length - 1) fail(here, "a summary is the last block of its level");
+      }
       else if (block.type === "details") {
         validateSegments(block.title, `${here}.title`, d, true);
         array(block.blocks, `${here}.blocks`).forEach((value, i) => validateParagraph(object(value, `${here}.blocks[${i}]`), `${here}.blocks[${i}]`, d, true));

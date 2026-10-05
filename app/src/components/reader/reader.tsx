@@ -8,6 +8,7 @@ import { relationRecords } from "@/lib/relations";
 import { deriveTermsSummary } from "@/lib/terms-summary";
 import { scopeContains, scopeStart, type Scope } from "@/lib/scope";
 import { jumpToAyah } from "@/lib/reader-dom";
+import { closingParts, lastStop } from "@/lib/closing";
 import { useSheets } from "./sheet-provider";
 import { ReadingProvider } from "./reading-context";
 import { SurahHeader } from "./surah-header";
@@ -17,6 +18,10 @@ import { MiniStrip } from "./mini-strip";
 import { ViewToggle } from "./view-toggle";
 import { SurahThread } from "./surah-thread";
 import { StopScene } from "./stop-scene";
+import { SceneShell } from "./scene-shell";
+import { ClosingScene } from "./closing-scene";
+import { ClosingSection } from "./closing-section";
+import { ClosingEntry } from "./closing-entry";
 import { ContinuousView } from "./continuous-view";
 import { TermsSummary } from "./terms-summary";
 
@@ -32,7 +37,8 @@ function remember(depth: Depth) {
 function rememberView(view: ReadingView) {
   try { localStorage.setItem(viewStorageKey, view); } catch { /* Optional device preference. */ }
 }
-function updateUrl(depth: Depth, stop: number | null, text: boolean, push: boolean) {
+/** `stop` is a stop number, `"summary"` for the closing screen, or null for no scene. */
+function updateUrl(depth: Depth, stop: number | "summary" | null, text: boolean, push: boolean) {
   const url = new URL(window.location.href);
   url.searchParams.set("d", String(depth));
   if (stop !== null) url.searchParams.set("stop", String(stop)); else url.searchParams.delete("stop");
@@ -49,6 +55,8 @@ export function Reader({ surah, ui, nextSurah, surahs }: { surah: Surah; ui: Ui;
   const [scope, setScope] = useState<Scope>({ kind: "surah" });
   const [view, setView] = useState<ReadingView>("map");
   const [stopNumber, setStopNumber] = useState<number | null>(null);
+  // The closing screen is a scene of its own, never a stop: it has no number and shares no state with the stops.
+  const [closingOpen, setClosingOpen] = useState(false);
   const [settled, setSettled] = useState(false);
   const [visited, setVisited] = useState<Set<string>>(() => new Set());
   const [currentStops, setCurrentStops] = useState<Partial<Record<Depth, number>>>({});
@@ -70,19 +78,21 @@ export function Reader({ surah, ui, nextSurah, surahs }: { surah: Surah; ui: Ui;
       const canOpenScene = units.length > 0;
       const rawStop = params.get("stop");
       const requestedStop = rawStop && /^[1-9]\d*$/.test(rawStop) ? Number(rawStop) : null;
+      const requestedClosing = rawStop === "summary" && Boolean(maps[next].summary);
       const requestedView = params.get("view");
       const nextView: ReadingView = requestedView === "text" ? "text"
-        : requestedStop !== null || requestedView === "map" ? "map"
+        : requestedStop !== null || requestedClosing || requestedView === "map" ? "map"
         : useSavedView ? savedView : "map";
       const stop = canOpenScene && nextView === "map"
         ? units.find((item) => item.number === requestedStop) : undefined;
-      setDepth(next); setView(nextView); setStopNumber(stop?.number ?? null);
+      const closing = canOpenScene && nextView === "map" && requestedClosing;
+      setDepth(next); setView(nextView); setStopNumber(stop?.number ?? null); setClosingOpen(closing);
       if (stop) {
         setVisited((previous) => new Set(previous).add(`${next}:${stop.blockIndex}`));
         setCurrentStops((previous) => ({ ...previous, [next]: stop.number }));
       }
       remember(next);
-      updateUrl(next, stop?.number ?? null, nextView === "text" || !units.length, false);
+      updateUrl(next, closing ? "summary" : stop?.number ?? null, nextView === "text" || !units.length, false);
     }
     restore(true);
     const popstate = () => { if (!document.documentElement.hasAttribute("data-huda-sheet-open")) restore(false); };
@@ -101,6 +111,12 @@ export function Reader({ surah, ui, nextSurah, surahs }: { surah: Surah; ui: Ui;
   const mapped = units.length > 0;
   const showMap = mapped && view === "map";
   const stop = showMap ? units.find((item) => item.number === stopNumber) : undefined;
+  // The closing summary of this level, when it has one: the last block, never a stop.
+  const summary = map.summary;
+  const closing = showMap && closingOpen && summary && !stop ? summary : undefined;
+  const parts = useMemo(() => closingParts(surah.passages, units), [surah.passages, units]);
+  // A level without stops ends on its last section.
+  const lastUnit = map.stops.length ? lastStop(units) : items.shelf.at(-1) ?? items.pins.at(-1);
   // The scene walks the weaving in its own order, so the opening question is followed by the paragraph the text puts second.
   const playlist: SceneUnit[] = stop?.kind ? depthPlaylist(items, stop) : [...map.stops].sort((a, b) => a.blockIndex - b.blockIndex);
   const neighbours = stop ? sceneNeighbours(playlist, stop.number) : { previous: undefined, next: undefined };
@@ -118,17 +134,28 @@ export function Reader({ surah, ui, nextSurah, surahs }: { surah: Surah; ui: Ui;
   function chooseScope(next: Scope) { setScope(next); window.requestAnimationFrame(() => jumpToAyah(scopeStart(surah, next))); }
   function jump(key: string) { if (mapped && view !== "map") chooseView("map"); window.requestAnimationFrame(() => jumpToAyah(key)); }
   function openStop(next: SceneUnit) {
-    setStopNumber(next.number);
+    const entering = stopNumber === null && !closing;
+    setStopNumber(next.number); setClosingOpen(false);
     setVisited((previous) => new Set(previous).add(`${depth}:${next.blockIndex}`));
     setCurrentStops((previous) => ({ ...previous, [depth]: next.number }));
-    updateUrl(depth, next.number, false, stopNumber === null);
+    updateUrl(depth, next.number, false, entering);
+  }
+  function openClosing() {
+    const entering = stopNumber === null && !closing;
+    setStopNumber(null); setClosingOpen(true);
+    updateUrl(depth, "summary", false, entering);
+  }
+  /** A part of the closing summary opens its first stop; from the continuous text that also returns to the map. */
+  function openPart(unit: SceneUnit) {
+    if (view !== "map") { setView("map"); rememberView("map"); }
+    openStop(unit);
   }
   function backToMap() {
     if (window.history.state?.hudaScene) window.history.back();
-    else { setStopNumber(null); updateUrl(depth, null, false, false); }
+    else { setStopNumber(null); setClosingOpen(false); updateUrl(depth, null, false, false); }
   }
   function chooseView(next: ReadingView) {
-    setView(next); setStopNumber(null); rememberView(next);
+    setView(next); setStopNumber(null); setClosingOpen(false); rememberView(next);
     updateUrl(depth, null, next === "text", true);
   }
   const startNumber = Number(scopeStart(surah, scope).split(":")[1]);
@@ -137,18 +164,24 @@ export function Reader({ surah, ui, nextSurah, surahs }: { surah: Surah; ui: Ui;
   const passage = stop ? surah.passages?.find((item) => item.id === stop.passage) : undefined;
   const nextPassage = neighbours.next && neighbours.next.passage !== stop?.passage ? surah.passages?.find((item) => item.id === neighbours.next!.passage) : undefined;
   return <ReadingProvider value={reading}><div className="huda-reader">
-    <SurahHeader surah={surah} surahs={surahs} scope={scope} ui={ui} onOpenUnit={() => openUnit(surah, scope, chooseScope)} />
+    <SurahHeader surah={surah} surahs={surahs} scope={scope} ui={ui} onOpenUnit={() => openUnit(surah, scope, chooseScope)} onMap={mapped && (view === "text" || stop || closing) ? (stop || closing ? backToMap : () => chooseView("map")) : undefined} />
     {showMap && hero ? <div className="hero-area"><HeroQuestion stop={hero} ui={ui} animate={settled} onOpen={openStop} /></div> : null}
     <div className="console">
       {depth !== 3 || mapped ? <MiniStrip groups={map.groups} depthPins={Object.fromEntries(map.groups.flatMap((group) => group.stations.map((station) => [station.ayah.key, station.stops.length])))} itemPins={items.pins.reduce<Record<string, number>>((counts, pin) => ({ ...counts, [pin.stationKey]: (counts[pin.stationKey] ?? 0) + 1 }), {})} current={currentAyah} scope={scope} onJump={jump} onScope={chooseScope} ariaLabel={ui.reader.ayahs_title} /> : null}
-      <DepthDial depth={depth} levels={ui.levels} label={ui.reader.choose_depth} onChange={(next) => { setDepth(next); setStopNumber(null); remember(next); updateUrl(next, null, view === "text" || !(maps[next].stops.length || itemModels[next].units.length), true); }} />
+      <DepthDial depth={depth} levels={ui.levels} label={ui.reader.choose_depth} onChange={(next) => { setDepth(next); setStopNumber(null); setClosingOpen(false); remember(next); updateUrl(next, null, view === "text" || !(maps[next].stops.length || itemModels[next].units.length), true); }} />
     </div>
     {mapped ? <ViewToggle view={view} ui={ui} onChange={chooseView} /> : null}
     <article className="reading-body" aria-label={ui.levels.find((item) => item.depth === depth)!.name}>
-      {showMap ? <><SurahThread map={map} items={items} scope={scope} onScope={chooseScope} onAyah={(key) => openUnit(surah, { kind: "ayah", key }, chooseScope)} ui={ui} visited={visitedNumbers} currentStop={currentStops[depth] ?? null} hidden={Boolean(stop)} onOpen={openStop} />
-          {termsSummary ? <TermsSummary summary={termsSummary} ui={ui} hidden={Boolean(stop)} onOpen={openSource} /> : null}</>
-        : level.blocks.length ? <div className="reader-text"><ContinuousView key={depth} blocks={map.continuousBlocks} {...reading} />{termsSummary ? <TermsSummary summary={termsSummary} ui={ui} onOpen={openSource} /> : null}</div> : <p className="reader-text">{ui.reader.empty_level}</p>}
+      {showMap ? <><SurahThread map={map} items={items} scope={scope} onScope={chooseScope} onAyah={(key) => openUnit(surah, { kind: "ayah", key }, chooseScope)} ui={ui} visited={visitedNumbers} currentStop={currentStops[depth] ?? null} hidden={Boolean(stop || closing)} onOpen={openStop} />
+          {summary ? <ClosingEntry ui={ui} threaded={!items.shelf.length} hidden={Boolean(stop || closing)} onOpen={openClosing} /> : null}
+          {termsSummary ? <TermsSummary summary={termsSummary} ui={ui} hidden={Boolean(stop || closing)} onOpen={openSource} /> : null}</>
+        : level.blocks.length ? <div className="reader-text"><ContinuousView key={depth} blocks={map.continuousBlocks} {...reading} />
+          {summary ? <ClosingSection surahName={surah.surah.name} summary={summary} parts={mapped ? parts : parts.map(({ passage }) => ({ passage }))} termsSummary={termsSummary} nextSurah={nextSurah} onPart={openPart} onMap={mapped ? () => chooseView("map") : undefined} {...reading} />
+            : termsSummary ? <TermsSummary summary={termsSummary} ui={ui} onOpen={openSource} /> : null}</div> : <p className="reader-text">{ui.reader.empty_level}</p>}
     </article>
-    {stop ? <StopScene stop={stop} stops={playlist} passage={passage} nextPassage={nextPassage} termsSummary={termsSummary} {...neighbours} nextSurah={nextSurah} onNavigate={openStop} onBack={backToMap} {...reading} /> : null}
+    {stop || closing ? <SceneShell onBack={backToMap}>
+      {stop ? <StopScene stop={stop} stops={playlist} passage={passage} nextPassage={nextPassage} termsSummary={termsSummary} {...neighbours} nextSurah={nextSurah} onClosing={summary ? openClosing : undefined} onNavigate={openStop} onBack={backToMap} {...reading} />
+        : <ClosingScene surahName={surah.surah.name} summary={closing!} parts={parts} termsSummary={termsSummary} nextSurah={nextSurah} onPart={openPart} previous={lastUnit} onPrevious={lastUnit ? () => openStop(lastUnit) : undefined} onMap={backToMap} onBack={backToMap} {...reading} />}
+    </SceneShell> : null}
   </div></ReadingProvider>;
 }

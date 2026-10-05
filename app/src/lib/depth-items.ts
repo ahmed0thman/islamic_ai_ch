@@ -64,7 +64,8 @@ export function deriveDepthItems(surah: Surah, depth: Depth): DepthItemsModel {
   const sections: Section[] = [];
   let section: Section | undefined;
   blocks.forEach((block, index) => {
-    if (block.type === "ayah") return;
+    // The closing summary is not a section: the closing screen shows it.
+    if (block.type === "ayah" || (block.type === "paragraph" && block.kind === "summary")) return;
     if (block.type === "heading") { section = { heading: block, blocks: [] }; sections.push(section); return; }
     if (!section) { section = { blocks: [] }; sections.push(section); }
     section.blocks.push({ block, index });

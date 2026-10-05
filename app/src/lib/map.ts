@@ -15,6 +15,8 @@ export interface MapStop {
 export interface MapStation { ayah: Ayah; stops: MapStop[] }
 export interface MapGroup { passage?: Passage; stations: MapStation[] }
 export interface SurahMapModel {
+  /** The closing synthesis of the level, when it has one. It is never a stop, a scene paragraph or part of the continuous blocks: the closing screen shows it. */
+  summary?: ParagraphBlock;
   groups: MapGroup[];
   stops: MapStop[];
   continuousBlocks: Block[];
@@ -39,9 +41,14 @@ export function deriveSurahMap(surah: Surah, depth: Depth): SurahMapModel {
   const stops: MapStop[] = [];
   const unassignedBlocks: Block[] = [];
   let current: MapStop | undefined;
+  let summary: ParagraphBlock | undefined;
 
   blocks.forEach((block, blockIndex) => {
-    if (block.type === "paragraph" && block.title) {
+    if (block.type === "paragraph" && block.kind === "summary") {
+      // It closes the level; it never joins the scene of the stop before it.
+      summary = block;
+      current = undefined;
+    } else if (block.type === "paragraph" && block.title) {
       current = {
         number: 0, blockIndex, title: block.title, ayahKeys: [...block.ayahs!],
         stationKey: block.ayahs![0], passage: block.passage,
@@ -85,8 +92,8 @@ export function deriveSurahMap(surah: Surah, depth: Depth): SurahMapModel {
   const ordered = groups.flatMap((group) => group.stations.flatMap((station) => station.stops));
   ordered.forEach((stop, index) => { stop.number = index + 1; });
   return {
-    groups, stops: ordered, unassignedBlocks,
-    continuousBlocks: blocks.filter((block, index) => !isDuplicateQuestion(block, blocks[index + 1])),
+    summary, groups, stops: ordered, unassignedBlocks,
+    continuousBlocks: blocks.filter((block, index) => !(block.type === "paragraph" && block.kind === "summary") && !isDuplicateQuestion(block, blocks[index + 1])),
   };
 }
 

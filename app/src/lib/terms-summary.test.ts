@@ -45,3 +45,13 @@ test("a term whose record is missing is skipped, and the blocks are not changed"
   assert.equal(deriveTermsSummary(blocks, records, sciences)!.termCount, 1);
   assert.deepEqual(blocks, snapshot);
 });
+test("a chip shows the record's approved name when it has one, and the wording of the text otherwise", () => {
+  const named: Record<string, SourceRecord> = { a: { ...record("a", "balagha"), term: "approved" }, c: record("c") };
+  const summary = deriveTermsSummary([para(term("as written", "a"), term("plain", "c"), mark)], named, sciences)!;
+  assert.deepEqual(summary.groups.flatMap((group: { terms: { text: string }[] }) => group.terms.map((item) => item.text)), ["approved", "plain"]);
+});
+test("no sciences in the level: the count of sciences is zero and the terms sit in one group without a science", () => {
+  const summary = deriveTermsSummary([para(term("x", "c"), mark)], records, sciences)!;
+  assert.equal(summary.scienceCount, 0);
+  assert.deepEqual(summary.groups.map((group: { science: string | null }) => group.science), [null]);
+});

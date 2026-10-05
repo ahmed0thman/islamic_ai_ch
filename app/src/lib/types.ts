@@ -12,7 +12,8 @@ export type Segment =
   | { t: "term"; v: string; record: string }
   | { t: "mark"; records: string[] };
 export type TitleSegment = Extract<Segment, { t: "text" | "term" | "mark" }>;
-export type ParagraphBlock = { type: "paragraph"; role: "claim" | "transmission" | "example"; title?: string; ayahs?: string[]; passage?: string; segments: Segment[] };
+/** `kind: "summary"` marks the closing synthesis of a level: a claim with no title and no ayahs, shown on its own screen after the last stop (never a stop). */
+export type ParagraphBlock = { type: "paragraph"; role: "claim" | "transmission" | "example"; kind?: "summary"; title?: string; ayahs?: string[]; passage?: string; segments: Segment[] };
 export type Block = (
   | { type: "heading"; text: string; kind?: "question" }
   | { type: "ayah"; keys: string[] }
@@ -30,6 +31,8 @@ export interface SourceRecord {
   status_text: string; depth_min: Depth; ayah_keys: string[]; evidence: Evidence[];
   /** Term records only: a key of `ui.sciences`. */
   science?: string | null;
+  /** Term records only: the approved name of the term (a noun phrase), shown on its chip and as its panel title. Absent: the wording of the text is used. */
+  term?: string;
 }
 export interface Surah {
   schema: 1; fixture: boolean; surah: SurahSummary; ayahs: Ayah[];
@@ -49,6 +52,7 @@ export interface Ui {
   sciences?: Record<string, string>;
   example: { label: string };
   terms_summary: Record<"title" | "terms" | "sciences" | "other", string>;
+  summary: Record<"title" | "parts" | "open", string>;
   panel: Record<"title" | "claim" | "source" | "author" | "locator" | "quote" | "ruling" | "ruler" | "open_source" | "close" | "no_badge" | "takhrij" | "for_text" | "sources_count", string> & { science_of: string };
   legend: Record<"title" | "icons_title" | "badges_title" | "show" | "hide", string>;
   reader: Record<"choose_depth" | "ayahs_title" | "surahs_title" | "back" | "empty_level"

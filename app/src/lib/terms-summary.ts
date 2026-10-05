@@ -30,7 +30,8 @@ export function deriveTermsSummary(blocks: readonly Block[], records: Record<str
     const science = scienceOf(record, sciences);
     let group = groups.find((item) => item.science === science);
     if (!group) { group = { science, terms: [] }; groups.push(group); }
-    group.terms.push({ text: segment.v, record });
+    // The approved name of the term when its record carries one; otherwise the wording of the text.
+    group.terms.push({ text: record.term || segment.v, record });
   }
   if (!seen.size) return null;
   groups.sort((a, b) => Number(a.science === null) - Number(b.science === null));

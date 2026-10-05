@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import type { Surah, SurahSummary, Ui } from "@/lib/types";
 import type { Scope } from "@/lib/scope";
 import { numeral } from "@/lib/numerals";
@@ -11,8 +10,9 @@ import { SourceGlyph } from "@/components/ui/source-chip";
 import { LegendTrigger } from "./legend-trigger";
 import { SurahSwitcher } from "./surah-switcher";
 
-export type SurahHeaderProps = { surah: Surah; surahs: SurahSummary[]; scope: Scope; ui: Ui; onOpenUnit: () => void };
-export function SurahHeader({ surah, surahs, scope, ui, onOpenUnit }: SurahHeaderProps) {
+/** `onMap`: opens the map of this surah; given only when the reader is on a page above it (the continuous text), so the arrow is absent on the map itself. */
+export type SurahHeaderProps = { surah: Surah; surahs: SurahSummary[]; scope: Scope; ui: Ui; onOpenUnit: () => void; onMap?: () => void };
+export function SurahHeader({ surah, surahs, scope, ui, onOpenUnit, onMap }: SurahHeaderProps) {
   let unit = "";
   if (scope.kind === "ayah") unit = numeral(Number(scope.key.split(":")[1]));
   else if (scope.kind === "range") unit = `${numeral(scope.from)}–${numeral(scope.to)}`;
@@ -21,7 +21,7 @@ export function SurahHeader({ surah, surahs, scope, ui, onOpenUnit }: SurahHeade
     if (passage) unit = `${passage.title} ${numeral(Number(passage.from.split(":")[1]))}–${numeral(Number(passage.to.split(":")[1]))}`;
   }
   return <header className="surah-header">
-    <div className="reader-appbar"><div className="reader-brand"><Button asChild variant="quiet" size="icon"><Link href="/" prefetch={false} aria-label={ui.reader.back}><Icon icon={ArrowRight01Icon} /></Link></Button><span>{ui.app_name}</span></div><LegendTrigger ui={ui} /></div>
+    <div className="reader-appbar"><div className="reader-brand">{onMap ? <Button variant="quiet" size="icon" aria-label={ui.reader.map_view} onClick={onMap}><Icon icon={ArrowRight01Icon} /></Button> : null}<span>{ui.app_name}</span></div><LegendTrigger ui={ui} /></div>
     <div className="surah-cover"><h1>{surah.surah.name}</h1><div className="cover-meta"><span className="cover-count" aria-label={`${ui.reader.ayahs_title}: ${numeral(surah.surah.ayah_count)}`}><b>{numeral(surah.surah.ayah_count)}</b><span aria-hidden="true"><SourceGlyph kind="ayah" size={20} /></span></span><p>{ui.tagline}</p></div><Button variant="pill" className="reading-unit-button" aria-haspopup="dialog" onClick={(event) => { event.currentTarget.focus({ preventScroll: true }); onOpenUnit(); }}><Icon icon={Bookmark01Icon} /><span>{surah.surah.name}{unit ? <> · <bdi>{unit}</bdi></> : null}</span></Button><SurahSwitcher surahs={surahs} current={surah.surah.no} ui={ui} /></div>
   </header>;
 }
