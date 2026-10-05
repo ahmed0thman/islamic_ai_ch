@@ -27,7 +27,7 @@ CHECKS = {
     "C7": "record depth restrictions", "C8": "display refusals excluded",
     "C9": "four nonempty levels", "C10": "held blocks excluded",
     "C11": "stop titles", "C12": "stop ayahs",
-    "C13": "passages", "C14": "map size",
+    "C13": "passages", "C14": "map size", "C15": "examples",
     "W12": "stop ayahs carried by the stop's records (warning)",
 }
 # Reported but never refuse an export: half of the built surahs still trip W12.
@@ -106,8 +106,13 @@ def validate_shape(nasij, private, no):
             for ref in block["keys"]:
                 text(ref, "ayah key", True)
         elif kind == "paragraph":
-            require(block.get("role") in ("claim", "transmission"), "unknown paragraph role")
-            segment_shape(block.get("segments"))
+            require(block.get("role") in ("claim", "transmission", "example"), "unknown paragraph role")
+            segments = block.get("segments")
+            require(isinstance(segments, list) and segments, "segments: expected nonempty list")
+            for seg in segments:
+                require(isinstance(seg, dict), "segment: expected object")
+            if block["role"] != "example":
+                segment_shape(segments)
         elif kind == "details":
             segment_shape(block.get("title"), title=True)
             require(isinstance(block.get("blocks"), list), "details.blocks: expected list")
@@ -132,7 +137,7 @@ def validate_shape(nasij, private, no):
     return records, sources
 
 
-def run_checks(nasij, records, quran, no):
+def run_checks(nasij, records, quran, no, ui=None):
     counts = {c: [0, []] for c in CHECKS}
     uses = defaultdict(list)
     ayah_refs = set()
@@ -154,6 +159,36 @@ def run_checks(nasij, records, quran, no):
                       if tuple(words[i:i + 4]) in windows), None)
         check("C2", "﴿" not in value and "﴾" not in value and found is None,
               f"{where}: Quran brackets or four-word match {found!r}")
+
+    def check_example(block, depth, where):
+        segments = block["segments"]
+        for snum, seg in enumerate(segments, 1):
+            if seg["t"] != "text":
+                check("C15", False, f"{where}, segment {snum}: example holds a non-text segment")
+        check("C15", "title" not in block and "ayahs" not in block and "passage" not in block,
+              f"{where}: example must not be a stop")
+        check("C15", depth in (1, 2), f"{where}: example outside levels 1 and 2")
+        examples[depth] += 1
+        check("C15", examples[depth] <= 1, f"level {depth}: more than one example")
+        prev_kind, prev_role = followers.get(depth, (None, None))[:2]
+        check("C15", prev_kind is not None and prev_role in ("claim", "transmission"),
+              f"{where}: example must follow a claim paragraph")
+        joined = "".join(s["v"] for s in segments if s["t"] == "text")
+        check("C15", sentence_count(joined) <= 2, f"{where}: example longer than two sentences")
+        # C2 still applies to the whole joined example text, not segment by segment.
+        check_text(joined, where)
+
+    def sentence_count(value):
+        ends = 0
+        saw_text = bool(value.strip())
+        for ch in value:
+            if ch in ".!?\u061f\u2026":
+                if saw_text:
+                    ends += 1
+                    saw_text = False
+            elif not ch.isspace():
+                saw_text = True
+        return ends + (1 if saw_text else 0)
 
     def check_segments(segments, role, depth, where, refs, title=False):
         check("C4", any(s["t"] == "mark" for s in segments), f"{where}: no marker")
@@ -201,8 +236,11 @@ def run_checks(nasij, records, quran, no):
     check("C9", len(levels) == 4 and sorted(l["depth"] for l in levels) == [0, 1, 2, 3]
           and all(l["blocks"] for l in levels), "expected exactly depths 0..3 with nonempty blocks")
     held = [h["block"] for h in nasij.get("held", [])]
+    examples = defaultdict(int)
+    followers = {}
     for level in levels:
         depth = level["depth"]
+        prev_kind, prev_role, inside_details = None, None, False
         for bnum, block in enumerate(level["blocks"], 1):
             where = f"level {depth}, block {bnum}"
             check("C10", block not in held, f"{where}: block is also listed under held")
@@ -210,13 +248,24 @@ def run_checks(nasij, records, quran, no):
                 check_text(block["text"], where)
             refs = block.get("keys", []) if block["type"] == "ayah" else []
             if block["type"] == "paragraph":
-                check_segments(block["segments"], block["role"], depth, where, refs)
+                if block["role"] == "example":
+                    check_example(block, depth, where)
+                else:
+                    prev_kind, prev_role, inside_details = "paragraph", block["role"], False
+                    check_segments(block["segments"], block["role"], depth, where, refs)
             elif block["type"] == "details":
+                prev_kind, prev_role, inside_details = "details", None, True
                 check_segments(block["title"], "claim", depth, f"{where}, title", refs, title=True)
                 for inner_num, inner in enumerate(block["blocks"], 1):
                     inner_where = f"{where}, inner block {inner_num}"
                     check("C10", inner not in held, f"{inner_where}: block is also listed under held")
-                    check_segments(inner["segments"], inner["role"], depth, inner_where, refs)
+                    if inner["role"] == "example":
+                        check("C15", False, f"{inner_where}: example inside details")
+                    else:
+                        check_segments(inner["segments"], inner["role"], depth, inner_where, refs)
+            else:
+                prev_kind, prev_role, inside_details = block["type"], None, False
+            followers[depth] = (prev_kind, prev_role, inside_details)
             for ref in refs:
                 ayah_refs.add(ref)
                 check("C1", ref in quran, f"{where}: unknown ayah {ref}")
@@ -258,7 +307,7 @@ def run_checks(nasij, records, quran, no):
         stops = 0
         for block in map_blocks(level["blocks"]):
             where = f"level {level['depth']}, map block"
-            is_stop = block["type"] == "paragraph" and "title" in block
+            is_stop = block["type"] == "paragraph" and "title" in block and block.get("role") != "example"
             if "title" in block and block["type"] != "details":
                 title = block["title"]
                 valid = (block["type"] == "paragraph" and isinstance(title, str)
@@ -276,7 +325,7 @@ def run_checks(nasij, records, quran, no):
                          and all(isinstance(ref, str) and ref in own_set for ref in keys))
                 check("C12", valid and (not is_stop or bool(keys)),
                       f"{where}: ayahs must be own keys; a stop needs at least one")
-            if block["type"] == "paragraph" and isinstance(block.get("ayahs"), list):
+            if block["type"] == "paragraph" and block.get("role") != "example" and isinstance(block.get("ayahs"), list):
                 carried = stop_carry(block, records)
                 if carried:
                     for ref in block["ayahs"]:
@@ -299,6 +348,13 @@ def run_checks(nasij, records, quran, no):
         for owner in [r] + r["evidence"]:
             for ref in owner.get("ayah_keys") or []:
                 check("C1", ref in quran, f"{ident}: unknown record/evidence ayah {ref}")
+    sciences = (ui or {}).get("sciences") or {}
+    for ident, r in sorted(records.items()):
+        science = r.get("science")
+        if science is None or science == "":
+            continue
+        check("C3", isinstance(science, str) and science in sciences,
+              f"{ident}: unknown science {science!r}")
     return counts, uses, ayah_refs
 
 
@@ -341,6 +397,7 @@ def trim_quote(quote):
 
 def public_record(r, sources, ui, quran):
     ident = r["id"]
+    sciences = ui.get("sciences") or {}
     require(isinstance(r.get("ayah_keys"), list) and
             all(isinstance(ref, str) and ref in quran for ref in r["ayah_keys"]),
             f"{ident}: invalid ayah_keys")
@@ -408,9 +465,17 @@ def public_record(r, sources, ui, quran):
             if reason not in reasons:
                 reasons.append(reason)
         status = "\n".join(reasons)
-    return {"id": ident, "icons": [i for i in ui["icon_order"] if i in icons],
-            "badge": badge, "claim": r["claim"], "status_text": status,
-            "depth_min": r["depth_min"], "ayah_keys": list(r["ayah_keys"]), "evidence": out}
+    science = r.get("science")
+    if science:
+        require(isinstance(science, str), f"{ident}: science must be a string")
+        require(science in sciences, f"{ident}: unknown science {science!r}")
+    out_record = {"id": ident, "icons": [i for i in ui["icon_order"] if i in icons],
+                  "badge": badge, "claim": r["claim"], "status_text": status,
+                  "depth_min": r["depth_min"], "ayah_keys": list(r["ayah_keys"]),
+                  "evidence": out}
+    if science:
+        out_record["science"] = science
+    return out_record
 
 
 def review_text(records, sources, uses, no):
@@ -437,7 +502,7 @@ def export_surah(no, records_root, content_root, quran, ui, check_only=False):
         private = read_json(records_root / str(no) / "records.v2.json")
         nasij = read_json(content_root / "nasij" / f"{no}.json")
         records, sources = validate_shape(nasij, private, no)
-        counts, uses, refs = run_checks(nasij, records, quran, no)
+        counts, uses, refs = run_checks(nasij, records, quran, no, ui)
     except (OSError, ValueError, TypeError, KeyError) as exc:
         print(f"{no} INPUT FAIL checked=1 failed=1: {exc}")
         return False

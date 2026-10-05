@@ -33,6 +33,8 @@ The app renders only what is in `content/`. It never writes Arabic text itself.
   "segments": [ /* Segment */ ] }
 { "type": "paragraph", "role": "example",                  // an everyday example in the explainer's manner (decision 076). System wording that illustrates and proves nothing:
   "segments": [ { "t": "text", "v": "…" } ] }              //   `text` segments only (no mark, quote, ayah or term), no `title`, no `ayahs`. The app prints the fixed label ui.ar.json -> example.label above it
+{ "type": "paragraph", "role": "claim", "kind": "summary", // the surah in one look (owner's note, 5 Oct): the closing synthesis of a level, shown on its own closing screen
+  "segments": [ /* Segment */ ] }                          //   before the link to the next surah. A claim paragraph like any other (markers, records), with no `title` and no `ayahs`
 { "type": "details",                                       // an item that opens on tap; closed by default
   "title": [ /* Segment: text | term | mark */ ],          // carries the short answer; it is a claim, so it ends with a mark
   "blocks": [ /* paragraph blocks only */ ] }
@@ -77,6 +79,7 @@ Rules the app relies on:
 - A `term` is not a marker: the sentence it sits in still ends with its own `mark`. Its record needs the same build and display permission as a claim's record.
 - A term's panel shows three things from its record: the plain meaning (`claim`), the scholar's sentence that uses the term (`evidence[].quote`), and the science it belongs to (`science`, a fixed classification like the source icons, never generated text).
 - An `example` paragraph: levels 1 and 2 only; at most one per level; at most two sentences; never the first block of a level and always directly after a `claim` or `transmission` paragraph (it belongs to that stop's scene); never inside `details`. It carries no marker because it claims nothing: any conclusion about the ayah is a separate claim paragraph with its record. It never likens God's act or the Prophet's state to ours (checked by the reviewer, not by the exporter).
+- A `summary` paragraph: at most one per level, always the last block of the level, never a stop and never inside `details`. It gathers what the level already said (the surah's parts in order, its purpose, how its end answers its beginning); a recap in words the level already used is frame wording, and anything new is a claim with its marker. The app draws the closing screen from it together with `passages` (their titles, in order) and the level's terms.
 - A `details` title follows the rules of a claim paragraph; its inner blocks follow the rules of their own role. `details` do not nest.
 - Every `ayah.key` and `ayah.keys[]` exists in `ayahs`.
 - A record with badge `la_yathbut` or `khilaf_mutabar` shows the badge next to the marker in the text and in the panel; `thabit` shows in the panel only.

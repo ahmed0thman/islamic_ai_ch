@@ -480,6 +480,143 @@ class ContentShapeTests(unittest.TestCase):
         self.nasij["held"].append({"depth": 0, "block": deepcopy(block["blocks"][0]), "reason": "Held"})
         self.refused("C10")
 
+    def test_science_key(self):
+        self.term()
+        r = next(r for r in self.private["records"] if r["id"] == "108-s0")
+        r["science"] = "balagha"
+        value = self.passes()
+        self.assertEqual(value["records"]["108-s0"]["science"], "balagha")
+        self.assertNotIn("science", value["records"]["108-r1"])
+
+    def test_science_unknown(self):
+        self.term()
+        r = next(r for r in self.private["records"] if r["id"] == "108-s0")
+        r["science"] = "alchemy"
+        self.refused("C3")
+
+    def test_science_absent(self):
+        self.term()
+        value = self.passes()
+        self.assertNotIn("science", value["records"]["108-s0"])
+        self.assertNotIn("science", value["records"]["108-r1"])
+
+    def test_science_null_and_empty(self):
+        for value in (None, ""):
+            with self.subTest(value=value):
+                self.nasij, self.private = fixtures()
+                self.term()
+                r = next(r for r in self.private["records"] if r["id"] == "108-s0")
+                r["science"] = value
+                out = self.passes()
+                self.assertNotIn("science", out["records"]["108-s0"])
+
+    def example(self, depth=1, text="Example one. Example two."):
+        block = {"type": "paragraph", "role": "example", "segments": [{"t": "text", "v": text}]}
+        blocks = self.nasij["levels"][depth]["blocks"]
+        blocks.append(block)
+        return block
+
+    def test_C15_example_valid(self):
+        for depth in (1, 2):
+            with self.subTest(depth=depth):
+                self.nasij, self.private = fixtures()
+                block = self.example(depth)
+                value = self.passes()
+                exported = value["levels"][depth]["blocks"][-1]
+                self.assertEqual(exported, {"type": "paragraph", "role": "example",
+                                            "segments": [{"t": "text", "v": "Example one. Example two."}]})
+
+    def test_C15_non_text_segment(self):
+        for segment in ({"t": "ayah", "key": "108:1"},
+                        {"t": "mark", "records": ["108-r1"]},
+                        {"t": "quote", "v": "Quote", "record": "108-r1"},
+                        {"t": "term", "v": "Term", "record": "108-r1"}):
+            with self.subTest(segment=segment["t"]):
+                self.nasij, self.private = fixtures()
+                block = self.example()
+                block["segments"].append(deepcopy(segment))
+                self.refused("C15")
+
+    def test_C15_stop_keys(self):
+        for field, value in (("title", "Stop title"), ("ayahs", ["108:1"]), ("passage", "p1")):
+            with self.subTest(field=field):
+                self.nasij, self.private = fixtures()
+                self.example()[field] = value
+                self.refused("C15")
+
+    def test_C15_level_depth(self):
+        for depth in (0, 3):
+            with self.subTest(depth=depth):
+                self.nasij, self.private = fixtures()
+                self.example(depth)
+                self.refused("C15")
+
+    def test_C15_one_per_level(self):
+        self.example()
+        second = self.example()
+        second["segments"][0]["v"] = "Another example."
+        self.refused("C15")
+
+    def test_C15_must_follow_claim(self):
+        for label, before in (("first block", "first"), ("after heading", "heading"),
+                              ("after ayah block", "ayah"), ("after details", "details"),
+                              ("after another example", "example")):
+            with self.subTest(label=label):
+                self.nasij, self.private = fixtures()
+                blocks = self.nasij["levels"][1]["blocks"]
+                if before == "first":
+                    blocks.clear()
+                elif before == "heading":
+                    blocks[0] = {"type": "heading", "text": "Heading"}
+                elif before == "ayah":
+                    blocks[0] = {"type": "ayah", "keys": ["108:1"]}
+                elif before == "details":
+                    blocks[0] = self.details()
+                elif before == "example":
+                    blocks[0] = {"type": "paragraph", "role": "example",
+                                 "segments": [{"t": "text", "v": "Example."}]}
+                self.example()
+                self.refused("C15")
+        for label in ("after claim", "after transmission"):
+            with self.subTest(label=label):
+                self.nasij, self.private = fixtures()
+                blocks = self.nasij["levels"][1]["blocks"]
+                if label == "after transmission":
+                    blocks[0]["role"] = "transmission"
+                    blocks[0]["segments"].insert(
+                        0, {"t": "quote", "v": "اقتباس اختبار حرفي", "record": "108-r1"})
+                self.example()
+                self.assertEqual(self.run_export().returncode, 0)
+
+    def test_C15_inside_details(self):
+        block = self.details()
+        block["blocks"].append({"type": "paragraph", "role": "example",
+                                "segments": [{"t": "text", "v": "Example."}]})
+        self.refused("C15")
+
+    def test_C15_two_sentences(self):
+        cases = [("two ends", "First sentence. Second one.", True),
+                 ("three ends", "First. Second. Third.", False),
+                 ("arabic question mark", "First\u061f Second\u061f", True),
+                 ("ellipsis", "First\u2026 Second\u2026", True),
+                 ("exclamation", "First! Second!", True),
+                 ("trailing counts as one", "First. Second", True),
+                 ("trailing makes three", "First. Second. Third", False)]
+        for label, text, ok in cases:
+            with self.subTest(label=label):
+                self.nasij, self.private = fixtures()
+                self.example(text=text)
+                if ok:
+                    self.passes()
+                else:
+                    self.refused("C15")
+
+    def test_C15_example_C2(self):
+        self.nasij, self.private = fixtures()
+        block = self.example()
+        block["segments"][0]["v"] = self.quran_text()
+        self.refused("C2")
+
 
 class MapTests(unittest.TestCase):
     setUp = ExportTests.setUp
@@ -489,6 +626,7 @@ class MapTests(unittest.TestCase):
     paragraph = ExportTests.paragraph
     details = ContentShapeTests.details
     quran_text = ContentShapeTests.quran_text
+    example = ContentShapeTests.example
     def stop(self, paragraph=None):
         paragraph = self.paragraph() if paragraph is None else paragraph
         paragraph["title"] = self.paragraph()["segments"][0]["v"]
