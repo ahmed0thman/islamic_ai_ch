@@ -44,6 +44,7 @@
   --font-ui: var(--font-plex), sans-serif;
   --font-heading: var(--font-plex), sans-serif;
   --font-quran: var(--font-amiri-quran), serif;
+  --font-mushaf: var(--font-hafs), var(--font-amiri-quran), serif;
   --font-quote: var(--font-amiri), serif;
   --radius-s: var(--radius-s);
   --radius-card: var(--radius);

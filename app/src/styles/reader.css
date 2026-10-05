@@ -92,9 +92,9 @@
 .claim-pulse { display: block; position: relative; padding-inline-start: var(--space-md); }
 .claim-pulse + .claim-pulse { margin-block-start: var(--space-sm); }
 .claim-pulse::before { content: ""; position: absolute; inset-inline-start: 0; inset-block: .5rem; inline-size: 3px; background: color-mix(in srgb, var(--tone) 70%, transparent); border-radius: var(--radius-pill); }
-.huda-inline-ayah { display: block; margin-block: .75rem; padding: var(--space-md); border-radius: var(--radius-s); background: color-mix(in srgb, var(--tone) 11%, var(--surface)); border: 1px solid color-mix(in srgb, var(--tone) 28%, transparent); font-family: var(--font-quran); font-size: var(--text-inline-ayah); line-height: var(--leading-inline-ayah); font-weight: 400; text-align: center; text-wrap: pretty; }
+.huda-inline-ayah { display: block; margin-block: .75rem; padding: var(--space-md); border-radius: var(--radius-s); background: color-mix(in srgb, var(--tone) 11%, var(--surface)); border: 1px solid color-mix(in srgb, var(--tone) 28%, transparent); font-family: var(--font-mushaf); font-size: var(--text-inline-ayah); line-height: var(--leading-inline-ayah); font-weight: 400; text-align: center; text-wrap: pretty; }
 .ayah-flow { margin-block: var(--space-lg); padding: var(--space-md); border-radius: var(--radius-s); background: color-mix(in srgb, var(--tone) 11%, var(--surface)); border: 1px solid color-mix(in srgb, var(--tone) 28%, transparent); }
-.ayah-flow-text { font-family: var(--font-quran); font-size: var(--text-inline-ayah); line-height: var(--leading-inline-ayah); font-weight: 400; text-wrap: pretty; }
+.ayah-flow-text { font-family: var(--font-mushaf); font-size: var(--text-inline-ayah); line-height: var(--leading-inline-ayah); font-weight: 400; text-wrap: pretty; }
 .ayah-flow .ayah-gem { color: var(--gold-strong); }
 .inline-ayah-reference { display: flex; align-items: center; justify-content: center; gap: .375rem; margin-block-start: var(--space-xs); color: var(--ink-3); font-family: var(--font-ui); font-size: var(--text-label); line-height: var(--leading-ui); font-variant-numeric: tabular-nums; }
 .verbatim-quote { display: block; quotes: none; margin-block: .75rem; padding: .75rem var(--space-md); background: var(--surface-2); border-inline-start: .25rem solid var(--gold); border-radius: var(--radius-s); font-family: var(--font-quote); font-size: var(--text-quote); line-height: var(--leading-quote); font-weight: 400; white-space: pre-wrap; }
@@ -136,7 +136,7 @@
 @keyframes scene-next { from { opacity: 0; transform: translateX(-2.25rem); } }
 @keyframes scene-previous { from { opacity: 0; transform: translateX(2.25rem); } }
 .ayah-stage { position: relative; margin: var(--space-lg) var(--gutter) 0; padding: var(--space-lg); border-radius: var(--radius); background: radial-gradient(120% 90% at 50% 0%,var(--stage-a),var(--stage-b)); color: var(--stage-ink); text-align: center; box-shadow: var(--shadow); }
-.stage-verse { font-family: var(--font-quran); font-size: var(--text-stage); line-height: var(--leading-stage); font-weight: 400; text-wrap: pretty; }
+.stage-verse { font-family: var(--font-mushaf); font-size: var(--text-stage); line-height: var(--leading-stage); font-weight: 400; text-wrap: pretty; }
 .stage-verse + .stage-verse { margin-block-start: var(--space-sm); padding-block-start: var(--space-sm); border-block-start: 1px solid color-mix(in srgb,var(--stage-ink) 12%,transparent); }
 .ayah-gem { display: inline-grid; place-items: center; min-inline-size: 1.875rem; min-block-size: 1.875rem; margin-inline-start: var(--space-xs); border: 1.5px solid currentColor; border-radius: 50%; color: var(--gold-stage); font-family: var(--font-quote); font-size: var(--text-ui); line-height: 1.5; vertical-align: middle; font-variant-numeric: tabular-nums; }
 .stage-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-sm); margin-block-start: .75rem; }
@@ -174,7 +174,7 @@
 .ayah-medal { position: relative; justify-self: center; align-self: start; margin-block-start: var(--space-xs); inline-size: var(--control-height); block-size: var(--control-height); border: 0; border-radius: 50%; background: var(--surface); color: var(--gold-strong); font-family: var(--font-quote); font-size: var(--text-sheet-title); font-weight: 700; font-variant-numeric: tabular-nums; box-shadow: 0 0 0 5px var(--bg), inset 0 0 0 2px var(--gold), inset 0 0 0 5px var(--surface), inset 0 0 0 6px color-mix(in srgb,var(--gold) 45%,transparent); z-index: var(--z-sticky); }
 .ayah-medal[aria-pressed="true"] { color: var(--on-accent); background: var(--accent); }
 .ayah-node-body { min-inline-size: 0; padding-inline-start: .875rem; }
-.thread-verse { font-family: var(--font-quran); font-size: var(--text-verse); line-height: var(--leading-verse); font-weight: 400; text-wrap: pretty; margin-block-end: var(--space-xs); }
+.thread-verse { font-family: var(--font-mushaf); font-size: var(--text-verse); line-height: var(--leading-verse); font-weight: 400; text-wrap: pretty; margin-block-end: var(--space-xs); }
 .ayah-node.is-dimmed { opacity: .55; }
 .door-wrap { position: relative; display: grid; grid-template-rows: 1fr; margin-block-start: var(--space-sm); }
 .door-wrap::before { content: ""; position: absolute; inset-inline-start: -2.625rem; inset-block-start: 1.875rem; inline-size: 2.625rem; block-size: 2px; background: var(--accent); opacity: .55; }
@@ -262,7 +262,7 @@ body:has(.huda-reader) .page-shell { padding-block-start: 0; padding-block-end: 
 .unit-range-controls label { min-inline-size: 0; }
 .unit-range-controls select { inline-size: 100%; min-block-size: var(--control-height); border: 1px solid var(--border-ui); border-radius: var(--radius-s); background: var(--surface-2); color: var(--ink); padding-inline: var(--space-sm); font: inherit; font-variant-numeric: tabular-nums; }
 .unit-ayah-list { display: grid; gap: var(--space-sm); }
-.unit-ayah-choice { display: grid; grid-template-columns: var(--control-height) minmax(0,1fr) auto; align-items: center; gap: var(--space-sm); inline-size: 100%; min-block-size: var(--control-height); padding: var(--space-sm); border: 1px solid var(--line); border-radius: var(--radius-s); background: var(--surface-2); color: var(--ink); font-family: var(--font-quran); font-size: var(--text-quote); line-height: 2.1; text-align: start; }
+.unit-ayah-choice { display: grid; grid-template-columns: var(--control-height) minmax(0,1fr) auto; align-items: center; gap: var(--space-sm); inline-size: 100%; min-block-size: var(--control-height); padding: var(--space-sm); border: 1px solid var(--line); border-radius: var(--radius-s); background: var(--surface-2); color: var(--ink); font-family: var(--font-mushaf); font-size: var(--text-quote); line-height: 2.1; text-align: start; }
 .unit-ayah-number { color: var(--gold-strong); font-family: var(--font-quote); font-size: var(--text-ui); font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) { .hero-previous { display: none; } }
 .hero-title:not(.hero-previous) { min-block-size: 3.4em; }

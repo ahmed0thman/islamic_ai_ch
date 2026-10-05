@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Readex_Pro, Amiri, Amiri_Quran, IBM_Plex_Sans_Arabic } from "next/font/google";
+import localFont from "next/font/local";
 import type { ReactNode } from "react";
 import { getUi } from "@/lib/content";
 import { Disclosure } from "@/components/disclosure";
@@ -10,6 +11,7 @@ import "./globals.css";
 
 const body = IBM_Plex_Sans_Arabic({ weight: ["400", "500", "600", "700"], subsets: ["arabic"], display: "swap", variable: "--font-plex" });
 const quran = Amiri_Quran({ weight: "400", subsets: ["arabic"], display: "swap", variable: "--font-amiri-quran" });
+const mushaf = localFont({ src: "../fonts/uthmanic_hafs_v20.ttf", weight: "400", display: "swap", variable: "--font-hafs" });
 const quote = Amiri({ weight: "400", subsets: ["arabic"], display: "swap", variable: "--font-amiri" });
 const comparison = Readex_Pro({ subsets: ["arabic"], display: "swap", variable: "--font-readex" });
 export async function generateMetadata(): Promise<Metadata> {
@@ -24,7 +26,7 @@ export const viewport: Viewport = {
 };
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const ui = await getUi();
-  return <html lang="ar" dir="rtl" className={`${body.variable} ${quran.variable} ${quote.variable} ${comparison.variable}`}>
+  return <html lang="ar" dir="rtl" className={`${body.variable} ${quran.variable} ${mushaf.variable} ${quote.variable} ${comparison.variable}`}>
     <body><SheetProvider ui={ui}><div className="page-shell"><main id="main-content">{children}</main><Disclosure ui={ui} /></div><LegendTrigger ui={ui} fixed /><Offline /></SheetProvider></body>
   </html>;
 }

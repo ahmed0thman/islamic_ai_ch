@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import type { ReadingProps } from "./reading-context";
-import { AyahStage } from "./ayah-stage";
+import { AyahStage, stageShownKeys } from "./ayah-stage";
 import { ContinuousView } from "./continuous-view";
 import { StopSources } from "./stop-sources";
 import { NextCard } from "./next-card";
@@ -34,6 +34,9 @@ export function StopScene({ stop, stops, previous, next, passage, nextPassage, n
     }, 350);
     return () => window.clearTimeout(timer);
   }, [stop.number, stop.openIndex, position]);
+  // The stage shows one ayah at a time past three, so what it shows is what an opening paragraph need not repeat.
+  const [picked, setPicked] = useState<{ number: number; key: string }>();
+  const shown = stageShownKeys(stop.ayahKeys, picked?.number === stop.number ? picked.key : undefined);
   const sources = stop.recordIds.map((id) => reading.records[id]);
   return <Dialog open onOpenChange={(open) => { if (!open) onBack(); }}>
     <DialogContent className="huda-stop-scene" overlayClassName="scene-scrim" showCloseButton={false} aria-describedby={undefined}
@@ -41,9 +44,9 @@ export function StopScene({ stop, stops, previous, next, passage, nextPassage, n
       onCloseAutoFocus={(event) => { event.preventDefault(); window.scrollTo({ top: origin.y, behavior: "instant" }); origin.opener?.focus({ preventScroll: true }); }}>
       <header className="scene-topbar"><Button variant="quiet" onClick={onBack}><Icon icon={ArrowRight01Icon} />{reading.ui.reader.back}</Button><div className="scene-pips" aria-hidden="true">{stops.map((item) => <span key={item.number} data-state={item.number === stop.number ? "here" : stops.indexOf(item) < stops.indexOf(stop) ? "done" : "todo"} />)}</div><div className="scene-nav"><Button variant="round" size="icon" disabled={!previous} aria-label={reading.ui.reader.previous_stop} onClick={() => { if (previous) onNavigate(previous); }}><Icon icon={ArrowRight01Icon} /></Button><Button variant="round" size="icon" disabled={!next} aria-label={reading.ui.reader.next_stop} onClick={() => { if (next) onNavigate(next); }}><Icon icon={ArrowLeft01Icon} /></Button></div></header>
       <div className="huda-scene-scroll" ref={scroll}><div key={stop.blockIndex} className={`huda-scene-body ${direction}`}>
-        <AyahStage ayahs={stop.ayahKeys.map((key) => reading.ayahs.get(key)!)} ui={reading.ui} />
+        <AyahStage ayahs={stop.ayahKeys.map((key) => reading.ayahs.get(key)!)} ui={reading.ui} selected={shown[0]} onSelect={(key) => setPicked({ number: stop.number, key })} />
         <div className="scene-heading">{passage ? <p className="scene-kicker" data-run={`scene-passage-${passage.id}`}>{passage.title}<SourceMarker records={passage.records.map((id) => reading.records[id])} ui={reading.ui} onOpen={() => reading.onOpen(passage.records.map((id) => reading.records[id]))} /></p> : null}<DialogTitle asChild><h2 ref={heading} tabIndex={-1} className={`huda-scene-title${stop.question ? " is-question" : ""}`}>{stop.sceneTitle ?? stop.title}</h2></DialogTitle></div>
-        <div className="scene-reading"><ContinuousView blocks={stop.scene} showTitles={false} openIndex={stop.openIndex} {...reading} /><StopSources records={sources} ui={reading.ui} onOpen={reading.onOpen} /><NextCard next={next} previous={previous} nextPassage={nextPassage} nextSurah={nextSurah} ui={reading.ui} records={reading.records} onOpen={reading.onOpen} onNext={() => { if (next) onNavigate(next); }} onPrevious={() => { if (previous) onNavigate(previous); }} onBack={onBack} /></div>
+        <div className="scene-reading"><ContinuousView blocks={stop.scene} showTitles={false} openIndex={stop.openIndex} stageKeys={stop.kind === "pin" ? undefined : shown} {...reading} /><StopSources records={sources} ui={reading.ui} onOpen={reading.onOpen} /><NextCard next={next} previous={previous} nextPassage={nextPassage} nextSurah={nextSurah} ui={reading.ui} records={reading.records} onOpen={reading.onOpen} onNext={() => { if (next) onNavigate(next); }} onPrevious={() => { if (previous) onNavigate(previous); }} onBack={onBack} /></div>
       </div></div>
     </DialogContent>
   </Dialog>;

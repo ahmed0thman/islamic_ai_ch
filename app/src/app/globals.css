@@ -56,7 +56,7 @@ ul { list-style: none; padding: 0; margin: 0; }
 .reading-term:hover { color: var(--text-primary); }
 .reading-paragraph { margin-block: var(--space-lg); text-align: justify; overflow-wrap: break-word; }
 .claim-ending { white-space: nowrap; overflow-wrap: normal; word-break: normal; }
-.quran { font-family: var(--font-quran), var(--font-body), serif; font-weight: 400; line-height: var(--leading-quran); font-synthesis: none; }
+.quran { font-family: var(--font-mushaf), var(--font-body), serif; font-weight: 400; line-height: var(--leading-quran); font-synthesis: none; }
 .ayah-block { text-align: center; margin-block: var(--space-lg) var(--space-xl); }
 .ayah-text { display: inline; font-size: var(--size-quran); color: var(--text); overflow-wrap: anywhere; }
 .ayah-number { display: inline; color: var(--color-ayah); font-family: var(--font-body), sans-serif; font-size: var(--text-lg); margin-inline: var(--space-xs); }

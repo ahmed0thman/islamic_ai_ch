@@ -41,6 +41,7 @@
   --font-ui: var(--font-plex), sans-serif;
   --font-quote: var(--font-amiri), serif;
   --font-quran: var(--font-amiri-quran), serif;
+  --font-mushaf: var(--font-hafs), var(--font-amiri-quran), serif;
   --text-cover: clamp(3.375rem, 17vw, 4.5rem);
   --text-stage: 1.875rem;
   --text-verse: 1.75rem;

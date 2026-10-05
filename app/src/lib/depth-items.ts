@@ -11,6 +11,8 @@ export interface SceneUnit {
   scene: Block[];
   recordIds: string[];
   icons: IconKey[];
+  /** The records behind `icons`, when they are fewer than `recordIds` (a pin shows its own item's kinds, not its section's). */
+  iconRecordIds?: string[];
   /** Absent on a map stop. */
   kind?: "pin" | "section";
   /** A pin opens its section with this block (a `details` item) already open. */
@@ -88,7 +90,7 @@ export function deriveDepthItems(surah: Surah, depth: Depth): DepthItemsModel {
       const badges = [...new Set(marks.map((id) => surah.records[id].badge))].filter((kind): kind is BadgeKey => kind === "la_yathbut" || kind === "khilaf_mutabar");
       const passage = surah.passages?.find((entry) => numberOf(anchors[0]) >= numberOf(entry.from) && numberOf(anchors[0]) <= numberOf(entry.to));
       // The door shows what its own item carries; the scene shows the whole section, so its sources cover the section.
-      draftPins.push({ blockIndex: index, title: flatText(block.title), ayahKeys: [anchors[0]], stationKey: anchors[0], passage: passage?.id, scene, recordIds, icons: iconsOf(pinIds), kind: "pin", openIndex, sceneTitle: heading, question, badges });
+      draftPins.push({ blockIndex: index, title: flatText(block.title), ayahKeys: [anchors[0]], stationKey: anchors[0], passage: passage?.id, scene, recordIds, icons: iconsOf(pinIds), iconRecordIds: pinIds, kind: "pin", openIndex, sceneTitle: heading, question, badges });
     });
   });
   draftPins.sort((a, b) => numberOf(a.stationKey) - numberOf(b.stationKey) || a.blockIndex - b.blockIndex);

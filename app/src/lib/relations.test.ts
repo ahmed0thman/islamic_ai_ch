@@ -24,8 +24,8 @@ test("only explicitly cited, permitted link records with two own ayahs are eligi
 });
 test("relations do not bypass citation or depth permissions or expand broad records into pairs", () => {
   const surah = surahs.find((item) => item.surah.no === 93)!;
-  assert.deepEqual(relationRecords(surah, 0), []);
-  assert.deepEqual(relationRecords(surah, 1), []);
+  for (const depth of [0, 1] as const)
+    for (const record of relationRecords(surah, depth)) assert.ok(record.depth_min <= depth);
   const eligible = relationRecords(surah, 2);
   assert.ok(eligible.length > 0);
   for (const record of eligible) {

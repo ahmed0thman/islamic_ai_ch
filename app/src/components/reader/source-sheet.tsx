@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { ArrowUpRight01Icon, BookOpen01Icon, PlusSignIcon, MinusSignIcon } from "@hugeicons/core-free-icons";
 import type { SourceRecord, Ui } from "@/lib/types";
-import { splitRulings } from "@/lib/rulings";
+import { sortByCertainty, splitRulings } from "@/lib/rulings";
 import { arabicDigits, numeral } from "@/lib/numerals";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
@@ -46,8 +46,10 @@ function RecordContent({ record, ui }: { record: SourceRecord; ui: Ui }) {
     {record.evidence.map((evidence, index) => <EvidenceContent key={index} evidence={evidence} ui={ui} />)}
   </section>;
 }
-export function SourceSheet({ records, ui, term, phrase, onClose }: SourceSheetProps) {
+export function SourceSheet({ records: opened, ui, term, phrase, onClose }: SourceSheetProps) {
   const [showEvidence, setShowEvidence] = useState(!term);
+  // Several records: the firmest opens first, the rest are folded away behind it.
+  const records = useMemo(() => sortByCertainty(opened, ui.icon_order), [opened, ui.icon_order]);
   return <BottomSheet title={term ?? ui.panel.title} ui={ui} onClose={onClose} term={Boolean(term)}>
     {term ? <div className="term-definition"><p>{records[0]?.claim}</p><Button variant="pill" aria-expanded={showEvidence} aria-controls="term-evidence" onClick={() => setShowEvidence((value) => !value)}><Icon icon={BookOpen01Icon} />{ui.panel.source}</Button></div>
       : <div className="sheet-for">

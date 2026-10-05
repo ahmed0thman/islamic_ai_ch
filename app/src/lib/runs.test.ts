@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 // @ts-expect-error -- Node's native TypeScript runner needs the source extension.
-import { toRuns, shouldStack } from "./runs.ts";
+import { toRuns, shouldStack, dropStageAyah } from "./runs.ts";
 // @ts-expect-error -- Node's native TypeScript runner needs the source extension.
 import { ayahWords, splitLastWord } from "./reading-text.ts";
 import type { ParagraphBlock, Segment, Surah } from "./types";
@@ -51,4 +51,49 @@ test("ayah cleanup and last-word glue preserve content words, diacritics and quo
     assert.equal(splitLastWord(ayahWords(ayah.text)).join(""), ayahWords(ayah.text));
   }
   for (const paragraph of paragraphs) for (const segment of paragraph.segments) if ("v" in segment) assert.equal(splitLastWord(segment.v).join(""), segment.v);
+});
+test("an opening ayah the stage already shows is lifted off with its hanging punctuation; nothing else moves", () => {
+  const mark: Segment = { t: "mark", records: ["r1"] };
+  const block = (segments: Segment[]): ParagraphBlock => ({ type: "paragraph", role: "claim", segments });
+  const lead: Segment = { t: "ayah", key: "93:4" };
+  const gloss: Segment = { t: "text", v: "\u060c \u0623\u064a: \u0627\u0644\u062f\u0627\u0631" };
+  const input = block([lead, gloss, mark]);
+  const snapshot = structuredClone(input);
+  // The stage shows it: the ayah goes, and so do the comma and the space before the sentence.
+  assert.deepEqual(dropStageAyah(input, ["93:4"]).segments, [{ t: "text", v: "\u0623\u064a: \u0627\u0644\u062f\u0627\u0631" }, mark]);
+  assert.deepEqual(input, snapshot, "the content is never mutated");
+  // A full stop and a text that is only punctuation: the text segment disappears.
+  assert.deepEqual(dropStageAyah(block([lead, { t: "text", v: ". " }, { t: "quote", v: "q", record: "r1" }]), ["93:4"]).segments, [{ t: "quote", v: "q", record: "r1" }]);
+  // Several stage ayahs: any of them counts.
+  assert.equal(dropStageAyah(input, ["93:3", "93:4"]).segments[0].t, "text");
+  // Another ayah than the stage's, an ayah in the middle, an ayah with its own mark right after it, and an empty stage all stay.
+  assert.equal(dropStageAyah(input, ["93:5"]), input);
+  assert.equal(dropStageAyah(input, []), input);
+  const middle = block([{ t: "text", v: "x " }, lead, gloss]);
+  assert.equal(dropStageAyah(middle, ["93:4"]), middle);
+  const marked = block([lead, mark, gloss]);
+  assert.equal(dropStageAyah(marked, ["93:4"]), marked);
+  // Consecutive opening ayahs: those on the stage go, one the stage does not show stays and opens the paragraph.
+  const pair = block([lead, { t: "text", v: " " }, { t: "ayah", key: "93:5" }, gloss]);
+  assert.deepEqual(dropStageAyah(pair, ["93:4", "93:5"]).segments, [gloss].map((segment) => ({ ...segment, v: segment.v.replace(/^\u060c /u, "") })));
+  assert.deepEqual(dropStageAyah(pair, ["93:4"]).segments, [{ t: "ayah", key: "93:5" }, gloss]);
+  assert.equal(dropStageAyah(pair, ["93:5"]), pair);
+  // An opening quote mark is not hanging punctuation: it begins something.
+  assert.equal((dropStageAyah(block([lead, { t: "text", v: " \u00ab\u0642\u0644\u00bb" }]), ["93:4"]).segments[0] as { v: string }).v, "\u00ab\u0642\u0644\u00bb");
+});
+test("on the real exports, every titled stop that opens with its own ayah starts clean once that ayah is lifted", () => {
+  let lifted = 0;
+  for (const paragraph of paragraphs) {
+    const first = paragraph.segments[0];
+    if (first?.t !== "ayah" || !paragraph.title) continue;
+    const result = dropStageAyah(paragraph, paragraph.ayahs ?? []);
+    if (!paragraph.ayahs?.includes(first.key)) { assert.equal(result, paragraph); continue; }
+    lifted++;
+    const [opening] = result.segments;
+    assert.notEqual(opening, first);
+    if (opening?.t === "ayah") assert.ok(!(paragraph.ayahs ?? []).includes(opening.key), "only an ayah the stage does not show can still open it");
+    if (opening?.t === "text") assert.ok(!/^[\s\p{Pd}\p{Po}\p{Pe}\p{Pf}]/u.test(opening.v), "no hanging punctuation at the start");
+    assert.deepEqual(result.segments.filter((segment) => segment.t === "mark"), paragraph.segments.filter((segment) => segment.t === "mark"), "no source mark is lost");
+  }
+  assert.ok(lifted > 0, "the real exports exercise the lift");
 });
