@@ -323,7 +323,9 @@
     "panel_show": "افتح لوحة السياق",
     "expand_all": "افتح كل البنود",
     "collapse_all": "اطوِ كل البنود",
-    "load_failed": "تعذّر تحميل السورة."
+    "load_failed": "تعذّر تحميل السورة.",
+    "reading_region": "نص الشرح",
+    "context_region": "لوحة السياق"
   },
   "judge_key": {
     "open": "مفتاح النموذج",
