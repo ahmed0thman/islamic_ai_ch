@@ -28,7 +28,7 @@ The app renders only what is in `content/`. It never writes Arabic text itself.
 { "type": "paragraph",
   "role": "claim" | "transmission",                        // transmission = quoted narration shown as-is, never restyled
   "title": "…",                                            // optional. A short title, a question or a noun phrase (at most 8 words). A titled paragraph is a STOP on the surah map
-  "kind": "misconception",                                 // optional, on a stop only: the stop corrects a common misreading or answers an objection. Its title is a question, its paragraph answers from its records; the app shows a badge and a side path that returns to the reading (decision 027). NOT accepted by the exporter yet (C16 allows "summary" only)
+  "kind": "misconception",                                 // optional, on a stop only: the stop corrects a common misreading or answers an objection. Its title is a question, its paragraph answers from its records; the app shows a badge and a side path that returns to the reading (decision 027).
   "ayahs": ["108:1"],                                      // optional in the nasij source; always present on a stop in the export: the ayah station(s) the stop hangs from
   "passage": "p1",                                         // optional: the passage this block belongs to (see `passages`)
   "segments": [ /* Segment */ ] }

@@ -143,7 +143,7 @@ export function Reader({ surah, ui, nextSurah, surahs, ask = false, weave = fals
   // A level without stops ends on its last section.
   const lastUnit = map.stops.length ? lastStop(units) : items.shelf.at(-1) ?? items.pins.at(-1);
   // The scene walks the weaving in its own order, so the opening question is followed by the paragraph the text puts second.
-  const playlist: SceneUnit[] = stop?.kind ? depthPlaylist(items, stop) : [...map.stops].sort((a, b) => a.blockIndex - b.blockIndex);
+  const playlist: SceneUnit[] = (stop?.kind === "pin" || stop?.kind === "section") ? depthPlaylist(items, stop) : [...map.stops].sort((a, b) => a.blockIndex - b.blockIndex);
   const neighbours = stop ? sceneNeighbours(playlist, stop.number) : { previous: undefined, next: undefined };
   const visitedNumbers = new Set(units.filter((item) => visited.has(`${depth}:${item.blockIndex}`)).map((item) => item.number));
   const reading = { surahNo: surah.surah.no, relations: relationRecords(surah, depth), ayahs, records: surah.records, ui, onOpen: openSource };
@@ -213,7 +213,7 @@ export function Reader({ surah, ui, nextSurah, surahs, ask = false, weave = fals
           {summary ? <ClosingSection surahName={surah.surah.name} summary={summary} parts={mapped ? parts : parts.map(({ passage }) => ({ passage }))} termsSummary={termsSummary} nextSurah={nextSurah} onPart={openPart} onMap={mapped ? () => chooseView("map") : undefined} {...reading} />
             : <>{termsSummary ? <TermsSummary summary={termsSummary} ui={ui} onOpen={openSource} /> : null}<AskedSection stop={null} /></>}</div> : <p className="reader-text">{ui.reader.empty_level}</p>}
     </article>
-    {stop || closing ? <SceneShell onBack={backToMap}>
+    {stop || closing ? <SceneShell onBack={backToMap} onReturnAyah={(key) => setScope({ kind: "ayah", key })}>
       {stop ? <SavedStopScene stop={stop} followups={followups} weave={weave} depth={depth} stops={playlist} passage={passage} nextPassage={nextPassage} termsSummary={termsSummary} {...neighbours} nextSurah={nextSurah} onClosing={summary ? openClosing : undefined} onNavigate={openStop} onBack={backToMap} {...reading} />
         : <ClosingScene surahName={surah.surah.name} summary={closing!} parts={parts} termsSummary={termsSummary} nextSurah={nextSurah} onPart={openPart} previous={lastUnit} onPrevious={lastUnit ? () => openStop(lastUnit) : undefined} onMap={backToMap} onBack={backToMap} {...reading} />}
     </SceneShell> : null}

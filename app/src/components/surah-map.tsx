@@ -5,6 +5,7 @@ import type { MapStop, SurahMapModel } from "@/lib/map";
 import type { Ui } from "@/lib/types";
 import { numeral } from "@/lib/numerals";
 import { AyahText } from "./reader";
+import { MisconceptionBadge } from "./reader/misconception-frame";
 import { SourceChip } from "./ui/source-chip";
 import { Icon } from "./ui/icon";
 import { ArrowLeft01Icon, PlusSignIcon, MinusSignIcon } from "@hugeicons/core-free-icons";
@@ -88,12 +89,12 @@ export function SurahMap({ map, ui, visited, currentStop, hidden = false, onOpen
                   currentStop === stop.number ? "is-current" : "",
                   highlighted === stop.number ? "is-highlighted" : "",
                 ].filter(Boolean).join(" ")}
-                  aria-label={[stop.title, ...ui.icon_order.filter((kind) => stop.icons.includes(kind)).map((kind) => ui.icons[kind].label)].join(" — ")}
+                  aria-label={[stop.title, ...(stop.kind === "misconception" ? [ui.misconception.badge] : []), ...ui.icon_order.filter((kind) => stop.icons.includes(kind)).map((kind) => ui.icons[kind].label)].join(" — ")}
                   aria-current={currentStop === stop.number ? "step" : undefined} onClick={() => onOpen(stop)}>
                   <span className="map-stop-icons" aria-hidden="true">{ui.icon_order.filter((kind) => stop.icons.includes(kind)).map((kind) =>
                     <span key={kind} className={kind === "hidaya" ? "map-hidaya-dot" : undefined}><SourceChip kind={kind} ui={ui} /></span>,
                   )}</span>
-                  <span className="map-stop-title">{stop.title}</span><Icon icon={ArrowLeft01Icon} />
+                  <span className="map-stop-title">{stop.title}{stop.kind === "misconception" ? <> <MisconceptionBadge ui={ui} /></> : null}</span><Icon icon={ArrowLeft01Icon} />
                 </button>
               </li>)}
             </ul> : null}

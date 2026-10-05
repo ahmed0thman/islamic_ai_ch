@@ -14,7 +14,7 @@ export type Segment =
   | { t: "mark"; records: string[] };
 export type TitleSegment = Extract<Segment, { t: "text" | "term" | "mark" }>;
 /** `kind: "summary"` marks the closing synthesis of a level: a claim with no title and no ayahs, shown on its own screen after the last stop (never a stop). */
-export type ParagraphBlock = { type: "paragraph"; role: "claim" | "transmission" | "example"; kind?: "summary"; title?: string; ayahs?: string[]; passage?: string; segments: Segment[] };
+export type ParagraphBlock = { type: "paragraph"; role: "claim" | "transmission" | "example"; kind?: "summary" | "misconception"; title?: string; ayahs?: string[]; passage?: string; segments: Segment[] };
 export type Block = (
   | { type: "heading"; text: string; kind?: "question" }
   | { type: "ayah"; keys: string[] }
@@ -56,6 +56,7 @@ export interface Ui {
   terms_summary: Record<"title" | "terms" | "sciences" | "other", string>;
   summary: Record<"title" | "parts" | "open", string>;
   weave: Record<"badge" | "ready" | "open" | "back" | "note" | "from_question" | "trigger" | "instruction" | "failed", string>;
+  misconception: Record<"badge" | "intro" | "back", string>;
   judge_key: Record<"open" | "title" | "intro" | "provider" | "key" | "test" | "save" | "clear" | "checking" | "ok" | "bad" | "using", string> & {
     providers: Record<"opencode-go" | "openai" | "anthropic", string>;
   };

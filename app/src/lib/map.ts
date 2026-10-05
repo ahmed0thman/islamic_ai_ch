@@ -5,6 +5,7 @@ export interface MapStop {
   number: number;
   blockIndex: number;
   title: string;
+  kind?: "misconception";
   ayahKeys: string[];
   stationKey: string;
   passage?: string;
@@ -52,6 +53,7 @@ export function deriveSurahMap(surah: Surah, depth: Depth): SurahMapModel {
       current = {
         number: 0, blockIndex, title: block.title, ayahKeys: [...block.ayahs!],
         stationKey: block.ayahs![0], passage: block.passage,
+        ...(block.kind === "misconception" ? { kind: block.kind } : {}),
         scene: [block], recordIds: [], icons: [],
       };
       stops.push(current);

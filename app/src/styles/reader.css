@@ -356,3 +356,8 @@ button.closing-part:focus-visible { outline: 3px solid var(--accent); outline-of
 .closing-entry-button { display: inline-flex; align-items: center; justify-self: start; gap: var(--space-sm); min-block-size: var(--control-height); padding-inline: .875rem var(--space-md); border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--accent); font: inherit; font-size: var(--text-door); font-weight: 700; line-height: var(--leading-door); }
 .closing-entry-button:hover { background: var(--accent-soft); }
 .closing-entry-button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* Quiet side-path cues share the reader's theme and type tokens. */
+.misconception-badge { display: inline-flex; align-items: center; gap: var(--space-xs); padding-inline: var(--space-xs); border-radius: var(--radius-s); color: var(--gold-strong); font-size: var(--text-label); font-weight: 500; line-height: var(--leading-ui); vertical-align: middle; }
+.misconception-intro { margin-block-end: var(--space-md); color: var(--ink-muted); font-size: var(--text-ui); line-height: var(--leading-ui); }
+.misconception-frame > .huda-button { margin-block: var(--space-md); border-radius: var(--radius-pill); }

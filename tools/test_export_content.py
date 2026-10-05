@@ -752,6 +752,31 @@ class MapTests(unittest.TestCase):
         paragraph["title"] = self.paragraph()["segments"][0]["v"]
         return paragraph
 
+    def test_C16_misconception_accepted_and_preserved(self):
+        stop = self.stop()
+        stop.update(kind="misconception", title="Common misunderstanding\u061f")
+        value = self.exported()
+        self.assertEqual(value["levels"][0]["blocks"][0]["kind"], "misconception")
+        self.assertEqual(value["levels"][0]["blocks"][0]["title"], stop["title"])
+
+    def test_C16_misconception_requires_question_stop_outside_details(self):
+        for case in ("no-title", "plain-title", "details"):
+            with self.subTest(case=case):
+                self.nasij, self.private = fixtures()
+                if case == "details":
+                    self.details()
+                    paragraph = self.nasij["levels"][0]["blocks"][1]["blocks"][0]
+                else:
+                    paragraph = self.paragraph()
+                paragraph["kind"] = "misconception"
+                if case != "no-title":
+                    paragraph["title"] = "Common misunderstanding" + ("\u061f" if case == "details" else "?")
+                self.refused("C16")
+
+    def test_C16_titled_unknown_kind_refused(self):
+        self.stop()["kind"] = "unknown"
+        self.refused("C16")
+
     def exported(self):
         result = self.run_export()
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)

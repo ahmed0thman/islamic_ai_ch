@@ -356,10 +356,17 @@ def run_checks(nasij, records, quran, no, ui=None, sources=None):
         check_text(joined, where)
         check_talk(joined, where)
 
-    def check_paragraph_kind(block, where):
+    def check_paragraph_kind(block, where, inside_details=False):
         kind = block.get("kind")
-        check("C16", "kind" not in block or kind == "summary",
+        check("C16", "kind" not in block or kind in ("summary", "misconception"),
               f"{where}: unknown paragraph kind {kind!r}")
+        if kind == "misconception":
+            title = block.get("title")
+            check("C16", isinstance(title, str) and bool(title),
+                  f"{where}: misconception must have a stop title")
+            check("C16", isinstance(title, str) and title.endswith("\u061f"),
+                  f"{where}: misconception title must end with U+061F")
+            check("C16", not inside_details, f"{where}: misconception inside details")
 
     def check_summary(block, depth, where):
         check("C16", block.get("role") == "claim", f"{where}: summary must be a claim paragraph")
@@ -460,7 +467,7 @@ def run_checks(nasij, records, quran, no, ui=None, sources=None):
                 for inner_num, inner in enumerate(block["blocks"], 1):
                     inner_where = f"{where}, inner block {inner_num}"
                     check("C10", inner not in held, f"{inner_where}: block is also listed under held")
-                    check_paragraph_kind(inner, inner_where)
+                    check_paragraph_kind(inner, inner_where, inside_details=True)
                     if inner["role"] == "example":
                         check("C15", False, f"{inner_where}: example inside details")
                     elif inner.get("kind") == "summary":

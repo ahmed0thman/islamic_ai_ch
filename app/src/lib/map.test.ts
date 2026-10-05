@@ -190,3 +190,21 @@ test("an example paragraph joins the scene of the stop before it and adds no rec
   assert.deepEqual(stop.recordIds, before.stops.find((item) => item.blockIndex === at)!.recordIds.filter((id) => stop.recordIds.includes(id)));
   assert.ok(map.continuousBlocks.includes(example));
 });
+
+
+test("misconception stops retain their kind, station and verified scene without changing content", () => {
+  const surah = structuredClone(surahs[0]);
+  const blocks = surah.levels[1].blocks;
+  const paragraph = blocks.find(isTitled)!;
+  paragraph.kind = "misconception";
+  paragraph.title = "Common misunderstanding\u061f";
+  const snapshot = structuredClone(surah);
+  const map = deriveSurahMap(surah, 1);
+  const stop = map.stops.find((item) => item.blockIndex === blocks.indexOf(paragraph))!;
+  assert.equal(stop.kind, "misconception");
+  assert.equal(stop.stationKey, paragraph.ayahs![0]);
+  assert.strictEqual(stop.scene[0], paragraph);
+  assert.ok(map.groups.some((group) => group.stations.some((station) => station.stops.includes(stop))));
+  assert.ok(map.stops.filter((item) => item !== stop).every((item) => item.kind === undefined));
+  assert.deepEqual(surah, snapshot);
+});

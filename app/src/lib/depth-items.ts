@@ -13,8 +13,8 @@ export interface SceneUnit {
   icons: IconKey[];
   /** The records behind `icons`, when they are fewer than `recordIds` (a pin shows its own item's kinds, not its section's). */
   iconRecordIds?: string[];
-  /** Absent on a map stop. */
-  kind?: "pin" | "section";
+  /** Pins and sections describe depth items; misconception marks a map stop. */
+  kind?: "pin" | "section" | "misconception";
   /** A pin opens its section with this block (a `details` item) already open. */
   openIndex?: number;
   /** Scene heading when it differs from the door title: pins open the section they belong to. */
