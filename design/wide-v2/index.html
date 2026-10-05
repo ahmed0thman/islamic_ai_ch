@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Huda wide reader v2</title>
+<!-- Body and quote fonts: the same request the previous prototype (design/bakeoff/claude/) makes. The mushaf font is local (app/src/fonts/), see style.css. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+<script>
+  /* theme choice before first paint (no flash); the reader's choice stays on the device */
+  try { var t = localStorage.getItem('huda.wide.theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+</head>
+<body>
+<!-- Every Arabic string is put in by app.js: from content/ui.ar.json, content/export/*.json, or the STR object at the top of app.js. -->
+<a class="skip" id="skip" href="#read"></a>
+
+<header class="bar" id="bar">
+  <div class="bar-start" id="barStart"></div>
+  <div class="bar-mid" id="barMid"></div>
+  <div class="bar-end" id="barEnd"></div>
+</header>
+
+<div class="shell" id="shell" data-ctx="on" data-toc="off">
+  <nav class="toc" id="toc"></nav>
+  <main class="read" id="read" tabindex="-1">
+    <div class="doc" id="doc">
+      <div class="skeleton" aria-hidden="true">
+        <i class="sk sk-title"></i><i class="sk sk-slab"></i>
+        <i class="sk"></i><i class="sk"></i><i class="sk short"></i>
+        <i class="sk"></i><i class="sk"></i><i class="sk short"></i>
+      </div>
+    </div>
+  </main>
+  <aside class="ctx" id="ctx"></aside>
+</div>
+<div class="toc-scrim" id="tocScrim" hidden></div>
+
+<div class="narrow" id="narrow"></div>
+
+<div id="layer"></div>
+
+<script src="app.js" defer></script>
+</body>
+</html>
