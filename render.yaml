@@ -6,6 +6,7 @@ services:
     name: huda
     runtime: node
     plan: free
+    region: frankfurt
     rootDir: app
     # next.config.ts selects server mode only when HUDA_ASK=1 at build time, so the
     # variable below is part of the build environment as well as the runtime environment.
@@ -39,5 +40,6 @@ services:
 databases:
   - name: huda-rag
     plan: free
+    region: frankfurt
     # If 18 is rejected, fall back to the highest major version Render accepts.
     postgresMajorVersion: 18
