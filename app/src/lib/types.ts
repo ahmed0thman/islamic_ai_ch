@@ -1,6 +1,7 @@
 export type Depth = 0 | 1 | 2 | 3;
 export type IconKey = "ayah" | "hadith" | "athar" | "scholar" | "link" | "hidaya";
 export type BadgeKey = "thabit" | "la_yathbut" | "khilaf_mutabar";
+export type StateKey = "report_unjudged";
 export type LinkStrength = "strong" | "medium" | "weak" | "unrated";
 export interface SurahSummary { no: number; name: string; ayah_count: number }
 export interface ContentIndex { surahs: SurahSummary[] }
@@ -27,7 +28,7 @@ export interface Evidence {
   quote: string; url: string | null; rulings: Ruling[]; link_strength: LinkStrength | null;
 }
 export interface SourceRecord {
-  id: string; icons: IconKey[]; badge: BadgeKey | null; claim: string;
+  id: string; icons: IconKey[]; badge: BadgeKey | null; state?: StateKey; claim: string;
   status_text: string; depth_min: Depth; ayah_keys: string[]; evidence: Evidence[];
   /** Term records only: a key of `ui.sciences`. */
   science?: string | null;
@@ -47,6 +48,7 @@ export interface Ui {
   icons: Record<IconKey, LegendEntry & { symbol: string }>;
   icon_order: IconKey[];
   badges: Record<BadgeKey, LegendEntry>;
+  states: Record<StateKey, LegendEntry>;
   link_strength: Record<LinkStrength | "note", string>;
   /** Display names of the sciences, by the keys a term record carries. May be absent from the dictionary. */
   sciences?: Record<string, string>;

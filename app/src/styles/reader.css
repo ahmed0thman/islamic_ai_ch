@@ -7,6 +7,7 @@
 .huda-button:active { transform: scale(.96); }
 .huda-button:focus-visible, .huda-badge:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .source-tone { background: color-mix(in srgb, var(--tone) 22%, transparent); color: color-mix(in srgb, var(--tone) 55%, var(--ink)); }
+.source-badge[data-state] { background: transparent; border: 1.5px dashed var(--tone) !important; }
 .source-chip { --s: 1.625rem; display: inline-grid; place-items: center; box-sizing: border-box; inline-size: var(--s); min-inline-size: var(--s); block-size: var(--s); padding: 0; border-radius: calc(var(--s) * .3); line-height: 1; }
 .source-chip svg { inline-size: calc(var(--s) * .62); block-size: calc(var(--s) * .62); }
 .source-chip-small { --s: 1.375rem; }
