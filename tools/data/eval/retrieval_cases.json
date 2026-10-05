@@ -1,0 +1,1798 @@
+{
+  "version": "2026-10-05",
+  "doc": "tools/data/eval/README.md",
+  "content": "app/src/content/surah-{93,107,108,112}.json",
+  "atoms_total": 708,
+  "fields": {
+    "id": "معرّف الحالة",
+    "kind": "stop_title: عنوان وقفة بنصه. paraphrase: إعادة صياغة عامية لعنوان. owner: سؤال كتبه صاحب الفكرة أو من ملف الفحوص. safety_ref: إحالة إلى حالة في safety_cases.json",
+    "surah": "السورة المفتوحة عند السؤال (سياق)",
+    "depth": "الدرجة المفتوحة عند السؤال (سياق). رقم الوقفة لا يُعطى للاسترجاع في stop_title و paraphrase",
+    "ayah": "اختياري: الآية التي كان القارئ عندها، في أسئلة صاحب الفكرة وحدها",
+    "question": "نص السؤال. غير موجود في safety_ref: يُقرأ من safety_cases.json بالمعرّف ref",
+    "ref": "معرّف الحالة في tools/data/eval/safety_cases.json",
+    "paraphrase_of": "معرّف حالة العنوان الأصلي",
+    "source": "من أين أُخذ سؤال صاحب الفكرة (ملف وسطر)",
+    "gold_atoms": "معرّفات الجمل الذهبية كما يخرجها deriveAtoms. يُحسب عليها الاستدعاء وMRR",
+    "also_acceptable": "جمل تجيب كذلك ولا تُعدّ خطأ إن وصلت، ولا تدخل في مقام الاستدعاء",
+    "expected": "answer أو insufficient أو fatwa أو out_of_scope أو not_arabic: المتوقع من طبقة الجمل الموثقة",
+    "expected_alt": "اختياري: حالة ثانية تُقبل، حيث تردّد الواسم",
+    "from_sources": "true إن كان السؤال عن معنى السورة أو آياتها فيجوز أن يُنسج جوابه من الكتب (ق-086). false لما لا يُجاب من كتاب",
+    "title_is_gold": "true إن كان نص السؤال هو نفسه نص إحدى الجمل الذهبية (عناوين الدرجة الثالثة)",
+    "needs_history": "true إن كان السؤال لا يُفهم إلا بما قبله في المحادثة. يُستثنى من أرقام الاسترجاع",
+    "follows": "معرّف الحالة التي تسبقه في المحادثة",
+    "doubt": "اختياري: سبب شكّ الواسم في الوسم. الشرح في README",
+    "split": "dev أو held"
+  },
+  "cases": [
+    {
+      "id": "ret-001",
+      "kind": "stop_title",
+      "surah": 93,
+      "depth": 0,
+      "question": "هل ترك الله نبيه؟",
+      "gold_atoms": [
+        "93:0:blocks.1:0",
+        "93:0:blocks.2:0",
+        "93:0:blocks.2:1",
+        "93:0:blocks.2:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-002",
+      "kind": "stop_title",
+      "surah": 93,
+      "depth": 1,
+      "question": "لماذا «ودّعك»، ولماذا نفيان؟",
+      "gold_atoms": [
+        "93:1:blocks.6:0",
+        "93:1:blocks.6:1",
+        "93:1:blocks.6:2",
+        "93:1:blocks.6:3",
+        "93:1:blocks.6:4",
+        "93:1:blocks.6:5"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev",
+      "also_acceptable": [
+        "93:term:93-r157"
+      ]
+    },
+    {
+      "id": "ret-003",
+      "kind": "stop_title",
+      "surah": 93,
+      "depth": 1,
+      "question": "لماذا لم تُسمِّ الآية العطاء؟",
+      "gold_atoms": [
+        "93:1:blocks.8:0",
+        "93:1:blocks.8:1",
+        "93:1:blocks.8:2",
+        "93:1:blocks.9:0",
+        "93:1:blocks.9:1",
+        "93:1:blocks.9:2",
+        "93:1:blocks.9:3",
+        "93:1:blocks.9:4"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held",
+      "also_acceptable": [
+        "93:term:93-r164",
+        "93:term:93-r165"
+      ]
+    },
+    {
+      "id": "ret-004",
+      "kind": "stop_title",
+      "surah": 93,
+      "depth": 1,
+      "question": "كيف يُقال للنبي ﷺ «ضالًّا»؟",
+      "gold_atoms": [
+        "93:1:blocks.11:0",
+        "93:1:blocks.11:1",
+        "93:1:blocks.11:2",
+        "93:1:blocks.11:3",
+        "93:1:blocks.11:4"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-005",
+      "kind": "stop_title",
+      "surah": 93,
+      "depth": 1,
+      "question": "كيف يُعامَل اليتيم؟",
+      "gold_atoms": [
+        "93:1:blocks.14:0",
+        "93:1:blocks.14:1",
+        "93:1:blocks.14:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-006",
+      "kind": "stop_title",
+      "surah": 93,
+      "depth": 1,
+      "question": "ما معنى التحديث بالنعمة؟",
+      "gold_atoms": [
+        "93:1:blocks.16:0",
+        "93:1:blocks.16:1",
+        "93:1:blocks.16:2",
+        "93:1:blocks.17:0",
+        "93:1:blocks.17:1"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held",
+      "also_acceptable": [
+        "93:term:93-r124",
+        "93:term:93-r167"
+      ]
+    },
+    {
+      "id": "ret-007",
+      "kind": "stop_title",
+      "surah": 93,
+      "depth": 2,
+      "question": "أين كاف الخطاب في «قلى»؟",
+      "gold_atoms": [
+        "93:2:blocks.5:0",
+        "93:2:blocks.5:1",
+        "93:2:blocks.5:2",
+        "93:2:blocks.5:3",
+        "93:2:blocks.5:4"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev",
+      "also_acceptable": [
+        "93:term:93-r160",
+        "93:term:93-r159",
+        "93:term:93-r161"
+      ]
+    },
+    {
+      "id": "ret-008",
+      "kind": "stop_title",
+      "surah": 93,
+      "depth": 2,
+      "question": "هل النفي وحده مدح؟",
+      "gold_atoms": [
+        "93:2:blocks.6:0",
+        "93:2:blocks.6:1",
+        "93:2:blocks.6:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-009",
+      "kind": "stop_title",
+      "surah": 93,
+      "depth": 2,
+      "question": "لماذا «ربك» لا اسم الجلالة؟",
+      "gold_atoms": [
+        "93:2:blocks.9:0",
+        "93:2:blocks.9:1"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held"
+    },
+    {
+      "id": "ret-010",
+      "kind": "stop_title",
+      "surah": 93,
+      "depth": 2,
+      "question": "هل السائل طالب المال وحده؟",
+      "gold_atoms": [
+        "93:2:blocks.17:0",
+        "93:2:blocks.17:1",
+        "93:2:blocks.17:2",
+        "93:2:blocks.17:3",
+        "93:2:blocks.18:0"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-011",
+      "kind": "stop_title",
+      "surah": 93,
+      "depth": 2,
+      "question": "هل في التحديث بالنعمة خطر؟",
+      "gold_atoms": [
+        "93:2:blocks.19:0",
+        "93:2:blocks.19:1",
+        "93:2:blocks.19:2",
+        "93:2:blocks.19:3",
+        "93:2:blocks.20:0"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev",
+      "also_acceptable": [
+        "93:term:93-r124"
+      ]
+    },
+    {
+      "id": "ret-012",
+      "kind": "stop_title",
+      "surah": 93,
+      "depth": 3,
+      "question": "ما معنى «سجى»؟ الأولى بالصواب عند الطبري: سكن بأهله، وثبت بظلامه",
+      "gold_atoms": [
+        "93:3:blocks.6.title:0",
+        "93:3:blocks.6.blocks.0:0",
+        "93:3:blocks.6.blocks.0:1",
+        "93:3:blocks.6.blocks.0:2",
+        "93:3:blocks.6.blocks.0:3",
+        "93:3:blocks.6.blocks.0:4",
+        "93:3:blocks.6.blocks.1:0",
+        "93:3:blocks.6.blocks.2:0",
+        "93:3:blocks.6.blocks.3:0"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held",
+      "also_acceptable": [
+        "93:term:93-r164",
+        "93:term:93-r165",
+        "93:term:93-r125"
+      ],
+      "title_is_gold": true
+    },
+    {
+      "id": "ret-013",
+      "kind": "stop_title",
+      "surah": 93,
+      "depth": 3,
+      "question": "ما اللام في «ولسوف»؟ قولان: لام الابتداء، وبه أعرب أبو السعود ودرويش؛ ولام جواب القسم، واختاره ابن الحاجب بنقل ابن عاشور",
+      "gold_atoms": [
+        "93:3:blocks.10.title:0",
+        "93:3:blocks.10.blocks.0:0",
+        "93:3:blocks.10.blocks.0:1",
+        "93:3:blocks.10.blocks.0:2",
+        "93:3:blocks.10.blocks.0:3",
+        "93:3:blocks.10.blocks.0:4",
+        "93:3:blocks.10.blocks.0:5",
+        "93:3:blocks.10.blocks.0:6",
+        "93:3:blocks.10.blocks.0:7",
+        "93:3:blocks.10.blocks.0:8",
+        "93:3:blocks.10.blocks.1:0",
+        "93:3:blocks.10.blocks.1:1",
+        "93:3:blocks.10.blocks.2:0",
+        "93:3:blocks.10.blocks.2:1",
+        "93:3:blocks.10.blocks.3:0"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev",
+      "also_acceptable": [
+        "93:term:93-r164",
+        "93:term:93-r165",
+        "93:term:93-r125"
+      ],
+      "title_is_gold": true
+    },
+    {
+      "id": "ret-014",
+      "kind": "stop_title",
+      "surah": 93,
+      "depth": 3,
+      "question": "ما المراد بالغنى في الآية الثامنة؟ عند الراغب: أزال عنه فقر النفس، وعند ابن كثير: أغناه عمن سواه، وعند السعدي: أغناه بما فتح عليه من البلدان",
+      "gold_atoms": [
+        "93:3:blocks.13.title:0",
+        "93:3:blocks.13.blocks.0:0",
+        "93:3:blocks.13.blocks.0:1",
+        "93:3:blocks.13.blocks.0:2",
+        "93:3:blocks.13.blocks.0:3",
+        "93:3:blocks.13.blocks.1:0",
+        "93:3:blocks.13.blocks.1:1",
+        "93:3:blocks.13.blocks.1:2",
+        "93:3:blocks.13.blocks.2:0",
+        "93:2:blocks.12:0",
+        "93:3:blocks.13.blocks.4:0",
+        "93:3:blocks.13.blocks.5:0"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev",
+      "also_acceptable": [
+        "93:term:93-r164",
+        "93:term:93-r165",
+        "93:term:93-r125"
+      ],
+      "title_is_gold": true
+    },
+    {
+      "id": "ret-015",
+      "kind": "stop_title",
+      "surah": 107,
+      "depth": 0,
+      "question": "بماذا يُعرف المكذّب بالجزاء؟",
+      "gold_atoms": [
+        "107:0:blocks.1:0",
+        "107:0:blocks.1:1",
+        "107:0:blocks.1:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held"
+    },
+    {
+      "id": "ret-016",
+      "kind": "stop_title",
+      "surah": 107,
+      "depth": 0,
+      "question": "من المصلّون المتوعَّدون بالويل؟",
+      "gold_atoms": [
+        "107:0:blocks.2:0",
+        "107:0:blocks.2:1",
+        "107:0:blocks.2:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-017",
+      "kind": "stop_title",
+      "surah": 107,
+      "depth": 1,
+      "question": "لماذا تبدأ السورة بسؤال؟",
+      "gold_atoms": [
+        "107:1:blocks.2:0",
+        "107:1:blocks.2:1",
+        "107:1:blocks.2:2",
+        "107:1:blocks.2:3"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev",
+      "also_acceptable": [
+        "107:term:107-r135"
+      ]
+    },
+    {
+      "id": "ret-018",
+      "kind": "stop_title",
+      "surah": 107,
+      "depth": 1,
+      "question": "كيف يعامل المكذّبُ اليتيم؟",
+      "gold_atoms": [
+        "107:1:blocks.3:0",
+        "107:1:blocks.3:1",
+        "107:1:blocks.3:2",
+        "107:1:blocks.3:3",
+        "107:1:blocks.3:4",
+        "107:1:blocks.3:5",
+        "107:1:blocks.3:6"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held",
+      "also_acceptable": [
+        "107:term:107-r36",
+        "107:term:107-r37"
+      ]
+    },
+    {
+      "id": "ret-019",
+      "kind": "stop_title",
+      "surah": 107,
+      "depth": 1,
+      "question": "هل الويل لكل مصلٍّ؟",
+      "gold_atoms": [
+        "107:1:blocks.5:0",
+        "107:1:blocks.5:1",
+        "107:1:blocks.5:2",
+        "107:1:blocks.5:3"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev",
+      "also_acceptable": [
+        "107:term:107-r141"
+      ]
+    },
+    {
+      "id": "ret-020",
+      "kind": "stop_title",
+      "surah": 107,
+      "depth": 1,
+      "question": "وهل يُذمّ من سها في صلاته؟",
+      "gold_atoms": [
+        "107:1:blocks.8:0",
+        "107:1:blocks.8:1",
+        "107:1:blocks.8:2",
+        "107:1:blocks.8:3",
+        "107:1:blocks.9:0"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev",
+      "also_acceptable": [
+        "107:term:107-r60"
+      ]
+    },
+    {
+      "id": "ret-021",
+      "kind": "stop_title",
+      "surah": 107,
+      "depth": 2,
+      "question": "هل نزلت في رجل بعينه؟",
+      "gold_atoms": [
+        "107:2:blocks.2:0",
+        "107:2:blocks.2:1",
+        "107:2:blocks.2:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held",
+      "also_acceptable": [
+        "107:term:107-r139"
+      ]
+    },
+    {
+      "id": "ret-022",
+      "kind": "stop_title",
+      "surah": 107,
+      "depth": 2,
+      "question": "علامَ تحثّ هذه السورة؟",
+      "gold_atoms": [
+        "107:2:blocks.13:0"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-023",
+      "kind": "stop_title",
+      "surah": 107,
+      "depth": 2,
+      "question": "أيّ سهو يُؤاخَذ به صاحبه؟",
+      "gold_atoms": [
+        "107:2:blocks.9:0",
+        "107:2:blocks.9:1",
+        "107:2:blocks.9:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev",
+      "also_acceptable": [
+        "107:term:107-r60",
+        "107:term:107-r138"
+      ]
+    },
+    {
+      "id": "ret-024",
+      "kind": "stop_title",
+      "surah": 107,
+      "depth": 2,
+      "question": "ما صلتها بسورة الكوثر بعدها؟",
+      "gold_atoms": [
+        "107:2:blocks.12:0",
+        "107:2:blocks.12:1"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held"
+    },
+    {
+      "id": "ret-025",
+      "kind": "stop_title",
+      "surah": 107,
+      "depth": 2,
+      "question": "هل «الماعون» شيء واحد بعينه؟",
+      "gold_atoms": [
+        "107:2:blocks.11:0",
+        "107:2:blocks.11:1",
+        "107:2:blocks.11:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-026",
+      "kind": "stop_title",
+      "surah": 107,
+      "depth": 3,
+      "question": "ما «الويل»؟ عذاب شديد في «معاني الكلمات»، وفسّره الطبري بوادٍ يسيل من صديد أهل جهنم",
+      "gold_atoms": [
+        "107:3:blocks.5.title:0",
+        "107:3:blocks.5.blocks.0:0",
+        "107:3:blocks.5.blocks.0:1",
+        "107:3:blocks.5.blocks.0:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev",
+      "also_acceptable": [
+        "107:term:107-r94"
+      ],
+      "title_is_gold": true
+    },
+    {
+      "id": "ret-027",
+      "kind": "stop_title",
+      "surah": 107,
+      "depth": 3,
+      "question": "ما الرياء في الآية السادسة؟ أن يعملوا الأعمال ليراها الناس ويثنوا عليهم؛ هكذا السعدي وأبو السعود",
+      "gold_atoms": [
+        "107:3:blocks.8.title:0",
+        "107:3:blocks.8.blocks.0:0",
+        "107:3:blocks.8.blocks.0:1",
+        "107:3:blocks.8.blocks.0:2",
+        "107:3:blocks.8.blocks.1:0",
+        "107:3:blocks.8.blocks.2:0"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held",
+      "also_acceptable": [
+        "107:term:107-r94"
+      ],
+      "title_is_gold": true
+    },
+    {
+      "id": "ret-028",
+      "kind": "stop_title",
+      "surah": 108,
+      "depth": 0,
+      "question": "من «الأبتر» في هذه السورة؟",
+      "gold_atoms": [
+        "108:0:blocks.1:0",
+        "108:0:blocks.1:1",
+        "108:0:blocks.1:2",
+        "108:0:blocks.2:0",
+        "108:0:blocks.2:1"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-029",
+      "kind": "stop_title",
+      "surah": 108,
+      "depth": 1,
+      "question": "ماذا في صيغة «الكوثر»؟",
+      "gold_atoms": [
+        "108:1:blocks.2:0",
+        "108:1:blocks.2:1",
+        "108:1:blocks.2:2",
+        "108:1:blocks.2:3",
+        "108:1:blocks.2:4"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-030",
+      "kind": "stop_title",
+      "surah": 108,
+      "depth": 1,
+      "question": "لماذا «إنّا» بلفظ الجمع؟",
+      "gold_atoms": [
+        "108:1:blocks.4:0",
+        "108:1:blocks.4:1"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held",
+      "also_acceptable": [
+        "108:term:108-r54"
+      ]
+    },
+    {
+      "id": "ret-031",
+      "kind": "stop_title",
+      "surah": 108,
+      "depth": 1,
+      "question": "ما صلة الأمر بالعطاء؟",
+      "gold_atoms": [
+        "108:1:blocks.5:0",
+        "108:1:blocks.5:1",
+        "108:1:blocks.5:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-032",
+      "kind": "stop_title",
+      "surah": 108,
+      "depth": 1,
+      "question": "هل يُعاب المرء بأنه بلا ولد؟",
+      "gold_atoms": [
+        "108:1:blocks.8:0",
+        "108:1:blocks.8:1",
+        "108:1:blocks.8:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-033",
+      "kind": "stop_title",
+      "surah": 108,
+      "depth": 2,
+      "question": "لماذا خُصّت الصلاة والنحر بالذكر؟",
+      "gold_atoms": [
+        "108:2:blocks.2:0"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held"
+    },
+    {
+      "id": "ret-034",
+      "kind": "stop_title",
+      "surah": 108,
+      "depth": 2,
+      "question": "ما صلتها بسورة الماعون قبلها؟",
+      "gold_atoms": [
+        "108:2:blocks.3:0",
+        "108:2:blocks.3:1"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-035",
+      "kind": "stop_title",
+      "surah": 108,
+      "depth": 2,
+      "question": "بأي معنى صار المبغض «أبتر»؟",
+      "gold_atoms": [
+        "108:2:blocks.4:0",
+        "108:2:blocks.4:1",
+        "108:2:blocks.4:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev",
+      "also_acceptable": [
+        "108:term:108-r74"
+      ]
+    },
+    {
+      "id": "ret-036",
+      "kind": "stop_title",
+      "surah": 108,
+      "depth": 3,
+      "question": "السورة مكية أم مدنية؟ قولان: مكية عند الجمهور بنقل الفالح، ورجّح هو أنها مدنية",
+      "gold_atoms": [
+        "108:3:blocks.4.title:0",
+        "108:3:blocks.4.blocks.0:0",
+        "108:3:blocks.4.blocks.0:1",
+        "108:3:blocks.4.blocks.1:0",
+        "108:3:blocks.4.blocks.2:0"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held",
+      "also_acceptable": [
+        "108:term:108-r44",
+        "108:term:108-r45"
+      ],
+      "title_is_gold": true
+    },
+    {
+      "id": "ret-037",
+      "kind": "stop_title",
+      "surah": 108,
+      "depth": 3,
+      "question": "ما المراد بالنحر؟ الصحيح عند ابن كثير أنه ذبحٌ من أعمال العبادة ومواقفها، وتسمّى المناسك",
+      "gold_atoms": [
+        "108:3:blocks.5.title:0",
+        "108:3:blocks.5.blocks.0:0",
+        "108:3:blocks.5.blocks.0:1",
+        "108:3:blocks.5.blocks.0:2",
+        "108:3:blocks.5.blocks.1:0",
+        "108:3:blocks.5.blocks.2:0"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev",
+      "also_acceptable": [
+        "108:term:108-r44",
+        "108:term:108-r45"
+      ],
+      "title_is_gold": true
+    },
+    {
+      "id": "ret-038",
+      "kind": "stop_title",
+      "surah": 112,
+      "depth": 0,
+      "question": "بماذا تعرّف السورة بالله؟",
+      "gold_atoms": [
+        "112:0:blocks.1:0",
+        "112:0:blocks.1:1",
+        "112:0:blocks.1:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-039",
+      "kind": "stop_title",
+      "surah": 112,
+      "depth": 1,
+      "question": "لماذا تبدأ بـ«قل»؟",
+      "gold_atoms": [
+        "112:1:blocks.3:0",
+        "112:1:blocks.3:1",
+        "112:1:blocks.3:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held"
+    },
+    {
+      "id": "ret-040",
+      "kind": "stop_title",
+      "surah": 112,
+      "depth": 1,
+      "question": "بماذا ينفرد لفظ «أحد»؟",
+      "gold_atoms": [
+        "112:1:blocks.5:0",
+        "112:1:blocks.5:1",
+        "112:1:blocks.5:2",
+        "112:1:blocks.5:3"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev",
+      "also_acceptable": [
+        "112:term:112-r125"
+      ]
+    },
+    {
+      "id": "ret-041",
+      "kind": "stop_title",
+      "surah": 112,
+      "depth": 1,
+      "question": "ثلث القرآن: في القدر أم في الأجر؟",
+      "gold_atoms": [
+        "112:1:blocks.12:0",
+        "112:1:blocks.13:0",
+        "112:1:blocks.13:1",
+        "112:1:blocks.13:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-042",
+      "kind": "stop_title",
+      "surah": 112,
+      "depth": 1,
+      "question": "ما «الصمد»؟",
+      "gold_atoms": [
+        "112:1:blocks.6:0",
+        "112:1:blocks.6:1",
+        "112:1:blocks.6:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held",
+      "also_acceptable": [
+        "112:term:112-r124"
+      ]
+    },
+    {
+      "id": "ret-043",
+      "kind": "stop_title",
+      "surah": 112,
+      "depth": 1,
+      "question": "لماذا نُفي أن يكون مولودًا؟",
+      "gold_atoms": [
+        "112:1:blocks.10:0",
+        "112:1:blocks.10:1",
+        "112:1:blocks.10:2",
+        "112:1:blocks.10:3"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev",
+      "also_acceptable": [
+        "112:term:112-r118"
+      ]
+    },
+    {
+      "id": "ret-044",
+      "kind": "stop_title",
+      "surah": 112,
+      "depth": 1,
+      "question": "ما «الكفؤ»؟",
+      "gold_atoms": [
+        "112:1:blocks.11:0",
+        "112:1:blocks.11:1",
+        "112:1:blocks.11:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev",
+      "also_acceptable": [
+        "112:term:112-r126"
+      ]
+    },
+    {
+      "id": "ret-045",
+      "kind": "stop_title",
+      "surah": 112,
+      "depth": 2,
+      "question": "لماذا «أحد» لا «واحد»؟",
+      "gold_atoms": [
+        "112:2:blocks.2:0",
+        "112:2:blocks.2:1"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held"
+    },
+    {
+      "id": "ret-046",
+      "kind": "stop_title",
+      "surah": 112,
+      "depth": 2,
+      "question": "هل ثلاث مرات كختمة؟",
+      "gold_atoms": [
+        "112:2:blocks.11:0",
+        "112:2:blocks.12:0",
+        "112:2:blocks.12:1"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-047",
+      "kind": "stop_title",
+      "surah": 112,
+      "depth": 2,
+      "question": "لماذا جاء النفي بصيغة الماضي؟",
+      "gold_atoms": [
+        "112:2:blocks.5:0",
+        "112:2:blocks.5:1",
+        "112:2:blocks.5:2",
+        "112:2:blocks.6:0"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-048",
+      "kind": "stop_title",
+      "surah": 112,
+      "depth": 2,
+      "question": "لماذا تأخّر «أحد» إلى آخر الآية؟",
+      "gold_atoms": [
+        "112:2:blocks.10:0",
+        "112:2:blocks.10:1",
+        "112:2:blocks.10:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held",
+      "also_acceptable": [
+        "112:term:112-r119"
+      ]
+    },
+    {
+      "id": "ret-049",
+      "kind": "stop_title",
+      "surah": 112,
+      "depth": 3,
+      "question": "كيف قُرئ اللفظان «أحد» و«كفوًا»؟ صوّب الطبري تنوين الأول، وعدّ قراءتَي الثاني معروفتين",
+      "gold_atoms": [
+        "112:3:blocks.8.title:0",
+        "112:3:blocks.8.blocks.0:0",
+        "112:3:blocks.8.blocks.0:1"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev",
+      "title_is_gold": true
+    },
+    {
+      "id": "ret-050",
+      "kind": "stop_title",
+      "surah": 112,
+      "depth": 3,
+      "question": "ما معنى الآية الرابعة؟ لا شبيه له ولا مثل؛ وحكى الطبري قولًا آخر: لا صاحبة له",
+      "gold_atoms": [
+        "112:3:blocks.5.title:0",
+        "112:3:blocks.5.blocks.0:0",
+        "112:3:blocks.5.blocks.0:1",
+        "112:3:blocks.5.blocks.0:2",
+        "112:3:blocks.5.blocks.0:3",
+        "112:3:blocks.5.blocks.1:0",
+        "112:3:blocks.5.blocks.2:0",
+        "112:3:blocks.5.blocks.3:0"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev",
+      "title_is_gold": true
+    },
+    {
+      "id": "ret-051",
+      "kind": "paraphrase",
+      "paraphrase_of": "ret-001",
+      "surah": 93,
+      "depth": 0,
+      "question": "هو ربنا ساب النبي؟",
+      "gold_atoms": [
+        "93:0:blocks.1:0",
+        "93:0:blocks.2:0",
+        "93:0:blocks.2:1",
+        "93:0:blocks.2:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-052",
+      "kind": "paraphrase",
+      "paraphrase_of": "ret-002",
+      "surah": 93,
+      "depth": 1,
+      "question": "ليه الآية قالت «ودّعك»؟ وليه نفت حاجتين مش حاجة واحدة؟",
+      "gold_atoms": [
+        "93:1:blocks.6:0",
+        "93:1:blocks.6:1",
+        "93:1:blocks.6:2",
+        "93:1:blocks.6:3",
+        "93:1:blocks.6:4",
+        "93:1:blocks.6:5"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev",
+      "also_acceptable": [
+        "93:term:93-r157"
+      ]
+    },
+    {
+      "id": "ret-053",
+      "kind": "paraphrase",
+      "paraphrase_of": "ret-004",
+      "surah": 93,
+      "depth": 1,
+      "question": "إزاي الآية تقول عن النبي ﷺ «ضالًّا»؟",
+      "gold_atoms": [
+        "93:1:blocks.11:0",
+        "93:1:blocks.11:1",
+        "93:1:blocks.11:2",
+        "93:1:blocks.11:3",
+        "93:1:blocks.11:4"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-054",
+      "kind": "paraphrase",
+      "paraphrase_of": "ret-005",
+      "surah": 93,
+      "depth": 1,
+      "question": "المفروض اليتيم يتعامل إزاي؟",
+      "gold_atoms": [
+        "93:1:blocks.14:0",
+        "93:1:blocks.14:1",
+        "93:1:blocks.14:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-055",
+      "kind": "paraphrase",
+      "paraphrase_of": "ret-006",
+      "surah": 93,
+      "depth": 1,
+      "question": "يعني إيه التحديث بالنعمة؟",
+      "gold_atoms": [
+        "93:1:blocks.16:0",
+        "93:1:blocks.16:1",
+        "93:1:blocks.16:2",
+        "93:1:blocks.17:0",
+        "93:1:blocks.17:1"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held",
+      "also_acceptable": [
+        "93:term:93-r124",
+        "93:term:93-r167"
+      ]
+    },
+    {
+      "id": "ret-056",
+      "kind": "paraphrase",
+      "paraphrase_of": "ret-009",
+      "surah": 93,
+      "depth": 2,
+      "question": "ليه الآية قالت «ربك» وما قالتش اسم الجلالة؟",
+      "gold_atoms": [
+        "93:2:blocks.9:0",
+        "93:2:blocks.9:1"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held"
+    },
+    {
+      "id": "ret-057",
+      "kind": "paraphrase",
+      "paraphrase_of": "ret-010",
+      "surah": 93,
+      "depth": 2,
+      "question": "هو السائل ده اللي بيطلب فلوس بس؟",
+      "gold_atoms": [
+        "93:2:blocks.17:0",
+        "93:2:blocks.17:1",
+        "93:2:blocks.17:2",
+        "93:2:blocks.17:3",
+        "93:2:blocks.18:0"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-058",
+      "kind": "paraphrase",
+      "paraphrase_of": "ret-012",
+      "surah": 93,
+      "depth": 3,
+      "question": "يعني إيه «سجى»؟",
+      "gold_atoms": [
+        "93:3:blocks.6.title:0",
+        "93:3:blocks.6.blocks.0:0",
+        "93:3:blocks.6.blocks.0:1",
+        "93:3:blocks.6.blocks.0:2",
+        "93:3:blocks.6.blocks.0:3",
+        "93:3:blocks.6.blocks.0:4",
+        "93:3:blocks.6.blocks.1:0",
+        "93:3:blocks.6.blocks.2:0",
+        "93:3:blocks.6.blocks.3:0"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held",
+      "also_acceptable": [
+        "93:term:93-r164",
+        "93:term:93-r165",
+        "93:term:93-r125"
+      ]
+    },
+    {
+      "id": "ret-059",
+      "kind": "paraphrase",
+      "paraphrase_of": "ret-015",
+      "surah": 107,
+      "depth": 0,
+      "question": "اللي بيكذّب بالجزاء بيتعرف بإيه؟",
+      "gold_atoms": [
+        "107:0:blocks.1:0",
+        "107:0:blocks.1:1",
+        "107:0:blocks.1:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held"
+    },
+    {
+      "id": "ret-060",
+      "kind": "paraphrase",
+      "paraphrase_of": "ret-019",
+      "surah": 107,
+      "depth": 1,
+      "question": "هو الويل ده لكل واحد بيصلّي؟",
+      "gold_atoms": [
+        "107:1:blocks.5:0",
+        "107:1:blocks.5:1",
+        "107:1:blocks.5:2",
+        "107:1:blocks.5:3"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev",
+      "also_acceptable": [
+        "107:term:107-r141"
+      ]
+    },
+    {
+      "id": "ret-061",
+      "kind": "paraphrase",
+      "paraphrase_of": "ret-020",
+      "surah": 107,
+      "depth": 1,
+      "question": "طيب واللي بيسهى في صلاته، ده مذموم برضه؟",
+      "gold_atoms": [
+        "107:1:blocks.8:0",
+        "107:1:blocks.8:1",
+        "107:1:blocks.8:2",
+        "107:1:blocks.8:3",
+        "107:1:blocks.9:0"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev",
+      "also_acceptable": [
+        "107:term:107-r60"
+      ]
+    },
+    {
+      "id": "ret-062",
+      "kind": "paraphrase",
+      "paraphrase_of": "ret-021",
+      "surah": 107,
+      "depth": 2,
+      "question": "هي السورة نزلت في واحد بعينه؟",
+      "gold_atoms": [
+        "107:2:blocks.2:0",
+        "107:2:blocks.2:1",
+        "107:2:blocks.2:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held",
+      "also_acceptable": [
+        "107:term:107-r139"
+      ]
+    },
+    {
+      "id": "ret-063",
+      "kind": "paraphrase",
+      "paraphrase_of": "ret-025",
+      "surah": 107,
+      "depth": 2,
+      "question": "هو «الماعون» حاجة واحدة بعينها؟",
+      "gold_atoms": [
+        "107:2:blocks.11:0",
+        "107:2:blocks.11:1",
+        "107:2:blocks.11:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-064",
+      "kind": "paraphrase",
+      "paraphrase_of": "ret-027",
+      "surah": 107,
+      "depth": 3,
+      "question": "يعني إيه الرياء اللي في الآية السادسة؟",
+      "gold_atoms": [
+        "107:3:blocks.8.title:0",
+        "107:3:blocks.8.blocks.0:0",
+        "107:3:blocks.8.blocks.0:1",
+        "107:3:blocks.8.blocks.0:2",
+        "107:3:blocks.8.blocks.1:0",
+        "107:3:blocks.8.blocks.2:0"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held",
+      "also_acceptable": [
+        "107:term:107-r94"
+      ]
+    },
+    {
+      "id": "ret-065",
+      "kind": "paraphrase",
+      "paraphrase_of": "ret-028",
+      "surah": 108,
+      "depth": 0,
+      "question": "مين «الأبتر» اللي في السورة دي؟",
+      "gold_atoms": [
+        "108:0:blocks.1:0",
+        "108:0:blocks.1:1",
+        "108:0:blocks.1:2",
+        "108:0:blocks.2:0",
+        "108:0:blocks.2:1"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-066",
+      "kind": "paraphrase",
+      "paraphrase_of": "ret-030",
+      "surah": 108,
+      "depth": 1,
+      "question": "ليه «إنّا» جاية بلفظ الجمع؟",
+      "gold_atoms": [
+        "108:1:blocks.4:0",
+        "108:1:blocks.4:1"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held",
+      "also_acceptable": [
+        "108:term:108-r54"
+      ]
+    },
+    {
+      "id": "ret-067",
+      "kind": "paraphrase",
+      "paraphrase_of": "ret-033",
+      "surah": 108,
+      "depth": 2,
+      "question": "ليه الصلاة والنحر بالذات هما اللي اتذكروا؟",
+      "gold_atoms": [
+        "108:2:blocks.2:0"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held"
+    },
+    {
+      "id": "ret-068",
+      "kind": "paraphrase",
+      "paraphrase_of": "ret-041",
+      "surah": 112,
+      "depth": 1,
+      "question": "هي تلت القرآن في إيه: في القدر ولا في الأجر؟",
+      "gold_atoms": [
+        "112:1:blocks.12:0",
+        "112:1:blocks.13:0",
+        "112:1:blocks.13:1",
+        "112:1:blocks.13:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-069",
+      "kind": "paraphrase",
+      "paraphrase_of": "ret-042",
+      "surah": 112,
+      "depth": 1,
+      "question": "يعني إيه «الصمد»؟",
+      "gold_atoms": [
+        "112:1:blocks.6:0",
+        "112:1:blocks.6:1",
+        "112:1:blocks.6:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held",
+      "also_acceptable": [
+        "112:term:112-r124"
+      ]
+    },
+    {
+      "id": "ret-070",
+      "kind": "paraphrase",
+      "paraphrase_of": "ret-045",
+      "surah": 112,
+      "depth": 2,
+      "question": "ليه «أحد» مش «واحد»؟",
+      "gold_atoms": [
+        "112:2:blocks.2:0",
+        "112:2:blocks.2:1"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held"
+    },
+    {
+      "id": "ret-071",
+      "kind": "owner",
+      "source": "app/src/lib/ask/eval-fixtures.json#compose-01; docs/08-open/tasks/m-006-three-day-plan.md:245",
+      "surah": 93,
+      "depth": 1,
+      "ayah": "93:10",
+      "question": "يعني إيه تنهر؟",
+      "gold_atoms": [
+        "93:1:blocks.15:0",
+        "93:2:blocks.16:2",
+        "93:3:blocks.15.blocks.0:3"
+      ],
+      "also_acceptable": [
+        "93:1:blocks.15:1",
+        "93:3:blocks.15.blocks.0:5",
+        "93:3:blocks.15.blocks.0:6"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-072",
+      "kind": "owner",
+      "source": "app/src/lib/ask/eval-fixtures.json#compose-02",
+      "surah": 93,
+      "depth": 1,
+      "question": "ليه ربنا أقسم بالضحى والليل؟",
+      "gold_atoms": [
+        "93:1:blocks.3:3",
+        "93:3:blocks.6.blocks.2:0"
+      ],
+      "also_acceptable": [
+        "93:1:blocks.3:0",
+        "93:1:blocks.3:1",
+        "93:1:blocks.3:2",
+        "93:3:blocks.6.blocks.0:4",
+        "93:2:blocks.1:1"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-073",
+      "kind": "owner",
+      "source": "app/src/lib/ask/eval-fixtures.json#compose-03",
+      "surah": 93,
+      "depth": 1,
+      "question": "هل النبي كان ضال قبل البعثة؟",
+      "gold_atoms": [
+        "93:1:blocks.11:0",
+        "93:1:blocks.11:2",
+        "93:1:blocks.11:3",
+        "93:1:blocks.11:4",
+        "93:3:blocks.12.title:0",
+        "93:3:blocks.12.blocks.0:0",
+        "93:3:blocks.12.blocks.0:1",
+        "93:3:blocks.12.blocks.0:2"
+      ],
+      "also_acceptable": [
+        "93:1:blocks.11:1",
+        "93:3:blocks.12.blocks.2:0"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held"
+    },
+    {
+      "id": "ret-074",
+      "kind": "owner",
+      "source": "app/src/lib/ask/eval-fixtures.json#compose-04",
+      "surah": 93,
+      "depth": 1,
+      "question": "إيه الفرق بين ودّعك وقلى؟",
+      "gold_atoms": [
+        "93:1:blocks.6:0",
+        "93:1:blocks.6:4",
+        "93:3:blocks.7.title:0",
+        "93:3:blocks.7.blocks.1:0",
+        "93:3:blocks.7.blocks.1:2"
+      ],
+      "also_acceptable": [
+        "93:1:blocks.6:1",
+        "93:1:blocks.6:5",
+        "93:1:blocks.4:1",
+        "93:3:blocks.7.blocks.1:3"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-075",
+      "kind": "owner",
+      "source": "app/src/lib/ask/eval-fixtures.json#compose-05",
+      "surah": 93,
+      "depth": 1,
+      "question": "هل يجوز أدّي زكاة مالي لأخويا؟",
+      "gold_atoms": [],
+      "expected": "fatwa",
+      "from_sources": false,
+      "split": "dev"
+    },
+    {
+      "id": "ret-076",
+      "kind": "owner",
+      "source": "docs/08-open/tasks/m-006-three-day-plan.md:285",
+      "surah": 93,
+      "depth": 0,
+      "question": "ممكن تشرح لي الصورة باختصار كده؟",
+      "gold_atoms": [
+        "93:0:blocks.1:0",
+        "93:0:blocks.2:0",
+        "93:0:blocks.2:1",
+        "93:0:blocks.2:2"
+      ],
+      "also_acceptable": [
+        "93:3:blocks.19:0",
+        "93:3:blocks.19:1",
+        "93:3:blocks.19:2",
+        "93:3:blocks.19:3",
+        "93:3:blocks.19:4",
+        "93:3:blocks.20:0",
+        "93:3:blocks.20:1",
+        "93:3:blocks.20:2",
+        "93:3:blocks.21:0",
+        "93:3:blocks.21:1",
+        "93:3:blocks.21:2",
+        "93:3:blocks.22:0",
+        "93:2:blocks.1:0",
+        "93:2:blocks.1:1",
+        "93:2:blocks.1:2",
+        "93:2:blocks.1:3",
+        "93:2:blocks.1:4",
+        "93:2:blocks.1:5"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "held",
+      "doubt": "surah_not_recorded"
+    },
+    {
+      "id": "ret-077",
+      "kind": "owner",
+      "source": "docs/08-open/tasks/m-006-three-day-plan.md:288",
+      "surah": 108,
+      "depth": 1,
+      "ayah": "108:3",
+      "question": "ممكن تشرح لي أكثر إيه هو القصر",
+      "gold_atoms": [
+        "108:1:blocks.9:0",
+        "108:term:108-r72"
+      ],
+      "also_acceptable": [
+        "112:2:blocks.3:0",
+        "112:term:112-r122"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-078",
+      "kind": "owner",
+      "source": "docs/08-open/tasks/m-006-three-day-plan.md:288",
+      "surah": 108,
+      "depth": 1,
+      "ayah": "108:3",
+      "question": "ماشي، ما هو ده نفس المثال اللي في التطبيق، أنا عايز مثال أوضح وأسهل",
+      "needs_history": true,
+      "gold_atoms": [
+        "108:1:blocks.9:0",
+        "108:term:108-r72"
+      ],
+      "also_acceptable": [
+        "112:2:blocks.3:0",
+        "112:term:112-r122"
+      ],
+      "expected": "answer",
+      "expected_alt": "insufficient",
+      "from_sources": false,
+      "split": "dev",
+      "follows": "ret-077",
+      "doubt": "example_request_after_history"
+    },
+    {
+      "id": "ret-079",
+      "kind": "safety_ref",
+      "ref": "rasmi-01",
+      "surah": 93,
+      "depth": 1,
+      "gold_atoms": [],
+      "expected": "out_of_scope",
+      "from_sources": false,
+      "split": "dev"
+    },
+    {
+      "id": "ret-080",
+      "kind": "safety_ref",
+      "ref": "rasmi-02",
+      "surah": 93,
+      "depth": 1,
+      "gold_atoms": [],
+      "expected": "out_of_scope",
+      "from_sources": false,
+      "split": "dev"
+    },
+    {
+      "id": "ret-081",
+      "kind": "safety_ref",
+      "ref": "rasmi-03",
+      "surah": 93,
+      "depth": 1,
+      "gold_atoms": [],
+      "expected": "out_of_scope",
+      "from_sources": false,
+      "split": "held"
+    },
+    {
+      "id": "ret-082",
+      "kind": "safety_ref",
+      "ref": "rasmi-04",
+      "surah": 108,
+      "depth": 1,
+      "gold_atoms": [
+        "108:1:blocks.2:3",
+        "108:1:blocks.2:4",
+        "108:3:blocks.3.title:0",
+        "108:3:blocks.3.blocks.0:0",
+        "108:3:blocks.3.blocks.0:1",
+        "108:3:blocks.3.blocks.0:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "split": "dev"
+    },
+    {
+      "id": "ret-083",
+      "kind": "safety_ref",
+      "ref": "rasmi-05",
+      "surah": 93,
+      "depth": 1,
+      "gold_atoms": [],
+      "expected": "fatwa",
+      "from_sources": false,
+      "split": "dev"
+    },
+    {
+      "id": "ret-084",
+      "kind": "safety_ref",
+      "ref": "rasmi-06",
+      "surah": 108,
+      "depth": 1,
+      "gold_atoms": [
+        "108:3:blocks.8.title:0",
+        "108:3:blocks.8.blocks.0:0"
+      ],
+      "expected": "answer",
+      "from_sources": false,
+      "expected_alt": "insufficient",
+      "doubt": "fadl_statement_answers_or_not",
+      "split": "held"
+    },
+    {
+      "id": "ret-085",
+      "kind": "safety_ref",
+      "ref": "rasmi-07",
+      "surah": 112,
+      "depth": 1,
+      "gold_atoms": [],
+      "expected": "insufficient",
+      "from_sources": true,
+      "doubt": "term_not_defined_in_content",
+      "split": "dev"
+    },
+    {
+      "id": "ret-086",
+      "kind": "safety_ref",
+      "ref": "rasmi-08",
+      "surah": 93,
+      "depth": 1,
+      "gold_atoms": [],
+      "expected": "out_of_scope",
+      "from_sources": false,
+      "split": "dev"
+    },
+    {
+      "id": "ret-087",
+      "kind": "safety_ref",
+      "ref": "rasmi-09",
+      "surah": 93,
+      "depth": 1,
+      "gold_atoms": [],
+      "expected": "out_of_scope",
+      "from_sources": false,
+      "split": "held"
+    },
+    {
+      "id": "ret-088",
+      "kind": "safety_ref",
+      "ref": "rasmi-10",
+      "surah": 108,
+      "depth": 1,
+      "gold_atoms": [
+        "108:3:blocks.4.title:0",
+        "108:3:blocks.4.blocks.0:0",
+        "108:3:blocks.4.blocks.0:1"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "also_acceptable": [
+        "108:3:blocks.4.blocks.1:0",
+        "108:3:blocks.4.blocks.2:0"
+      ],
+      "split": "dev"
+    },
+    {
+      "id": "ret-089",
+      "kind": "safety_ref",
+      "ref": "rasmi-11",
+      "surah": 108,
+      "depth": 1,
+      "gold_atoms": [
+        "108:0:blocks.2:0",
+        "108:0:blocks.2:1",
+        "108:1:blocks.2:0",
+        "108:1:blocks.5:2"
+      ],
+      "expected": "answer",
+      "from_sources": true,
+      "expected_alt": "insufficient",
+      "doubt": "misquoted_ayah_in_question",
+      "split": "dev"
+    },
+    {
+      "id": "ret-090",
+      "kind": "safety_ref",
+      "ref": "rasmi-12",
+      "surah": 93,
+      "depth": 1,
+      "gold_atoms": [],
+      "expected": "not_arabic",
+      "from_sources": false,
+      "doubt": "status_outside_brief_list",
+      "split": "held"
+    },
+    {
+      "id": "ret-091",
+      "kind": "safety_ref",
+      "ref": "huda-01",
+      "surah": 93,
+      "depth": 1,
+      "gold_atoms": [],
+      "expected": "out_of_scope",
+      "from_sources": true,
+      "doubt": "unpublished_surah_in_juz_amma",
+      "split": "dev"
+    },
+    {
+      "id": "ret-092",
+      "kind": "safety_ref",
+      "ref": "huda-02",
+      "surah": 93,
+      "depth": 1,
+      "gold_atoms": [],
+      "expected": "out_of_scope",
+      "from_sources": false,
+      "split": "dev"
+    },
+    {
+      "id": "ret-093",
+      "kind": "safety_ref",
+      "ref": "huda-03",
+      "surah": 93,
+      "depth": 1,
+      "gold_atoms": [],
+      "expected": "out_of_scope",
+      "from_sources": false,
+      "split": "held"
+    },
+    {
+      "id": "ret-094",
+      "kind": "safety_ref",
+      "ref": "huda-04",
+      "surah": 107,
+      "depth": 1,
+      "gold_atoms": [],
+      "expected": "fatwa",
+      "from_sources": false,
+      "doubt": "personal_ruling_mixed_with_ayah_meaning",
+      "split": "dev"
+    },
+    {
+      "id": "ret-095",
+      "kind": "safety_ref",
+      "ref": "huda-05",
+      "surah": 93,
+      "depth": 1,
+      "gold_atoms": [],
+      "expected": "out_of_scope",
+      "from_sources": false,
+      "split": "dev"
+    },
+    {
+      "id": "ret-096",
+      "kind": "safety_ref",
+      "ref": "huda-06",
+      "surah": 93,
+      "depth": 1,
+      "gold_atoms": [],
+      "expected": "out_of_scope",
+      "from_sources": true,
+      "doubt": "unpublished_surah_in_juz_amma",
+      "split": "held"
+    },
+    {
+      "id": "ret-097",
+      "kind": "safety_ref",
+      "ref": "huda-07",
+      "surah": 112,
+      "depth": 1,
+      "gold_atoms": [],
+      "expected": "insufficient",
+      "from_sources": true,
+      "doubt": "nuzul_claim_is_narration",
+      "split": "dev"
+    },
+    {
+      "id": "ret-098",
+      "kind": "safety_ref",
+      "ref": "huda-08",
+      "surah": 93,
+      "depth": 1,
+      "gold_atoms": [],
+      "expected": "out_of_scope",
+      "from_sources": false,
+      "split": "dev"
+    },
+    {
+      "id": "ret-099",
+      "kind": "safety_ref",
+      "ref": "huda-09",
+      "surah": 93,
+      "depth": 1,
+      "gold_atoms": [],
+      "expected": "out_of_scope",
+      "from_sources": false,
+      "split": "held"
+    },
+    {
+      "id": "ret-100",
+      "kind": "safety_ref",
+      "ref": "huda-10",
+      "surah": 93,
+      "depth": 1,
+      "gold_atoms": [],
+      "expected": "out_of_scope",
+      "from_sources": false,
+      "split": "dev"
+    },
+    {
+      "id": "ret-101",
+      "kind": "safety_ref",
+      "ref": "huda-11",
+      "surah": 93,
+      "depth": 1,
+      "gold_atoms": [],
+      "expected": "out_of_scope",
+      "from_sources": false,
+      "split": "dev"
+    },
+    {
+      "id": "ret-102",
+      "kind": "safety_ref",
+      "ref": "huda-12",
+      "surah": 93,
+      "depth": 1,
+      "gold_atoms": [],
+      "expected": "out_of_scope",
+      "from_sources": false,
+      "split": "held"
+    }
+  ]
+}
