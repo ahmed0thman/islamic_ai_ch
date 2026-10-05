@@ -9,8 +9,9 @@ import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 
 export type BottomSheetProps = {
   title: string; ui: Ui; onClose: () => void; children: ReactNode | ((dismiss: () => void) => ReactNode); term?: boolean;
+  variant?: "ask"; titleAfter?: ReactNode;
 };
-export function BottomSheet({ title, ui, onClose, children, term = false }: BottomSheetProps) {
+export function BottomSheet({ title, ui, onClose, children, term = false, variant, titleAfter }: BottomSheetProps) {
   const id = useId();
   const [open, setOpen] = useState(true);
   const closeButton = useRef<HTMLButtonElement>(null);
@@ -56,7 +57,7 @@ export function BottomSheet({ title, ui, onClose, children, term = false }: Bott
     else setOpen(false);
   }
   return <Sheet open={open} onOpenChange={(value) => { if (!value) requestClose(); }}>
-    <SheetContent side="bottom" showCloseButton={false} aria-describedby={undefined}
+    <SheetContent side="bottom" showCloseButton={false} aria-describedby={undefined} data-variant={variant}
       onOpenAutoFocus={(event) => { event.preventDefault(); closeButton.current?.focus({ preventScroll: true }); }}
       onCloseAutoFocus={(event) => {
         event.preventDefault();
@@ -68,9 +69,11 @@ export function BottomSheet({ title, ui, onClose, children, term = false }: Bott
       <div className="sheet-grabber" aria-hidden="true" />
       <header className="huda-sheet-header">
         <SheetTitle className={term ? "huda-sheet-title huda-term-title" : "huda-sheet-title"}>{title}</SheetTitle>
+        {titleAfter}
         <Button ref={closeButton} variant="round" size="icon" onClick={requestClose} aria-label={ui.panel.close}><Icon icon={Cancel01Icon} /></Button>
       </header>
       <div className="huda-sheet-scroll">{typeof children === "function" ? children(requestClose) : children}</div>
     </SheetContent>
   </Sheet>;
 }
+

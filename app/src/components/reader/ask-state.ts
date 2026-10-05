@@ -1,11 +1,19 @@
 import { createContext, useContext } from "react";
 import type { Depth } from "@/lib/types";
 import type { AskedQuestion } from "@/lib/asked";
-import type { Atom } from "@/lib/ask/types";
+import type { Atom, AskResponse } from "@/lib/ask/types";
 
 /** The stop the reader has open, as «اسأل» needs it: its number at the current depth (the `?stop=N` of the URL) and the title the scene shows. */
 export interface AskStop { number: number; title: string }
 export type AskedEntry = { item: AskedQuestion; atoms: Atom[] };
+
+export interface AskTurn {
+  id: number;
+  question: string;
+  loading: boolean;
+  result: AskResponse | null;
+}
+
 export interface AskState {
   depth: Depth;
   stop: AskStop | null;
@@ -14,8 +22,13 @@ export interface AskState {
   open: () => void;
   save: (entry: { question: string; atomIds: string[] }) => void;
   remove: (id: string) => void;
+  
+  turns: AskTurn[];
+  starters: string[];
+  addTurn: (question: string) => number;
+  settleTurn: (id: number, result: AskResponse) => void;
+  dropTurn: (id: number) => void;
 }
 export const AskContext = createContext<AskState | null>(null);
 /** `null` when «اسأل» is off (the static export) or outside the reader: every consumer then renders nothing. */
 export const useAsk = () => useContext(AskContext);
-

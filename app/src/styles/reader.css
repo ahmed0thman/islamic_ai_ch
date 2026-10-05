@@ -40,6 +40,8 @@
 .huda-sheet-title { font-size: var(--text-sheet-title); line-height: 1.6; font-weight: 700; text-wrap: balance; }
 .huda-term-title { color: var(--accent); font-size: var(--text-term-title); }
 .huda-sheet-scroll { min-block-size: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 var(--gutter) calc(var(--space-xl) + env(safe-area-inset-bottom)); }
+.huda-sheet-content[data-variant="ask"] { block-size: min(calc(100dvh - var(--kb, 0px) - 1.5rem), 46rem); max-block-size: none; inset-block-end: var(--kb, 0px); }
+.huda-sheet-content[data-variant="ask"] .huda-sheet-scroll { flex: 1; display: flex; flex-direction: column; padding-block-end: 0; overflow: hidden; }
 .sheet-label, .sheet-facts dt { font-size: var(--text-label); color: var(--ink-3); font-weight: 600; line-height: var(--leading-ui); }
 .sheet-record { padding-block: var(--space-md); }
 .sheet-claim { font-size: var(--text-details); line-height: 1.95; font-weight: 500; white-space: pre-wrap; }

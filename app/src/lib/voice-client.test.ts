@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 // @ts-expect-error -- Node requires source extensions.
-import { clock, fileNameFor, LIVE_EVERY_MS, LIVE_FOR_MP4, LIVE_MIN_MS, liveAllowed, MAX_RECORDING_MS, mergeQuestion, MIME_CANDIDATES, nextAfterFinal, pickMimeType, TIMESLICE_MS } from "./voice-client.ts";
+import { clock, fileNameFor, LIVE_EVERY_MS, LIVE_FOR_MP4, LIVE_MIN_MS, liveAllowed, MAX_RECORDING_MS, mergeQuestion, MIME_CANDIDATES, nextAfterFinal, pickMimeType, TIMESLICE_MS, levelFrom } from "./voice-client.ts";
 
 test("the constants the button and the server rely on", () => {
   assert.equal(LIVE_EVERY_MS, 2500);
@@ -97,4 +97,12 @@ test("nextAfterFinal: ok goes to review, anything else keeps the provisional tex
   assert.equal(nextAfterFinal("empty", false), "failed");
   assert.equal(nextAfterFinal("busy", false), "failed");
   assert.equal(nextAfterFinal(undefined, false), "failed");
+});
+
+test("levelFrom: calculates the RMS level from the sample array", () => {
+  assert.equal(levelFrom(new Uint8Array([])), 0);
+  assert.equal(levelFrom(new Uint8Array([128, 128, 128, 128])), 0);
+  assert.equal(levelFrom(new Uint8Array([0, 255, 0, 255])), 1);
+  const small = levelFrom(new Uint8Array([127, 129, 127, 129]));
+  assert.ok(small > 0 && small < 0.1);
 });

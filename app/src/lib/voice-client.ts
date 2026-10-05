@@ -57,3 +57,13 @@ export function nextAfterFinal(status: string | undefined, hasLiveText: boolean)
   if (status === "ok") return "review";
   return hasLiveText ? "partial" : "failed";
 }
+
+export function levelFrom(samples: Uint8Array): number {
+  if (samples.length === 0) return 0;
+  let sum = 0;
+  for (let i = 0; i < samples.length; i++) {
+    const v = (samples[i] - 128) / 128;
+    sum += v * v;
+  }
+  return Math.min(1, Math.sqrt(sum / samples.length) * 4);
+}

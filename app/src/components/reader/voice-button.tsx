@@ -1,13 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Mic01Icon, StopIcon } from "@hugeicons/core-free-icons";
-import { Button } from "@/components/ui/button";
-import { Icon } from "@/components/ui/icon";
-import type { Ui } from "@/lib/types";
 import {
   clock, fileNameFor, LIVE_EVERY_MS, LIVE_MIN_MS, liveAllowed, MAX_RECORDING_MS,
-  nextAfterFinal, pickMimeType, TIMESLICE_MS, type VoiceState,
+  nextAfterFinal, pickMimeType, TIMESLICE_MS, type VoiceState, levelFrom
 } from "@/lib/voice-client";
 
 const FINAL_TIMEOUT_MS = 25_000;
@@ -16,16 +12,12 @@ const MIN_BLOB_BYTES = 2000;
 
 type TranscribeResult = { status: string; text?: string };
 
-/**
- * The microphone of the ask sheet. One tap records; while it records, the growing recording is posted every
- * LIVE_EVERY_MS for a provisional transcript that appears in the question box; the next tap posts the whole
- * recording once and its text replaces the provisional one. It never submits, and nothing is kept after a send.
- */
-export function VoiceButton({ surah, depth, stop, ui, disabled = false, onStart, onLive, onFinal }: {
-  surah: number; depth: number; stop: number | null; ui: Ui; disabled?: boolean;
+export function useVoice({ surah, depth, stop, onStart, onLive, onFinal, onLevel }: {
+  surah: number; depth: number; stop: number | null;
   onStart: () => void; onLive: (text: string) => void; onFinal: (text: string | null) => void;
+  onLevel: (level: number | null) => void;
 }) {
-  const [supported, setSupported] = useState(false); // decided on the client so server and client HTML match
+  const [supported, setSupported] = useState(false);
   const [state, setState] = useState<VoiceState>("idle");
   const [elapsed, setElapsed] = useState(0);
   const [liveOn, setLiveOn] = useState(false);
@@ -45,17 +37,17 @@ export function VoiceButton({ surah, depth, stop, ui, disabled = false, onStart,
   const liveFailures = useRef(0);
   const liveInFlight = useRef(false);
   const startedAt = useRef(0);
-  const starting = useRef(false); // a second tap while the permission prompt is open must not ask twice
+  const starting = useRef(false);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const rafRef = useRef<number | null>(null);
 
   const setVoiceState = (next: VoiceState) => { stateRef.current = next; if (alive.current) setState(next); };
 
   useEffect(() => {
-    // lib.dom types `mediaDevices` as always present; older browsers and non-secure contexts lack it, hence the cast.
     const mediaDevices = (navigator as { mediaDevices?: MediaDevices }).mediaDevices;
     setSupported(Boolean(window.isSecureContext && mediaDevices?.getUserMedia && typeof MediaRecorder !== "undefined"));
   }, []);
 
-  // On unmount: every timer cleared, every request aborted, the recorder and the mic released.
   useEffect(() => () => {
     alive.current = false;
     clearTimers();
@@ -64,11 +56,12 @@ export function VoiceButton({ surah, depth, stop, ui, disabled = false, onStart,
     const recorder = recorderRef.current;
     recorderRef.current = null;
     if (recorder) {
-      recorder.removeEventListener("stop", onRecorderStop); // no final send for a recording nobody hears the end of
-      try { if (recorder.state !== "inactive") recorder.stop(); } catch { /* releasing the mic never throws */ }
+      recorder.removeEventListener("stop", onRecorderStop);
+      try { if (recorder.state !== "inactive") recorder.stop(); } catch { }
     }
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
+    cleanupAudioCtx();
   }, []);
 
   function clearTimers() {
@@ -77,7 +70,14 @@ export function VoiceButton({ surah, depth, stop, ui, disabled = false, onStart,
     if (liveTimer.current !== null) { window.clearInterval(liveTimer.current); liveTimer.current = null; }
   }
 
-  /** One POST to the transcription endpoint; any non-2xx, a `busy`, or a network failure is a failure status. */
+  function cleanupAudioCtx() {
+    if (rafRef.current !== null) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
+    if (audioCtxRef.current) {
+      audioCtxRef.current.close().catch(() => {});
+      audioCtxRef.current = null;
+    }
+  }
+
   async function postTranscribe(blob: Blob, live: boolean, signal: AbortSignal): Promise<TranscribeResult> {
     const form = new FormData();
     form.set("audio", blob, fileNameFor(blob.type));
@@ -96,7 +96,6 @@ export function VoiceButton({ surah, depth, stop, ui, disabled = false, onStart,
     }
   }
 
-  /** The tap: getUserMedia is called directly here (iOS grants it only inside the gesture), then the recording starts. */
   function start() {
     if (starting.current) return;
     starting.current = true;
@@ -104,7 +103,6 @@ export function VoiceButton({ surah, depth, stop, ui, disabled = false, onStart,
       starting.current = false;
       if (!alive.current) { media.getTracks().forEach((track) => track.stop()); return; }
       streamRef.current = media;
-      // Older WebKit lacks the static method entirely; the cast keeps `undefined` representable.
       const isTypeSupported = (MediaRecorder as unknown as { isTypeSupported?: (type: string) => boolean }).isTypeSupported;
       const mime = pickMimeType(isTypeSupported?.bind(MediaRecorder));
       let recorder: MediaRecorder;
@@ -116,6 +114,31 @@ export function VoiceButton({ surah, depth, stop, ui, disabled = false, onStart,
         setVoiceState("failed");
         return;
       }
+      
+      try {
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        const ctx = new AudioContextClass();
+        void ctx.resume();
+        const source = ctx.createMediaStreamSource(media);
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 256;
+        source.connect(analyser);
+        audioCtxRef.current = ctx;
+
+        const dataArray = new Uint8Array(analyser.fftSize);
+        let smoothed = 0;
+        const loop = () => {
+          analyser.getByteTimeDomainData(dataArray);
+          const level = levelFrom(dataArray);
+          smoothed = smoothed * 0.7 + level * 0.3;
+          onLevel(smoothed);
+          rafRef.current = requestAnimationFrame(loop);
+        };
+        rafRef.current = requestAnimationFrame(loop);
+      } catch {
+        onLevel(null);
+      }
+
       recorderRef.current = recorder;
       chunksRef.current = [];
       liveText.current = "";
@@ -139,7 +162,6 @@ export function VoiceButton({ surah, depth, stop, ui, disabled = false, onStart,
     }, () => { starting.current = false; setVoiceState("denied"); });
   }
 
-  /** One provisional send of the recording so far; late answers are dropped, failures are counted and never shown. */
   function liveTick() {
     const recorder = recorderRef.current;
     if (!recorder || liveInFlight.current) return;
@@ -166,13 +188,12 @@ export function VoiceButton({ surah, depth, stop, ui, disabled = false, onStart,
     });
   }
 
-  /** The second tap, the hard stop, or the mic going away: timers off, provisional send aborted, recorder flushed. */
   function stopRecording() {
     if (stateRef.current !== "listening") return;
     clearTimers();
     liveAbort.current?.abort();
     setVoiceState("finalizing");
-    recorderRef.current?.stop(); // the final blob is assembled in onRecorderStop
+    recorderRef.current?.stop();
   }
 
   function onTrackEnded() { stopRecording(); }
@@ -182,12 +203,13 @@ export function VoiceButton({ surah, depth, stop, ui, disabled = false, onStart,
     recorderRef.current = null;
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
+    cleanupAudioCtx();
+    onLevel(0);
     const blob = new Blob(chunksRef.current, { type: recorder?.mimeType });
-    chunksRef.current = []; // the recording is released; only the send holds it now
+    chunksRef.current = [];
     void finalize(blob);
   }
 
-  /** The whole recording goes once more; the final text replaces the provisional one. onFinal fires exactly once. */
   async function finalize(blob: Blob) {
     if (blob.size < MIN_BLOB_BYTES) {
       setVoiceState(nextAfterFinal(undefined, Boolean(liveText.current)));
@@ -209,35 +231,11 @@ export function VoiceButton({ surah, depth, stop, ui, disabled = false, onStart,
     }
   }
 
-  function onTap() {
+  function toggle() {
     if (stateRef.current === "listening") { stopRecording(); return; }
     if (stateRef.current === "finalizing") return;
     start();
   }
 
-  if (!supported) return null;
-  const listening = state === "listening";
-  return <>
-    <span className="ask-voice">
-      <Button variant="round" size="icon" onClick={onTap}
-        disabled={state === "finalizing" || (disabled && !listening)}
-        aria-label={listening ? ui.ask.voice_stop : ui.ask.voice_start}
-        aria-pressed={listening}
-        data-state={listening ? "listening" : undefined}>
-        <Icon icon={listening ? StopIcon : Mic01Icon} />
-      </Button>
-    </span>
-    {state === "idle" ? null : <div className="ask-voice-status" role="status" aria-live="polite">
-      {listening ? <>
-        <p><span className="ask-voice-dot" aria-hidden="true" /> {ui.ask.voice_listening} <span className="ask-voice-clock">{clock(elapsed)}</span></p>
-        {liveOn ? <p className="ask-voice-note">{ui.ask.voice_live_note}</p> : null}
-        <p className="ask-voice-note">{ui.ask.voice_privacy}</p>
-      </> : null}
-      {state === "finalizing" ? <p>{ui.ask.voice_transcribing}</p> : null}
-      {state === "review" ? <p>{ui.ask.voice_review}</p> : null}
-      {state === "partial" ? <p>{ui.ask.voice_partial}</p> : null}
-      {state === "denied" ? <p>{ui.ask.voice_denied}</p> : null}
-      {state === "failed" ? <p>{ui.ask.voice_failed}</p> : null}
-    </div>}
-  </>;
+  return { supported, state, elapsed, liveOn, toggle };
 }

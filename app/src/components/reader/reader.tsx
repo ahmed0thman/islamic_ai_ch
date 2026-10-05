@@ -169,7 +169,13 @@ export function Reader({ surah, ui, nextSurah, surahs, ask = false }: { surah: S
   const followups = useMemo(() => stop ? deriveFollowups(surah, depth, { title: stop.title, ayahKeys: stop.ayahKeys }, maps.map((model) => model.stops)) : [], [surah, depth, stop, maps]);
   const passage = stop ? surah.passages?.find((item) => item.id === stop.passage) : undefined;
   const nextPassage = neighbours.next && neighbours.next.passage !== stop?.passage ? surah.passages?.find((item) => item.id === neighbours.next!.passage) : undefined;
-  return <ReadingProvider value={reading}><AskProvider enabled={ask} surah={surah} depth={depth} stop={stop ? { number: stop.number, title: stop.sceneTitle ?? stop.title } : null}><div className="huda-reader">
+  // Starter questions for the ask panel: this level's stop titles that are themselves questions (they end in the Arabic question mark).
+  const starters = useMemo(() => {
+    const open = stop ? stop.sceneTitle ?? stop.title : null;
+    return map.stops.map((item) => item.title)
+      .filter((title): title is string => typeof title === "string" && title.endsWith("\u061F") && title !== open).slice(0, 3);
+  }, [map.stops, stop]);
+  return <ReadingProvider value={reading}><AskProvider enabled={ask} surah={surah} depth={depth} stop={stop ? { number: stop.number, title: stop.sceneTitle ?? stop.title } : null} starters={starters}><div className="huda-reader">
     <SurahHeader surah={surah} surahs={surahs} scope={scope} ui={ui} onOpenUnit={() => openUnit(surah, scope, chooseScope)} onMap={mapped && (view === "text" || stop || closing) ? (stop || closing ? backToMap : () => chooseView("map")) : undefined} />
     {showMap && hero ? <div className="hero-area"><HeroQuestion stop={hero} ui={ui} animate={settled} onOpen={openStop} /></div> : null}
     <div className="console">
