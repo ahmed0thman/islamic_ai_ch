@@ -106,6 +106,7 @@
 /* The written answer: the system's wording, no border and no fill, its source marker inline at the end.
    The verified sentences it rests on stay one tap away, under the summary. */
 .ask-composed-note { color: var(--ink-2); font-size: var(--text-ui); line-height: var(--leading-ui); }
+.ask-example-note { margin-block: 0 var(--space-md); color: var(--ink-3); font-size: var(--text-label); line-height: var(--leading-ui); }
 .ask-written.claim-text { margin-block: var(--space-sm) var(--space-xs); color: var(--ink); font-size: var(--text-details); }
 .ask-composed + .ask-composed, .ask-composed + .ask-atom, .ask-atom + .ask-composed { border-block-start: 1px solid var(--line); }
 .ask-verified summary { list-style: none; cursor: pointer; color: var(--ink-2); font-size: var(--text-ui); line-height: var(--leading-ui); }

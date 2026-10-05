@@ -2,9 +2,11 @@ import type { AskResponse, PublicAtom } from "./ask/types";
 
 export type ComposedWrittenItem = { kind: "written"; text: string; atoms: PublicAtom[]; records: string[] };
 export type ComposedVerbatimItem = { kind: "verbatim"; atoms: PublicAtom[] };
-export type ComposedItem = ComposedWrittenItem | ComposedVerbatimItem;
-/** As the server sends it, only wider: the brief allows a composed item without `text`. */
-export type ComposedResponse = Omit<AskResponse, "composed"> & { composed?: { text?: string; atom_ids: string[] }[] };
+/** An everyday illustration written by the model: no atoms, no records, no marker. */
+export type ComposedExampleItem = { kind: "example"; text: string };
+export type ComposedItem = ComposedWrittenItem | ComposedVerbatimItem | ComposedExampleItem;
+/** As the server sends it, only wider: the brief allows a composed item without `text`, and an example carries no atom ids. */
+export type ComposedResponse = Omit<AskResponse, "composed"> & { composed?: { kind?: "example"; text?: string; atom_ids?: string[] }[] };
 
 /** Union of the atoms' record ids, each once, in the order they were first seen. */
 function unionRecords(atoms: PublicAtom[]): string[] {
@@ -27,7 +29,11 @@ export function composedView(response: ComposedResponse): ComposedItem[] | null 
   if (!Array.isArray(response.composed) || !response.composed.length) return null;
   const byId = new Map(response.atoms.map((atom) => [atom.id, atom]));
   const items: ComposedItem[] = [];
-  for (const { text, atom_ids } of response.composed) {
+  for (const { kind, text, atom_ids } of response.composed) {
+    if (kind === "example") {
+      if (text) items.push({ kind: "example", text });
+      continue;
+    }
     const atoms = (atom_ids ?? []).map((id) => byId.get(id)).filter((atom): atom is PublicAtom => atom !== undefined);
     if (!text) {
       if (atoms.length) items.push({ kind: "verbatim", atoms });

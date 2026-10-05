@@ -4,12 +4,14 @@ import { Fragment, useEffect, useId, useRef, useState, useLayoutEffect, type For
 import { ArrowUp02Icon, Mic01Icon, StopIcon } from "@hugeicons/core-free-icons";
 import type { AskResponse, PublicAtom } from "@/lib/ask/types";
 import { composedView, type ComposedItem } from "@/lib/ask-composed-view";
+import { historyFromTurns } from "@/lib/ask/history";
 import { mergeQuestion, clock } from "@/lib/voice-client";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { BottomSheet } from "./bottom-sheet";
 import { useVoice } from "./voice-button";
 import { ParagraphView } from "./paragraph-view";
+import { ExampleParagraph } from "./example-paragraph";
 import { useReading } from "./reading-context";
 import { useAsk, type AskTurn } from "./ask-state";
 import { AskOrb } from "./ask-orb";
@@ -117,9 +119,11 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
     const controller = new AbortController();
     active.current = { controller, turnId };
 
+    // The last two finished turns, so the server can tell what "this" or "clearer" refers to.
+    const history = historyFromTurns(ask.turns);
     const send = () => fetch("/api/ask/", {
       method: "POST", signal: controller.signal, headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ surah: surahNo, question: text, depth: ask.depth, ...(ask.stop ? { stop: ask.stop.number } : {}) }),
+      body: JSON.stringify({ surah: surahNo, question: text, depth: ask.depth, ...(ask.stop ? { stop: ask.stop.number } : {}), ...(history.length ? { history } : {}) }),
     });
     // A request lost on the way (a dropped connection, a gateway error) is sent once more before the reader is told.
     send().then((response) => response.status >= 500 ? send() : response, () => send()).then(async response => {
@@ -174,6 +178,10 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
 
   function composedItems(items: ComposedItem[], turnId: number) {
     return <>{items.map((item, index) => item.kind === "verbatim" ? <Fragment key={index}>{atomRows(item.atoms, turnId)}</Fragment>
+      : item.kind === "example" ? <div className="ask-example" key={index}>
+        <ExampleParagraph block={{ type: "paragraph", role: "example", segments: [{ t: "text", v: item.text }] }} ui={ui} />
+        <p className="ask-example-note">{ui.ask.example_note}</p>
+      </div>
       : <div className="ask-composed" key={index}>
         <div className="ask-written"><ParagraphView block={{ type: "paragraph", role: "claim", segments: [{ t: "text", v: item.text }, { t: "mark", records: item.records }] }} mode="flow" runPrefix={`ask-composed:${turnId}:${index}`} {...reading} /></div>
         <details className="ask-verified">

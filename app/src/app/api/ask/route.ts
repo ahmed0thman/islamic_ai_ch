@@ -2,6 +2,7 @@ import { providersFromEnv } from "@/lib/ask/providers";
 import { getIndex, getSurah } from "@/lib/content";
 import { deriveAtoms, resolveReaderContext } from "@/lib/ask/atoms";
 import { answer } from "@/lib/ask/answer";
+import { resolveHistory } from "@/lib/ask/history";
 import type { AskResponse } from "@/lib/ask/types";
 
 export const runtime = "nodejs";
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
     let body: unknown;
     try { body = await request.json(); } catch { return reply("insufficient", 400); }
     if (!body || typeof body !== "object" || Array.isArray(body)) return reply("insufficient", 400);
-    const { surah, question, depth, stop } = body as Record<string, unknown>;
+    const { surah, question, depth, stop, history } = body as Record<string, unknown>;
     if (typeof surah !== "number" || !Number.isInteger(surah) || typeof question !== "string") return reply("insufficient", 400);
     const trimmed = question.trim();
     if ([...trimmed].length < 3 || [...trimmed].length > 300) return reply("insufficient", 400);
@@ -46,7 +47,9 @@ export async function POST(request: Request) {
       const source = await getSurah(surah);
       const reader = resolveReaderContext(source, depth, stop);
       const context = { depth: reader?.depth ?? 0, ...reader, surah, ayah_numbers: source.ayahs.map((ayah) => Number(ayah.key.split(":")[1])) };
-      const result = await answer(trimmed, deriveAtoms(source), context, provider, { log: (line) => { flowLog = line; } });
+      const atoms = deriveAtoms(source);
+      // Optional and only context: a malformed history is ignored, never an error.
+      const result = await answer(trimmed, atoms, context, provider, { history: resolveHistory(history, atoms), log: (line) => { flowLog = line; } });
       return Response.json(result, { headers: { "Cache-Control": "no-store" } });
     } catch { return reply("insufficient"); }
   } finally {

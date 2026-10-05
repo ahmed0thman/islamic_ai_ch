@@ -28,8 +28,8 @@ export async function runStage(request: Omit<SelectionRequest, "signal">, provid
       parentSignal?.throwIfAborted();
       const remaining = deadline - start;
       if (remaining <= 0) throw new Error("timeout");
-      // Reserve a fair share for each remaining provider in the chain.
-      const slice = Math.max(1, Math.floor(remaining / (providers.length - index)));
+      // The first providers take 80% of what is left (measured live: a written answer takes 4 to 6 s, a repair about as long); the last one takes all that remains.
+      const slice = Math.max(1, Math.floor(remaining * (index === providers.length - 1 ? 1 : 0.8)));
       const timeout = new Promise<never>((_, reject) => {
         timer = setTimeout(() => { outcome = "timeout"; controller.abort(); reject(new Error("timeout")); }, slice);
       });

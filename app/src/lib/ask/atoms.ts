@@ -22,6 +22,8 @@ function stripLeadingPunctuation(run: Segment[]): Segment[] {
 export function deriveAtoms(surah: AtomSource): Atom[] {
   const ayahs = new Map(surah.ayahs.map((ayah) => [ayah.key, ayah.text]));
   const atoms: Atom[] = [];
+  // Terms met in the explainer's sentences, with every place they are met: each becomes one more candidate, its definition.
+  const termPlaces = new Map<string, { level: Depth; locations: NonNullable<Atom["locations"]> }>();
   function sentences(segments: Segment[], level: Depth, path: string, role: Atom["role"], stops: number[]) {
     let start = 0, index = 0;
     segments.forEach((segment, end) => {
@@ -30,6 +32,10 @@ export function deriveAtoms(surah: AtomSource): Atom[] {
       const records = [...new Set(run.flatMap((part) => part.t === "mark" ? part.records
         : part.t === "quote" || part.t === "term" ? [part.record] : []))];
       const text = run.map((part) => part.t === "mark" ? "" : part.t === "ayah" ? ayahs.get(part.key)! : part.v).join("");
+      for (const part of run) if (part.t === "term") {
+        const place = termPlaces.get(part.record) || termPlaces.set(part.record, { level, locations: [] }).get(part.record)!;
+        place.locations.push({ depth: level, stops });
+      }
       atoms.push({ id: `${surah.surah.no}:${level}:${path}:${index++}`, level, role, segments: run, records, text, locations: [{ depth: level, stops }] });
       start = end + 1;
     });
@@ -47,7 +53,7 @@ export function deriveAtoms(surah: AtomSource): Atom[] {
     });
   }
   const seen = new Map<string, Atom>();
-  return atoms.filter((atom) => {
+  const sentencesOnly = atoms.filter((atom) => {
     const key = JSON.stringify([atom.text, [...atom.records].sort()]);
     const lowest = seen.get(key);
     if (lowest && lowest.level < atom.level) {
@@ -57,6 +63,15 @@ export function deriveAtoms(surah: AtomSource): Atom[] {
     seen.set(key, atom);
     return true;
   });
+  // A term's definition is its record's own `claim` (what the term's panel shows), verbatim and with the record as its marker; nothing is written for it.
+  const definitions: Atom[] = [];
+  for (const [record, { level, locations }] of termPlaces) {
+    const claim = surah.records[record]?.claim;
+    if (typeof claim !== "string" || !claim.trim()) continue;
+    definitions.push({ id: `${surah.surah.no}:term:${record}`, level, role: "claim", records: [record], text: claim,
+      segments: [{ t: "text", v: claim }, { t: "mark", records: [record] }], locations });
+  }
+  return [...sentencesOnly, ...definitions];
 }
 
 export function readerUnits(surah: AtomSource, depth: Depth) {
