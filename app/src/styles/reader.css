@@ -40,8 +40,19 @@
 .huda-sheet-title { font-size: var(--text-sheet-title); line-height: 1.6; font-weight: 700; text-wrap: balance; }
 .huda-term-title { color: var(--accent); font-size: var(--text-term-title); }
 .huda-sheet-scroll { min-block-size: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 var(--gutter) calc(var(--space-xl) + env(safe-area-inset-bottom)); }
-.huda-sheet-content[data-variant="ask"] { block-size: min(calc(100dvh - var(--kb, 0px) - 1.5rem), 46rem); max-block-size: none; inset-block-end: var(--kb, 0px); }
-.huda-sheet-content[data-variant="ask"] .huda-sheet-scroll { flex: 1; display: flex; flex-direction: column; padding-block-end: 0; overflow: hidden; }
+/* «ask» is a page of its own: full screen on a phone, a side drawer on a wide screen; it enters from the inline end. */
+.huda-sheet-content[data-variant="ask"] { inset: 0 0 var(--kb, 0px) 0; block-size: auto; max-block-size: none; max-inline-size: none; margin: 0; border: 0; border-radius: 0; background: var(--bg); }
+.huda-sheet-content[data-variant="ask"][data-state="open"] { animation: ask-panel-in var(--dur-scene) var(--ease); }
+.huda-sheet-content[data-variant="ask"][data-state="closed"] { animation: ask-panel-out var(--dur-fast) var(--ease); }
+.huda-sheet-content[data-variant="ask"] .sheet-grabber { display: none; }
+.huda-sheet-content[data-variant="ask"] .huda-sheet-header { padding-block-start: calc(var(--space-md) + env(safe-area-inset-top)); border-block-end: 1px solid var(--line); align-items: center; }
+.huda-sheet-content[data-variant="ask"] .huda-sheet-scroll { flex: 1; display: flex; flex-direction: column; overflow: hidden; padding-block-end: 0; }
+@keyframes ask-panel-in { from { transform: translateX(-100%); } to { transform: none; } }
+@keyframes ask-panel-out { from { transform: none; } to { transform: translateX(-100%); } }
+@media (min-width: 60rem) {
+  .huda-sheet-content[data-variant="ask"] { inset: 0 auto 0 0; inline-size: min(30rem, 100vw); border-inline-start: 1px solid var(--line-strong); box-shadow: var(--shadow); }
+}
+@media (prefers-reduced-motion: reduce) { .huda-sheet-content[data-variant="ask"][data-state] { animation: none; } }
 .sheet-label, .sheet-facts dt { font-size: var(--text-label); color: var(--ink-3); font-weight: 600; line-height: var(--leading-ui); }
 .sheet-record { padding-block: var(--space-md); }
 .sheet-claim { font-size: var(--text-details); line-height: 1.95; font-weight: 500; white-space: pre-wrap; }

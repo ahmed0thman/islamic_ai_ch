@@ -93,13 +93,15 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
     }
   }, [ask.turns.length]);
 
-  // Abort on unmount
+  // Abort on unmount only: the ask state changes with every turn, so the cleanup must not depend on it.
+  const dropTurn = useRef(ask.dropTurn);
+  dropTurn.current = ask.dropTurn;
   useEffect(() => () => {
     if (active.current) {
       active.current.controller.abort();
-      ask.dropTurn(active.current.turnId);
+      dropTurn.current(active.current.turnId);
     }
-  }, [ask]);
+  }, []);
 
   const loadingTurn = ask.turns.some((t) => t.loading);
 

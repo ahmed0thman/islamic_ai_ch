@@ -8,7 +8,7 @@
 .ask-fab.huda-button, .ask-form .huda-button[data-variant="primary"] { color: var(--on-accent); }
 .ask-fab.huda-button:focus-visible { outline-offset: 5px; }
 
-.ask-sheet { display: flex; flex-direction: column; flex: 1; min-block-size: 0; }
+.ask-sheet { display: flex; flex-direction: column; flex: 1; min-block-size: 0; inline-size: 100%; max-inline-size: var(--reading-width); margin-inline: auto; }
 .ask-body { flex: 1; overflow-y: auto; padding-block: var(--space-md); }
 .ask-ai-badge { color: var(--ink-2); font-size: var(--text-label); border: 1px solid var(--line-strong); border-radius: var(--radius-pill); background: var(--surface-2); padding-inline: .5rem; line-height: 1.5; margin-inline-start: var(--space-xs); display: inline-flex; vertical-align: middle; }
 
@@ -16,6 +16,8 @@
 .ask-composer { flex: none; display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: end; gap: var(--space-sm); margin-block: var(--space-sm) calc(var(--space-md) + env(safe-area-inset-bottom)); padding-block: var(--space-sm); padding-inline: var(--space-md) var(--space-sm); border: 1px solid var(--border-ui); border-radius: 1.5rem; background: var(--bg); transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
 .ask-composer:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 .ask-input { grid-column: 1; inline-size: 100%; min-block-size: 2.75rem; max-block-size: 9.5rem; padding-block: .375rem; border: 0; outline: none; background: transparent; color: var(--ink); font: inherit; font-size: max(1rem, var(--text-body)); line-height: 1.7; resize: none; overflow-y: auto; field-sizing: content; }
+/* the capsule shows the focus (:focus-within); the field itself carries no ring */
+.ask-input:focus, .ask-input:focus-visible { outline: none; box-shadow: none; }
 .ask-input::placeholder { color: var(--ink-3); }
 .ask-input[readonly] { opacity: .7; }
 
@@ -31,21 +33,39 @@
 @media (hover: hover) { .ask-voice .huda-button:hover { background: var(--accent-soft); } }
 .ask-voice .huda-button[data-state="listening"] { background: var(--accent); color: var(--on-accent); border-color: transparent; }
 
-/* The orb */
-.ask-orb { --level: 0; --orb: 5.5rem; position: relative; flex: none; display: inline-grid; place-items: center; inline-size: var(--orb); block-size: var(--orb); }
+/* The voice orb: a glass sphere, light turning inside it. HTML and CSS only. --level (0..1) is the reader's voice. */
+.ask-orb { --level: 0; --orb: 7.5rem; --orb-deep: color-mix(in srgb, var(--accent) 62%, black); --orb-glow: color-mix(in srgb, var(--accent) 55%, white); position: relative; flex: none; display: inline-grid; place-items: center; inline-size: var(--orb); block-size: var(--orb); }
 .ask-orb[data-size="sm"] { --orb: 1.75rem; }
-.ask-orb::before, .ask-orb::after { content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; }
-.ask-orb::before { background: radial-gradient(circle, color-mix(in srgb, var(--gold) 34%, transparent) 0%, transparent 70%); transform: scale(calc(1.15 + var(--level) * .75)); opacity: calc(.25 + var(--level) * .6); transition: transform 90ms linear, opacity 90ms linear; }
-.ask-orb::after { border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); transform: scale(calc(1.08 + var(--level) * .35)); opacity: calc(.35 + var(--level) * .5); transition: transform 90ms linear, opacity 90ms linear; }
-.ask-orb-core { position: relative; z-index: 1; inline-size: 72%; block-size: 72%; border-radius: 50%; background: radial-gradient(circle at 32% 28%, color-mix(in srgb, var(--gold) 55%, var(--accent)) 0%, var(--accent) 58%, color-mix(in srgb, var(--accent) 70%, var(--ink)) 100%); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--on-accent) 22%, transparent), 0 .5rem 1.5rem color-mix(in srgb, var(--accent) 28%, transparent); transform: scale(calc(1 + var(--level) * .16)); transition: transform 90ms linear; }
-.ask-orb[data-size="sm"]::before { display: none; }
-.ask-orb[data-size="sm"] .ask-orb-core { box-shadow: none; }
-.ask-orb[data-state="idle"] .ask-orb-core { animation: ask-orb-breathe 4.5s ease-in-out infinite; }
-.ask-orb[data-state="listening"][data-level="off"] .ask-orb-core { animation: ask-orb-breathe 1.4s ease-in-out infinite; }
-.ask-orb[data-state="thinking"]::after { border: 2px solid transparent; background: conic-gradient(from 0deg, transparent 0 55%, var(--gold) 80%, transparent 100%) border-box; -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: 1; transform: none; animation: ask-orb-spin 1.2s linear infinite; }
-.ask-orb[data-state="thinking"] .ask-orb-core { animation: ask-orb-breathe 1.6s ease-in-out infinite; }
-@keyframes ask-orb-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
-@keyframes ask-orb-spin { to { transform: rotate(360deg); } }
+.ask-stage .ask-orb { --orb: 9rem; }
+.ask-stage .ask-orb, .ask-empty .ask-orb { margin-block: var(--space-lg); }
+/* the glow around the ball opens with the voice */
+.ask-orb::before { content: ""; position: absolute; inset: -18%; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--gold) 42%, transparent) 0%, color-mix(in srgb, var(--orb-glow) 22%, transparent) 45%, transparent 70%); transform: scale(calc(.9 + var(--level) * .55)); opacity: calc(.35 + var(--level) * .65); transition: transform 110ms linear, opacity 110ms linear; pointer-events: none; }
+/* the soft shadow under the ball */
+.ask-orb::after { content: ""; position: absolute; inset: auto 20% -9% 20%; block-size: 12%; border-radius: 50%; background: color-mix(in srgb, black 30%, transparent); filter: blur(calc(var(--orb) * .06)); pointer-events: none; }
+.ask-orb-sphere { position: relative; inline-size: 100%; block-size: 100%; border-radius: 50%; overflow: hidden; clip-path: circle(50%); isolation: isolate; background: radial-gradient(circle at 50% 42%, var(--accent) 0%, var(--orb-deep) 78%); transform: scale(calc(1 + var(--level) * .14)); transition: transform 110ms linear; animation: ask-orb-breathe 5s ease-in-out infinite; }
+/* two ribbons of light, turning against each other, blurred into each other */
+.ask-orb-light { position: absolute; inset: -30%; border-radius: 50%; filter: blur(calc(var(--orb) * .13)); }
+.ask-orb-light[data-layer="a"] { background: conic-gradient(from 0deg, var(--orb-glow) 0turn, transparent .22turn, var(--gold) .4turn, transparent .6turn, var(--orb-glow) .82turn, transparent 1turn); animation: ask-orb-turn 11s linear infinite; }
+.ask-orb-light[data-layer="b"] { inset: -10%; background: conic-gradient(from .5turn, color-mix(in srgb, var(--gold) 70%, white) 0turn, transparent .18turn, var(--accent) .5turn, transparent .7turn, color-mix(in srgb, var(--gold) 70%, white) 1turn); mix-blend-mode: screen; opacity: .75; animation: ask-orb-turn 17s linear infinite reverse; }
+/* what makes it a ball: a dark limb, a warm bounce from below, a thin lit rim */
+.ask-orb-shade { position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 50% 46%, transparent 48%, color-mix(in srgb, black 42%, transparent) 100%), radial-gradient(circle at 68% 82%, color-mix(in srgb, var(--gold) 50%, transparent) 0%, transparent 40%); box-shadow: inset 0 0 0 1px color-mix(in srgb, white 20%, transparent), inset 0 calc(var(--orb) * -.06) calc(var(--orb) * .14) color-mix(in srgb, black 30%, transparent); }
+/* the glass highlight: a soft cap on top and a small hard spark */
+.ask-orb-gloss { position: absolute; inset: 5% 16% 54% 16%; border-radius: 50%; background: linear-gradient(to bottom, color-mix(in srgb, white 62%, transparent), transparent 85%); opacity: .85; }
+.ask-orb-gloss::after { content: ""; position: absolute; inset: 18% auto auto 22%; inline-size: 16%; block-size: 22%; border-radius: 50%; background: color-mix(in srgb, white 85%, transparent); filter: blur(calc(var(--orb) * .012)); }
+/* states */
+.ask-orb[data-state="listening"] .ask-orb-sphere { animation: none; }
+.ask-orb[data-state="listening"] .ask-orb-light[data-layer="a"] { animation-duration: 5s; }
+.ask-orb[data-state="listening"] .ask-orb-light[data-layer="b"] { animation-duration: 7s; }
+.ask-orb[data-state="listening"][data-level="off"] .ask-orb-sphere { animation: ask-orb-breathe 1.4s ease-in-out infinite; }
+.ask-orb[data-state="thinking"] .ask-orb-light[data-layer="a"] { animation-duration: 2.2s; }
+.ask-orb[data-state="thinking"] .ask-orb-light[data-layer="b"] { animation-duration: 3.1s; }
+.ask-orb[data-state="thinking"] .ask-orb-sphere { animation-duration: 1.6s; }
+/* the small orb beside an answer: the same ball, still unless it is thinking, no glow and no shadow */
+.ask-orb[data-size="sm"]::before, .ask-orb[data-size="sm"]::after { display: none; }
+.ask-orb[data-size="sm"] .ask-orb-sphere { animation: none; }
+.ask-orb[data-size="sm"]:not([data-state="thinking"]) .ask-orb-light { animation: none; }
+@keyframes ask-orb-breathe { 0%, 100% { scale: 1; } 50% { scale: 1.045; } }
+@keyframes ask-orb-turn { to { rotate: 1turn; } }
 @media (prefers-reduced-motion: reduce) { .ask-orb *, .ask-orb::before, .ask-orb::after { animation: none !important; transition: none !important; } }
 
 /* Views in the body */
@@ -56,7 +76,7 @@
 .ask-voice-clock { font-variant-numeric: tabular-nums; margin-inline-start: var(--space-xs); }
 .ask-voice-msg { color: var(--ink-2); font-size: var(--text-ui); text-align: center; margin-block-end: var(--space-sm); }
 
-.ask-empty { display: flex; flex-direction: column; align-items: center; gap: var(--space-md); text-align: center; }
+.ask-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-md); min-block-size: 100%; text-align: center; }
 .ask-context { display: inline-flex; align-items: center; padding-inline: var(--space-md); min-block-size: 1.5rem; border-radius: var(--radius-pill); background: var(--surface-2); color: var(--ink-2); font-size: var(--text-ui); line-height: 1.5; }
 .ask-context b { color: var(--ink); font-weight: 600; margin-inline-start: .25em; }
 .ask-note { color: var(--ink-2); font-size: var(--text-ui); max-inline-size: 32ch; }
