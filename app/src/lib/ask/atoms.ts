@@ -18,10 +18,10 @@ export function deriveAtoms(surah: AtomSource): Atom[] {
   }
   for (const level of [...surah.levels].sort((a, b) => a.depth - b.depth)) {
     level.blocks.forEach((block, i) => {
-      if (block.type === "paragraph") sentences(block.segments, level.depth, `blocks.${i}`, block.role);
+      if (block.type === "paragraph" && block.role !== "example") sentences(block.segments, level.depth, `blocks.${i}`, block.role);
       if (block.type === "details") {
         sentences(block.title, level.depth, `blocks.${i}.title`, "claim");
-        block.blocks.forEach((inner, j) => sentences(inner.segments, level.depth, `blocks.${i}.blocks.${j}`, inner.role));
+        block.blocks.forEach((inner, j) => { if (inner.role !== "example") sentences(inner.segments, level.depth, `blocks.${i}.blocks.${j}`, inner.role); });
       }
     });
   }

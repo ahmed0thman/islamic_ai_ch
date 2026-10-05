@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 // @ts-expect-error -- Node's native TypeScript runner needs the source extension.
-import { toRuns, shouldStack, dropStageAyah } from "./runs.ts";
+import { toRuns, shouldStack, dropStageAyah, tidyAfterAyah } from "./runs.ts";
 // @ts-expect-error -- Node's native TypeScript runner needs the source extension.
 import { ayahWords, splitLastWord } from "./reading-text.ts";
 import type { ParagraphBlock, Segment, Surah } from "./types";
@@ -96,4 +96,15 @@ test("on the real exports, every titled stop that opens with its own ayah starts
     assert.deepEqual(result.segments.filter((segment) => segment.t === "mark"), paragraph.segments.filter((segment) => segment.t === "mark"), "no source mark is lost");
   }
   assert.ok(lifted > 0, "the real exports exercise the lift");
+});
+
+test("the separator right after an inline ayah block is dropped, and nothing else changes", () => {
+  const block = { type: "paragraph" as const, role: "claim" as const, segments: [
+    { t: "text" as const, v: "a: " }, { t: "ayah" as const, key: "93:2" }, { t: "text" as const, v: ". b" },
+    { t: "mark" as const, records: ["r1"] }, { t: "ayah" as const, key: "93:3" }, { t: "text" as const, v: "، " }, { t: "text" as const, v: "c" }] };
+  const tidy = tidyAfterAyah(block);
+  assert.deepEqual(tidy.segments.map((segment: { t: string; v?: string }) => segment.v ?? segment.t), ["a: ", "ayah", "b", "mark", "ayah", "c"]);
+  assert.equal(block.segments[2].v, ". b");
+  const clean = { ...block, segments: block.segments.slice(0, 2) };
+  assert.equal(tidyAfterAyah(clean), clean);
 });

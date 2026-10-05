@@ -12,10 +12,12 @@ import { AyahStage, stageShownKeys } from "./ayah-stage";
 import { ContinuousView } from "./continuous-view";
 import { StopSources } from "./stop-sources";
 import { NextCard } from "./next-card";
+import { TermsSummary } from "./terms-summary";
+import type { TermsSummary as Summary } from "@/lib/terms-summary";
 import { SourceMarker } from "./source-marker";
 
-export type StopSceneProps = ReadingProps & { stop: SceneUnit; stops: SceneUnit[]; previous?: SceneUnit; next?: SceneUnit; passage?: Passage; nextPassage?: Passage; nextSurah?: SurahSummary; onNavigate: (stop: SceneUnit) => void; onBack: () => void };
-export function StopScene({ stop, stops, previous, next, passage, nextPassage, nextSurah, onNavigate, onBack, ...reading }: StopSceneProps) {
+export type StopSceneProps = ReadingProps & { stop: SceneUnit; stops: SceneUnit[]; previous?: SceneUnit; next?: SceneUnit; passage?: Passage; nextPassage?: Passage; nextSurah?: SurahSummary; termsSummary?: Summary | null; onNavigate: (stop: SceneUnit) => void; onBack: () => void };
+export function StopScene({ stop, stops, previous, next, passage, nextPassage, nextSurah, termsSummary, onNavigate, onBack, ...reading }: StopSceneProps) {
   const heading = useRef<HTMLHeadingElement>(null);
   const scroll = useRef<HTMLDivElement>(null);
   const position = stops.indexOf(stop);
@@ -46,7 +48,7 @@ export function StopScene({ stop, stops, previous, next, passage, nextPassage, n
       <div className="huda-scene-scroll" ref={scroll}><div key={stop.blockIndex} className={`huda-scene-body ${direction}`}>
         <AyahStage ayahs={stop.ayahKeys.map((key) => reading.ayahs.get(key)!)} ui={reading.ui} selected={shown[0]} onSelect={(key) => setPicked({ number: stop.number, key })} />
         <div className="scene-heading">{passage ? <p className="scene-kicker" data-run={`scene-passage-${passage.id}`}>{passage.title}<SourceMarker records={passage.records.map((id) => reading.records[id])} ui={reading.ui} onOpen={() => reading.onOpen(passage.records.map((id) => reading.records[id]))} /></p> : null}<DialogTitle asChild><h2 ref={heading} tabIndex={-1} className={`huda-scene-title${stop.question ? " is-question" : ""}`}>{stop.sceneTitle ?? stop.title}</h2></DialogTitle></div>
-        <div className="scene-reading"><ContinuousView blocks={stop.scene} showTitles={false} openIndex={stop.openIndex} stageKeys={stop.kind === "pin" ? undefined : shown} {...reading} /><StopSources records={sources} ui={reading.ui} onOpen={reading.onOpen} /><NextCard next={next} previous={previous} nextPassage={nextPassage} nextSurah={nextSurah} ui={reading.ui} records={reading.records} onOpen={reading.onOpen} onNext={() => { if (next) onNavigate(next); }} onPrevious={() => { if (previous) onNavigate(previous); }} onBack={onBack} /></div>
+        <div className="scene-reading"><ContinuousView blocks={stop.scene} showTitles={false} openIndex={stop.openIndex} stageKeys={stop.kind === "pin" ? undefined : shown} {...reading} /><StopSources records={sources} ui={reading.ui} onOpen={reading.onOpen} />{!next && stop.kind !== "pin" && termsSummary ? <TermsSummary summary={termsSummary} ui={reading.ui} onOpen={reading.onOpen} /> : null}<NextCard next={next} previous={previous} nextPassage={nextPassage} nextSurah={nextSurah} ui={reading.ui} records={reading.records} onOpen={reading.onOpen} onNext={() => { if (next) onNavigate(next); }} onPrevious={() => { if (previous) onNavigate(previous); }} onBack={onBack} /></div>
       </div></div>
     </DialogContent>
   </Dialog>;

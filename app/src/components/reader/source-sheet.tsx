@@ -50,8 +50,11 @@ export function SourceSheet({ records: opened, ui, term, phrase, onClose }: Sour
   const [showEvidence, setShowEvidence] = useState(!term);
   // Several records: the firmest opens first, the rest are folded away behind it.
   const records = useMemo(() => sortByCertainty(opened, ui.icon_order), [opened, ui.icon_order]);
+  // The science the term belongs to: absent or an unknown key shows nothing.
+  const scienceKey = records[0]?.science;
+  const scienceName = term && scienceKey && ui.sciences && Object.hasOwn(ui.sciences, scienceKey) ? ui.sciences[scienceKey] : undefined;
   return <BottomSheet title={term ?? ui.panel.title} ui={ui} onClose={onClose} term={Boolean(term)}>
-    {term ? <div className="term-definition"><p>{records[0]?.claim}</p><Button variant="pill" aria-expanded={showEvidence} aria-controls="term-evidence" onClick={() => setShowEvidence((value) => !value)}><Icon icon={BookOpen01Icon} />{ui.panel.source}</Button></div>
+    {term ? <div className="term-definition"><p>{records[0]?.claim}</p>{scienceName ? <p className="science-chip"><span>{ui.panel.science_of}</span><b>{scienceName}</b></p> : null}<Button variant="pill" aria-expanded={showEvidence} aria-controls="term-evidence" onClick={() => setShowEvidence((value) => !value)}><Icon icon={BookOpen01Icon} />{ui.panel.source}</Button></div>
       : <div className="sheet-for">
         {phrase ? <><p className="sheet-label">{ui.panel.for_text}</p><blockquote className="sheet-for-text">{phrase}</blockquote></> : null}
         <p className="sheet-count">{ui.panel.sources_count}: <b>{numeral(records.length)}</b></p>

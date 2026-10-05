@@ -5,6 +5,7 @@ import type { Depth, SourceRecord, Surah, SurahSummary, Ui } from "@/lib/types";
 import { deriveSurahMap, heroStop } from "@/lib/map";
 import { deriveDepthItems, depthHero, depthPlaylist, sceneNeighbours, type SceneUnit } from "@/lib/depth-items";
 import { relationRecords } from "@/lib/relations";
+import { deriveTermsSummary } from "@/lib/terms-summary";
 import { scopeContains, scopeStart, type Scope } from "@/lib/scope";
 import { jumpToAyah } from "@/lib/reader-dom";
 import { useSheets } from "./sheet-provider";
@@ -17,6 +18,7 @@ import { ViewToggle } from "./view-toggle";
 import { SurahThread } from "./surah-thread";
 import { StopScene } from "./stop-scene";
 import { ContinuousView } from "./continuous-view";
+import { TermsSummary } from "./terms-summary";
 
 const storageKey = "huda:depth:v1";
 const viewStorageKey = "huda:reader-view:v1";
@@ -47,6 +49,7 @@ export function Reader({ surah, ui, nextSurah, surahs }: { surah: Surah; ui: Ui;
   const [scope, setScope] = useState<Scope>({ kind: "surah" });
   const [view, setView] = useState<ReadingView>("map");
   const [stopNumber, setStopNumber] = useState<number | null>(null);
+  const [settled, setSettled] = useState(false);
   const [visited, setVisited] = useState<Set<string>>(() => new Set());
   const [currentStops, setCurrentStops] = useState<Partial<Record<Depth, number>>>({});
   const { openSource, openUnit } = useSheets();
@@ -86,7 +89,11 @@ export function Reader({ surah, ui, nextSurah, surahs }: { surah: Surah; ui: Ui;
     window.addEventListener("popstate", popstate);
     return () => window.removeEventListener("popstate", popstate);
   }, [maps, itemModels]);
+  // The hero swaps its title without a cross-fade until the first restore of the saved depth has painted.
+  useEffect(() => { const frame = window.requestAnimationFrame(() => setSettled(true)); return () => window.cancelAnimationFrame(frame); }, []);
   const level = surah.levels[depth];
+  // What this level teaches, from its own term segments and their records.
+  const termsSummary = useMemo(() => deriveTermsSummary(level.blocks, surah.records, ui.sciences), [level, surah.records, ui.sciences]);
   const map = maps[depth];
   const items = itemModels[depth];
   // A level with titled stops walks its stops; a level without them (depth 3) walks its depth items.
@@ -131,16 +138,17 @@ export function Reader({ surah, ui, nextSurah, surahs }: { surah: Surah; ui: Ui;
   const nextPassage = neighbours.next && neighbours.next.passage !== stop?.passage ? surah.passages?.find((item) => item.id === neighbours.next!.passage) : undefined;
   return <ReadingProvider value={reading}><div className="huda-reader">
     <SurahHeader surah={surah} surahs={surahs} scope={scope} ui={ui} onOpenUnit={() => openUnit(surah, scope, chooseScope)} />
-    {showMap && hero ? <div className="hero-area"><HeroQuestion stop={hero} ui={ui} onOpen={openStop} /></div> : null}
+    {showMap && hero ? <div className="hero-area"><HeroQuestion stop={hero} ui={ui} animate={settled} onOpen={openStop} /></div> : null}
     <div className="console">
       {depth !== 3 || mapped ? <MiniStrip groups={map.groups} depthPins={Object.fromEntries(map.groups.flatMap((group) => group.stations.map((station) => [station.ayah.key, station.stops.length])))} itemPins={items.pins.reduce<Record<string, number>>((counts, pin) => ({ ...counts, [pin.stationKey]: (counts[pin.stationKey] ?? 0) + 1 }), {})} current={currentAyah} scope={scope} onJump={jump} onScope={chooseScope} ariaLabel={ui.reader.ayahs_title} /> : null}
       <DepthDial depth={depth} levels={ui.levels} label={ui.reader.choose_depth} onChange={(next) => { setDepth(next); setStopNumber(null); remember(next); updateUrl(next, null, view === "text" || !(maps[next].stops.length || itemModels[next].units.length), true); }} />
     </div>
     {mapped ? <ViewToggle view={view} ui={ui} onChange={chooseView} /> : null}
     <article className="reading-body" aria-label={ui.levels.find((item) => item.depth === depth)!.name}>
-      {showMap ? <SurahThread map={map} items={items} scope={scope} onScope={chooseScope} onAyah={(key) => openUnit(surah, { kind: "ayah", key }, chooseScope)} ui={ui} visited={visitedNumbers} currentStop={currentStops[depth] ?? null} hidden={Boolean(stop)} onOpen={openStop} />
-        : level.blocks.length ? <div className="reader-text"><ContinuousView key={depth} blocks={map.continuousBlocks} {...reading} /></div> : <p className="reader-text">{ui.reader.empty_level}</p>}
+      {showMap ? <><SurahThread map={map} items={items} scope={scope} onScope={chooseScope} onAyah={(key) => openUnit(surah, { kind: "ayah", key }, chooseScope)} ui={ui} visited={visitedNumbers} currentStop={currentStops[depth] ?? null} hidden={Boolean(stop)} onOpen={openStop} />
+          {termsSummary ? <TermsSummary summary={termsSummary} ui={ui} hidden={Boolean(stop)} onOpen={openSource} /> : null}</>
+        : level.blocks.length ? <div className="reader-text"><ContinuousView key={depth} blocks={map.continuousBlocks} {...reading} />{termsSummary ? <TermsSummary summary={termsSummary} ui={ui} onOpen={openSource} /> : null}</div> : <p className="reader-text">{ui.reader.empty_level}</p>}
     </article>
-    {stop ? <StopScene stop={stop} stops={playlist} passage={passage} nextPassage={nextPassage} {...neighbours} nextSurah={nextSurah} onNavigate={openStop} onBack={backToMap} {...reading} /> : null}
+    {stop ? <StopScene stop={stop} stops={playlist} passage={passage} nextPassage={nextPassage} termsSummary={termsSummary} {...neighbours} nextSurah={nextSurah} onNavigate={openStop} onBack={backToMap} {...reading} /> : null}
   </div></ReadingProvider>;
 }

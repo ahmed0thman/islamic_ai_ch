@@ -12,7 +12,7 @@ export type Segment =
   | { t: "term"; v: string; record: string }
   | { t: "mark"; records: string[] };
 export type TitleSegment = Extract<Segment, { t: "text" | "term" | "mark" }>;
-export type ParagraphBlock = { type: "paragraph"; role: "claim" | "transmission"; title?: string; ayahs?: string[]; passage?: string; segments: Segment[] };
+export type ParagraphBlock = { type: "paragraph"; role: "claim" | "transmission" | "example"; title?: string; ayahs?: string[]; passage?: string; segments: Segment[] };
 export type Block = (
   | { type: "heading"; text: string; kind?: "question" }
   | { type: "ayah"; keys: string[] }
@@ -28,6 +28,8 @@ export interface Evidence {
 export interface SourceRecord {
   id: string; icons: IconKey[]; badge: BadgeKey | null; claim: string;
   status_text: string; depth_min: Depth; ayah_keys: string[]; evidence: Evidence[];
+  /** Term records only: a key of `ui.sciences`. */
+  science?: string | null;
 }
 export interface Surah {
   schema: 1; fixture: boolean; surah: SurahSummary; ayahs: Ayah[];
@@ -43,7 +45,11 @@ export interface Ui {
   icon_order: IconKey[];
   badges: Record<BadgeKey, LegendEntry>;
   link_strength: Record<LinkStrength | "note", string>;
-  panel: Record<"title" | "claim" | "source" | "author" | "locator" | "quote" | "ruling" | "ruler" | "open_source" | "close" | "no_badge" | "takhrij" | "for_text" | "sources_count", string>;
+  /** Display names of the sciences, by the keys a term record carries. May be absent from the dictionary. */
+  sciences?: Record<string, string>;
+  example: { label: string };
+  terms_summary: Record<"title" | "terms" | "sciences" | "other", string>;
+  panel: Record<"title" | "claim" | "source" | "author" | "locator" | "quote" | "ruling" | "ruler" | "open_source" | "close" | "no_badge" | "takhrij" | "for_text" | "sources_count", string> & { science_of: string };
   legend: Record<"title" | "icons_title" | "badges_title" | "show" | "hide", string>;
   reader: Record<"choose_depth" | "ayahs_title" | "surahs_title" | "back" | "empty_level"
     | "map_view" | "read_continuous" | "next_stop" | "previous_stop" | "why_next" | "next_surah"

@@ -47,3 +47,12 @@ test("details title, inner paragraphs, consecutive closing markers and ayah text
     assert.ok(result[1].text.includes(surah.ayahs.find((ayah) => ayah.key === segment.key)!.text));
   }
 });
+
+test("an example paragraph is never a sentence the ask box can choose", () => {
+  const copy = structuredClone(surah);
+  const before = deriveAtoms(copy).length;
+  copy.levels[1].blocks.splice(1, 0, { type: "paragraph", role: "example", segments: [{ t: "text", v: "example text" }] });
+  const atoms = deriveAtoms(copy);
+  assert.equal(atoms.length, before);
+  assert.ok(atoms.every((atom) => !atom.text.includes("example text")));
+});

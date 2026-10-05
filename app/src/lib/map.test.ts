@@ -172,3 +172,18 @@ test("93: the opening question is the first titled paragraph in content order", 
   assert.equal(inSecond.passage, second.id);
   assert.equal(inSecond.blockIndex, Math.min(...map.stops.filter((stop) => stop.passage === second.id).map((stop) => stop.blockIndex)));
 });
+
+test("an example paragraph joins the scene of the stop before it and adds no record", () => {
+  const surah = structuredClone(surahs.find((item) => item.surah.no === 93)!);
+  const blocks = surah.levels[1].blocks;
+  const at = blocks.findIndex((block) => isTitled(block));
+  const example: ParagraphBlock = { type: "paragraph", role: "example", segments: [{ t: "text", v: "x" }] };
+  const before = deriveSurahMap(surah, 1);
+  blocks.splice(at + 1, 0, example);
+  const map = deriveSurahMap(surah, 1);
+  assert.equal(map.stops.length, before.stops.length);
+  const stop = map.stops.find((item) => item.blockIndex === at)!;
+  assert.strictEqual(stop.scene[1], example);
+  assert.deepEqual(stop.recordIds, before.stops.find((item) => item.blockIndex === at)!.recordIds.filter((id) => stop.recordIds.includes(id)));
+  assert.ok(map.continuousBlocks.includes(example));
+});

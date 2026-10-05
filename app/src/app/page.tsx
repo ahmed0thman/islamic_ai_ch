@@ -1,23 +1,18 @@
-import Link from "next/link";
-import { ArrowLeft01Icon, BookOpen01Icon } from "@hugeicons/core-free-icons";
-import { Icon } from "@/components/ui/icon";
-import { getIndex, getUi } from "@/lib/content";
-import { numeral } from "@/lib/numerals";
+import { getUi } from "@/lib/content";
+import { publishedSurahs } from "@/lib/published";
+import { ReplaceLocation } from "@/components/replace-location";
 
+/**
+ * The first screen is the first published surah; a new reader starts at the understanding depth (the reader's default) and a saved depth is kept. The others are reached from the reader's surah chips.
+ * A static export cannot send an HTTP redirect, and `redirect()` there leaves an error shell that only scripts resolve, so the page
+ * carries a meta refresh (no script needed), a client replace (instant) and a plain link (last resort).
+ */
 export default async function Home() {
-  const [index, ui] = await Promise.all([getIndex(), getUi()]);
+  const ui = await getUi();
+  const target = `/s/${publishedSurahs[0]}/`;
   return <>
-    <header className="home-header"><div className="book-emblem" aria-hidden="true"><Icon icon={BookOpen01Icon} size={24} /></div><h1>{ui.app_name}</h1><p className="tagline">{ui.tagline}</p></header>
-    <section className="surah-library" aria-labelledby="surahs-title">
-      <h2 id="surahs-title" className="eyebrow">{ui.reader.surahs_title}</h2>
-      <ul className="surah-list">{index.surahs.map((surah) => <li key={surah.no}>
-        <Link href={`/s/${surah.no}/`} prefetch={false} className="surah-card">
-          <span className="surah-number">{numeral(surah.no)}</span>
-          <span className="surah-card-title">{surah.name}</span>
-          <span className="surah-count">{ui.reader.ayahs_title} <b>{numeral(surah.ayah_count)}</b></span>
-          <Icon icon={ArrowLeft01Icon} className="card-arrow" />
-        </Link>
-      </li>)}</ul>
-    </section>
+    <meta httpEquiv="refresh" content={`0;url=${target}`} />
+    <ReplaceLocation to={target} />
+    <p className="home-redirect"><a href={target}>{ui.app_name}</a></p>
   </>;
 }

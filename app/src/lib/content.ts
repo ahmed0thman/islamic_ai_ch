@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { cache } from "react";
 import type { ContentIndex, Surah, Ui } from "./types";
+import { onlyPublished } from "./published";
 export type * from "./types";
 
 const directory = path.join(process.cwd(), "src/content");
@@ -96,6 +97,7 @@ export function validateSurah(value: unknown): asserts value is Surah {
     if (record.badge !== null) member(record.badge, badges, `${at}.badge`);
     string(record.claim, `${at}.claim`); string(record.status_text, `${at}.status_text`);
     integer(record.depth_min, `${at}.depth_min`, 0, 3);
+    if (Object.hasOwn(record, "science") && record.science !== null) string(record.science, `${at}.science`);
     array(record.ayah_keys, `${at}.ayah_keys`).forEach((key) => {
       string(key, `${at}.ayah_keys`);
       const match = /^([1-9]\d{0,2}):([1-9]\d{0,2})$/.exec(key);
@@ -210,8 +212,22 @@ export function validateSurah(value: unknown): asserts value is Surah {
     if (!hasMarker) fail(at, "expected at least one marker");
     if (title && object(segments[segments.length - 1], at).t !== "mark") fail(at, "title must end with a marker");
   };
-  const validateParagraph = (block: Record<string, unknown>, at: string, depth: number) => {
+  const validateParagraph = (block: Record<string, unknown>, at: string, depth: number, inDetails = false) => {
     if (block.type !== "paragraph") fail(at, "expected a paragraph; details cannot nest");
+    if (block.role === "example") {
+      // An example illustrates and claims nothing: plain text only, no marker, no stop, never inside a details item.
+      if (inDetails) fail(at, "an example never sits inside details");
+      if (Object.hasOwn(block, "title") || Object.hasOwn(block, "ayahs")) fail(at, "an example has no title and no ayahs");
+      validateMapBlock(block, at);
+      const parts = array(block.segments, `${at}.segments`);
+      if (!parts.length) fail(`${at}.segments`, "expected nonempty segments");
+      parts.forEach((part, i) => {
+        const segment = object(part, `${at}.segments[${i}]`);
+        if (segment.t !== "text") fail(`${at}.segments[${i}]`, "an example holds text segments only");
+        string(segment.v, `${at}.segments[${i}].v`);
+      });
+      return;
+    }
     if (block.role !== "claim" && block.role !== "transmission") fail(at, "unknown paragraph role");
     validateMapBlock(block, at);
     validateSegments(block.segments, `${at}.segments`, depth);
@@ -235,7 +251,7 @@ export function validateSurah(value: unknown): asserts value is Surah {
       else if (block.type === "paragraph") validateParagraph(block, here, d);
       else if (block.type === "details") {
         validateSegments(block.title, `${here}.title`, d, true);
-        array(block.blocks, `${here}.blocks`).forEach((value, i) => validateParagraph(object(value, `${here}.blocks[${i}]`), `${here}.blocks[${i}]`, d));
+        array(block.blocks, `${here}.blocks`).forEach((value, i) => validateParagraph(object(value, `${here}.blocks[${i}]`), `${here}.blocks[${i}]`, d, true));
       } else fail(here, "unknown block type");
     });
   });
@@ -248,7 +264,8 @@ export const getIndex = cache(async (): Promise<ContentIndex> => {
     if (seen.has(item.no as number)) fail("index.surahs", "duplicate surah number");
     seen.add(item.no as number);
   });
-  return data as unknown as ContentIndex;
+  // Only the published surahs, in their own order: everything that lists or builds surahs goes through here.
+  return { surahs: onlyPublished((data as unknown as ContentIndex).surahs) };
 });
 export const getSurah = cache(async (no: number): Promise<Surah> => {
   integer(no, "requested surah", 1, 114);

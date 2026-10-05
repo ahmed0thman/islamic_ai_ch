@@ -19,6 +19,22 @@ export function shouldStack(block: ParagraphBlock, runs: Segment[][]): boolean {
 /** Separators a sentence leaves behind once the ayah that began it is lifted away. Opening quotes and brackets stay: they start something. */
 const hangingPunctuation = /^[\s\p{Pd}\p{Po}\p{Pe}\p{Pf}]+/u;
 /**
+ * An inline ayah is drawn as its own block, so the separator the sentence put right after it (a full stop, a comma, a colon)
+ * would open the next line on its own. It is dropped from the text that follows. Content is never mutated.
+ */
+export function tidyAfterAyah(block: ParagraphBlock): ParagraphBlock {
+  let changed = false;
+  const segments: Segment[] = [];
+  block.segments.forEach((segment, index) => {
+    if (segment.t !== "text" || block.segments[index - 1]?.t !== "ayah") { segments.push(segment); return; }
+    const text = segment.v.replace(hangingPunctuation, "");
+    if (text === segment.v) { segments.push(segment); return; }
+    changed = true;
+    if (text) segments.push({ ...segment, v: text });
+  });
+  return changed ? { ...block, segments } : block;
+}
+/**
  * A paragraph that opens with ayahs already shown on the stage above it does not show them a second time:
  * each leading ayah segment is lifted off, and the separator that followed it (a comma, a full stop, a space) goes with
  * it so the sentence starts clean. Only the opening run qualifies; an ayah in the middle, one the stage does not show, or
