@@ -5,7 +5,8 @@ import { ArrowUp02Icon, Mic01Icon, StopIcon } from "@hugeicons/core-free-icons";
 import type { AskResponse, PublicAtom } from "@/lib/ask/types";
 import { composedView, type ComposedItem } from "@/lib/ask-composed-view";
 import { historyFromTurns } from "@/lib/ask/history";
-import { blockRole, displaySegments, drawingFor } from "@/lib/ask-client";
+import { blockRole, displaySegments, drawingFor, requestAsk } from "@/lib/ask-client";
+import { getOwnKey, OWN_KEY_CHANGE_EVENT, type OwnKeyProvider } from "@/lib/own-key";
 import { mergeQuestion, clock } from "@/lib/voice-client";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
@@ -18,6 +19,8 @@ import { ExampleParagraph } from "./example-paragraph";
 import { useReading } from "./reading-context";
 import { useAsk, type AskTurn } from "./ask-state";
 import { AskOrb } from "./ask-orb";
+import { KeySheet } from "./key-sheet";
+import keyStyles from "./key-sheet.module.css";
 
 const longEnough = (text: string) => [...text.trim()].length >= 3 && [...text.trim()].length <= 300;
 
@@ -28,6 +31,14 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
   const { ui } = reading;
   const id = useId();
   const [question, setQuestion] = useState("");
+  const [keyOpen, setKeyOpen] = useState(false);
+  const [ownProvider, setOwnProvider] = useState<OwnKeyProvider | null>(null);
+  useEffect(() => {
+    const update = () => setOwnProvider(getOwnKey()?.provider ?? null);
+    update();
+    window.addEventListener(OWN_KEY_CHANGE_EVENT, update);
+    return () => window.removeEventListener(OWN_KEY_CHANGE_EVENT, update);
+  }, []);
   const active = useRef<{ controller: AbortController, turnId: number } | null>(null);
   const textarea = useRef<HTMLTextAreaElement>(null);
   const voiceBase = useRef("");
@@ -127,10 +138,7 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
 
     // The last two finished turns, so the server can tell what "this" or "clearer" refers to.
     const history = historyFromTurns(ask.turns);
-    const send = () => fetch("/api/ask/", {
-      method: "POST", signal: controller.signal, headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ surah: surahNo, question: text, depth: ask.depth, ...(ask.stop ? { stop: ask.stop.number } : {}), ...(history.length ? { history } : {}), ...(openRecord && /^\d{1,3}-r\d{2,4}$/.test(openRecord) ? { open_record: openRecord } : {}) }),
-    });
+    const send = () => requestAsk({ surah: surahNo, question: text, depth: ask.depth, ...(ask.stop ? { stop: ask.stop.number } : {}), ...(history.length ? { history } : {}), ...(openRecord && /^\d{1,3}-r\d{2,4}$/.test(openRecord) ? { open_record: openRecord } : {}) }, controller.signal);
     // A request lost on the way (a dropped connection, a gateway error) is sent once more before the reader is told.
     send().then((response) => response.status >= 500 ? send() : response, () => send()).then(async response => {
       const body = response.ok ? await response.json() as AskResponse : null;
@@ -237,9 +245,14 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
     </>;
   }
 
-  return <BottomSheet variant="ask" title={ask.stop ? ui.ask.title_stop : ui.ask.title} titleAfter={<span className="ask-ai-badge">{ui.ask.ai_badge}</span>} ui={ui} onClose={onClose}>
+  return <><BottomSheet variant="ask" title={ask.stop ? ui.ask.title_stop : ui.ask.title} titleAfter={<>
+    <span className="ask-ai-badge">{ui.ask.ai_badge}</span>
+    <button type="button" className={keyStyles.open} aria-haspopup="dialog" aria-expanded={keyOpen} onClick={() => setKeyOpen(true)}>{ui.judge_key.open}</button>
+  </>} ui={ui} onClose={onClose}>
     <div className="ask-sheet">
       <div className="ask-body" ref={bodyRef}>
+        {ownProvider ? <p className={keyStyles.using} role="status">{ui.judge_key.using.replace("{provider}", ui.judge_key.providers[ownProvider])}</p>
+          : ask.turns.some((turn) => turn.result?.status === "unavailable") ? <p className={keyStyles.using}>{ui.judge_key.intro}</p> : null}
         {isListening ? (
           <div className="ask-stage" role="status" aria-live="polite">
             <AskOrb ref={orbRef} size="lg" state={voice.state === "finalizing" ? "thinking" : "listening"} />
@@ -303,5 +316,7 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
         </div>
       </form>
     </div>
-  </BottomSheet>;
+  </BottomSheet>
+    {keyOpen ? <KeySheet ui={ui} onClose={() => setKeyOpen(false)} /> : null}
+  </>;
 }

@@ -1,4 +1,4 @@
-import { providersFromEnv } from "@/lib/ask/providers";
+import { providersForRequest } from "@/lib/ask/providers";
 import { getIndex, getSurah } from "@/lib/content";
 import { resolveReaderContext } from "@/lib/ask/atoms";
 import { answer } from "@/lib/ask/answer";
@@ -14,6 +14,7 @@ export async function POST(request: Request) {
   const started = Date.now();
   let flowLog: string | undefined;
   let outcome = "request_error";
+  const selected = providersForRequest(request.headers, process.env);
   const reply = (status: AskResponse["status"], httpStatus = 200) => {
     outcome = `${status}_${httpStatus}`;
     return responseFor(status, httpStatus);
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
     if (!/[\u0621-\u064A]/u.test(trimmed)) return reply("not_arabic");
     try {
       if (!(await getIndex()).surahs.some((item) => item.no === surah)) return reply("insufficient", 400);
-      const provider = providersFromEnv(process.env);
+      const provider = selected.providers;
       if (!provider.length) return reply("unavailable");
       const source = await getSurah(surah);
       const reader = resolveReaderContext(source, depth, stop);
@@ -44,16 +45,22 @@ export async function POST(request: Request) {
         openRecord, historyAtomIds: historyAtomIds(history),
       }, getSurah);
       const atoms = gathered.atoms;
+      let providerFailed = false;
       const result = await answer(trimmed, atoms, context, provider, {
         history: resolveHistory(history, atoms), examples: gathered.examples, preface: [gathered.event], logExtra: { dropped: gathered.dropped },
         log: (line) => { flowLog = line; },
+        observe: (event) => {
+          if (selected.ownKey && event.provider === selected.provider) providerFailed = event.outcome !== "ok";
+        },
       });
+      if (selected.ownKey && providerFailed && result.status === "insufficient") return reply("unavailable");
       const extra = await extraFor(result.atoms, surah, getSurah);
       logQuestion({ question: trimmed, surah, depth: context.depth, stop: reader?.stop ?? null, status: result.status, atomIds: result.atoms.map((atom) => atom.id),
         retrieval: { mode: gathered.event.provider, counts: gathered.event.outcome, dropped: gathered.dropped } });
       return Response.json({ ...result, ...(gathered.sources ? { sources: true } : {}), ...(extra ? { extra } : {}) }, { headers: { "Cache-Control": "no-store" } });
-    } catch { return reply("insufficient"); }
+    } catch { return reply(selected.ownKey ? "unavailable" : "insufficient"); }
   } finally {
-    console.info(flowLog || JSON.stringify({ event: "ask", stages: [{ stage: "request", provider: "server", outcome, ms: Date.now() - started }], ms: Date.now() - started }));
+    const entry = flowLog ? JSON.parse(flowLog) : { event: "ask", stages: [{ stage: "request", provider: "server", outcome, ms: Date.now() - started }], ms: Date.now() - started };
+    console.info(JSON.stringify({ ...entry, ...(selected.ownKey ? { own_key: true, ...(selected.provider ? { provider: selected.provider } : {}) } : {}) }));
   }
 }

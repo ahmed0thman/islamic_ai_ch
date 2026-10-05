@@ -1,5 +1,14 @@
 import type { Ayah, ParagraphBlock, Segment, SourceRecord, Surah } from "./types";
-import type { AskExtra, PublicAtom } from "./ask/types";
+import type { AskExtra, HistoryTurn, PublicAtom } from "./ask/types";
+// @ts-expect-error -- Node tests require explicit source extensions.
+import { ownKeyHeaders } from "./own-key.ts";
+
+export function requestAsk(body: { surah: number; question: string; depth: number; stop?: number; history?: HistoryTurn[]; open_record?: string }, signal?: AbortSignal, send: typeof fetch = fetch): Promise<Response> {
+  return send("/api/ask/", {
+    method: "POST", signal, cache: "no-store", headers: { "Content-Type": "application/json", ...ownKeyHeaders() },
+    body: JSON.stringify(body),
+  });
+}
 
 /** A book excerpt has no record of ours: this stands in for one so the marker and the sheet can show where it came from. Its id is the atom's id. */
 export function sourceRecordOf(atom: PublicAtom): SourceRecord | undefined {

@@ -5,6 +5,8 @@ import { anthropicProvider, CHOICE_SCHEMA } from "./select.ts";
 import { lexicalScore } from "./normalize.ts";
 // @ts-expect-error -- Node requires source extensions.
 import { fetchRetry, runStage } from "./runtime.ts";
+// @ts-expect-error -- Node tests require explicit source extensions.
+import { keyWithinShape } from "../own-key.ts";
 import type { ChoiceProvider } from "./types";
 
 export const DEFAULT_GEMINI_MODEL = "gemini-3.8-flash";
@@ -123,6 +125,27 @@ export function opencodeGoProvider(apiKey: string, model = "gpt-6-luna", effort?
 /** Direct OpenAI, the fallback when OpenCode Go fails. */
 export function openaiProvider(apiKey: string, model = "gpt-6-luna", effort?: string): ChoiceProvider {
   return responsesProvider({ name: "openai", baseUrl: OPENAI_BASE_URL, apiKey, model, sessionHeader: false, effort });
+}
+/** The supplied secret belongs only to the returned request-scoped provider. */
+export function providersFromKey(provider: string, key: string, env: Readonly<Record<string, string | undefined>>): ChoiceProvider[] {
+  if (!keyWithinShape(key)) return [];
+  const effort = env.HUDA_ASK_EFFORT === "default" ? undefined : env.HUDA_ASK_EFFORT || "low";
+  if (provider === "opencode-go") return [opencodeGoProvider(key, env.HUDA_ASK_MODEL || "gpt-6-luna", effort)];
+  if (provider === "openai") return [openaiProvider(key, env.HUDA_ASK_MODEL || "gpt-6-luna", effort)];
+  if (provider === "anthropic") return [anthropicProvider(key, env.HUDA_ASK_MODEL || "claude-sonnet-5-5")];
+  return [];
+}
+
+/** Any own-key header opts out of the project's chain, including malformed or incomplete pairs. */
+export function providersForRequest(headers: Headers, env: Readonly<Record<string, string | undefined>>) {
+  const provider = headers.get("x-huda-provider");
+  const key = headers.get("x-huda-key");
+  const ownKey = provider !== null || key !== null;
+  const name = provider === "opencode-go" || provider === "openai" || provider === "anthropic" ? provider : undefined;
+  return {
+    ownKey, provider: name,
+    providers: ownKey ? provider !== null && key !== null ? providersFromKey(provider, key, env) : [] : providersFromEnv(env),
+  };
 }
 export function providersFromEnv(env: Readonly<Record<string, string | undefined>>): ChoiceProvider[] {
   const names = env.HUDA_ASK_PROVIDER?.split(",").map((name) => name.trim()) || [

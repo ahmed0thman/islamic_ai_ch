@@ -1,6 +1,6 @@
 import ui from "@/content/ui.ar.json" with { type: "json" };
 import { getIndex, getSurah } from "@/lib/content";
-import { providersFromEnv } from "@/lib/ask/providers";
+import { providersForRequest } from "@/lib/ask/providers";
 import { requestAllowed, responseFor } from "@/lib/ask/runtime";
 import { parseWeaveRequest, weaveStop } from "@/lib/ask/weave";
 import type { AskResponse } from "@/lib/ask/types";
@@ -12,6 +12,7 @@ export async function POST(request: Request) {
   const started = Date.now();
   let flowLog: string | undefined;
   let outcome = "request_error";
+  const selected = providersForRequest(request.headers, process.env);
   const reply = (status: AskResponse["status"], httpStatus = 200) => {
     outcome = `${status}_${httpStatus}`;
     return responseFor(status, httpStatus);
@@ -25,7 +26,7 @@ export async function POST(request: Request) {
     if (!input) return reply("insufficient", 400);
     try {
       if (!(await getIndex()).surahs.some((item) => item.no === input.surah)) return reply("insufficient", 400);
-      const providers = providersFromEnv(process.env);
+      const providers = selected.providers;
       if (!providers.length) return reply("unavailable");
       const result = await weaveStop(await getSurah(input.surah), input, instruction, providers, { log: (line) => { flowLog = line; } });
       outcome = result.status;
@@ -33,6 +34,7 @@ export async function POST(request: Request) {
     } catch { return reply("unavailable"); }
   } finally {
     // Fixed codes and timings only. Saved reader questions are never logged here.
-    console.info(flowLog || JSON.stringify({ event: "weave", stages: [{ stage: "request", provider: "server", outcome, ms: Date.now() - started }], ms: Date.now() - started }));
+    const entry = flowLog ? JSON.parse(flowLog) : { event: "weave", stages: [{ stage: "request", provider: "server", outcome, ms: Date.now() - started }], ms: Date.now() - started };
+    console.info(JSON.stringify({ ...entry, ...(selected.ownKey ? { own_key: true, ...(selected.provider ? { provider: selected.provider } : {}) } : {}) }));
   }
 }

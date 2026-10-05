@@ -1,0 +1,97 @@
+.form {
+  display: grid;
+  gap: var(--space-lg);
+  padding-block: var(--space-md);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: var(--text-ui);
+  line-height: var(--leading-ui);
+}
+
+.intro, .using, .status {
+  color: var(--ink-2);
+  font-size: var(--text-ui);
+  line-height: var(--leading-ui);
+  overflow-wrap: anywhere;
+}
+
+.using {
+  padding-block: var(--space-sm);
+}
+
+.field {
+  display: grid;
+  gap: var(--space-sm);
+  min-inline-size: 0;
+}
+
+.input {
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: var(--control-height);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-ui);
+  border-radius: var(--radius-s);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-details);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.button, .open {
+  min-block-size: var(--control-height);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-ui);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.button {
+  flex: 1 1 auto;
+}
+
+.open {
+  min-inline-size: 0;
+  background: transparent;
+  color: var(--ink-2);
+  font-family: var(--font-ui);
+  font-size: var(--text-label);
+  line-height: var(--leading-ui);
+}
+
+.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.button:hover, .open:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.primary:hover {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.button:disabled {
+  color: var(--ink-3);
+  background: var(--surface-2);
+  border-color: var(--line-strong);
+  cursor: default;
+}
+
+.input:focus-visible, .button:focus-visible, .open:focus-visible {
+  outline: var(--space-xs) solid var(--accent);
+  outline-offset: var(--space-xs);
+}

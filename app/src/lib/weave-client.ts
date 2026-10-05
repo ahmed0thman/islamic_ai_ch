@@ -2,6 +2,8 @@
 import { askedAt } from "./asked.ts";
 // @ts-expect-error -- Node tests require explicit source extensions.
 import { composedView } from "./ask-composed-view.ts";
+// @ts-expect-error -- Node tests require explicit source extensions.
+import { ownKeyHeaders } from "./own-key.ts";
 import type { AskedQuestion } from "./asked";
 import type { AskResponse } from "./ask/types";
 import type { Depth } from "./types";
@@ -25,11 +27,13 @@ export function createWeaveClient(send: typeof fetch = fetch) {
     try {
       signal?.throwIfAborted();
       const key = weaveKey(input);
-      const cached = cache.get(key);
+      const headers = ownKeyHeaders();
+      const ownKey = Object.hasOwn(headers, "x-huda-key");
+      const cached = ownKey ? undefined : cache.get(key);
       if (cached) return cached;
       if (!input.questions.length) return null;
       const response = await send("/api/weave/", {
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input),
+        method: "POST", cache: "no-store", headers: { "Content-Type": "application/json", ...headers }, body: JSON.stringify(input),
         signal: AbortSignal.any([AbortSignal.timeout(35_000), ...(signal ? [signal] : [])]),
       });
       if (!response.ok) return null;
@@ -39,7 +43,7 @@ export function createWeaveClient(send: typeof fetch = fetch) {
       const items = composedView(result);
       // Every sentence on this card must have a source marker, including after a partial server failure.
       if (!items || items.length < 2 || items.some((item) => item.kind !== "written" || !item.records.length)) return null;
-      cache.set(key, result);
+      if (!ownKey) cache.set(key, result);
       return result;
     } catch { return null; }
   };
