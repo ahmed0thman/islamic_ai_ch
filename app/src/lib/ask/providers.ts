@@ -89,13 +89,13 @@ export const OPENAI_BASE_URL = "https://api.openai.com/v1";
 /** Groq serves open-weight models through the chat-completions dialect; listed only when named in HUDA_ASK_PROVIDER. */
 export const GROQ_BASE_URL = "https://api.groq.com/openai/v1";
 /** Any endpoint that speaks the OpenAI Responses API; the session header is only for OpenCode Go. */
-export function responsesProvider({ name, baseUrl, apiKey, model, sessionHeader }: { name: string; baseUrl: string; apiKey: string; model: string; sessionHeader: boolean }): ChoiceProvider {
+export function responsesProvider({ name, baseUrl, apiKey, model, sessionHeader, effort }: { name: string; baseUrl: string; apiKey: string; model: string; sessionHeader: boolean; effort?: string }): ChoiceProvider {
   return { name, async choose({ system, message, signal, schema }) {
     const outputSchema = withoutUniqueItems(schema || CHOICE_SCHEMA);
     const send = (structured: boolean) => fetchRetry(`${baseUrl}/responses`, {
       method: "POST", signal,
       headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json", "user-agent": "huda-ask/1.0", ...(sessionHeader ? { "x-opencode-session": PROCESS_SESSION } : {}) },
-      body: JSON.stringify({ model, input: message,
+      body: JSON.stringify({ model, input: message, ...(effort ? { reasoning: { effort } } : {}),
         instructions: structured ? system : `${system}\nReturn ONLY valid JSON matching this schema, with no markdown fences:\n${JSON.stringify(outputSchema)}`,
         ...(structured ? { text: { format: { type: "json_schema", name: "ask_response", strict: true, schema: outputSchema } } } : {}),
       }),
@@ -117,20 +117,22 @@ export function responsesProvider({ name, baseUrl, apiKey, model, sessionHeader 
   } };
 }
 /** OpenCode Go's Luna model uses Responses, not chat completions. */
-export function opencodeGoProvider(apiKey: string, model = "gpt-6-luna"): ChoiceProvider {
-  return responsesProvider({ name: "opencode-go", baseUrl: OPENCODE_GO_BASE_URL, apiKey, model, sessionHeader: true });
+export function opencodeGoProvider(apiKey: string, model = "gpt-6-luna", effort?: string): ChoiceProvider {
+  return responsesProvider({ name: "opencode-go", baseUrl: OPENCODE_GO_BASE_URL, apiKey, model, sessionHeader: true, effort });
 }
 /** Direct OpenAI, the fallback when OpenCode Go fails. */
-export function openaiProvider(apiKey: string, model = "gpt-6-luna"): ChoiceProvider {
-  return responsesProvider({ name: "openai", baseUrl: OPENAI_BASE_URL, apiKey, model, sessionHeader: false });
+export function openaiProvider(apiKey: string, model = "gpt-6-luna", effort?: string): ChoiceProvider {
+  return responsesProvider({ name: "openai", baseUrl: OPENAI_BASE_URL, apiKey, model, sessionHeader: false, effort });
 }
 export function providersFromEnv(env: Readonly<Record<string, string | undefined>>): ChoiceProvider[] {
   const names = env.HUDA_ASK_PROVIDER?.split(",").map((name) => name.trim()) || [
     ...(env.OPENCODE_GO_API_KEY ? ["opencode-go"] : []), ...(env.OPENAI_API_KEY ? ["openai"] : []), ...(env.GEMINI_API_KEY ? ["gemini"] : []), ...(env.ANTHROPIC_API_KEY ? ["anthropic"] : []),
   ];
+  // Measured live on the writing stage: the model's default reasoning level takes about 10 s, "low" about 3.5 s, with the same answer quality. HUDA_ASK_EFFORT=default leaves the level to the model.
+  const effort = env.HUDA_ASK_EFFORT === "default" ? undefined : env.HUDA_ASK_EFFORT || "low";
   return [...new Set(names)].flatMap((name) => {
-    if (name === "opencode-go" && env.OPENCODE_GO_API_KEY) return [opencodeGoProvider(env.OPENCODE_GO_API_KEY, env.HUDA_ASK_MODEL || "gpt-6-luna")];
-    if (name === "openai" && env.OPENAI_API_KEY) return [openaiProvider(env.OPENAI_API_KEY, env.HUDA_ASK_MODEL || "gpt-6-luna")];
+    if (name === "opencode-go" && env.OPENCODE_GO_API_KEY) return [opencodeGoProvider(env.OPENCODE_GO_API_KEY, env.HUDA_ASK_MODEL || "gpt-6-luna", effort)];
+    if (name === "openai" && env.OPENAI_API_KEY) return [openaiProvider(env.OPENAI_API_KEY, env.HUDA_ASK_MODEL || "gpt-6-luna", effort)];
     if (name === "groq" && env.GROQ_API_KEY) return [{ ...openaiCompatibleProvider({ baseUrl: GROQ_BASE_URL, apiKey: env.GROQ_API_KEY, model: env.HUDA_ASK_GROQ_MODEL || "openai/gpt-oss-120b" }), name: "groq" }];
     if (name === "gemini" && env.GEMINI_API_KEY) return [geminiProvider(env.GEMINI_API_KEY, env.HUDA_ASK_MODEL || DEFAULT_GEMINI_MODEL)];
     if (name === "anthropic" && env.ANTHROPIC_API_KEY) return [anthropicProvider(env.ANTHROPIC_API_KEY, env.HUDA_ASK_MODEL || "claude-sonnet-5-5")];

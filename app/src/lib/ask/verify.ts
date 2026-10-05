@@ -10,7 +10,8 @@ import type { Atom, ComposedSentence, Composition, ReaderContext } from "./types
 export type VerifyReason = "shape" | "quran_text" | "quotation" | "grading" | "numbers" | "names" | "report";
 export type Verification = { ok: true; value: Composition } | { ok: false; reason: VerifyReason };
 export const GRADING_WORDS = ["\u0635\u062d\u064a\u062d", "\u062d\u0633\u0646", "\u0636\u0639\u064a\u0641", "\u0645\u0648\u0636\u0648\u0639", "\u0645\u0646\u0643\u0631", "\u0645\u062a\u0648\u0627\u062a\u0631", "\u062b\u0627\u0628\u062a", "\u0644\u0627 \u064a\u062b\u0628\u062a", "\u0644\u0645 \u064a\u062b\u0628\u062a", "\u0644\u064a\u0633 \u0628\u062b\u0627\u0628\u062a"] as const;
-export const ATTRIBUTION_WORDS = ["\u0642\u0627\u0644", "\u064a\u0642\u0648\u0644", "\u0630\u0643\u0631", "\u064a\u0631\u0649", "\u0639\u0646\u062f", "\u0639\u0646", "\u062d\u0633\u0628", "\u0648\u0641\u0642\u0627 \u0644\u0640", "\u0648\u0641\u0642\u0627 \u0644"] as const;
+/** The bare preposition (U+0639 U+0646) is not a trigger: it precedes any noun, and its narration use is caught by the report markers and the support check. */
+export const ATTRIBUTION_WORDS = ["\u0642\u0627\u0644", "\u064a\u0642\u0648\u0644", "\u0630\u0643\u0631", "\u064a\u0631\u0649", "\u0639\u0646\u062f", "\u062d\u0633\u0628", "\u0648\u0641\u0642\u0627 \u0644\u0640", "\u0648\u0641\u0642\u0627 \u0644"] as const;
 const words = (text: string): string[] => normalize(text).match(/[\p{L}\p{N}]+/gu) || [];
 export function buildQuranTrigrams(ayahs: readonly string[]): Set<string> {
   const grams = new Set<string>();

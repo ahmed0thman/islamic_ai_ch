@@ -61,7 +61,10 @@ export async function answer(question: string, atoms: Atom[], context: ReaderCon
     if ((options.mode || process.env.HUDA_ASK_MODE) !== "extractive") {
       try {
         const prompt = compose(question, atoms, context, history, options.examples || []);
-        const first = await stage(prompt.request, budgets.compose, budgets.select);
+        // A provider hiccup must not cost the reader the answer: one more try while there is time.
+        let first: unknown;
+        try { first = await stage(prompt.request, budgets.compose, budgets.select); }
+        catch { note("compose", "retry"); first = await stage(prompt.request, budgets.compose, budgets.select); }
         // Fixed statuses do not need Quran indexing, mechanical checks, or support.
         const parsed = parseComposition(first, prompt.atoms);
         if (parsed && parsed.status !== "answer") { note("compose", parsed.status); return { status: parsed.status, atoms: [] }; }
@@ -127,7 +130,14 @@ export async function answer(question: string, atoms: Atom[], context: ReaderCon
           } catch { /* A failed repair leaves what the first round could keep. */ }
           note("repair", outcome);
         }
-        if (!best || !kept(best)) throw new Error("no_supported_sentences");
+        if (!best || !kept(best)) {
+          // Nothing written stood, but the writer did point at sentences: show those as they are (verified sentences or book excerpts, word for word), with no further model call.
+          const pointed = parsed?.status === "answer" ? unique(parsed.sentences.flatMap((sentence) => sentence.kind === "example" ? [] : sentence.cites)).slice(0, 4) : [];
+          if (!pointed.length) throw new Error("no_supported_sentences");
+          const byId = new Map(prompt.atoms.map((atom) => [atom.id, atom]));
+          note("fallback", "cited_verbatim");
+          return { status: "answer", mode: "extractive", atoms: pointed.map((id) => publicAtom(byId.get(id)!)) };
+        }
 
         // Keep the written order; a dropped sentence keeps its cites so the UI can show them verbatim.
         const composed: ComposedItem[] = [];
