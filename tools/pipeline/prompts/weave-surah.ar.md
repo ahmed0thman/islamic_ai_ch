@@ -20,6 +20,8 @@
 - `tools/pipeline/prompts/build-surah.ar.md`: حدوده ودروس المراجعة فيه كلها تنطبق هنا.
 - `content/SCHEMA.md`.
 - المثال المنجز: `content/nasij/93.json`، وسكربته `.cache/records/93/reweave_93.py`، وجمل إطاره `.cache/records/93/weave-frames.json`، وما كان قبله في `.cache/records/93/backup-before-reweave/`.
+- ومثال المصطلحات والخلاف النحوي والكلام الأبسط: `.cache/records/93/add_sciences_93.py` (سجلات النبذات بحقل `science`، وسجلا القولين في لام «ولسوف») و`.cache/records/93/weave_sciences_93.py`.
+- المصادر الجديدة مقيّدة في `SOURCES` بسكربت البناء بهذه الأسماء: `abu_saud`، `irab_darwish`، `sira_ali`، `sira_umari`، `mujam_ulum`، `tarifat`، `idah`، `tahrir`.
 
 ## الخطوات
 
