@@ -1,0 +1,43 @@
+# Blueprint for the reader's assistant ("huda"): the Next.js server and its private Postgres.
+# Book texts live only in the database (decision 131), never in this repository.
+# Secret values are set by the owner in the Render dashboard (sync: false); none are stored here.
+services:
+  - type: web
+    name: huda
+    runtime: node
+    plan: free
+    rootDir: app
+    # next.config.ts selects server mode only when HUDA_ASK=1 at build time, so the
+    # variable below is part of the build environment as well as the runtime environment.
+    buildCommand: "corepack enable && pnpm install --frozen-lockfile && pnpm build"
+    startCommand: "pnpm start"
+    healthCheckPath: /api/health/
+    envVars:
+      - key: HUDA_ASK
+        value: "1"
+      - key: HUDA_ASK_PROVIDER
+        value: "opencode-go"
+      - key: HUDA_ASK_EFFORT
+        value: "low"
+      # The embedding model needs ~700 MB of memory, so production retrieval is lexical-only.
+      - key: HUDA_EMBED
+        value: "off"
+      - key: HUDA_EMBED_MODEL_DIR
+        sync: false
+      - key: NODE_VERSION
+        value: "24.16.0"
+      - key: OPENCODE_GO_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: huda-rag
+          property: connectionString
+databases:
+  - name: huda-rag
+    plan: free
+    # If 18 is rejected, fall back to the highest major version Render accepts.
+    postgresMajorVersion: 18

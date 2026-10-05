@@ -13,6 +13,7 @@
     "prebuild": "node scripts/sync-content.mjs",
     "build": "next build",
     "postbuild": "node scripts/check-scene-css.mjs && node scripts/build-offline.mjs",
+    "start": "next start -p ${PORT:-3000}",
     "typecheck": "tsc --noEmit",
     "ask-eval": "node scripts/ask-eval.mjs",
     "rag:ingest": "node --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/rag-ingest.mts",

@@ -1,4 +1,5 @@
 -- Retrieval store for the reader's assistant. Idempotent: safe to run on every ingest.
+-- Requires the pgvector extension (enabled below); Render's managed Postgres offers it on major versions 13-18.
 -- The loader (app/src/lib/rag/db.ts) rewrites the `rag.` prefix when another schema name is requested (tests use rag_test).
 DO $$ BEGIN PERFORM 'arabic'::regconfig; END $$;
 CREATE EXTENSION IF NOT EXISTS vector;
