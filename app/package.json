@@ -19,7 +19,7 @@
     "eval:ask": "node scripts/ask-eval.mjs",
     "eval:retrieval": "node --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/retrieval-eval.mts",
     "rag:ingest": "node --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/rag-ingest.mts",
-    "test": "node --test src/lib/ask/*.test.ts src/lib/*.test.ts src/lib/rag/*.test.ts"
+    "test": "node --test src/lib/ask/*.test.ts src/lib/*.test.ts src/lib/rag/*.test.ts src/lib/server/*.test.ts src/lib/history/*.test.ts"
   },
   "dependencies": {
     "@clerk/localizations": "^4.21.2",
