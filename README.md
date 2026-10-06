@@ -26,16 +26,26 @@
 
 ## التشغيل من نسخة نظيفة
 
-**المتطلبات:** Node 24 (الإصدار الذي يحدده `render.yaml` هو 24.16.0)، وpnpm 10.26.1 (كما في `app/package.json`)، وبايثون 3 لأدوات `tools/`، وبوستجرس 18 مع إضافة pgvector لاسترجاع «اسأل» وحده. وأول بناء أو تشغيل يحتاج اتصالًا بالشبكة ليجلب الخطوط (انظر `app/README.md`).
+**ما جُرّب:** في 5 أكتوبر 2026 (نحو الساعة 23:00 بتوقيت القاهرة) جرّبت جلسة سحابية أوامر هذا القسم والقسم التالي (إلا ما كُتب فيهما أنه لم يُجرَّب) **من نسخة بلا `.cache/`**، وبلا `node_modules`، وبلا `app/.env.local`، على الالتزام `1fb88f0`. الإصدارات: node 22.22.2، وpnpm 10.33.0، وبايثون 3.11.15. التفصيل والأزمنة ونصوص الأخطاء في [`docs/08-open/cloud-reports/s-01-clean-clone.md`](docs/08-open/cloud-reports/s-01-clean-clone.md).
+
+**المتطلبات:**
+
+- **node:** جُرّبت أوامر القسمين بالإصدار 22.22.2 ولم يفشل منها شيء بسبب الإصدار (والفاشل واحد لسبب آخر، انظر أدناه)، فلا يلزم 24. والحد الأدنى المكتوب في `app/package.json` (السطر 7) هو 20.9.0، لكن `pnpm test` (السطر 22) يشغّل ملفات `.ts` مباشرة بلا علم، وهذا لا يتوفر في خط 22 قبل 22.18.0 بحسب `CHANGELOG.md` المرفق مع node 22.22.2 (قرأته ولم أجرّب إصدارًا أقدم). ويثبّت `render.yaml` الإصدار 24.16.0 للنشر (السطران 28 و29)، ولم يُجرَّب النشر.
+- **pnpm:** المثبَّت عامًّا هنا 10.33.0. وداخل `app/` يقرأ حقل `packageManager` (`pnpm@10.26.1`، السطر 5 من `app/package.json`) فينزّل ذلك الإصدار من الشبكة بصمت في أول مرة، ثم يشغّل التثبيت به، بلا تحذير ولا خطأ.
+- **بايثون 3** لأدوات `tools/` (جُرّب 3.11.15).
+- **بوستجرس 18 مع إضافة pgvector** لاسترجاع «اسأل» وحده. لم يُجرَّب هنا: ليس في الجلسة السحابية بوستجرس ولا مفاتيح.
+- **الشبكة:** جلب `pnpm build` الخطوط من الشبكة ونجح (المستودع لا يحوي ملف خط `woff2` واحدًا، وفي `out/_next/static/media/` خمسة وعشرون منها). ولم يُجرَّب البناء بلا شبكة.
 
 ```bash
 cd app
-pnpm install
-cp .env.example .env.local     # عبّئ منه ما تحتاجه فقط؛ كل القيم فارغة افتراضيًّا
+pnpm install                   # نجح: 481 حزمة، في نحو 14 ثانية على مخزن حزم فارغ (وفي 2 ثانية حين كانت الحزم فيه)
+cp .env.example .env.local     # لم يُجرَّب في الجلسة السحابية (لا يُنشأ فيها هذا الملف) ونجح كل ما جُرّب بدونه؛ عبّئ منه ما تحتاجه فقط، كل القيم فارغة افتراضيًّا
 pnpm dev                       # قارئ ثابت على http://localhost:3000، وقبله تُنسخ ملفات المحتوى تلقائيًّا
 ```
 
-**القارئ وحده** (بلا «اسأل» وبلا قاعدة بيانات): `pnpm build` يولّد مجلد `out/` الثابت، ويُفتح بأي خادم ملفات. هذا هو الوضع الافتراضي.
+يطبع التثبيت تحذيرًا بأن سكربتات بناء `onnxruntime-node` و`protobufjs` و`sharp` لم تُشغَّل (`Ignored build scripts`، ولتشغيلها `pnpm approve-builds`)؛ ولم يضرّ ذلك شيئًا مما جُرّب. وجُرّب `pnpm dev` في نسخة منفصلة وعلى منفذ آخر (`pnpm dev -p 31071`) بلا `.env.local`: أقلع في أقل من ثانية، وردّت `/` و`/s/93/` و`/s/107/` و`/s/108/` و`/s/112/` و`/manifest.webmanifest` بالرمز 200. **ويعدّل `pnpm dev` الملف المتتبَّع `app/next-env.d.ts`** (السطر 3)، فيظهر في `git status`.
+
+**القارئ وحده** (بلا «اسأل» وبلا قاعدة بيانات): `pnpm build` يولّد مجلد `out/` الثابت، ويُفتح بأي خادم ملفات. هذا هو الوضع الافتراضي. **جُرّب:** نجح في 20 ثانية، وولّد 106 ملفات (نحو 8.5 ميجابايت) فيها صفحات السور الأربع؛ وخُدم `out/` بـ `python3 -m http.server`، فردّت `/` و`/s/93/` و`/s/107/` و`/s/108/` و`/s/112/` بالرمز 200، و`/s/110/` بالرمز 404 (غير منشورة).
 
 **«اسأل» حيًّا:**
 
@@ -46,34 +56,46 @@ pnpm dev                       # قارئ ثابت على http://localhost:3000�
 5. المفتاح: إما مفتاح من متغيرات البيئة (`OPENCODE_GO_API_KEY` أو غيره)، وإما **أن يُدخل المحكّم مفتاحه هو من الواجهة** (ق-088)، فلا يحتاج مفاتيحنا. المفتاح المُدخَل يُحفظ في ذاكرة جلسة المتصفح وحدها (`sessionStorage`) ويُرسل مع كل سؤال، ولا يُخزَّن في الخادم بحسب الكود (`app/src/lib/own-key.ts`، `app/src/lib/ask/providers.ts`؛ قرأتهما ولم أجرّب).
 6. السؤال بالصوت يحتاج `GROQ_API_KEY`، أو خادم ويسبر محليًّا بـ`HUDA_VOICE_STT_URL`. والميكروفون لا يعمل إلا على رابط آمن (https) أو على الجهاز نفسه.
 
+**جُرّب من هذا الجزء في الجلسة السحابية** (في نسخة منفصلة، بلا قاعدة ولا مفاتيح): `HUDA_ASK=1 pnpm build` نجح في 20 ثانية، و`HUDA_ASK=1 pnpm start` أقلع، وردّ `/api/health/` بالرمز 200 وبالنص `{"ok":true,"db":false,"embed":"off"}`. وبلا `DATABASE_URL` يتوقف `pnpm rag:ingest` فورًا برسالة `DATABASE_URL is not set` ورمز الخروج 1. **ولم يُجرَّب:** «اسأل» نفسه، و«نسيج لك»، والصوت، والمفتاح المُدخَل من الواجهة، وتسجيل الدخول؛ كلها تحتاج قاعدة أو مفتاحًا.
+
 كل المتغيرات التي يقرؤها الكود مسمّاة ومشروحة في `app/.env.example`.
 
 **تسجيل الدخول (Clerk)** قيد الإضافة: اختياري ولا يحجب القراءة ولا «اسأل»، ويُفعَّل في بناء الخادم وحده (ق-089). متغيراته مذكورة في `app/.env.example`.
 
-**ما لا يعمل بلا `.cache/`:** `.cache/` خارج git، وفيه نصوص الكتب (لا تُنشر، ق-131) وفهرسها (`.cache/index/sources.sqlite`) وسجلات كل سورة. فنسخة جديدة من المستودع **تقرأ السور الأربع المنشورة وتشغّل «اسأل»** (من الجمل الموثقة)، لكنها **لا تبني سورة جديدة ولا تفهرس الكتب ولا تملأ مقاطع الكتب في القاعدة** (`pnpm rag:ingest --passages` يتوقف إن غاب الفهرس). وسكربتا بناء السجلات وفحصها المشتركان في `.cache/records/108/` خارج المستودع أيضًا. (وصف مفصل: `tools/pipeline/README.md`، القسم 3.) لم أجرّب التشغيل من نسخة بلا `.cache/`، فما سبق مأخوذ من قراءة الكود: **غير متحقق بالتجربة**.
+**ما لا يعمل بلا `.cache/`:** `.cache/` خارج git، وفيه نصوص الكتب (لا تُنشر، ق-131) وفهرسها (`.cache/index/sources.sqlite`) وسجلات كل سورة. **جُرّب من نسخة بلا `.cache/`:** نجح التثبيت، والمزامنة، وفحص الأنواع، واختبارات التطبيق (265)، واختبارات بايثون (125 و41)، وفحص حالات السلامة، وبناء القارئ الثابت؛ فالسور الأربع المنشورة **تُقرأ**. **وفشل أمر واحد:** `python3 -B tools/export_content.py 93 107 108 112 --check-only` يتوقف لكل سورة بالرسالة `INPUT FAIL checked=1 failed=1: [Errno 2] No such file or directory: '<الجذر>/.cache/records/<رقم>/records.v2.json'` ورمز الخروج 1، لأن مجلد السجلات الافتراضي هو `.cache/records` (`tools/export_content.py`، السطر 792). **ولم يُجرَّب** (فهو مأخوذ من قراءة الكود وحدها: **غير متحقق بالتجربة**): بناء سورة جديدة، وفهرسة الكتب، وملء مقاطع الكتب في القاعدة (`pnpm rag:ingest --passages` يتوقف إن غاب الفهرس)، وسكربتا بناء السجلات وفحصها المشتركان في `.cache/records/108/` (وهما خارج المستودع أيضًا). (وصف مفصل: `tools/pipeline/README.md`، القسم 3.)
 
 **النشر:** `render.yaml` في الجذر، وإعادة بناء القاعدة في `app/scripts/db-rebuild.md`، وإبقاء الخدمة مستيقظة في `app/scripts/keepalive.md`. **لم يُجرَّب النشر بعد.**
 
 ## إعادة الاختبار
 
-شُغّلت هذه الأوامر على جهاز التطوير في 5 أكتوبر 2026 ونجحت (وفيه `.cache/`؛ لم تُجرَّب من نسخة بلا `.cache/`):
+جُرّبت هذه الأوامر في 5 أكتوبر 2026 **من نسخة بلا `.cache/`** (وبلا `node_modules` وبلا `app/.env.local`)، في جلسة سحابية بإصدار node 22.22.2 وبايثون 3.11.15، بهذا الترتيب. وتأخذ كلها نحو دقيقتين.
+
+**الترتيب مهم:** `pnpm sync-content` قبل فحص الأنواع والاختبارات، لأنهما يقرآن `app/src/content/` وهو خارج git (`app/.gitignore`، السطر 4) ويولّده ذلك الأمر. وجُرّب بدونه في نسخة منفصلة: فشل `pnpm typecheck` بستة أخطاء من نوع `TS2307: Cannot find module '@/content/ui.ar.json' or its corresponding type declarations` ونظائرها، وفشل `pnpm test` في تسعة ملفات اختبار (سبعة منها بـ `ERR_MODULE_NOT_FOUND` عن `src/content/quran-plain.json`، واثنان بـ `ENOENT` عن `src/content/mushaf-index.json` و`src/content/surah-108.json`)، فسُجّل 165 اختبارًا بدل 265. (`pnpm dev` و`pnpm build` يشغّلان المزامنة تلقائيًّا؛ فحص الأنواع والاختبارات لا.)
 
 ```bash
-# التطبيق (من app/): الأنواع، والاختبارات
-pnpm typecheck
-pnpm test                      # 264 اختبارًا: 262 نجح، و2 تخطّاهما (لا يحتاجان قاعدة بيانات)
+# التطبيق (من app/)
+pnpm install
+pnpm sync-content              # نجح: 17 ملفًا في app/src/content/
+pnpm typecheck                 # نجح بلا أخطاء، نحو 9 ثوانٍ
+pnpm test                      # نجح: 265 اختبارًا، 263 نجح، و0 فشل، و2 تخطّاهما، نحو 11 ثانية
 
 # بايثون (من tools/)
-cd tools
+cd ../tools
 python3 -B -m unittest test_export_content test_normalize_cases test_retrieve test_fetch_shamela
-#   95 + 3 + 18 + 6 اختبارًا. اختبار التصدير يجب أن يُشغَّل من داخل tools/ (من الجذر يفشل الاستيراد)
-cd pipeline && python3 -B -m unittest test_run_surah     # 41 اختبارًا
+#   نجح: 125 اختبارًا (98 + 3 + 18 + 6)، نحو 52 ثانية. اختبار التصدير يجب أن يُشغَّل من داخل tools/ (جُرّب من الجذر بصيغة python3 -B -m unittest tools.test_export_content فجاء: ModuleNotFoundError: No module named 'export_content')
+cd pipeline && python3 -B -m unittest test_run_surah     # نجح: 41 اختبارًا، نحو 30 ثانية
 
-# فحص التصدير نفسه (من الجذر): يرفض السورة كلها عند أي فشل
+# اتساق حالات السلامة بين docs/06-product/safety-test-set.md وtools/data/eval/safety_cases.json (من الجذر)
+cd ../.. && python3 tools/check_safety_cases.py          # نجح: OK: 24 cases, same ids and levels in both files (يطابق بين ملفين ولا يختبر سلوك النموذج)
+
+# فحص التصدير نفسه (من الجذر): يحتاج .cache/records، وقد فشل في نسخة بلا .cache/
 python3 -B tools/export_content.py 93 107 108 112 --check-only
+#   رمز الخروج 1، ولكل سورة سطر مثل: 93 INPUT FAIL checked=1 failed=1: [Errno 2] No such file or directory: '<الجذر>/.cache/records/93/records.v2.json'
 ```
 
-**سكربتا التقييم** موجودان في `app/package.json` ولم أشغّلهما هنا (الأول يحتاج `DATABASE_URL`، والثاني مفتاحًا أو خادمًا قائمًا):
+**الاختباران المتخطَّيان** يحتاجان قاعدة بيانات: `per-call retrieval mode overrides the environment without mutating it` (سبب التخطي: `DATABASE_URL/HUDA_TEST_DATABASE_URL is not set`)، و`integration: ingest surah 108 and retrieve atoms and passages` (`HUDA_TEST_DATABASE_URL is not set`). فلم يُجرَّب اختبار الاسترجاع المتكامل.
+
+**سكربتا التقييم** موجودان في `app/package.json` ولم يُشغَّلا في الجلسة السحابية (الأول يحتاج `DATABASE_URL`، والثاني مفتاحًا أو خادمًا قائمًا):
 
 ```bash
 pnpm eval:retrieval --split held         # استدعاء@8 و@24 وMRR@10 للأنماط الثلاثة: نصي، ودلالي، وهجين
@@ -105,6 +127,6 @@ pnpm eval:ask --direct --surah 93        # أو --base http://localhost:3000 ؛ 
 
 ---
 
-**In English (short).** Huda ("guidance") is an Arabic reader that explains a Quran surah to a non-specialist at four depths. Every claim carries its source and its status; the AI weaves text from verified records and does not generate facts or rule on narrations. Four surahs (93, 107, 108, 112) are published; every record is still a candidate that no specialist has reviewed. The reader is a Next.js app in `app/` (static export by default; `HUDA_ASK=1` builds a server with an "ask" assistant backed by PostgreSQL 18 with pgvector). Judges can type their own model key in the UI. Setup: `cd app && pnpm install && cp .env.example .env.local && pnpm dev`. Tests: `pnpm typecheck && pnpm test` in `app/`, and `python3 -B -m unittest test_export_content` from inside `tools/`. Book texts and the retrieval index live in the git-ignored `.cache/`, so a fresh clone cannot build new surahs. Deployment (`render.yaml`) is written but untested. Sources, tools and licenses: `docs/07-competition/sources-tools-licenses.md`. No `LICENSE` file yet; the owner has not chosen one.
+**In English (short).** Huda ("guidance") is an Arabic reader that explains a Quran surah to a non-specialist at four depths. Every claim carries its source and its status; the AI weaves text from verified records and does not generate facts or rule on narrations. Four surahs (93, 107, 108, 112) are published; every record is still a candidate that no specialist has reviewed. The reader is a Next.js app in `app/` (static export by default; `HUDA_ASK=1` builds a server with an "ask" assistant backed by PostgreSQL 18 with pgvector). Judges can type their own model key in the UI. Setup: `cd app && pnpm install && cp .env.example .env.local && pnpm dev` (the `cp` is optional for the static reader: everything that was run ran without `.env.local`). Tests: `pnpm sync-content && pnpm typecheck && pnpm test` in `app/` (the sync must come first: `app/src/content/` is generated and git-ignored, so on a fresh clone the other two fail without it), and `python3 -B -m unittest test_export_content` from inside `tools/`. The install, the tests, the static build and `pnpm dev` (in a separate copy, on another port) were run on 5 October 2026 from a copy without `.cache/` (node 22.22.2) and passed, except `python3 -B tools/export_content.py 93 107 108 112 --check-only`, which needs `.cache/records`. Book texts and the retrieval index live in the git-ignored `.cache/`, so a fresh clone cannot build new surahs. Deployment (`render.yaml`) is written but untested. Sources, tools and licenses: `docs/07-competition/sources-tools-licenses.md`. No `LICENSE` file yet; the owner has not chosen one.
 
 </div>
