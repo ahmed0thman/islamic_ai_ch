@@ -1,18 +1,10 @@
-import { getUi } from "@/lib/content";
-import { publishedSurahs } from "@/lib/published";
-import { ReplaceLocation } from "@/components/replace-location";
+import { getUi, getIndex } from "@/lib/content";
+import { Landing } from "@/components/landing/landing";
 
 /**
- * The first screen is the first published surah; a new reader starts at the understanding depth (the reader's default) and a saved depth is kept. The others are reached from the reader's surah chips.
- * A static export cannot send an HTTP redirect, and `redirect()` there leaves an error shell that only scripts resolve, so the page
- * carries a meta refresh (no script needed), a client replace (instant) and a plain link (last resort).
+ * The introduction page. It lists the published surahs and links into the reader; a returning visitor reaches reading from the first screen, a surah chip, or any `/s/<no>/` link. No automatic redirect: a script redirect flashes the page, and a judge who returns must still be able to see it.
  */
 export default async function Home() {
-  const ui = await getUi();
-  const target = `/s/${publishedSurahs[0]}/`;
-  return <>
-    <meta httpEquiv="refresh" content={`0;url=${target}`} />
-    <ReplaceLocation to={target} />
-    <p className="home-redirect"><a href={target}>{ui.app_name}</a></p>
-  </>;
+  const [ui, index] = await Promise.all([getUi(), getIndex()]);
+  return <Landing ui={ui} surahs={index.surahs} />;
 }

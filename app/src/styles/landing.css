@@ -1,0 +1,51 @@
+/* The introduction page at `/`. Same token set as the reader; no new color, font or size. */
+body:has(.landing) .huda-legend-bar { display: none; }
+body:has(.landing) .page-shell { padding-block-end: calc(var(--space-xl) + env(safe-area-inset-bottom)); }
+
+.landing { display: grid; gap: var(--space-xl); }
+
+.landing-hero { display: grid; gap: var(--space-md); background: linear-gradient(160deg, var(--stage-a), var(--stage-b)); color: var(--stage-ink); border-radius: var(--radius); padding: var(--space-xl) var(--space-lg); }
+.landing-hero h1 { font-size: var(--text-cover); line-height: var(--leading-title); }
+.landing-tagline { color: var(--stage-mute); font-size: var(--text-ui); }
+.landing-lead { font-size: var(--text-hero); line-height: var(--leading-hero); }
+.landing-sub { font-size: var(--text-body); }
+.landing-guide-link { display: inline-flex; align-items: center; justify-self: start; min-block-size: var(--control-height); color: var(--stage-ink); font-size: var(--text-ui); text-decoration: underline; }
+.landing-hero .huda-button { justify-self: start; }
+
+.landing-section h2, .landing-status-block h2, .landing-surahs h2 { font-size: var(--text-hero); line-height: var(--leading-hero); margin-block-end: var(--space-md); }
+.landing-section p { font-size: var(--text-body); line-height: var(--leading-body); color: var(--ink); }
+.landing-section p + p { margin-block-start: var(--space-md); }
+
+.landing-card, .landing-status-block { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: var(--space-lg); box-shadow: var(--shadow); }
+.landing-card h3 { font-size: var(--text-door); color: var(--accent); }
+.landing-card p, .landing-status-block p, .landing-list li, .landing-status-block li { font-size: var(--text-ui); line-height: var(--leading-ui); color: var(--ink-2); }
+
+.landing-chips { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm); margin-block-start: var(--space-md); }
+.landing-chip { border: 1px solid var(--border-ui); border-radius: var(--radius-pill); padding: 0 var(--space-md); font-size: var(--text-label); line-height: var(--control-height); }
+
+.landing-list li + li, .landing-status-block li + li { margin-block-start: var(--space-sm); }
+.landing-list li::before, .landing-status-block li::before { content: ""; display: inline-block; inline-size: .5rem; block-size: .5rem; margin-inline-end: var(--space-sm); border-radius: 50%; vertical-align: middle; }
+.landing-ai li::before, .landing-status-block[data-state="today"] li::before { background: var(--accent); }
+.landing-status-block[data-state="progress"] li::before { background: var(--gold); }
+.landing-status-block[data-state="planned"] li::before { background: transparent; border: 2px solid var(--ink-3); }
+
+.landing-note { font-size: var(--text-label); color: var(--ink-3); margin-block-start: var(--space-md); }
+
+.landing-status { display: grid; gap: var(--space-lg); }
+
+.landing-surahs { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm); }
+.landing-surahs h2 { flex-basis: 100%; }
+.landing-surahs .huda-button { margin-inline-start: auto; }
+
+.landing-cards { display: grid; gap: var(--space-md); list-style: none; margin: 0; padding: 0; }
+
+@media (min-width: 640px) {
+  .landing-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  .page-shell:has(.landing) { max-inline-size: 64rem; padding-block-start: var(--space-2xl); }
+  .landing { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .landing-hero, .landing-how, .landing-ai, .landing-status, .landing-surahs { grid-column: 1 / -1; }
+  .landing-hero h1, .landing-hero p { max-inline-size: 40rem; }
+  .landing-status { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; }
+}

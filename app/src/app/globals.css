@@ -6,6 +6,7 @@
 @import "@clerk/ui/themes/shadcn.css";
 @import "../styles/reader-theme.css";
 @import "../styles/wide.css";
+@import "../styles/landing.css";
 
 * { box-sizing: border-box; }
 html { font-size: 16px; background: var(--paper); scroll-padding-bottom: calc(var(--legend-occupied-height, var(--legend-height)) + var(--space-xl)); }

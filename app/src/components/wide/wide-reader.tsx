@@ -186,7 +186,7 @@ function WideLayout({ surah, surahs, ui, depth, view, map, items, stop, closing,
     <a className="wide-skip" href="#wide-reading">{ui.wide.skip}</a>
     <header className="wide-bar"><div className="wide-bar-start">
       {iconButton(ui.wide.toc, RightToLeftListBulletIcon, () => setDrawer((value) => !value), drawer, "wide-toc-toggle")}
-      <span className="wide-brand">{ui.app_name}</span><button className="wide-surah-picker" type="button" aria-expanded={localPopover === "surahs"} aria-haspopup="dialog" onClick={(event) => togglePopover("surahs", event.currentTarget)}>{surah.surah.name}<Icon icon={ArrowDown01Icon} size={16} /></button>
+      <a className="wide-brand" href="/" title={ui.landing.back_link}>{ui.app_name}</a><button className="wide-surah-picker" type="button" aria-expanded={localPopover === "surahs"} aria-haspopup="dialog" onClick={(event) => togglePopover("surahs", event.currentTarget)}>{surah.surah.name}<Icon icon={ArrowDown01Icon} size={16} /></button>
     </div><div className="wide-tabs wide-depths" role="group" aria-label={ui.reader.choose_depth}>{ui.levels.map((level) => <button type="button" className="wide-tab" key={level.depth} aria-pressed={level.depth === depth} onClick={() => onDepth(level.depth)}>{level.name}</button>)}</div>
     <div className="wide-bar-end">{ask ? <button className="wide-ask-open" type="button" aria-label={ui.ask.placeholder} title={ui.ask.placeholder} onClick={() => openAsk(true)}><Icon icon={BubbleChatQuestionIcon} size={16} /><span>{ui.ask.placeholder}</span><kbd>/</kbd></button> : null}
       {iconButton(ui.legend.title, Key01Icon, openLegend, sheets.legendOpen && surface.popoverAnchor?.classList.contains("wide-legend-trigger"), "wide-legend-trigger")}

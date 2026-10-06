@@ -102,7 +102,7 @@ export function MenuDrawer({ ui, current, onClose }: MenuDrawerProps) {
             <Tabs.Trigger className="menu-tab" value="about"><Icon icon={InformationCircleIcon} />{ui.menu.tab_about}</Tabs.Trigger>
           </Tabs.List>
           <Tabs.Content className="menu-panel" value="mushaf"><MushafTab ui={ui} current={current} onChoose={choose} /></Tabs.Content>
-          <Tabs.Content className="menu-panel" value="about"><AboutTab ui={ui} /></Tabs.Content>
+          <Tabs.Content className="menu-panel" value="about"><AboutTab ui={ui} onAct={choose} /></Tabs.Content>
         </Tabs.Root>
         <SignInEntry ui={ui} onAct={choose} />
         <Button variant="quiet" className="menu-settings" aria-haspopup="dialog" onClick={() => choose(() => settings.open(Boolean(ask)))}><Icon icon={Settings01Icon} />{ui.settings.open}</Button>
