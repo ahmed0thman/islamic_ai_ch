@@ -2,12 +2,16 @@
 .guide-blocker { position: fixed; inset: 0; }
 .guide[data-target="none"] .guide-blocker { background: var(--scrim); }
 .guide-spot { position: fixed; border-radius: var(--radius-s); box-shadow: 0 0 0 100vmax var(--scrim); outline: 2px solid var(--gold); pointer-events: none; }
-.guide-card { position: fixed; inset-inline: var(--gutter); max-inline-size: 26rem; margin-inline: auto; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius); padding: var(--space-lg); box-shadow: var(--shadow); animation: guide-fade var(--dur-fast) var(--ease); }
-.guide-card[data-place="bottom"] { inset-block-end: calc(var(--space-lg) + env(safe-area-inset-bottom)); }
-.guide-card[data-place="top"] { inset-block-start: var(--space-lg); }
-.guide-card[data-place="center"] { inset-block: 0; block-size: fit-content; margin-block: auto; }
+.guide-card { position: fixed; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius); padding: var(--space-lg); box-shadow: var(--shadow); animation: guide-fade var(--dur-fast) var(--ease); }
 .guide-card h2 { font-size: var(--text-sheet-title); margin-block-end: var(--space-sm); }
 .guide-card p { font-size: var(--text-ui); line-height: var(--leading-ui); color: var(--ink-2); }
 .guide-progress { font-size: var(--text-label); color: var(--ink-3); margin-block-end: var(--space-sm); }
 .guide-actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; margin-block-start: var(--space-lg); }
+.guide[data-surface="phone"] .guide-card { inset-inline: var(--gutter); max-inline-size: 26rem; margin-inline: auto; }
+.guide[data-surface="phone"] .guide-card[data-place="bottom"] { inset-block-end: calc(var(--space-lg) + env(safe-area-inset-bottom)); }
+.guide[data-surface="phone"] .guide-card[data-place="top"] { inset-block-start: var(--space-lg); }
+.guide[data-surface="phone"] .guide-card[data-place="center"] { inset-block: 0; block-size: fit-content; margin-block: auto; }
+/* The wide card is placed in physical px by the hook; only the centered case is left to CSS. */
+.guide[data-surface="wide"] .guide-card { inline-size: 24rem; max-inline-size: none; inset-inline: auto; margin-inline: 0; }
+.guide[data-surface="wide"] .guide-card[data-place="center"] { inset: 0; block-size: fit-content; margin: auto; }
 @keyframes guide-fade { from { opacity: 0; } to { opacity: 1; } }

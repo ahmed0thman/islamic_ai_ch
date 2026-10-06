@@ -1,13 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { ArrowDown01Icon, BubbleChatQuestionIcon, Cancel01Icon, Key01Icon, KeyboardIcon, Moon02Icon, Sun03Icon, Settings01Icon, SidebarLeftIcon, RightToLeftListBulletIcon } from "@hugeicons/core-free-icons";
+import { ArrowDown01Icon, BubbleChatQuestionIcon, Cancel01Icon, HelpCircleIcon, Key01Icon, KeyboardIcon, Moon02Icon, Sun03Icon, Settings01Icon, SidebarLeftIcon, RightToLeftListBulletIcon } from "@hugeicons/core-free-icons";
 import type { Depth, Surah, SurahSummary, Ui } from "@/lib/types";
 import type { SurahMapModel } from "@/lib/map";
 import type { DepthItemsModel, SceneUnit } from "@/lib/depth-items";
 import { wideIndex, unitAtAyah, indexQuestion } from "@/lib/wide-index";
 import { wideCommand, wideEscapeAction } from "@/lib/wide-keyboard";
 import { widePopoverPosition } from "@/lib/wide-popover";
+import { requestGuide } from "@/lib/guide";
 import { numeral } from "@/lib/numerals";
 import type { Followup } from "@/lib/followups";
 import { Icon } from "@/components/ui/icon";
@@ -191,6 +192,7 @@ function WideLayout({ surah, surahs, ui, depth, view, map, items, stop, closing,
     <div className="wide-bar-end">{ask ? <button className="wide-ask-open" type="button" aria-label={ui.ask.placeholder} title={ui.ask.placeholder} onClick={() => openAsk(true)}><Icon icon={BubbleChatQuestionIcon} size={16} /><span>{ui.ask.placeholder}</span><kbd>/</kbd></button> : null}
       {iconButton(ui.legend.title, Key01Icon, openLegend, sheets.legendOpen && surface.popoverAnchor?.classList.contains("wide-legend-trigger"), "wide-legend-trigger")}
       {iconButton(ui.wide.shortcuts, KeyboardIcon, (element) => togglePopover("shortcuts", element), localPopover === "shortcuts", "wide-shortcut-trigger")}
+      {iconButton(ui.guide.reopen, HelpCircleIcon, () => { closeLocal(false); surface.closePopover(false); requestGuide(); }, undefined, "wide-guide-trigger")}
       {iconButton(ui.wide.theme, theme.effective === "dark" ? Moon02Icon : Sun03Icon, (element) => togglePopover("theme", element), localPopover === "theme", "wide-theme-trigger")}
       {iconButton(ui.settings.open, Settings01Icon, () => { closeLocal(false); if (settings.isOpen) settings.close(); else settings.open(Boolean(ask)); }, settings.isOpen, "wide-settings-trigger")}
       {process.env.NEXT_PUBLIC_HUDA_AUTH === "1" ? <div className="wide-account" aria-label={ui.wide.account}><UserBadge /><SignInEntry ui={ui} onAct={(act) => act()} /></div> : null}
