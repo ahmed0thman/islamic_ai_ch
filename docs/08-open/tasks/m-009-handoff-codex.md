@@ -115,3 +115,9 @@ Everything is in `docs/07-competition/measured-results.md` with method and limit
 ## Owner notes
 
 - **6 Oct, 21:51:** the Claude weekly limit is almost used up; he asked for the running tasks and a summary of everything understood, so Codex can continue the work.
+
+## Update 22:26
+
+- The critical-findings agent finished at 22:25: **12 of 13 treated and committed locally** (108: `c4a4a63`, `6c09998`; 104: `e39e757`; 110: `cee5fda`; 114: `0918f15`; 93: `04317f6`), each after its hard check, export and the app tests (710 of 713). One is left for the owner: the reports about Khadija's money and trade at the "tadabbur" level of surah 93 (`93-r142`, `93-r182`): keep, move to the deepest level, or hold.
+- **Not done:** no second review confirmed these fixes (re-run the review for 93, 104, 108, 110, 114 with `codex:extract-codex`); the 30 major findings are untouched; the live database that "Ask" reads still holds the old sentences of these five surahs (re-ingest needs the owner's word: `app/scripts/db-rebuild.md`); generator scripts under `.cache/records/` for 110 and 108 would re-introduce the removed sentences if re-run.
+- **Nothing is running.** The owner set 22:36 as the end of agent work; after that the focus is the video, the deck and the submission. These commits are not pushed: ask him.
