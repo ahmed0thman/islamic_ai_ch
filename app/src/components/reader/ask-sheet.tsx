@@ -6,6 +6,7 @@ import type { AskResponse, PublicAtom } from "@/lib/ask/types";
 import { composedView, type ComposedItem } from "@/lib/ask-composed-view";
 import { historyFromTurns } from "@/lib/ask/history";
 import { blockRole, displaySegments, drawingFor, requestAsk } from "@/lib/ask-client";
+import { FAULT_UI_KEY } from "@/lib/ask/fault";
 import { getOwnKey, OWN_KEY_CHANGE_EVENT, type AskKeyProvider } from "@/lib/own-key";
 import { mergeQuestion, clock } from "@/lib/voice-client";
 import { Button } from "@/components/ui/button";
@@ -234,7 +235,8 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
     const result = turn.result!;
     const composed = composedView(result);
     const drawing = drawingFor(reading, result.atoms, result.extra);
-    const fixed = result.status === "unavailable" ? ui.ask.unavailable
+    // A failure of a judge's own key is told by its fixed reason; anything else unavailable keeps the one general message and the hint to add a key.
+    const fixed = result.status === "unavailable" ? (result.reason ? ui.ask[FAULT_UI_KEY[result.reason]] : ui.ask.unavailable)
       : result.status === "fatwa" ? ui.phrases.fatwa
       : result.status === "out_of_scope" ? ui.phrases.out_of_scope
       : result.status === "not_arabic" ? ui.phrases.arabic_only
@@ -253,7 +255,7 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
       ) : (
         <>
           <p className="ask-fixed"><AskOrb size="sm" state="idle" /> {fixed}</p>
-          {result.status === "unavailable" ? <SettingsKeyHint ui={ui} /> : null}
+          {result.status === "unavailable" && !result.reason ? <SettingsKeyHint ui={ui} /> : null}
           {(result.status === "fatwa" || result.status === "out_of_scope") && <a className="ask-link" href={ui.links.fatwa.url}>{ui.links.fatwa.label}</a>}
         </>
       )}

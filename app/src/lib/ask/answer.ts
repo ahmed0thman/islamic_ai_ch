@@ -9,7 +9,9 @@ import { splitExamples, pickExample } from "./example.ts";
 // @ts-expect-error -- Node requires source extensions.
 import { buildPrompt, SYSTEM_PROMPT, CHOICE_SCHEMA, validateChoice } from "./select.ts";
 // @ts-expect-error -- Node requires source extensions.
-import { runStage } from "./runtime.ts";
+import { runStage, StageFailed } from "./runtime.ts";
+// @ts-expect-error -- Node requires source extensions.
+import { faultStopsRequest } from "./fault.ts";
 // @ts-expect-error -- Node requires source extensions.
 import { publicAtom } from "./public-atom.ts";
 import type { Observer, StageEvent } from "./runtime";
@@ -43,6 +45,8 @@ interface Draft { sentences: ComposedSentence[]; claims: ComposedSentence[]; cla
 const kept = (draft: Draft) => draft.flags.filter(Boolean).length;
 const unique = <T,>(items: T[]) => [...new Set(items)];
 /** Whether the output of the extractive choice has the shape of a choice at all (a status and a list of ids). When it has not, the chain failed; that says nothing about the material. */
+/** Whether a stage failed for a reason that asking again cannot cure (see `faultStopsRequest`). */
+const hopeless = (error: unknown) => error instanceof StageFailed && faultStopsRequest(error.fault);
 const isChoice = (value: unknown): boolean => !!value && typeof value === "object" && !Array.isArray(value)
   && typeof (value as { status?: unknown }).status === "string" && Array.isArray((value as { atom_ids?: unknown }).atom_ids);
 
@@ -72,7 +76,7 @@ export async function answer(question: string, atoms: Atom[], context: ReaderCon
         // A provider hiccup must not cost the reader the answer: one more try while there is time.
         let first: unknown;
         try { first = await stage(prompt.request, budgets.compose, budgets.select); }
-        catch { note("compose", "retry"); first = await stage(prompt.request, budgets.compose, budgets.select); }
+        catch (error) { if (hopeless(error)) throw error; note("compose", "retry"); first = await stage(prompt.request, budgets.compose, budgets.select); }
         // Fixed statuses do not need Quran indexing, mechanical checks, or support.
         const parsed = parseComposition(first, prompt.atoms);
         if (parsed && parsed.status !== "answer") { note("compose", parsed.status); return { status: parsed.status, atoms: [] }; }
@@ -188,6 +192,8 @@ export async function answer(question: string, atoms: Atom[], context: ReaderCon
         }
         return { status: "answer", mode: "composed", composed, atoms: used.map(publicAtom) };
       } catch (error) {
+        // The key, the model or the allowance of the provider is the problem: another try or another model call would be refused the same way, and would spend what is left of the allowance.
+        if (hopeless(error)) { note("fallback", "unavailable"); return { status: "unavailable", atoms: [] }; }
         // The one failure that is about the material: the writer answered, nothing it wrote stood and it pointed at nothing.
         chainFailed = !(error instanceof Error && error.message === "no_supported_sentences");
         note("fallback", options.extractiveFallback === false ? "composition_failed" : "extractive");

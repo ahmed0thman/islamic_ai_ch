@@ -1,3 +1,4 @@
+import type { AskFault } from "./fault";
 import type { Ayah, Depth, Segment, SourceRecord, Surah, Ui } from "../types";
 
 export type ChoiceStatus = "answer" | "insufficient" | "fatwa" | "out_of_scope" | "not_arabic";
@@ -39,10 +40,13 @@ export interface HistoryTurn { question: string; answer: string; atom_ids: strin
 export interface AskExtra { records: Record<string, SourceRecord>; ayahs: Ayah[] }
 /** `sources`: the server weaves from book passages (so the note under the composer says so). */
 /** `no_question`: the message only follows up on an earlier question ("search again", "explain more") and the conversation holds none. */
-export interface AskResponse { status: ChoiceStatus | "unavailable" | "no_question"; mode?: "composed" | "extractive"; composed?: ComposedItem[]; atoms: PublicAtom[]; sources?: boolean; extra?: AskExtra }
+/** `reason`: on an `unavailable` reply to a judge's own key, why that key's provider refused (a fixed code, never its words). */
+export interface AskResponse { status: ChoiceStatus | "unavailable" | "no_question"; reason?: AskFault; mode?: "composed" | "extractive"; composed?: ComposedItem[]; atoms: PublicAtom[]; sources?: boolean; extra?: AskExtra }
 /** One illustration for the writer: a verified sentence and the quote of its first record. Never material, never citable. */
 export interface ExamplePair { source_quote: string; verified_sentence: string }
+export type { AskFault };
 export type AskUi = Ui & { ask: Record<"title" | "placeholder" | "submit" | "loading" | "answer_title" | "note" | "unavailable", string> };
-export interface SelectionRequest { system: string; message: string; signal: AbortSignal; schema?: Record<string, unknown>; stage?: "select" | "compose" | "support" | "repair" }
+/** `deadline`: the timestamp by which this try must be over (set by `runStage`), so a provider does not wait for a retry that cannot finish. */
+export interface SelectionRequest { system: string; message: string; signal: AbortSignal; deadline?: number; schema?: Record<string, unknown>; stage?: "select" | "compose" | "support" | "repair" }
 export interface ChoiceProvider { name?: string; choose(request: SelectionRequest): Promise<unknown> }
 export type AtomSource = Surah;

@@ -6,7 +6,7 @@ import { extraFor, gatherAtoms } from "@/lib/ask/gather";
 import { carriedQuestion, historyAtomIds, resolveHistory } from "@/lib/ask/history";
 import { logQuestion } from "@/lib/rag/log";
 import { questionWithinLimit, requestAllowed, responseFor } from "@/lib/ask/runtime";
-import type { AskResponse } from "@/lib/ask/types";
+import type { AskFault, AskResponse } from "@/lib/ask/types";
 
 export const runtime = "nodejs";
 
@@ -15,9 +15,11 @@ export async function POST(request: Request) {
   let flowLog: string | undefined;
   let outcome = "request_error";
   const selected = providersForRequest(request.headers, process.env);
-  const reply = (status: AskResponse["status"], httpStatus = 200) => {
+  // Why the judge's own key's provider refused (a fixed code), so the reader is told what to do about their key.
+  let ownFault: AskFault | undefined;
+  const reply = (status: AskResponse["status"], httpStatus = 200, reason?: AskFault) => {
     outcome = `${status}_${httpStatus}`;
-    return responseFor(status, httpStatus);
+    return responseFor(status, httpStatus, status === "unavailable" && selected.ownKey ? reason ?? "other" : undefined);
   };
   try {
     if (process.env.HUDA_ASK !== "1") return reply("unavailable", 404);
@@ -38,7 +40,8 @@ export async function POST(request: Request) {
     try {
       if (!(await getIndex()).surahs.some((item) => item.no === surah)) return reply("insufficient", 400);
       const provider = selected.providers;
-      if (!provider.length) return reply("unavailable");
+      // A key that is not even the shape of a key, or an incomplete pair of headers, is a key the provider would refuse.
+      if (!provider.length) return reply("unavailable", 200, "key_rejected");
       const source = await getSurah(surah);
       const reader = resolveReaderContext(source, depth, stop);
       const context = { depth: reader?.depth ?? 0, ...reader, surah, ayah_numbers: source.ayahs.map((ayah) => Number(ayah.key.split(":")[1])) };
@@ -55,12 +58,15 @@ export async function POST(request: Request) {
         preface: [...(carried ? [{ stage: "follow_up", provider: "server", outcome: carried.kind, ms: 0 }] : []), gathered.event],
         log: (line) => { flowLog = line; },
         observe: (event) => {
-          if (selected.ownKey && event.provider === selected.provider) providerFailed = event.outcome !== "ok";
+          if (selected.ownKey && event.provider === selected.provider) {
+            providerFailed = event.outcome !== "ok";
+            if (event.outcome === "ok") ownFault = undefined; else if (event.fault) ownFault = event.fault;
+          }
         },
       });
-      if (selected.ownKey && providerFailed && result.status === "insufficient") return reply("unavailable");
+      if (selected.ownKey && providerFailed && result.status === "insufficient") return reply("unavailable", 200, ownFault);
       // A failure of the provider chain on the project's own keys is said as it is, never as "nothing in our sources".
-      if (result.status === "unavailable") return reply("unavailable");
+      if (result.status === "unavailable") return reply("unavailable", 200, ownFault);
       const extra = await extraFor(result.atoms, surah, getSurah);
       logQuestion({ question: trimmed, surah, depth: context.depth, stop: reader?.stop ?? null, status: result.status, atomIds: result.atoms.map((atom) => atom.id),
         retrieval: { mode: gathered.event.provider, counts: gathered.event.outcome, dropped: gathered.dropped } });

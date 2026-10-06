@@ -5,6 +5,8 @@ import { anthropicProvider, CHOICE_SCHEMA } from "./select.ts";
 import { lexicalScore } from "./normalize.ts";
 // @ts-expect-error -- Node requires source extensions.
 import { fetchRetry, runStage } from "./runtime.ts";
+// @ts-expect-error -- Node requires source extensions.
+import { classifyFault, ProviderError } from "./fault.ts";
 // @ts-expect-error -- Node tests require explicit source extensions.
 import { keyWithinShape, ownKeyFromHeaders } from "../own-key.ts";
 import type { ChoiceProvider, SelectionRequest } from "./types";
@@ -110,7 +112,7 @@ export const OPENAI_BASE_URL = "https://api.openai.com/v1";
 export const GROQ_BASE_URL = "https://api.groq.com/openai/v1";
 /** Any endpoint that speaks the OpenAI Responses API; the session header is only for OpenCode Go. */
 export function responsesProvider({ name, baseUrl, apiKey, model, sessionHeader, effort }: { name: string; baseUrl: string; apiKey: string; model: string; sessionHeader: boolean; effort?: string }): ChoiceProvider {
-  return { name, async choose({ system, message, signal, schema }) {
+  return { name, async choose({ system, message, signal, schema, deadline }) {
     const outputSchema = withoutUniqueItems(schema || CHOICE_SCHEMA);
     const send = (structured: boolean) => fetchRetry(`${baseUrl}/responses`, {
       method: "POST", signal,
@@ -119,16 +121,17 @@ export function responsesProvider({ name, baseUrl, apiKey, model, sessionHeader,
         instructions: structured ? system : `${system}\nReturn ONLY valid JSON matching this schema, with no markdown fences:\n${JSON.stringify(outputSchema)}`,
         ...(structured ? { text: { format: { type: "json_schema", name: "ask_response", strict: true, schema: outputSchema } } } : {}),
       }),
-    });
+    }, 3, deadline);
     let response = await send(true);
     if ([400, 422].includes(response.status)) {
       const error = await response.text();
       // Retry without structured output only for a schema/format rejection.
       // Neither this diagnostic nor any upstream response is ever logged.
-      if (!/schema|text[. _]format|response[ _]format/i.test(error)) throw new Error("provider_http");
+      if (!/schema|text[. _]format|response[ _]format/i.test(error)) throw new ProviderError(response.status, classifyFault(response.status, error));
       response = await send(false);
     }
-    if (!response.ok) throw new Error(`http_${response.status}`);
+    // Only the fixed fault of the refusal leaves here, never the provider's own words.
+    if (!response.ok) throw new ProviderError(response.status, classifyFault(response.status, await response.text().catch(() => "")));
     const data = await response.json();
     if (data.status !== "completed" || data.error || data.incomplete_details || !Array.isArray(data.output)) throw new Error("provider_output");
     const parts = data.output.flatMap((item: { type?: string; content?: unknown[] }) => item.type === "message" && Array.isArray(item.content) ? item.content : []);
@@ -144,11 +147,34 @@ export function opencodeGoProvider(apiKey: string, model = "gpt-6-luna", effort?
 export function openaiProvider(apiKey: string, model = "gpt-6-luna", effort?: string): ChoiceProvider {
   return responsesProvider({ name: "openai", baseUrl: OPENAI_BASE_URL, apiKey, model, sessionHeader: false, effort });
 }
+/** The model a judge's OpenAI key calls: the one the project's own chain uses, and the one every OpenAI key tried so far could reach (a key with no credit reaches only this one). */
+export const DEFAULT_OPENAI_MODEL = "gpt-6-luna";
+export const DEFAULT_OPENAI_FALLBACK_MODEL = "gpt-5-mini";
+/** The model that answers when the configured one is not open to the judge's account; an empty HUDA_ASK_OPENAI_FALLBACK_MODEL switches it off. */
+export function openaiFallbackModel(env: Readonly<Record<string, string | undefined>>): string | undefined {
+  return (env.HUDA_ASK_OPENAI_FALLBACK_MODEL ?? DEFAULT_OPENAI_FALLBACK_MODEL) || undefined;
+}
+/** The backup is tried only when the provider says the model is not available to this key: a rate limit or a missing credit would be the same on any model. */
+function withModelFallback(primary: ChoiceProvider, backup?: ChoiceProvider): ChoiceProvider {
+  if (!backup) return primary;
+  return { name: primary.name, async choose(request) {
+    try { return await primary.choose(request); }
+    catch (error) {
+      if (!(error instanceof ProviderError) || error.fault !== "model_unavailable" || request.signal.aborted) throw error;
+      return backup.choose(request);
+    }
+  } };
+}
 /** The supplied secret belongs only to the returned request-scoped provider. Only the Ask providers a judge may enter are built here. */
 export function providersFromKey(provider: string, key: string, env: Readonly<Record<string, string | undefined>>): ChoiceProvider[] {
   if (!keyWithinShape(key)) return [];
   const effort = env.HUDA_ASK_EFFORT === "default" ? undefined : env.HUDA_ASK_EFFORT || "low";
-  if (provider === "openai") return [openaiProvider(key, env.HUDA_ASK_MODEL || "gpt-6-luna", effort)];
+  if (provider === "openai") {
+    // HUDA_ASK_MODEL names a model of the project's own chain (it may belong to another provider); a judge's OpenAI key has its own settings.
+    const fallback = openaiFallbackModel(env);
+    return [withModelFallback(openaiProvider(key, env.HUDA_ASK_OPENAI_MODEL || DEFAULT_OPENAI_MODEL, effort),
+      fallback ? openaiProvider(key, fallback, effort) : undefined)];
+  }
   // The judge's Google key calls the same model as the project's, with the same fallback model; HUDA_ASK_MODEL names the OpenAI model, so Google has its own override.
   if (provider === "gemini") return [geminiProvider(key, env.HUDA_ASK_GEMINI_MODEL || DEFAULT_GEMINI_MODEL, geminiFallbackModel(env))];
   return [];

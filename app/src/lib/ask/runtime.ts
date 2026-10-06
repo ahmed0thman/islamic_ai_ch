@@ -1,5 +1,7 @@
 import { setTimeout as sleep } from "node:timers/promises";
-import type { AskResponse, ChoiceProvider, SelectionRequest } from "./types";
+// @ts-expect-error -- Node requires source extensions.
+import { classifyFault, ProviderError, retryAfterMs } from "./fault.ts";
+import type { AskFault, AskResponse, ChoiceProvider, SelectionRequest } from "./types";
 
 export const MAX_QUESTION_CHARS = 300;
 export const questionWithinLimit = (text: string) => [...text].length <= MAX_QUESTION_CHARS;
@@ -16,32 +18,54 @@ export function requestAllowed(request: Request): boolean {
   requests.set(ip, { count: 1, expires: now + 60_000 });
   return true;
 }
-export const responseFor = (status: AskResponse["status"], httpStatus = 200) => Response.json({ status, atoms: [] }, {
+/** `reason` is only for a judge's own key: which fixed fault of that key's provider stopped the answer (never the provider's own words). */
+export const responseFor = (status: AskResponse["status"], httpStatus = 200, reason?: AskFault) => Response.json({ status, atoms: [], ...(reason ? { reason } : {}) }, {
   status: httpStatus, headers: { "Cache-Control": "no-store" },
 });
 
-/** Retries consume the caller's stage deadline, including backoff. */
-export async function fetchRetry(url: string, options: RequestInit, attempts = 3): Promise<Response> {
+/** The longest wait a provider's own "try again in" is honoured for, and the time a try needs once the wait is over. */
+const MAX_PROVIDER_WAIT_MS = 10_000, MIN_TRY_MS = 3_000;
+/** Retries consume the caller's stage deadline (`deadline`, a timestamp, when the caller knows it), including backoff.
+ * A 429 is read for what it says: no credit or a daily cap is never retried; a per-minute cap is waited out for as long as the provider asks, if that fits the deadline, and otherwise given back at once. */
+export async function fetchRetry(url: string, options: RequestInit, attempts = 3, deadline?: number): Promise<Response> {
   for (let attempt = 0; ; attempt++) {
     options.signal?.throwIfAborted();
     const response = await fetch(url, options);
     if (![429, 500, 502, 503, 504].includes(response.status) || attempt === attempts - 1) return response;
+    let wait = [700, 1800][attempt];
+    if (response.status === 429) {
+      const body = await response.clone().text().catch(() => "");
+      if (classifyFault(429, body) === "quota") return response;
+      const asked = retryAfterMs(response.headers, body);
+      if (asked !== undefined) {
+        wait = asked + 250;
+        if (wait > MAX_PROVIDER_WAIT_MS || (deadline !== undefined && Date.now() + wait + MIN_TRY_MS > deadline)) return response;
+      }
+    }
     await response.body?.cancel();
-    await sleep([700, 1800][attempt], undefined, { signal: options.signal || undefined });
+    await sleep(wait, undefined, { signal: options.signal || undefined });
   }
 }
-export interface StageEvent { stage: string; provider: string; outcome: string; ms: number }
+/** `fault`: why the provider refused, when it did (a fixed code). */
+export interface StageEvent { stage: string; provider: string; outcome: string; ms: number; fault?: AskFault }
+/** Every provider of the chain failed; `fault` is the last one's reason, when it gave one. */
+export class StageFailed extends Error {
+  readonly fault?: AskFault;
+  constructor(fault?: AskFault) { super("stage_failed"); this.fault = fault; }
+}
 export type Observer = (event: StageEvent) => void;
 
 /** Even a misbehaving provider that ignores AbortSignal cannot hold up fallback. */
 export async function runStage(request: Omit<SelectionRequest, "signal">, providers: ChoiceProvider[], timeoutMs: number, observe: Observer, parentSignal?: AbortSignal): Promise<unknown> {
   const deadline = Date.now() + timeoutMs;
+  let lastFault: AskFault | undefined;
   for (const [index, provider] of providers.entries()) {
     if (parentSignal?.aborted) break;
     const start = Date.now();
     const controller = new AbortController();
     let timer: ReturnType<typeof setTimeout> | undefined;
     let outcome = "provider_error";
+    let fault: AskFault | undefined;
     let onParentAbort: (() => void) | undefined;
     try {
       parentSignal?.throwIfAborted();
@@ -56,18 +80,20 @@ export async function runStage(request: Omit<SelectionRequest, "signal">, provid
         onParentAbort = () => { outcome = "aborted"; controller.abort(); reject(new Error("aborted")); };
         parentSignal?.addEventListener("abort", onParentAbort, { once: true });
       });
-      const result = await Promise.race([provider.choose({ ...request, signal: controller.signal }), timeout, cancelled]);
+      const result = await Promise.race([provider.choose({ ...request, signal: controller.signal, deadline: start + slice }), timeout, cancelled]);
       outcome = "ok";
       return result;
     } catch (error) {
       // The next provider tries the same schema and data. A fixed code (never upstream text) says why this one failed.
+      fault = error instanceof ProviderError ? error.fault : undefined;
+      lastFault = fault;
       if (outcome === "provider_error" && error instanceof Error && /^(http_\d{3}|provider_output)$/.test(error.message)) outcome = error.message;
     }
     finally {
       clearTimeout(timer);
       if (onParentAbort) parentSignal?.removeEventListener("abort", onParentAbort);
-      observe({ stage: request.stage || "select", provider: provider.name || "custom", outcome, ms: Date.now() - start });
+      observe({ stage: request.stage || "select", provider: provider.name || "custom", outcome, ms: Date.now() - start, ...(fault ? { fault } : {}) });
     }
   }
-  throw new Error("stage_failed");
+  throw new StageFailed(lastFault);
 }

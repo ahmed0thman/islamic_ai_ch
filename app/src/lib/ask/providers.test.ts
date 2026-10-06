@@ -170,8 +170,11 @@ test("own-key factories use their default models, supplied credentials and the c
     assert.deepEqual(seen.at(-1)!.body.reasoning, { effort: "high" });
     await providersFromKey("openai", "test-only-sentinel-factory", { HUDA_ASK_EFFORT: "default" })[0].choose(request);
     assert.equal(Object.hasOwn(seen.at(-1)!.body, "reasoning"), false);
-    await providersFromKey("openai", "test-only-sentinel-factory", { HUDA_ASK_MODEL: "custom-model" })[0].choose(request);
+    await providersFromKey("openai", "test-only-sentinel-factory", { HUDA_ASK_OPENAI_MODEL: "custom-model" })[0].choose(request);
     assert.equal(seen.at(-1)!.body.model, "custom-model");
+    // HUDA_ASK_MODEL names a model of the project's own chain; a judge's OpenAI key never takes it.
+    await providersFromKey("openai", "test-only-sentinel-factory", { HUDA_ASK_MODEL: "project-model" })[0].choose(request);
+    assert.equal(seen.at(-1)!.body.model, "gpt-6-luna");
     // The Google model is not named by the OpenAI model variable.
     await providersFromKey("gemini", "test-only-sentinel-factory", { HUDA_ASK_MODEL: "gpt-custom" })[0].choose(request);
     assert.ok(seen.at(-1)!.url.includes(`/models/${DEFAULT_GEMINI_MODEL}:`));
@@ -265,6 +268,38 @@ test("a failing own-key Ask request never falls back to project credentials or l
     const log = JSON.parse(fixture.logs[0]);
     assert.equal(log.own_key, true);
     assert.equal(log.provider, "openai");
+  } finally { globalThis.fetch = original; }
+});
+
+test("a judge's key refused by its provider is told by a fixed reason (never the provider's words), after one call, and a project key is never tried", async () => {
+  const key = "test-only-sentinel-reason";
+  const refusals: [number, string, Record<string, string>, string][] = [
+    [429, "Rate limit reached ... requests per day (RPD): Limit 50, Used 50 sentinel-provider-words", {}, "quota"],
+    [429, "no credits remaining sentinel-provider-words", {}, "quota"],
+    [429, "Rate limit reached ... requests per min (RPM) sentinel-provider-words. Please try again in 55s.", {}, "rate_limit"],
+    [401, "Incorrect API key provided sentinel-provider-words", {}, "key_rejected"],
+    [404, "model_not_found sentinel-provider-words", {}, "model_unavailable"],
+    [500, "sentinel-provider-words", {}, "other"],
+  ];
+  const original = globalThis.fetch;
+  try {
+    for (const [status, body, headers, reason] of refusals) {
+      // The model that is not open: the backup is refused the same way.
+      const fixture = await routeFixture("ask", { HUDA_ASK: "1", OPENAI_API_KEY: "project-only-openai", HUDA_ASK_OPENAI_FALLBACK_MODEL: "" });
+      let calls = 0;
+      globalThis.fetch = async (_url, options) => {
+        calls++;
+        assert.equal(new Headers(options!.headers).get("authorization"), `Bearer ${key}`, "only the judge's key is ever sent");
+        return new Response(body, { status, headers });
+      };
+      const response = await fixture.POST(new Request("https://reader.invalid/api/ask", { method: "POST",
+        headers: { "x-huda-provider": "openai", "x-huda-key": key }, body: JSON.stringify({ surah: 108, question: fixture.question }) }));
+      const text = await response.text();
+      assert.deepEqual(JSON.parse(text), { status: "unavailable", atoms: [], reason }, `${status} ${reason}`);
+      assert.equal(text.includes("sentinel-provider-words") || text.includes(key), false);
+      assert.equal(fixture.logs[0].includes("sentinel-provider-words") || fixture.logs[0].includes(key), false);
+      if (reason !== "other") assert.equal(calls, 1, `${reason}: one call to the provider`);
+    }
   } finally { globalThis.fetch = original; }
 });
 
@@ -512,7 +547,8 @@ test("Ask accepts a judge's Google key alone; any other provider with a key is u
     globalThis.fetch = async () => { assert.fail("No provider may be called"); };
     for (const provider of ["groq", "opencode-go", "anthropic", "lexical", "unknown"]) {
       const response = await post(provider);
-      assert.deepEqual(await response.json(), { status: "unavailable", atoms: [] });
+      // A judge's key the app has no use for is told as a rejected key, not as a fault of the service.
+      assert.deepEqual(await response.json(), { status: "unavailable", atoms: [], reason: "key_rejected" });
     }
   } finally { globalThis.fetch = original; }
 });
