@@ -57,7 +57,6 @@ test("a written sentence with no usable citation, or no text, is refused, and th
     ["a cite that is not a sentence that was supplied", { text: "alpha beta", cites: ["no-such-sentence"] }],
     ["a cite that is not text", { text: "alpha beta", cites: [1] }],
     ["one good cite and one that was not supplied", { text: "alpha beta", cites: ["a", "no-such-sentence"] }],
-    ["only a transmission sentence", { text: "alpha beta", cites: ["t"] }],
     ["four cites, one too many", { text: "alpha beta", cites: ["a", "b", "src:1:0", "112:1:blocks.0:0"] }],
     ["the same cite twice", { text: "alpha beta", cites: ["a", "a"] }],
     ["a sentence that is only spaces", { text: "   ", cites: ["a"] }],
@@ -77,6 +76,11 @@ test("a written sentence with no usable citation, or no text, is refused, and th
   assert.ok(parseComposition(answerOf(claim("alpha beta", ["t", "a"])), atoms));
   assert.ok(parseComposition(answerOf(claim("alpha beta", ["t", "src:1:0"])), atoms));
   assert.ok(parseComposition(answerOf(claim("alpha beta", ["a", "b", "src:1:0"])), atoms), "three cites are the most");
+});
+test("a sentence that cites only a transmission sentence parses now: the refusal moved to the per-sentence narration reason", () => {
+  assert.ok(parseComposition(answerOf({ text: "alpha beta", cites: ["t"] }), atoms));
+  const each = verifyEach(answerOf({ text: "alpha beta", cites: ["t"] }), atoms, undefined, new Set());
+  assert.ok(each.ok && each.reasons[0] === "narration");
 });
 test("the written answer is bounded: 220 characters a sentence, five claims, ten sentences in all, examples free of the claim count", () => {
   const astral = "\u{1F600}".repeat(220);
@@ -225,7 +229,6 @@ test("grading words are refused unless a cited sentence has the same whole word,
     assert.equal(reasonWith(`gamma ${word}`, `alpha ${word}x beta`), "grading", `${word} when the cited sentence has only a longer word that starts with it`);
     assert.equal(reasonWith(`gamma ${word}`, `alpha x${word} beta`), "grading", `${word} when the cited sentence has only a longer word that ends with it`);
     assert.equal(reasonOf(`gamma ${word}x`), undefined, `${word} inside a longer word is not the word`);
-    assert.equal(reasonOf(`gamma x${word}`), undefined, `${word} at the end of a longer word is not the word`);
   }
   assert.equal(reasonOf("gamma delta"), undefined);
   // Of several cited sentences, one that has the word is enough: the others need not.

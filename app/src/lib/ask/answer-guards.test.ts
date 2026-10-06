@@ -91,7 +91,7 @@ test("control: a sentence that is its verified source word for word is shown as 
 const hostile: [string, unknown, string, "cited" | "selected"][] = [
   ["a sentence that cites nothing", claimOf(lead, []), "shape", "selected"],
   ["a sentence that cites a sentence it was not given", claimOf(lead, ["no-such-sentence"]), "shape", "selected"],
-  ["a sentence that cites only a transmission sentence", claimOf(lead, [transmission.id]), "shape", "selected"],
+  ["a sentence that cites only a transmission sentence", claimOf(lead, [transmission.id]), "narration", "cited"],
   ["a sentence that leaves out its cites field", { kind: "claim", text: lead }, "shape", "selected"],
   ["a sentence with Quran text in it", claimOf(`${lead} ${quranWords}`, [good.id]), "quran_text", "cited"],
   ["a sentence with an ornate Quran bracket", claimOf(`${lead} \ufd3f`, [good.id]), "quran_text", "cited"],
@@ -114,7 +114,7 @@ for (const [name, sentence, reason, fallback] of hostile) {
     assert.ok(result.atoms.every((atom) => !Object.hasOwn(atom, "text")), "and without their search text");
     assert.deepEqual(outcome(stages, "verify"), [reason]);
     assert.equal(model.count("compose"), 1);
-    assert.equal(model.count("repair"), 1, "one repair round, and only one");
+    assert.equal(model.count("repair"), reason === "narration" ? 0 : 1, reason === "narration" ? "a narration is not repaired: it is shown word for word in the sentence's place" : "one repair round, and only one");
     assert.equal(model.count("support"), 0, "a sentence that failed a mechanical check is not sent on to the support model");
     assert.equal(model.count("select"), fallback === "selected" ? 1 : 0, fallback === "cited" ? "the writer's own cites are shown as they are" : "no cites to show, so the plain choice runs");
     if (fallback === "cited") assert.deepEqual(result.atoms.map((atom) => atom.id), [(sentence as { cites: string[] }).cites[0]]);
@@ -190,11 +190,11 @@ test("the fallback to the writer's own cites shows at most four sentences, each 
   assert.equal(result.mode, "extractive");
   assert.deepEqual(result.atoms.map((atom) => atom.id), [five[0].id, five[1].id, five[2].id, five[3].id]);
 });
-test("two dropped sentences are shown as one only when they cite exactly the same sentences", async () => {
+test("a dropped sentence is shown as the cited sentences of it not yet shown, so each cited sentence is shown once", async () => {
   const written = [claimOf(good.text, [good.id]), claimOf(`${lead} 4242`, [good.id, second.id]), claimOf(`${lead} 4242`, [good.id, third.id]), claimOf(`${lead} 4242`, [third.id, good.id])];
   const { result } = await run(script(wrap(...written)));
-  assert.deepEqual(result.composed, [{ text: good.text, atom_ids: [good.id] }, { atom_ids: [good.id, second.id] }, { atom_ids: [good.id, third.id] }],
-    "the second and third share a sentence but not all: they stay apart; the third and fourth cite the same two: they are one");
+  assert.deepEqual(result.composed, [{ text: good.text, atom_ids: [good.id] }, { atom_ids: [good.id, second.id] }, { atom_ids: [third.id] }],
+    "the second and third share a sentence but not all: they stay apart; the fourth adds nothing not yet shown: it is not shown at all");
 });
 test("an accepted example comes right after the written sentence it follows, even when that is the last one", async () => {
   const example = { kind: "example", text: "a neighbour lends a ladder to a friend who is painting a fence", cites: [] };
@@ -214,9 +214,9 @@ test("illustration pairs reach the writer as a labelled block after the sentence
   assert.match(block.label, /not material and not citable/);
   assert.ok(!model.calls.find((call) => call.stage === "support")!.message.includes(pair.source_quote));
 });
-test("the fixed codes of the log: a failed written answer without a fallback is `composition_failed`, then `disabled`, and the reply is the fixed `insufficient`", async () => {
+test("the fixed codes of the log: a failed written answer without a fallback is `composition_failed`, then `disabled`, and the reply is the fixed `unavailable`", async () => {
   const { result, stages } = await run(script(null, null, undefined, 2), { extractiveFallback: false });
-  assert.deepEqual(result, { status: "insufficient", atoms: [] });
+  assert.deepEqual(result, { status: "unavailable", atoms: [] });
   assert.deepEqual(outcome(stages, "fallback"), ["composition_failed", "disabled"]);
   const withFallback = await run(script(null, null, undefined, 2));
   assert.deepEqual(outcome(withFallback.stages, "fallback"), ["extractive"]);
