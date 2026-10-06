@@ -32,6 +32,15 @@ export function classifyFault(status: number, body: string): AskFault {
   return "other";
 }
 
+/** Anthropic's refusals, by the status it answers with: 401 and 403 the key, 404 the model, 429 the rate, and a 400 that says the credit balance is too low. Anything else is `other`. Never keeps the text. */
+export function classifyAnthropicFault(status: number, body: string): AskFault {
+  if (status === 401 || status === 403) return "key_rejected";
+  if (status === 404) return "model_unavailable";
+  if (status === 429) return "rate_limit";
+  if (status === 400 && /credit balance/i.test(body.slice(0, 4000))) return "quota";
+  return "other";
+}
+
 /** How long the provider asks to wait before the next try: `retry-after-ms`, `retry-after` (seconds), or "try again in 6s" in the body. Undefined when it says nothing usable. */
 export function retryAfterMs(headers: Headers, body: string): number | undefined {
   const ms = Number(headers.get("retry-after-ms"));

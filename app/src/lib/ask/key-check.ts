@@ -5,7 +5,7 @@ import { GEMINI_BASE_URL, GROQ_BASE_URL, providersFromKey } from "./providers.ts
 // @ts-expect-error -- Node requires source extensions.
 import { runStage } from "./runtime.ts";
 // @ts-expect-error -- Node tests require explicit source extensions.
-import { CHOICE_SCHEMA } from "./select.ts";
+import { ANTHROPIC_BASE_URL, ANTHROPIC_VERSION, CHOICE_SCHEMA } from "./select.ts";
 
 export type KeyCheck = "ok" | "rejected" | "timeout";
 export const KEY_CHECK_MS = 8_000;
@@ -24,6 +24,7 @@ async function listModels(url: string, headers: Record<string, string>, ms: numb
 export async function checkOwnKey(provider: OwnKeyProvider, key: string, env: Readonly<Record<string, string | undefined>>, signal: AbortSignal, ms = KEY_CHECK_MS): Promise<KeyCheck> {
   if (OWN_KEY_PURPOSES[provider] === "transcribe") return listModels(`${GROQ_BASE_URL}/models`, { authorization: `Bearer ${key}` }, ms, signal);
   if (provider === "gemini") return listModels(`${GEMINI_BASE_URL}/models?pageSize=1`, { "x-goog-api-key": key }, ms, signal);
+  if (provider === "anthropic") return listModels(`${ANTHROPIC_BASE_URL}/models`, { "x-api-key": key, "anthropic-version": ANTHROPIC_VERSION }, ms, signal);
   const providers = providersFromKey(provider, key, env);
   if (!providers.length) return "rejected";
   let outcome: KeyCheck = "rejected";

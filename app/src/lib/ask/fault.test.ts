@@ -3,11 +3,13 @@ import test from "node:test";
 // @ts-expect-error -- Node requires source extensions.
 import { answer } from "./answer.ts";
 // @ts-expect-error -- Node requires source extensions.
-import { classifyFault, faultStopsRequest, ProviderError, retryAfterMs } from "./fault.ts";
+import { classifyAnthropicFault, classifyFault, faultStopsRequest, ProviderError, retryAfterMs } from "./fault.ts";
 // @ts-expect-error -- Node requires source extensions.
 import { fetchRetry, runStage, StageFailed } from "./runtime.ts";
 // @ts-expect-error -- Node requires source extensions.
-import { openaiProvider, providersFromKey } from "./providers.ts";
+import { openaiProvider, providersFromEnv, providersFromKey } from "./providers.ts";
+// @ts-expect-error -- Node requires source extensions.
+import { anthropicProvider, DEFAULT_ANTHROPIC_MODEL } from "./select.ts";
 import type { Atom, ChoiceProvider } from "./types";
 
 // The words below are the ones OpenAI sent for the cases in the names (shortened); the code only ever keeps the fixed fault they map to.
@@ -141,5 +143,91 @@ test("a judge's OpenAI key: its own model setting, and the backup model only whe
     models.length = 0;
     await openaiProvider("project-key", "gpt-6-luna").choose(request).catch(() => {});
     assert.deepEqual(models, ["gpt-6-luna"]);
+  } finally { globalThis.fetch = original; }
+});
+
+// What Anthropic sends for each case in the names (the credit-balance wording is the real one, shortened); only the fixed fault they map to is ever kept.
+const ANTHROPIC_CREDIT = '{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."}}';
+const anthropicRefusals = [
+  [401, '{"type":"error","error":{"type":"authentication_error","message":"invalid x-api-key"}}', "key_rejected"],
+  [403, '{"type":"error","error":{"type":"permission_error","message":"Your API key does not have permission to use the specified resource."}}', "key_rejected"],
+  [400, ANTHROPIC_CREDIT, "quota"],
+  [429, '{"type":"error","error":{"type":"rate_limit_error","message":"Number of request tokens has exceeded your per-minute rate limit"}}', "rate_limit"],
+  [404, '{"type":"error","error":{"type":"not_found_error","message":"model: x"}}', "model_unavailable"],
+  [400, '{"type":"error","error":{"type":"invalid_request_error","message":"messages: text content blocks must be non-empty"}}', "other"],
+  [500, '{"type":"error","error":{"type":"api_error","message":"Internal server error"}}', "other"],
+  [529, '{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"}}', "other"],
+] as const;
+
+test("Anthropic refusals: the status says the fault, a 400 only when it is the credit balance, and anything else is other", () => {
+  for (const [status, body, fault] of anthropicRefusals) assert.equal(classifyAnthropicFault(status, body), fault, `${status}`);
+  assert.equal(classifyAnthropicFault(400, ""), "other");
+  assert.equal(classifyAnthropicFault(200, ANTHROPIC_CREDIT), "other");
+});
+
+test("the Anthropic provider throws the classified ProviderError for each refusal, with none of the provider's words in it, and does not retry what a retry cannot cure", async () => {
+  const original = globalThis.fetch;
+  const request = { system: "s", message: "m", signal: new AbortController().signal };
+  try {
+    // A 429 with a long retry-after is handed back at once; a 500 is retried by fetchRetry (2.5 s of backoff), so its class is checked above and not here.
+    for (const [status, body, fault] of anthropicRefusals.filter(([status]) => status !== 500)) {
+      let calls = 0;
+      globalThis.fetch = async () => { calls++; return new Response(body, { status, headers: status === 429 ? { "retry-after": "60" } : {} }); };
+      await assert.rejects(anthropicProvider("test-only-sentinel-anthropic", "m").choose(request), (error: unknown) => {
+        assert.ok(error instanceof ProviderError);
+        assert.equal(error.fault, fault);
+        assert.equal(error.status, status);
+        assert.equal(error.message, `http_${status}`);
+        assert.equal(error.message.includes("credit"), false);
+        return true;
+      }, `${status}`);
+      assert.equal(calls, 1, `${status}: one call`);
+    }
+  } finally { globalThis.fetch = original; }
+});
+
+test("a judge's Anthropic key that is refused ends the question at the first call: no second try, no extractive fallback", async () => {
+  const original = globalThis.fetch;
+  try {
+    for (const [status, body, fault] of anthropicRefusals.filter(([, , kind]) => kind !== "other")) {
+      let calls = 0;
+      globalThis.fetch = async () => { calls++; return new Response(body, { status, headers: status === 429 ? { "retry-after": "60" } : {} }); };
+      const events: { stage: string; provider: string; outcome: string; fault?: string }[] = [];
+      const result = await answer("question", atoms, undefined, providersFromKey("anthropic", "test-only-sentinel-anthropic", {}),
+        { observe: (event: { stage: string; provider: string; outcome: string; fault?: string }) => events.push(event), log: () => {} });
+      assert.deepEqual(result, { status: "unavailable", atoms: [] }, `${status}`);
+      assert.equal(calls, 1, `${status}: one provider call`);
+      assert.deepEqual(events.filter((event) => event.provider === "anthropic").map(({ fault: why }) => why), [fault]);
+    }
+  } finally { globalThis.fetch = original; }
+});
+
+test("a judge's Anthropic key is composed through a tool_use answer, with the model of its own setting and no effort or thinking parameter", async () => {
+  const original = globalThis.fetch;
+  const bodies: Record<string, unknown>[] = [];
+  globalThis.fetch = async (_url, options) => {
+    bodies.push(JSON.parse(String(options!.body)));
+    return Response.json({ stop_reason: "tool_use", content: [{ type: "text", text: "prose that is never used" },
+      { type: "tool_use", name: "choose_sentences", input: { status: "answer", sentences: [{ kind: "claim", text: "a verified sentence", cites: ["a"] }] } }] });
+  };
+  try {
+    const result = await answer("question", atoms, undefined, providersFromKey("anthropic", "test-only-sentinel-anthropic", { HUDA_ASK_MODEL: "project-model" }),
+      { support: false, log: () => {} });
+    assert.equal(result.status, "answer");
+    assert.equal(result.mode, "composed");
+    assert.deepEqual(result.composed, [{ text: "a verified sentence", atom_ids: ["a"] }]);
+    assert.equal(bodies.length, 1);
+    // HUDA_ASK_MODEL names a model of the project's own chain; a judge's key never takes it.
+    assert.equal(bodies[0].model, DEFAULT_ANTHROPIC_MODEL);
+    assert.deepEqual(Object.keys(bodies[0]).sort(), ["max_tokens", "messages", "model", "system", "tool_choice", "tools"]);
+    bodies.length = 0;
+    await providersFromKey("anthropic", "test-only-sentinel-anthropic", { HUDA_ASK_ANTHROPIC_MODEL: "claude-custom" })[0].choose({ system: "s", message: "m", signal: new AbortController().signal });
+    assert.equal(bodies[0].model, "claude-custom");
+    // The project's own Anthropic provider reads the same variable first, then HUDA_ASK_MODEL, then the default.
+    for (const [env, model] of [[{ HUDA_ASK_ANTHROPIC_MODEL: "claude-custom", HUDA_ASK_MODEL: "other" }, "claude-custom"], [{ HUDA_ASK_MODEL: "other" }, "other"], [{}, DEFAULT_ANTHROPIC_MODEL]] as const) {
+      bodies.length = 0;
+      await providersFromEnv({ HUDA_ASK_PROVIDER: "anthropic", ANTHROPIC_API_KEY: "project-only-anthropic", ...env })[0].choose({ system: "s", message: "m", signal: new AbortController().signal });
+      assert.equal(bodies[0].model, model);
+    }
   } finally { globalThis.fetch = original; }
 });

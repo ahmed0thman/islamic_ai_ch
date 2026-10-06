@@ -4,6 +4,8 @@ import { lexicalScore } from "./normalize.ts";
 // @ts-expect-error -- Node requires source extensions.
 import { fetchRetry } from "./runtime.ts";
 // @ts-expect-error -- Node requires source extensions.
+import { classifyAnthropicFault, ProviderError } from "./fault.ts";
+// @ts-expect-error -- Node requires source extensions.
 import { publicAtom, surahOf } from "./public-atom.ts";
 import type { AskResponse, Atom, ChoiceProvider, HistoryTurn, ReaderContext, SelectionRequest } from "./types";
 
@@ -80,16 +82,22 @@ export async function select(question: string, atoms: Atom[], provider: ChoicePr
   finally { clearTimeout(timer); }
 }
 
-export function anthropicProvider(apiKey: string, model = process.env.HUDA_ASK_MODEL || "claude-sonnet-5-5"): ChoiceProvider {
-  return { name: "anthropic", async choose({ system, message, signal, schema, stage }: SelectionRequest): Promise<unknown> {
-    const response = await fetchRetry("https://api.anthropic.com/v1/messages", {
+export const ANTHROPIC_BASE_URL = "https://api.anthropic.com/v1";
+export const ANTHROPIC_VERSION = "2023-06-01";
+/** The model of the Anthropic provider when nothing names one: the project's own chain and a judge's Anthropic key. */
+export const DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-5-5";
+
+export function anthropicProvider(apiKey: string, model = process.env.HUDA_ASK_MODEL || DEFAULT_ANTHROPIC_MODEL): ChoiceProvider {
+  return { name: "anthropic", async choose({ system, message, signal, schema, stage, deadline }: SelectionRequest): Promise<unknown> {
+    const response = await fetchRetry(`${ANTHROPIC_BASE_URL}/messages`, {
       method: "POST", signal,
-      headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+      headers: { "x-api-key": apiKey, "anthropic-version": ANTHROPIC_VERSION, "content-type": "application/json" },
       body: JSON.stringify({ model, max_tokens: 2048, system, messages: [{ role: "user", content: message }],
         tools: [{ name: "choose_sentences", description: stage && stage !== "select" ? "Return the requested structured JSON" : "Select verified sentences or a fixed abstention status", input_schema: schema || CHOICE_SCHEMA }],
         tool_choice: { type: "tool", name: "choose_sentences" } }),
-    });
-    if (!response.ok) throw new Error("Provider failed");
+    }, 3, deadline);
+    // Only the fixed fault of the refusal leaves here, never the provider's own words.
+    if (!response.ok) throw new ProviderError(response.status, classifyAnthropicFault(response.status, await response.text().catch(() => "")));
     const data = await response.json();
     if (data.stop_reason !== "tool_use" || !Array.isArray(data.content)) throw new Error("Provider refused or returned incomplete output");
     const choices = data.content.filter((block: { type?: string; name?: string }) => block.type === "tool_use");

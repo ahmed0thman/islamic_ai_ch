@@ -143,13 +143,13 @@ test("default chain order is opencode-go, openai, gemini, anthropic; openai is s
   } finally { globalThis.fetch = original; }
 });
 
-test("own-key providers accept exactly the two Ask names and strict printable ASCII lengths", () => {
-  for (const name of ["openai", "gemini"]) {
+test("own-key providers accept exactly the three Ask names and strict printable ASCII lengths", () => {
+  for (const name of ["openai", "gemini", "anthropic"]) {
     for (const key of ["!".repeat(20), "~".repeat(300)]) assert.deepEqual(providersFromKey(name, key, {}).map((provider) => provider.name), [name]);
     for (const key of ["", "x".repeat(19), "x".repeat(301), "x".repeat(20) + " ", "x".repeat(20) + "\n",
       "x".repeat(20) + "\t", "x".repeat(20) + "\x00", "x".repeat(20) + "\x7f", "x".repeat(20) + "\u00e9"]) assert.deepEqual(providersFromKey(name, key, {}), []);
   }
-  for (const name of ["", "opencode-go", "anthropic", "groq", "lexical", "OpenAI", "openai,gemini", " openai"]) assert.deepEqual(providersFromKey(name, "x".repeat(20), {}), []);
+  for (const name of ["", "opencode-go", "groq", "lexical", "OpenAI", "openai,gemini", " openai"]) assert.deepEqual(providersFromKey(name, "x".repeat(20), {}), []);
 });
 
 test("own-key factories use their default models, supplied credentials and the configured reasoning effort", async () => {
@@ -186,7 +186,7 @@ test("own-key factories use their default models, supplied credentials and the c
 test("request headers opt into the own-key provider only, even with project keys configured; incomplete pairs and other providers fail closed", () => {
   const env = { OPENCODE_GO_API_KEY: "project-only-go", OPENAI_API_KEY: "project-only-openai", GEMINI_API_KEY: "project-only-gemini" };
   assert.deepEqual(providersForRequest(new Headers(), env).providers.map((provider) => provider.name), ["opencode-go", "openai", "gemini"]);
-  for (const provider of ["openai", "gemini"]) {
+  for (const provider of ["openai", "gemini", "anthropic"]) {
     const headers = new Headers({ "x-huda-provider": provider, "x-huda-key": "test-only-sentinel-header" });
     assert.deepEqual(providersForRequest(headers, env).providers.map((item) => item.name), [provider]);
     assert.deepEqual(providersForRequest(headers, {}).providers.map((item) => item.name), [provider]);
@@ -194,7 +194,7 @@ test("request headers opt into the own-key provider only, even with project keys
   }
   for (const headers of [new Headers({ "x-huda-provider": "openai" }), new Headers({ "x-huda-key": "test-only-sentinel-header" }),
     new Headers({ "x-huda-provider": "unknown", "x-huda-key": "test-only-sentinel-header" }), new Headers({ "x-huda-provider": "openai", "x-huda-key": "short" }),
-    ...["groq", "opencode-go", "anthropic"].map((provider) => new Headers({ "x-huda-provider": provider, "x-huda-key": "test-only-sentinel-header" }))]) {
+    ...["groq", "opencode-go"].map((provider) => new Headers({ "x-huda-provider": provider, "x-huda-key": "test-only-sentinel-header" }))]) {
     const result = providersForRequest(headers, env);
     assert.equal(result.ownKey, true);
     assert.deepEqual(result.providers, []);
@@ -435,7 +435,7 @@ test("key-check gates and limits requests; valid checks make one minimal choice 
     const limited = await routeFixture("key-check", { HUDA_ASK: "1" }, false);
     assert.equal((await limited.POST(send(key))).status, 429);
     const fixture = await routeFixture("key-check", { HUDA_ASK: "1", OPENAI_API_KEY: "project-only-openai" });
-    for (const removed of ["unknown", "opencode-go", "anthropic"]) {
+    for (const removed of ["unknown", "opencode-go"]) {
       assert.deepEqual(await (await fixture.POST(send(key, removed))).json(), { ok: false, reason: "unsupported" });
     }
     assert.deepEqual(await (await fixture.POST(send("short"))).json(), { ok: false, reason: "rejected" });
@@ -528,7 +528,7 @@ test("Gemini fallback model comes from the environment: default, override, empty
   } finally { globalThis.fetch = original; }
 });
 
-test("Ask accepts a judge's Google key alone; any other provider with a key is unavailable, with no project fallback and no provider call", async () => {
+test("Ask accepts a judge's Google key; any provider that is not an Ask provider is unavailable, with no project fallback and no provider call", async () => {
   const original = globalThis.fetch;
   const seen: string[] = [];
   globalThis.fetch = async (url, options) => {
@@ -545,7 +545,7 @@ test("Ask accepts a judge's Google key alone; any other provider with a key is u
     assert.equal(JSON.parse(fixture.logs[0]).provider, "gemini");
     seen.length = 0;
     globalThis.fetch = async () => { assert.fail("No provider may be called"); };
-    for (const provider of ["groq", "opencode-go", "anthropic", "lexical", "unknown"]) {
+    for (const provider of ["groq", "opencode-go", "lexical", "unknown"]) {
       const response = await post(provider);
       // A judge's key the app has no use for is told as a rejected key, not as a fault of the service.
       assert.deepEqual(await response.json(), { status: "unavailable", atoms: [], reason: "key_rejected" });
@@ -632,5 +632,89 @@ test("transcribe route: a judge's Groq key is used alone at Groq; a failure neve
       assert.equal(rejected.response.status, 400);
       assert.deepEqual(JSON.parse(rejected.text), { status: "error" });
     }
+  } finally { globalThis.fetch = original; }
+});
+
+test("Ask accepts a judge's Anthropic key: the call goes to Anthropic alone with that key, and a refusal never falls back to the project's keys or leaks the key", async () => {
+  const key = "test-only-sentinel-anthropic-ask";
+  const original = globalThis.fetch;
+  const env = { HUDA_ASK: "1", HUDA_ASK_MODEL: "project-model", OPENCODE_GO_API_KEY: "project-only-go", OPENAI_API_KEY: "project-only-openai", GEMINI_API_KEY: "project-only-gemini", ANTHROPIC_API_KEY: "project-only-anthropic" };
+  const calls: { url: string; key: string | null; model: string }[] = [];
+  let reply: () => Response = () => Response.json({ stop_reason: "tool_use", content: [{ type: "tool_use", name: "choose_sentences", input: { status: "insufficient", sentences: [] } }] });
+  globalThis.fetch = async (url, options) => {
+    calls.push({ url: String(url), key: new Headers(options!.headers).get("x-api-key"), model: JSON.parse(String(options!.body)).model });
+    return reply();
+  };
+  try {
+    const fixture = await routeFixture("ask", env);
+    const post = () => fixture.POST(new Request("https://reader.invalid/api/ask", { method: "POST",
+      headers: { "x-huda-provider": "anthropic", "x-huda-key": key }, body: JSON.stringify({ surah: 108, question: fixture.question }) }));
+    assert.equal((await (await post()).json()).status, "insufficient");
+    assert.deepEqual(calls, [{ url: "https://api.anthropic.com/v1/messages", key, model: "claude-sonnet-5-5" }]);
+    assert.deepEqual({ own_key: JSON.parse(fixture.logs[0]).own_key, provider: JSON.parse(fixture.logs[0]).provider }, { own_key: true, provider: "anthropic" });
+    // No credit: one call, the reason is told, and no other provider is tried with the project's keys.
+    calls.length = 0;
+    fixture.logs.length = 0;
+    reply = () => new Response('{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API."}}', { status: 400 });
+    const refused = await post();
+    const text = await refused.text();
+    assert.deepEqual(JSON.parse(text), { status: "unavailable", atoms: [], reason: "quota" });
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].key, key);
+    assert.equal(text.includes(key) || fixture.logs.join("").includes(key) || fixture.logs.join("").includes("credit balance"), false);
+    for (const [status, reason] of [[401, "key_rejected"], [403, "key_rejected"], [404, "model_unavailable"]] as const) {
+      calls.length = 0;
+      reply = () => new Response("{}", { status });
+      assert.deepEqual(await (await post()).json(), { status: "unavailable", atoms: [], reason });
+      assert.equal(calls.length, 1, `${status}: one call`);
+    }
+    calls.length = 0;
+    reply = () => new Response("{}", { status: 429, headers: { "retry-after": "60" } });
+    assert.deepEqual(await (await post()).json(), { status: "unavailable", atoms: [], reason: "rate_limit" });
+    assert.equal(calls.length, 1);
+    // The judge's model has its own setting.
+    calls.length = 0;
+    reply = () => Response.json({ stop_reason: "tool_use", content: [{ type: "tool_use", name: "choose_sentences", input: { status: "insufficient", sentences: [] } }] });
+    const custom = await routeFixture("ask", { ...env, HUDA_ASK_ANTHROPIC_MODEL: "claude-custom" });
+    await custom.POST(new Request("https://reader.invalid/api/ask", { method: "POST",
+      headers: { "x-huda-provider": "anthropic", "x-huda-key": key }, body: JSON.stringify({ surah: 108, question: custom.question }) }));
+    assert.equal(calls[0].model, "claude-custom");
+  } finally { globalThis.fetch = original; }
+});
+
+test("key-check for anthropic: one authenticated model listing, the key only in its headers, sanitized failures", async () => {
+  const key = "test-only-sentinel-anthropic-list";
+  const original = globalThis.fetch;
+  const calls: { url: string; headers: Headers }[] = [];
+  let status = 200;
+  globalThis.fetch = async (url, options) => {
+    calls.push({ url: String(url), headers: new Headers(options!.headers) });
+    return new Response(key, { status });
+  };
+  const send = (value = key) => new Request("https://reader.invalid/api/key-check", { method: "POST", body: JSON.stringify({ provider: "anthropic", key: value }) });
+  try {
+    const fixture = await routeFixture("key-check", { HUDA_ASK: "1", ANTHROPIC_API_KEY: "project-only-anthropic" });
+    assert.deepEqual(await (await fixture.POST(send())).json(), { ok: true });
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].url, "https://api.anthropic.com/v1/models");
+    assert.equal(calls[0].headers.get("x-api-key"), key);
+    assert.equal(calls[0].headers.get("anthropic-version"), "2023-06-01");
+    status = 401;
+    const response = await fixture.POST(send());
+    const text = await response.text();
+    assert.deepEqual(JSON.parse(text), { ok: false, reason: "rejected" });
+    assert.equal(text.includes(key), false);
+    assert.equal(response.headers.get("Cache-Control"), "no-store");
+    calls.length = 0;
+    assert.deepEqual(await (await fixture.POST(send("short"))).json(), { ok: false, reason: "rejected" });
+    assert.equal(calls.length, 0);
+    globalThis.fetch = async () => { throw new Error(key); };
+    assert.deepEqual(await (await fixture.POST(send())).json(), { ok: false, reason: "rejected" });
+    const timed = await routeFixture("key-check", { HUDA_ASK: "1" }, true, 5);
+    globalThis.fetch = async (_url, options) => new Promise((_resolve, reject) => {
+      options!.signal!.addEventListener("abort", () => reject(new Error(key)), { once: true });
+    });
+    assert.deepEqual(await (await timed.POST(send())).json(), { ok: false, reason: "timeout" });
+    assert.equal(fixture.logs.join("").includes(key), false);
   } finally { globalThis.fetch = original; }
 });

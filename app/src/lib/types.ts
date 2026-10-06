@@ -98,8 +98,8 @@ export interface Ui {
   settings: Record<"title" | "open" | "appearance" | "model" | "account" | "back" | "key_needed" | "open_from_ask", string>;
   wide: Record<"skip" | "toc" | "purpose" | "ayah_one" | "ayah_few" | "tab_passage" | "tab_source" | "tab_term" | "tab_ask" | "tab_weave" | "passage_sources" | "all_sources" | "source_hint" | "term_hint" | "weave_empty" | "shortcuts" | "theme" | "theme_light" | "theme_dark" | "theme_system" | "account" | "panel_hide" | "panel_show" | "expand_all" | "collapse_all" | "load_failed", string> & Partial<Record<"reading_region" | "context_region", string>>;
   judge_key: Record<"open" | "title" | "intro" | "provider" | "key" | "test" | "save" | "clear" | "checking" | "ok" | "bad" | "using" | "in_use" | "use_this" | "empty" | "clear_all", string> & {
-    providers: Record<"openai" | "gemini" | "groq", string>;
-    hints: Record<"openai" | "gemini" | "groq", string>;
+    providers: Record<"openai" | "gemini" | "anthropic" | "groq", string>;
+    hints: Record<"openai" | "gemini" | "anthropic" | "groq", string>;
   };
   panel: Record<"title" | "claim" | "source" | "author" | "locator" | "quote" | "ruling" | "ruler" | "open_source" | "close" | "no_badge" | "takhrij" | "for_text" | "sources_count", string> & { science_of: string };
   legend: Record<"title" | "icons_title" | "badges_title" | "show" | "hide", string>;

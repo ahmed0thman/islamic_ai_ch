@@ -13,20 +13,20 @@
 «اسأل» يحتاج مفتاح نموذج. **مفتاح المشروع على حصص مجانية محدودة وقد لا يجيب، فأدخل مفتاحك أنت.**
 
 1. **افتح الإعدادات.** في الجوال: زر «افتح القائمة» أعلى الصفحة، ثم «الإعدادات» في أسفل القائمة. وفي الشاشة العريضة: أيقونة الترس («الإعدادات») في الشريط العلوي. (ولا يظهر القسم في صفحة «عن هُدًى»، بل داخل القراءة، مثل `/s/93/`.)
-2. في قسم **«النموذج»** ثلاث خانات بهذا الترتيب: **«أوبن إيه آي»**، ثم **«Google»**، ثم **«Groq»**. ألصق مفتاحك في خانة مزوّدك وحدها:
-   - **«أوبن إيه آي» أو «Google» (Gemini):** لجواب «اسأل». ويكفي واحد منهما.
+2. في قسم **«النموذج»** أربع خانات بهذا الترتيب: **«أوبن إيه آي»**، ثم **«Google»**، ثم **«Anthropic»**، ثم **«Groq»**. ألصق مفتاحك في خانة مزوّدك وحدها:
+   - **«أوبن إيه آي» أو «Google» (Gemini) أو «Anthropic» (Claude):** لجواب «اسأل». ويكفي واحد منها. المجرَّب على الرابط المنشور بجواب حقيقي هو مفتاح Google؛ ومسارا «أوبن إيه آي» و«Anthropic» لم يُجرَّبا بحساب فيه رصيد.
    - **«Groq»:** للسؤال بالصوت وحده: يحوّل كلامك إلى نص، ولا يُستعمل في الجواب.
 3. تحت كل خانة ثلاثة أزرار بهذا الترتيب: **«جرّب المفتاح»** (اختياري: يفحص أن المفتاح يعمل)، ثم **«استعمله»** (يحفظه في هذه الصفحة)، ثم **«امسحه»**. ثم يظهر تحت الخانة المحفوظة ما يلي:
-   - في «أوبن إيه آي» و«Google»: أول مفتاح تحفظه يصير هو المستعمل («يُستعمل الآن»). فإن حفظت المفتاحين فاضغط **«استعمل هذا المفتاح»** تحت الذي تريده.
+   - في «أوبن إيه آي» و«Google» و«Anthropic»: أول مفتاح تحفظه يصير هو المستعمل («يُستعمل الآن»). فإن حفظت أكثر من مفتاح فاضغط **«استعمل هذا المفتاح»** تحت الذي تريده.
    - في «Groq»: لا زر اختيار؛ يكتب «يُستعمل الآن» ويُستعمل للسؤال بالصوت وحده.
-4. «امسح كل المفاتيح» (آخر الأزرار في القسم) يمسح الثلاثة.
+4. «امسح كل المفاتيح» (آخر الأزرار في القسم) يمسح الأربعة.
 
 **ما يحدث للمفتاح** (من `app/src/lib/own-key.ts` ومسارات `app/src/app/api/`):
 
 - يبقى في `sessionStorage` لتبويب هذه الصفحة، ويُمسح حين تغلقها.
 - يُرسل مع الطلب في ترويستين: `x-huda-provider` و`x-huda-key`، ويُستعمل في ذلك النداء وحده.
 - لا يُخزَّن في الخادم، ولا يُسجَّل: سجل الخادم يحمل علامة أن السؤال بمفتاح المحكّم واسم المزوّد، لا المفتاح. و«جرّب المفتاح» يرسله إلى مزوّده وحده. و«امسحه» يزيله.
-- إن فشل مفتاحك لا يُستعمل مفتاح المشروع بدله: يظهر أن الجواب غير متاح.
+- إن فشل مفتاحك لا يُستعمل مفتاح المشروع بدله: تظهر رسالة تذكر السبب (حد الطلبات، أو الرصيد، أو رفض المفتاح، أو النموذج).
 
 **باقي التطبيق** (القراءة، والدرجات الأربع، وعلامات المصادر، والمصطلحات) **يعمل بلا أي مفتاح.**
 
@@ -127,6 +127,6 @@ python3 tools/check_safety_cases.py
 
 ---
 
-**In English (short).** Huda ("guidance") is an Arabic reader that explains a Quran surah to a non-specialist at four depths; every claim carries a named source, and the AI weaves text from verified records without writing verses, inventing meanings, grading narrations or issuing fatwas. Live: https://hudan.ahmedothman.online. **Judges: the project's model key may be out of quota, so enter your own key** (menu, Settings, "Model" section: the OpenAI or Google field for "Ask", the Groq field for voice transcription only; on a wide screen, the gear icon in the top bar). The key stays in `sessionStorage`, is sent in two headers, is never stored or logged, and the project's key is never used in its place. Reading works without any key. Nothing has been reviewed by a specialist yet.
+**In English (short).** Huda ("guidance") is an Arabic reader that explains a Quran surah to a non-specialist at four depths; every claim carries a named source, and the AI weaves text from verified records without writing verses, inventing meanings, grading narrations or issuing fatwas. Live: https://hudan.ahmedothman.online. **Judges: the project's model key may be out of quota, so enter your own key** (menu, Settings, "Model" section: the OpenAI, Google or Anthropic field for "Ask", the Groq field for voice transcription only; on a wide screen, the gear icon in the top bar). The key stays in `sessionStorage`, is sent in two headers, is never stored or logged, and the project's key is never used in its place. Reading works without any key. Nothing has been reviewed by a specialist yet.
 
 </div>

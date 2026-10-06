@@ -1,5 +1,5 @@
-/** The one place that says which keys a judge may enter and what each is for. */
-export const OWN_KEY_PURPOSES = { openai: "ask", gemini: "ask", groq: "transcribe" } as const;
+/** The one place that says which keys a judge may enter and what each is for; the key sheet lists them in this order. */
+export const OWN_KEY_PURPOSES = { openai: "ask", gemini: "ask", anthropic: "ask", groq: "transcribe" } as const;
 export type OwnKeyProvider = keyof typeof OWN_KEY_PURPOSES;
 export type OwnKeyPurpose = typeof OWN_KEY_PURPOSES[OwnKeyProvider];
 export type AskKeyProvider = { [P in OwnKeyProvider]: typeof OWN_KEY_PURPOSES[P] extends "ask" ? P : never }[OwnKeyProvider];

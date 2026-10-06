@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 // @ts-expect-error -- Node tests require explicit source extensions.
-import { anthropicProvider, CHOICE_SCHEMA } from "./select.ts";
+import { anthropicProvider, CHOICE_SCHEMA, DEFAULT_ANTHROPIC_MODEL } from "./select.ts";
 // @ts-expect-error -- Node tests require explicit source extensions.
 import { lexicalScore } from "./normalize.ts";
 // @ts-expect-error -- Node requires source extensions.
@@ -177,6 +177,8 @@ export function providersFromKey(provider: string, key: string, env: Readonly<Re
   }
   // The judge's Google key calls the same model as the project's, with the same fallback model; HUDA_ASK_MODEL names the OpenAI model, so Google has its own override.
   if (provider === "gemini") return [geminiProvider(key, env.HUDA_ASK_GEMINI_MODEL || DEFAULT_GEMINI_MODEL, geminiFallbackModel(env))];
+  // Likewise for a judge's Anthropic key: its model has its own setting, never HUDA_ASK_MODEL, and the request carries no effort or thinking parameter.
+  if (provider === "anthropic") return [anthropicProvider(key, env.HUDA_ASK_ANTHROPIC_MODEL || DEFAULT_ANTHROPIC_MODEL)];
   return [];
 }
 
@@ -199,7 +201,7 @@ export function providersFromEnv(env: Readonly<Record<string, string | undefined
     if (name === "openai" && env.OPENAI_API_KEY) return [openaiProvider(env.OPENAI_API_KEY, env.HUDA_ASK_MODEL || "gpt-6-luna", effort)];
     if (name === "groq" && env.GROQ_API_KEY) return [{ ...openaiCompatibleProvider({ baseUrl: GROQ_BASE_URL, apiKey: env.GROQ_API_KEY, model: env.HUDA_ASK_GROQ_MODEL || "openai/gpt-oss-120b" }), name: "groq" }];
     if (name === "gemini" && env.GEMINI_API_KEY) return [geminiProvider(env.GEMINI_API_KEY, env.HUDA_ASK_MODEL || DEFAULT_GEMINI_MODEL, geminiFallbackModel(env))];
-    if (name === "anthropic" && env.ANTHROPIC_API_KEY) return [anthropicProvider(env.ANTHROPIC_API_KEY, env.HUDA_ASK_MODEL || "claude-sonnet-5-5")];
+    if (name === "anthropic" && env.ANTHROPIC_API_KEY) return [anthropicProvider(env.ANTHROPIC_API_KEY, env.HUDA_ASK_ANTHROPIC_MODEL || env.HUDA_ASK_MODEL || DEFAULT_ANTHROPIC_MODEL)];
     if (name === "lexical" && env.NODE_ENV !== "production") return [lexicalProvider()];
     return [];
   });
