@@ -30,6 +30,7 @@ Written in English because it is a brief for Codex. The owner is Ahmed Hisham. T
 ## 3. What is in the working tree that is not yours or mine
 
 - `content/ui.ar.json` is **staged** with a one-word change in the landing page («تمشي» → «تتدرّج») made at 21:40, and `app/.env.example` is modified. No agent of the Claude session did this; most likely the owner. Ask him before committing or discarding either.
+- At 21:52 four more code files showed uncommitted edits that no agent of the Claude session made: `app/src/app/s/[no]/page.tsx`, `app/src/lib/ask/gather.ts`, `app/src/lib/ask/providers.ts`, `app/src/lib/rag/db.ts`. Someone else is editing the code at the same time. Do not overwrite, stage or discard them; ask the owner whose they are.
 - Three local commits are not pushed (docs only): `ca0c68b`, `cd64552`, `74a1eb4`, plus the commit that adds this file.
 - Untracked leftovers to leave alone: `.github/`, `presentation/export/*.png` and two `preview-*` folders, `presentation/setup/build_deck.py`, `docs/08-open/cloud-reports/s-13-plain-111.md`, `.playwright-mcp/`.
 
