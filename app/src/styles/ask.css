@@ -710,6 +710,7 @@
 }
 
 /* A book excerpt the assistant retrieved: its words verbatim, and the title of the book under them. A caption names the surah of a sentence that is not the open one. */
+.ask-report-note { margin-block: 0 var(--space-xs); color: var(--ink-3); font-size: var(--text-label); line-height: var(--leading-ui); }
 .ask-source-title,
 .ask-from-surah {
   margin-block: 0 var(--space-sm);

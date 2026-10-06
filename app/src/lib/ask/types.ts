@@ -16,6 +16,8 @@ export interface Atom extends PublicAtom {
   text: string;
   /** All source locations, including duplicates retained under the original lowest-depth ID. */
   locations?: { depth: Depth; stops: number[] }[];
+  /** A narration whose record carries no accepted ruling (decision 058): shown word for word with its marker, never reworded or built on. Server only. */
+  suspended?: boolean;
 }
 export interface ReaderContext {
   depth: Depth;
@@ -36,7 +38,8 @@ export interface HistoryTurn { question: string; answer: string; atom_ids: strin
 /** What the client needs to draw verified sentences of surahs other than the open one: their records and the ayahs they show. */
 export interface AskExtra { records: Record<string, SourceRecord>; ayahs: Ayah[] }
 /** `sources`: the server weaves from book passages (so the note under the composer says so). */
-export interface AskResponse { status: ChoiceStatus | "unavailable"; mode?: "composed" | "extractive"; composed?: ComposedItem[]; atoms: PublicAtom[]; sources?: boolean; extra?: AskExtra }
+/** `no_question`: the message only follows up on an earlier question ("search again", "explain more") and the conversation holds none. */
+export interface AskResponse { status: ChoiceStatus | "unavailable" | "no_question"; mode?: "composed" | "extractive"; composed?: ComposedItem[]; atoms: PublicAtom[]; sources?: boolean; extra?: AskExtra }
 /** One illustration for the writer: a verified sentence and the quote of its first record. Never material, never citable. */
 export interface ExamplePair { source_quote: string; verified_sentence: string }
 export type AskUi = Ui & { ask: Record<"title" | "placeholder" | "submit" | "loading" | "answer_title" | "note" | "unavailable", string> };

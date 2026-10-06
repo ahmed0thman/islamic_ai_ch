@@ -1,0 +1,17 @@
+.sections { display: grid; gap: var(--space-lg); color: var(--ink); font-family: var(--font-ui); font-size: var(--text-ui); line-height: var(--leading-ui); }
+.sections section { min-inline-size: 0; scroll-margin-block-start: var(--space-md); }
+.sections h3 { padding-block: var(--space-md) var(--space-sm); font-weight: 700; }
+.sections :global(.theme-choice-row) { padding-inline: 0; flex-wrap: wrap; }
+.sections :global(.menu-account) { padding-inline: 0; }
+.sections :is(button, select, input), .hint button { min-block-size: 44px; min-inline-size: 44px; }
+.sections :focus-visible, .hint button:focus-visible { outline: var(--space-xs) solid var(--accent); outline-offset: var(--space-xs); }
+.hint { color: var(--ink-2); font-family: var(--font-ui); font-size: var(--text-ui); line-height: var(--leading-ui); }
+.hint button { padding: var(--space-xs) var(--space-sm); color: var(--accent); background: transparent; border: 0; font: inherit; text-decoration: underline; cursor: pointer; }
+.hint button:hover { background: var(--surface-2); }
+:global(.huda-sheet-content[data-variant="settings"]) { inset: 0; block-size: 100dvh; max-block-size: none; max-inline-size: none; margin: 0; border: 0; border-radius: 0; }
+:global(.huda-sheet-content[data-variant="settings"] .sheet-grabber) { display: none; }
+:global(.huda-sheet-content[data-variant="settings"] .huda-sheet-header) { padding-block-start: calc(var(--space-md) + env(safe-area-inset-top)); border-block-end: 1px solid var(--line); }
+:global(.huda-sheet-content[data-variant="settings"] .huda-sheet-scroll) { flex: 1; }
+@media (min-width: 1024px) {
+  .sections :is(button, select, input), .hint button { min-block-size: 32px; min-inline-size: 32px; }
+}

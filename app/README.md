@@ -57,6 +57,17 @@ build. No analytics and no external client font requests. The reader page fetche
 content (only the optional server-mode "ask" calls model providers and a database).
 Source links open only when requested by the reader.
 
+Sign-in (Clerk) is optional and protects nothing; every route stays public. It
+exists only in a server build (`HUDA_ASK=1` or `HUDA_WEAVE=1`) that also has
+`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`: `next.config.ts` then sets
+`NEXT_PUBLIC_HUDA_AUTH`, which turns on the provider, `src/proxy.ts`, the
+`/sign-in` and `/sign-up` pages and the controls in `src/components/account/`.
+The static export bundles no Clerk code. Local keys are in `.env.local`
+(`npx clerk init`); try it with `HUDA_ASK=1 pnpm dev`. Clerk's screens are in
+Arabic (`@clerk/localizations`, with our wording in the `clerk` section of
+`content/ui.ar.json`) and take the app's tokens from
+`src/components/account/clerk.css`.
+
 All design tokens are at the top of `src/app/globals.css`, including a dark theme
 via `prefers-color-scheme`. Source icons keep their supplied shape and color;
 dark mode lifts the colors for legibility. Components under `src/components/ui/` come

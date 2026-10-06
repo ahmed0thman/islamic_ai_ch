@@ -6,7 +6,7 @@ import type { ClosingPart } from "@/lib/closing";
 import type { ParagraphBlock, SurahSummary } from "@/lib/types";
 import type { TermsSummary as Summary } from "@/lib/terms-summary";
 import { numeral } from "@/lib/numerals";
-import { DialogTitle } from "@/components/ui/dialog";
+import { SceneTitle as DialogTitle } from "@/components/wide/wide-scene";
 import type { ReadingProps } from "./reading-context";
 import { ParagraphView } from "./paragraph-view";
 import { TermsSummary } from "./terms-summary";

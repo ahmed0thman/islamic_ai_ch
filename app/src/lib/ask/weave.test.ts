@@ -4,9 +4,9 @@ import test from "node:test";
 // @ts-expect-error -- Node requires source extensions.
 import { answer } from "./answer.ts";
 // @ts-expect-error -- Node requires source extensions.
-import { deriveAtoms } from "./atoms.ts";
+import { deriveAtoms, suspendedNarration } from "./atoms.ts";
 // @ts-expect-error -- Node requires source extensions.
-import { gatherAtoms, sourcesEnabled } from "./gather.ts";
+import { gatherAtoms, markSuspended, sourcesEnabled } from "./gather.ts";
 // @ts-expect-error -- Node requires source extensions.
 import { sourceAtoms } from "./source-atoms.ts";
 // @ts-expect-error -- Node requires source extensions.
@@ -93,7 +93,9 @@ test("(c) without DATABASE_URL the five fixtures give exactly today's atoms and 
     const provider = (value: unknown) => mock(() => value);
     for (const fixture of fixtures) {
       const gathered = await gatherAtoms({ question: fixture.question, surah: 93, depth: fixture.depth }, load);
-      assert.deepEqual(gathered.atoms, today);
+      // The same sentences, in the same order; the only addition is the server-side mark on narrations that may not be built on.
+      assert.deepEqual(gathered.atoms.map(({ suspended: _mark, ...atom }: Atom) => atom), today);
+      assert.deepEqual(gathered.atoms.filter((atom: Atom) => atom.suspended).map((atom: Atom) => atom.id), today.filter((atom) => suspendedNarration(atom, surah93.records)).map((atom) => atom.id));
       assert.equal(gathered.sources, false);
       assert.equal(gathered.event.provider, "fallback");
       assert.deepEqual(gathered.examples, []);
@@ -101,6 +103,27 @@ test("(c) without DATABASE_URL the five fixtures give exactly today's atoms and 
       assert.deepEqual(await answer(fixture.question, gathered.atoms, undefined, provider(value), quiet), await answer(fixture.question, today, undefined, provider(value), quiet));
     }
   } finally { if (saved !== undefined) process.env.DATABASE_URL = saved; }
+});
+
+test("narrations that may not be built on are marked from their records: no accepted ruling, ruled not established, no record, or records that cannot be read", async () => {
+  const narration = (id: string, records: string[]): Atom => ({ id, level: 3, role: "transmission", records, segments: [], text: "x" });
+  const records = { ok: { badge: "thabit" }, none: { badge: null }, not: { badge: "la_yathbut" } };
+  assert.equal(suspendedNarration(narration("108:a", ["ok"]), records), false);
+  assert.equal(suspendedNarration(narration("108:a", ["ok", "none"]), records), true);
+  assert.equal(suspendedNarration(narration("108:a", ["not"]), records), true);
+  assert.equal(suspendedNarration(narration("108:a", ["missing"]), records), true);
+  assert.equal(suspendedNarration(narration("108:a", []), records), true);
+  assert.equal(suspendedNarration({ role: "claim", records: ["none"] }, records), false, "a scholar's sentence is not a narration");
+  // The real records: the report of al-Suddi in Ibn Kathir (108-r36) carries no ruling; the hadith of Anas about the river (108-r26) is established.
+  const real = verified.filter((atom) => atom.role === "transmission");
+  const marked = await markSuspended(verified, load);
+  assert.equal(marked.length, verified.length);
+  assert.equal(marked.find((atom: Atom) => atom.records.includes("108-r36"))?.suspended, true);
+  assert.equal(marked.find((atom: Atom) => atom.records.includes("108-r26") && atom.role === "transmission")?.suspended, undefined);
+  assert.ok(marked.every((atom: Atom) => atom.role === "transmission" || atom.suspended === undefined));
+  assert.ok(real.length > 0 && marked.filter((atom: Atom) => atom.suspended).length > 0);
+  const unreadable = await markSuspended(real, async () => { throw new Error("no file"); });
+  assert.ok(unreadable.every((atom: Atom) => atom.suspended === true), "fails closed");
 });
 
 test("(d) HUDA_ASK_SOURCES=0 turns book weaving off; it is on only with a database", async () => {

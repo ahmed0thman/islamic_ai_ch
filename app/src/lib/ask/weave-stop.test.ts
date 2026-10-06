@@ -105,7 +105,8 @@ test("disabling extractive fallback avoids both cited-verbatim and selection whi
     } };
     assert.equal((await answer("q", atoms, undefined, provider, quiet)).mode, "extractive");
     calls.length = 0;
-    assert.deepEqual(await answer("q", atoms, undefined, provider, { ...quiet, extractiveFallback: false }), { status: "insufficient", atoms: [] });
+    // A writer that failed is unavailable; a writer whose sentences did not stand is insufficient.
+    assert.deepEqual(await answer("q", atoms, undefined, provider, { ...quiet, extractiveFallback: false }), { status: fail ? "unavailable" : "insufficient", atoms: [] });
     assert.ok(!calls.includes("select"));
   }
 });

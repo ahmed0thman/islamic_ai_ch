@@ -3,6 +3,9 @@
 @import "../styles/reader.css";
 @import "../styles/ask.css";
 @import "../styles/menu.css";
+@import "@clerk/ui/themes/shadcn.css";
+@import "../styles/reader-theme.css";
+@import "../styles/wide.css";
 
 * { box-sizing: border-box; }
 html { font-size: 16px; background: var(--paper); scroll-padding-bottom: calc(var(--legend-occupied-height, var(--legend-height)) + var(--space-xl)); }
@@ -12,6 +15,7 @@ button, a, label { -webkit-tap-highlight-color: transparent; }
 button { cursor: pointer; }
 button, a { touch-action: manipulation; }
 a { color: inherit; text-decoration: none; }
+a.huda-button.bg-accent { color: var(--on-accent); }
 button { color: inherit; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 ::selection { color: var(--text); background: var(--accent-soft); }

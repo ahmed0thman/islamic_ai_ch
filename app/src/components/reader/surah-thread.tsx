@@ -14,15 +14,17 @@ import { PassageBar } from "./passage-bar";
 import { PassageOverview } from "./passage-overview";
 import { StationDoors } from "./station-doors";
 import { ContinuousView } from "./continuous-view";
+import { useWideSurface } from "@/components/wide/wide-surface";
 
 export type SurahThreadProps = { map: SurahMapModel; ui: Ui; visited: ReadonlySet<number>; scope: Scope; currentStop: number | null; hidden?: boolean; items?: DepthItemsModel; onOpen: (stop: SceneUnit) => void; onScope: (scope: Scope) => void; onAyah?: (key: string) => void; animate?: boolean };
 export function SurahThread({ map, ui, visited, scope, currentStop, hidden = false, items, onOpen, onScope, onAyah }: SurahThreadProps) {
+  const wide = useWideSurface()?.wide;
   const reading = useReading();
   const passages = map.groups.flatMap((group) => group.passage ? [group.passage] : []);
   const hasItems = Boolean(items?.units.length);
   // A short surah shows its passages in the thread itself. A long one opens on the outline alone until a unit is chosen.
   const long = passages.length > 0 && isLongSurah(map.groups.reduce((sum, group) => sum + group.stations.length, 0));
-  const outlineOnly = long && scope.kind === "surah";
+  const outlineOnly = long && scope.kind === "surah" && !wide;
   const pins: Record<string, SceneUnit[]> = {};
   for (const pin of items?.pins ?? []) (pins[pin.stationKey] ??= []).push(pin);
   useEffect(() => {
@@ -30,7 +32,7 @@ export function SurahThread({ map, ui, visited, scope, currentStop, hidden = fal
     const button = Array.from(document.querySelectorAll<HTMLButtonElement>(".surah-thread .stop-door")).find((element) => element.dataset.stop === String(currentStop));
     button?.focus({ preventScroll: true });
   }, [hidden, currentStop]);
-  function pickPassage(id: string) { onScope({ kind: "passage", id }); const passage = passages.find((item) => item.id === id); if (passage) jumpToAyah(passage.from); }
+  function pickPassage(id: string) { onScope({ kind: "passage", id }); const passage = passages.find((item) => item.id === id); if (passage && !wide) jumpToAyah(passage.from); }
   function node(station: MapStation) {
     return <AyahNode key={station.ayah.key} station={station} scope={scope} dimmed={!scopeContains(station.ayah.key, scope, passages)} ui={ui} visited={visited} onOpen={onOpen} onScope={() => { if (onAyah) onAyah(station.ayah.key); else onScope({ kind: "ayah", key: station.ayah.key }); }}>{hasItems ? <StationDoors stops={pins[station.ayah.key] ?? []} visited={visited} ui={ui} onOpen={onOpen} /> : undefined}</AyahNode>;
   }

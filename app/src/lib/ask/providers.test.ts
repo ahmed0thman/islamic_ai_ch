@@ -10,6 +10,8 @@ import { buildPrompt, CHOICE_SCHEMA, select } from "./select.ts";
 import { answer } from "./answer.ts";
 // @ts-expect-error -- Node requires source extensions.
 import { requestAllowed, responseFor, runStage } from "./runtime.ts";
+// @ts-expect-error -- Node requires source extensions.
+import { carriedQuestion } from "./history.ts";
 import type { Atom } from "./types";
 const atoms: Atom[] = ["alpha beta", "beta gamma", "alpha beta gamma", "unrelated"].map((text, i) => ({
   id: String(i), level: 0, role: "claim", text, records: [], segments: [],
@@ -196,6 +198,7 @@ async function routeFixture(name: "ask" | "weave" | "key-check", env: Record<str
   const ui = JSON.parse(await readFile(new URL("../../content/ui.ar.json", import.meta.url), "utf8"));
   const source = await readFile(new URL(`../../app/api/${name}/route.ts`, import.meta.url), "utf8");
   const logs: string[] = [];
+  const searches: { question: string; wide?: boolean }[] = [];
   const atom = { id: "a", text: "verified sentence", segments: [{ t: "text", v: "verified sentence" }], records: ["r"], role: "claim", level: 0 };
   const dependencies: Record<string, unknown> = {
     "@/content/ui.ar.json": ui,
@@ -203,8 +206,8 @@ async function routeFixture(name: "ask" | "weave" | "key-check", env: Record<str
     "@/lib/content": { getIndex: async () => ({ surahs: [{ no: 108 }] }), getSurah: async () => ({ surah: { no: 108 }, ayahs: [] }) },
     "@/lib/ask/atoms": { resolveReaderContext: () => undefined },
     "@/lib/ask/answer": { answer },
-    "@/lib/ask/gather": { gatherAtoms: async () => ({ atoms: [atom], examples: [], dropped: {}, event: { stage: "retrieve", provider: "verified", outcome: "ready", ms: 0 } }), extraFor: async () => undefined },
-    "@/lib/ask/history": { historyAtomIds: () => [], resolveHistory: () => [] },
+    "@/lib/ask/gather": { gatherAtoms: async (input: { question: string; wide?: boolean }) => (searches.push({ question: input.question, ...(input.wide ? { wide: true } : {}) }), { atoms: [atom], examples: [], dropped: {}, event: { stage: "retrieve", provider: "verified", outcome: "ready", ms: 0 } }), extraFor: async () => undefined },
+    "@/lib/ask/history": { historyAtomIds: () => [], resolveHistory: () => [], carriedQuestion },
     "@/lib/rag/log": { logQuestion: () => {} },
     "@/lib/ask/select": { CHOICE_SCHEMA },
     "@/lib/ask/runtime": {
@@ -228,7 +231,7 @@ async function routeFixture(name: "ask" | "weave" | "key-check", env: Record<str
     assert.ok(Object.hasOwn(dependencies, id), `Unexpected route dependency: ${id}`);
     return dependencies[id];
   }, exported, { env }, { info: (line: string) => logs.push(line) });
-  return { ...exported, logs, question: ui.ask.title };
+  return { ...exported, logs, searches, question: ui.ask.title };
 }
 
 test("a failing own-key Ask request never falls back to project credentials or leaks the key in the response or log", async () => {
@@ -277,6 +280,21 @@ test("without own-key headers Ask retains the project provider chain and fallbac
   } finally { globalThis.fetch = original; }
 });
 
+test("on the project's own keys a chain that fails at every provider answers unavailable, never insufficient", async () => {
+  const fixture = await routeFixture("ask", { HUDA_ASK: "1", OPENCODE_GO_API_KEY: "project-only-go", OPENAI_API_KEY: "project-only-openai" });
+  const original = globalThis.fetch;
+  let calls = 0;
+  globalThis.fetch = async () => { calls++; return new Response("rejected", { status: 401 }); };
+  try {
+    const response = await fixture.POST(new Request("https://reader.invalid/api/ask", { method: "POST", body: JSON.stringify({ surah: 108, question: fixture.question }) }));
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), { status: "unavailable", atoms: [] });
+    assert.equal(response.headers.get("Cache-Control"), "no-store");
+    assert.ok(calls > 0);
+    assert.equal(Object.hasOwn(JSON.parse(fixture.logs[0]), "own_key"), false);
+  } finally { globalThis.fetch = original; }
+});
+
 test("a failing own-key weave request uses no project credential and leaks no upstream error", async () => {
   const key = "test-only-sentinel-weave-failure";
   const fixture = await routeFixture("weave", { HUDA_WEAVE: "1", OPENCODE_GO_API_KEY: "project-only-go", OPENAI_API_KEY: "project-only-openai" });
@@ -321,6 +339,41 @@ test("Ask and weave accept own keys without project keys and reject malformed pa
     const fixture = await routeFixture("ask", { HUDA_ASK: "1", OPENAI_API_KEY: "project-only-openai" });
     const response = await fixture.POST(new Request("https://reader.invalid/api/ask", { method: "POST", headers: { "x-huda-provider": "openai" }, body: JSON.stringify({ surah: 108, question: fixture.question }) }));
     assert.equal((await response.json()).status, "unavailable");
+  } finally { globalThis.fetch = original; }
+});
+
+test("Ask carries a follow-up message on the earlier question: the search and the writer get that question, and with none the reader is asked for one without a model call", async () => {
+  const original = globalThis.fetch;
+  const asked: string[] = [];
+  globalThis.fetch = async (_url, options) => {
+    const message = JSON.parse(options!.body as string).input as string;
+    asked.push(JSON.parse(message.split("BEGIN_QUESTION_JSON\n")[1].split("\nEND_QUESTION_JSON")[0]).question);
+    return Response.json({ status: "completed", output: [{ type: "message", content: [{ type: "output_text", text: '{"status":"insufficient","sentences":[]}' }] }] });
+  };
+  const earlier = "\u0645\u0627 \u0645\u0639\u0646\u0649 \u0627\u0644\u0643\u0648\u062b\u0631\u061f";
+  const again = "\u0627\u0628\u062d\u062b \u0645\u0631\u0647 \u0627\u062e\u0631\u064a", more = "\u0648\u0636\u0651\u062d \u0623\u0643\u062b\u0631";
+  const post = async (question: string, history?: unknown) => {
+    const fixture = await routeFixture("ask", { HUDA_ASK: "1", OPENAI_API_KEY: "project-only-openai" });
+    const response = await fixture.POST(new Request("https://reader.invalid/api/ask", { method: "POST", body: JSON.stringify({ surah: 108, question, ...(history ? { history } : {}) }) }));
+    return { body: await response.json(), fixture };
+  };
+  try {
+    const none = await post(again);
+    assert.deepEqual(none.body, { status: "no_question", atoms: [] });
+    assert.deepEqual(none.fixture.searches, []);
+    assert.deepEqual(asked, [], "no model call");
+    const history = [{ question: earlier, answer: "", atom_ids: [] }];
+    const second = await post(again, history);
+    assert.deepEqual(second.fixture.searches, [{ question: earlier, wide: true }], "search again: the earlier question, and a wider search");
+    assert.equal(asked.at(-1), earlier);
+    assert.ok(JSON.parse(second.fixture.logs[0]).stages.some((event: { stage: string; outcome: string }) => event.stage === "follow_up" && event.outcome === "again"));
+    assert.ok(!second.fixture.logs[0].includes(earlier), "the log carries no question text");
+    const third = await post(more, history);
+    assert.deepEqual(third.fixture.searches, [{ question: earlier }]);
+    assert.equal(asked.at(-1), `${earlier} ${more}`);
+    const own = await post(earlier, history);
+    assert.deepEqual(own.fixture.searches, [{ question: earlier }]);
+    assert.ok(!JSON.parse(own.fixture.logs[0]).stages.some((event: { stage: string }) => event.stage === "follow_up"));
   } finally { globalThis.fetch = original; }
 });
 

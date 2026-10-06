@@ -3,11 +3,14 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Dialog, Tabs } from "radix-ui";
-import { Cancel01Icon, InformationCircleIcon, Quran01Icon } from "@hugeicons/core-free-icons";
+import { Cancel01Icon, InformationCircleIcon, Quran01Icon, Settings01Icon } from "@hugeicons/core-free-icons";
 import type { Ui } from "@/lib/types";
 import { jumpToAyah } from "@/lib/reader-dom";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
+import { SignInEntry } from "@/components/account/account";
+import { useSettings } from "@/components/settings/settings";
+import { useAsk } from "@/components/reader/ask-state";
 import { AboutTab } from "./about-tab";
 import { MushafTab } from "./mushaf-tab";
 
@@ -15,13 +18,15 @@ type Target = { surah: number; ayah?: number };
 export type MenuDrawerProps = { ui: Ui; current: number; onClose: () => void };
 /** A dialog that enters from the start edge. Same history and focus handling as the bottom sheets: the entry it pushes is gone before the next page opens. */
 export function MenuDrawer({ ui, current, onClose }: MenuDrawerProps) {
+  const settings = useSettings();
+  const ask = useAsk();
   const id = useId();
   const router = useRouter();
   const [open, setOpen] = useState(true);
   const closeButton = useRef<HTMLButtonElement>(null);
   const historyOrigin = useRef<{ state: unknown; pushed: boolean }>({ state: null, pushed: false });
   const mounted = useRef(false);
-  const pending = useRef<Target | null>(null);
+  const pending = useRef<Target | (() => void) | null>(null);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
   const [origin] = useState(() => {
@@ -60,7 +65,7 @@ export function MenuDrawer({ ui, current, onClose }: MenuDrawerProps) {
     else setOpen(false);
   }
   // Choose, close, then act: the menu's own history entry is gone before the page changes.
-  function choose(target: Target) { pending.current = target; requestClose(); }
+  function choose(target: Target | (() => void)) { pending.current = target; requestClose(); }
 
   return <Dialog.Root open={open} onOpenChange={(value) => { if (!value) requestClose(); }}>
     <Dialog.Portal>
@@ -81,6 +86,7 @@ export function MenuDrawer({ ui, current, onClose }: MenuDrawerProps) {
           const target = pending.current;
           pending.current = null;
           if (!target) return;
+          if (typeof target === "function") { target(); return; }
           if (target.surah === current) {
             const { surah, ayah } = target;
             if (ayah) requestAnimationFrame(() => jumpToAyah(`${surah}:${ayah}`));
@@ -98,6 +104,8 @@ export function MenuDrawer({ ui, current, onClose }: MenuDrawerProps) {
           <Tabs.Content className="menu-panel" value="mushaf"><MushafTab ui={ui} current={current} onChoose={choose} /></Tabs.Content>
           <Tabs.Content className="menu-panel" value="about"><AboutTab ui={ui} /></Tabs.Content>
         </Tabs.Root>
+        <SignInEntry ui={ui} onAct={choose} />
+        <Button variant="quiet" className="menu-settings" aria-haspopup="dialog" onClick={() => choose(() => settings.open(Boolean(ask)))}><Icon icon={Settings01Icon} />{ui.settings.open}</Button>
       </Dialog.Content>
     </Dialog.Portal>
   </Dialog.Root>;

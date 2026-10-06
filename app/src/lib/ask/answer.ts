@@ -42,6 +42,9 @@ export interface AnswerOptions {
 interface Draft { sentences: ComposedSentence[]; claims: ComposedSentence[]; claimAt: number[]; flags: boolean[] }
 const kept = (draft: Draft) => draft.flags.filter(Boolean).length;
 const unique = <T,>(items: T[]) => [...new Set(items)];
+/** Whether the output of the extractive choice has the shape of a choice at all (a status and a list of ids). When it has not, the chain failed; that says nothing about the material. */
+const isChoice = (value: unknown): boolean => !!value && typeof value === "object" && !Array.isArray(value)
+  && typeof (value as { status?: unknown }).status === "string" && Array.isArray((value as { atom_ids?: unknown }).atom_ids);
 
 export async function answer(question: string, atoms: Atom[], context: ReaderContext | undefined, providers: ChoiceProvider | ChoiceProvider[], options: AnswerOptions = {}): Promise<AskResponse> {
   const start = Date.now(), deadline = start + REQUEST_DEADLINE_MS;
@@ -59,6 +62,9 @@ export async function answer(question: string, atoms: Atom[], context: ReaderCon
   // A written answer never takes the time the fallback needs: the extractive choice keeps its own budget.
   const stage = (request: Parameters<typeof runStage>[0], ms: number, reserve = 0) => runStage(request, chain, Math.max(0, Math.min(ms, deadline - Date.now() - reserve)), observe);
   const useSupport = options.support ?? process.env.HUDA_ASK_SUPPORT !== "0";
+  // Whether the writing stopped on a failure of the chain (a provider error, a timeout, an output with no shape) and not on the material:
+  // such a request ends as `unavailable`, never as `insufficient`, which tells the reader the sources hold nothing.
+  let chainFailed = false;
   try {
     if ((options.mode || process.env.HUDA_ASK_MODE) !== "extractive") {
       try {
@@ -84,7 +90,7 @@ export async function answer(question: string, atoms: Atom[], context: ReaderCon
         };
         /** Verify every written sentence on its own. `undefined` when the shape is wrong as a whole. */
         const draftOf = (value: unknown) => {
-          const each = verifyEach(value, prompt.atoms, context);
+          const each = verifyEach(value, prompt.atoms, context, undefined, question);
           if (!each.ok) return undefined;
           const claimAt = each.value.sentences.flatMap((sentence, index) => sentence.kind === "example" ? [] : [index]);
           const claims = claimAt.map((index) => each.value.sentences[index]);
@@ -92,6 +98,8 @@ export async function answer(question: string, atoms: Atom[], context: ReaderCon
         };
 
         let best: Draft | undefined;
+        // Sentences that rest on a narration: nothing to repair, the narration itself is shown in their place.
+        let narrated = 0, written = 0;
         const problems: RepairProblem[] = [];
         const checked = draftOf(first);
         if (!checked) { note("verify", "shape"); problems.push({ index: 0, problem: "shape" }); }
@@ -99,7 +107,9 @@ export async function answer(question: string, atoms: Atom[], context: ReaderCon
           const { draft, reasons } = checked;
           const failed = reasons.filter((reason): reason is VerifyReason => reason !== undefined);
           note("verify", failed.length ? unique(failed).join(",") : "ok");
-          reasons.forEach((reason, i) => { if (reason) problems.push({ index: draft.claimAt[i], problem: reason }); });
+          narrated = reasons.filter((reason) => reason === "narration").length;
+          written = draft.claims.length;
+          reasons.forEach((reason, i) => { if (reason && reason !== "narration") problems.push({ index: draft.claimAt[i], problem: reason }); });
           // Support is checked for every sentence that passed the mechanical checks, so a slow or failed repair never costs the reader the sound ones.
           const pass = reasons.map((reason) => reason === undefined);
           if (pass.some(Boolean)) {
@@ -112,7 +122,8 @@ export async function answer(question: string, atoms: Atom[], context: ReaderCon
         }
 
         // Enough of the first answer stands: return it now rather than spend a second model round the reader waits for.
-        const enough = best !== undefined && kept(best) >= Math.min(REPAIR_BELOW, best.claims.length);
+        // A narration shown word for word stands as much as a written sentence does.
+        const enough = written > 0 && (best ? kept(best) : 0) + narrated >= Math.min(REPAIR_BELOW, written);
         if (enough && problems.length) { note("repair", "skipped"); problems.length = 0; }
 
         // One repair round, and only one: the model gets its own answer back with what is wrong in each place.
@@ -138,18 +149,21 @@ export async function answer(question: string, atoms: Atom[], context: ReaderCon
           const pointed = parsed?.status === "answer" ? unique(parsed.sentences.flatMap((sentence) => sentence.kind === "example" ? [] : sentence.cites)).slice(0, 4) : [];
           if (!pointed.length) throw new Error("no_supported_sentences");
           const byId = new Map(prompt.atoms.map((atom) => [atom.id, atom]));
-          note("fallback", "cited_verbatim");
+          note("fallback", narrated && narrated === written ? "narrations_verbatim" : "cited_verbatim");
           return { status: "answer", mode: "extractive", atoms: pointed.map((id) => publicAtom(byId.get(id)!)) };
         }
 
         // Keep the written order; a dropped sentence keeps its cites so the UI can show them verbatim.
         const composed: ComposedItem[] = [];
         const writtenAt = new Map<number, number>();
+        // Between two written sentences a sentence is shown word for word once, however many dropped neighbours cited it.
+        const verbatim = new Set<string>();
         best.claims.forEach(({ text, cites }, index) => {
-          if (best!.flags[index]) { writtenAt.set(index, composed.length); composed.push({ text, atom_ids: cites }); return; }
-          const last = composed.at(-1);
-          if (last && last.kind === undefined && last.text === undefined && last.atom_ids.length === cites.length && last.atom_ids.every((id) => cites.includes(id))) return;
-          composed.push({ atom_ids: cites });
+          if (best!.flags[index]) { verbatim.clear(); writtenAt.set(index, composed.length); composed.push({ text, atom_ids: cites }); return; }
+          const fresh = cites.filter((id) => !verbatim.has(id));
+          if (!fresh.length) return;
+          fresh.forEach((id) => verbatim.add(id));
+          composed.push({ atom_ids: fresh });
         });
         // The example, if any, once all the checks of an example pass; it comes right after the written sentence it follows (or after the first one).
         const { claims: _claims, examples } = splitExamples(best.sentences);
@@ -173,16 +187,22 @@ export async function answer(question: string, atoms: Atom[], context: ReaderCon
           if (kinds.size === 2) cited.both++; else if (kinds.has(true)) cited.source++; else cited.verified++;
         }
         return { status: "answer", mode: "composed", composed, atoms: used.map(publicAtom) };
-      } catch { note("fallback", options.extractiveFallback === false ? "composition_failed" : "extractive"); }
+      } catch (error) {
+        // The one failure that is about the material: the writer answered, nothing it wrote stood and it pointed at nothing.
+        chainFailed = !(error instanceof Error && error.message === "no_supported_sentences");
+        note("fallback", options.extractiveFallback === false ? "composition_failed" : "extractive");
+      }
     }
-    if (options.extractiveFallback === false) { note("fallback", "disabled"); return { status: "insufficient", atoms: [] }; }
+    if (options.extractiveFallback === false) { note("fallback", "disabled"); return { status: chainFailed ? "unavailable" : "insufficient", atoms: [] }; }
     try {
       const prompt = buildPrompt(question, atoms, 100_000, context, history);
       const value = await stage({ system: SYSTEM_PROMPT, message: prompt.message, schema: CHOICE_SCHEMA, stage: "select" }, budgets.select);
       const result = validateChoice(value, prompt.atoms);
+      // An output that is no choice at all is a failure of the chain, not a finding that the sources hold nothing.
+      if (result.status === "insufficient" && !isChoice(value)) { note("select", "shape"); note("fallback", "unavailable"); return { status: "unavailable", atoms: [] }; }
       note("select", result.status);
       return result.status === "answer" ? { ...result, mode: "extractive" } : result;
-    } catch { note("fallback", "insufficient"); return { status: "insufficient", atoms: [] }; }
+    } catch { note("fallback", "unavailable"); return { status: "unavailable", atoms: [] }; }
   } finally {
     // One structured line per request; only fixed codes, names and elapsed times.
     (options.log || console.info)(JSON.stringify({ event: "ask", stages: events, ms: Date.now() - start, ...(options.logExtra || {}), ...(cited ? { cited } : {}) }));

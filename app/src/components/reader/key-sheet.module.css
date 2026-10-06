@@ -95,3 +95,13 @@
   outline: var(--space-xs) solid var(--accent);
   outline-offset: var(--space-xs);
 }
+
+.choice {
+  background: transparent;
+  color: var(--ink-2);
+}
+
+.choice[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+}

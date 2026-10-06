@@ -180,7 +180,8 @@ test("fake-fetch flow exercises compose/support parsing and all three fallback s
         return Response.json({ candidates: [{ finishReason: "STOP", content: { parts: [{ text: JSON.stringify(result) }] } }] });
       };
       const result = await answer("q", atoms, undefined, geminiProvider("fake"), noLog);
-      assert.equal(result.status, failure === "all" ? "insufficient" : "answer");
+      // Every stage returned an output with no shape: the chain failed, which is not "nothing in our sources".
+      assert.equal(result.status, failure === "all" ? "unavailable" : "answer");
       assert.equal(result.mode, failure === "all" ? undefined : failure ? "extractive" : "composed");
     }
     const result = await answer("alpha beta", atoms, undefined, lexicalProvider(), noLog);

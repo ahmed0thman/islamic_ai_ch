@@ -74,6 +74,12 @@ export function deriveAtoms(surah: AtomSource): Atom[] {
   return [...sentencesOnly, ...definitions];
 }
 
+/** Whether a sentence is a narration that may not be built on: a transmission sentence with no record, or with a record that is not marked established
+ * (no accepted ruling was transmitted for it, or it was ruled not established). Decision 058. */
+export function suspendedNarration(atom: Pick<Atom, "role" | "records">, records: Readonly<Record<string, { badge: string | null } | undefined>>): boolean {
+  return atom.role === "transmission" && (!atom.records.length || atom.records.some((id) => records[id]?.badge !== "thabit"));
+}
+
 export function readerUnits(surah: AtomSource, depth: Depth) {
   const map = deriveSurahMap(surah, depth);
   return map.stops.length ? map.stops : deriveDepthItems(surah, depth).units;

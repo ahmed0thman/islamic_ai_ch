@@ -8,7 +8,7 @@ import { parseComposition } from "./verify.ts";
 // @ts-expect-error -- Node requires source extensions.
 import { checkExample, EXAMPLE_MAX_WORDS } from "./example.ts";
 // @ts-expect-error -- Node requires source extensions.
-import { resolveHistory, historyFromTurns, answerText, HISTORY_TEXT_CHARS } from "./history.ts";
+import { resolveHistory, historyFromTurns, answerText, followUpKind, carriedQuestion, HISTORY_TEXT_CHARS } from "./history.ts";
 // @ts-expect-error -- Node requires source extensions.
 import { buildPrompt } from "./select.ts";
 // @ts-expect-error -- Node requires source extensions.
@@ -245,6 +245,43 @@ test("the client's history: the last two finished turns, written text joined, ex
   const history = historyFromTurns(turns);
   assert.deepEqual(history.map((item) => item.question), ["q2", "q3"]);
   assert.deepEqual(history[1], { question: "q3", answer: "T1 E1 B", atom_ids: ["a", "b"] });
+});
+
+test("a follow-up message is told from a question: only follow-up words, six at most; a message with a word of its own is a question", () => {
+  for (const text of ["ابحث مره اخري", "ابحث مرة أخرى", "ابحث تاني", "حاول مرة ثانية", "أعد البحث", "دوّر كمان"]) assert.equal(followUpKind(text), "again", text);
+  for (const text of ["وضّح أكثر", "وضح اكتر", "كمّل", "أكمل", "يعني إيه؟", "اشرح أكثر من فضلك", "بسّطها", "باختصار", "مثال", "أعطني مثالًا", "لماذا؟", "ليه؟", "مش فاهم", "ما المقصود؟", "ابحث مرة أخرى ووضّح"])
+    assert.equal(followUpKind(text), "more", text);
+  for (const text of ["يعني إيه التعريض؟", "اشرح السورة باختصار", "ما معنى هذه الآية؟", "ما هذا؟", "ابحث عن معنى الكوثر", "وضّح معنى الصمد أكثر", "لماذا نزلت السورة؟", "طيب", "من فضلك",
+    "أليس ثابتًا أن المشركين كانوا يعايرون النبي بوفاة أبنائه صغارًا؟", "ابحث مرة أخرى ثم ابحث مرة أخرى ثم ابحث", "", "؟؟"]) assert.equal(followUpKind(text), undefined, text);
+});
+
+test("a follow-up is carried on the earlier question of the conversation; with none, the reader is asked for a question", () => {
+  const asked = "أليس ثابتًا أن المشركين كانوا يعايرون النبي بوفاة أبنائه صغارًا؟";
+  const turn = (question: unknown, text = "") => ({ question, answer: text, atom_ids: [] });
+  // The owner's two messages of 6 October: the question, then "search again".
+  assert.deepEqual(carriedQuestion("ابحث مره اخري", [turn(asked)]), { kind: "again", search: asked, question: asked });
+  assert.deepEqual(carriedQuestion("وضّح أكثر", [turn("ما معنى الصمد؟", "جواب")]), { kind: "more", search: "ما معنى الصمد؟", question: "ما معنى الصمد؟ وضّح أكثر" });
+  // After several follow-ups the earlier question is still found, as long as it is among the turns sent.
+  assert.deepEqual(carriedQuestion("كمّل", [turn(asked), turn("ابحث مرة أخرى")]), { kind: "more", search: asked, question: `${asked} كمّل` });
+  assert.deepEqual(carriedQuestion("كمّل", [turn("سؤال قديم"), turn(asked), turn("وضّح")]), { kind: "more", search: asked, question: `${asked} كمّل` }, "only the last two turns are read");
+  for (const none of [undefined, null, [], "x", [turn("وضّح أكثر")], [turn("  ")], [turn(7)], [null]]) assert.equal(carriedQuestion("ابحث مرة أخرى", none), "no_question");
+  // At an open stop, with no earlier question, "explain more" is about what is open; "search again" still has nothing to search for.
+  assert.equal(carriedQuestion("اشرح أكثر", undefined, true), undefined);
+  assert.equal(carriedQuestion("اشرح أكثر", undefined, false), "no_question");
+  assert.equal(carriedQuestion("ابحث مرة أخرى", undefined, true), "no_question");
+  assert.deepEqual(carriedQuestion("اشرح أكثر", [turn(asked)], true), { kind: "more", search: asked, question: `${asked} اشرح أكثر` }, "an earlier question still comes first");
+  assert.equal(carriedQuestion("ما معنى الكوثر؟", [turn(asked)]), undefined, "a question of its own is not carried");
+  assert.equal(carriedQuestion("ما معنى الكوثر؟", undefined), undefined);
+  const long = "س".repeat(900);
+  const carried = carriedQuestion("ابحث مرة أخرى", [turn(long)]);
+  assert.ok(carried && carried !== "no_question" && [...carried.search].length === 300);
+});
+
+test("the client sends a follow-up turn under the question it followed, so a third follow-up still finds it", () => {
+  const done = (question: string) => ({ question, loading: false, result: { status: "insufficient" as const, atoms: [] } });
+  assert.deepEqual(historyFromTurns([done("ما معنى الصمد؟"), done("ابحث مرة أخرى"), done("وضّح أكثر")]).map((item) => item.question), ["ما معنى الصمد؟", "ما معنى الصمد؟"]);
+  assert.deepEqual(historyFromTurns([done("وضّح أكثر"), done("ما معنى الكوثر؟"), done("كمّل")]).map((item) => item.question), ["ما معنى الكوثر؟", "ما معنى الكوثر؟"]);
+  assert.deepEqual(historyFromTurns([done("وضّح أكثر")]).map((item) => item.question), ["وضّح أكثر"], "with no earlier question the message goes as it is");
 });
 
 test("a term's definition becomes a candidate sentence: its record's claim verbatim, its record as the marker, a stable id", async () => {

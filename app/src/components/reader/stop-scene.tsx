@@ -5,7 +5,7 @@ import { ArrowRight01Icon, ArrowLeft01Icon } from "@hugeicons/core-free-icons";
 import type { SceneUnit } from "@/lib/depth-items";
 import type { Depth, Passage, SurahSummary } from "@/lib/types";
 import type { AskedQuestion } from "@/lib/asked";
-import { DialogTitle } from "@/components/ui/dialog";
+import { SceneTitle as DialogTitle } from "@/components/wide/wide-scene";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import type { ReadingProps } from "./reading-context";
@@ -21,11 +21,14 @@ import { AskedSection } from "./asked-section";
 import { AskDock } from "./ask-dock";
 import { FollowupsSection } from "./followups-section";
 import { WeaveCard } from "./weave-card";
-import { MisconceptionFrame } from "./misconception-frame";
+import { MisconceptionBadge, MisconceptionFrame } from "./misconception-frame";
+import { numeral } from "@/lib/numerals";
+import { useWideSurface } from "@/components/wide/wide-surface";
 
 export type StopSceneProps = ReadingProps & { stop: SceneUnit; stops: SceneUnit[]; previous?: SceneUnit; next?: SceneUnit; passage?: Passage; nextPassage?: Passage; nextSurah?: SurahSummary; termsSummary?: Summary | null; /** Deeper questions that share an ayah with this stop, from `deriveFollowups`; none at the deepest level. */ followups?: Followup[]; /** Candidate ids promoted by saved reader questions. */ promoted?: string[]; weave?: boolean; depth?: Depth; questions?: AskedQuestion[]; /** The level closes with a summary screen: the last stop leads to it instead of ending on the next surah. */ onClosing?: () => void; onNavigate: (stop: SceneUnit) => void; onBack: () => void };
 /** The body of a stop scene; `SceneShell` holds the dialog around it. */
 export function StopScene({ stop, stops, previous, next, passage, nextPassage, nextSurah, termsSummary, followups = [], promoted, weave = false, depth = 0, questions = [], onClosing, onNavigate, onBack, ...reading }: StopSceneProps) {
+  const wide = useWideSurface()?.wide;
   const heading = useRef<HTMLHeadingElement>(null);
   const scroll = useRef<HTMLDivElement>(null);
   const position = stops.indexOf(stop);
@@ -33,16 +36,18 @@ export function StopScene({ stop, stops, previous, next, passage, nextPassage, n
   const direction = position === last.current ? "scene-body-enter" : position > last.current ? "scene-body-next" : "scene-body-previous";
   useEffect(() => {
     heading.current?.focus({ preventScroll: true }); if (scroll.current) scroll.current.scrollTop = 0; last.current = position;
+    if (wide) window.scrollTo({ top: 0, behavior: "instant" });
     if (stop.openIndex === undefined) return;
     // A depth pin opens its section with one item open: bring that item into view once the scene has settled.
     const timer = window.setTimeout(() => {
       const container = scroll.current, item = container?.querySelector<HTMLElement>("details[open]");
       if (!container || !item) return;
+      if (wide) { window.scrollTo({ top: Math.max(0, item.getBoundingClientRect().top + window.scrollY - 112), behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); return; }
       const top = item.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop - 72;
       container.scrollTo({ top: Math.max(0, top), behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     }, 350);
     return () => window.clearTimeout(timer);
-  }, [stop.number, stop.openIndex, position]);
+  }, [stop.number, stop.openIndex, position, depth, wide]);
   // The stage shows one ayah at a time past three, so what it shows is what an opening paragraph need not repeat.
   const [picked, setPicked] = useState<{ number: number; key: string }>();
   const shown = stageShownKeys(stop.ayahKeys, picked?.number === stop.number ? picked.key : undefined);
@@ -51,10 +56,10 @@ export function StopScene({ stop, stops, previous, next, passage, nextPassage, n
     ? <MisconceptionFrame ui={reading.ui} stationKey={stop.stationKey} onBack={onBack}>{children}</MisconceptionFrame>
     : children;
   return <>
-      <header className="scene-topbar"><Button variant="quiet" onClick={onBack}><Icon icon={ArrowRight01Icon} />{reading.ui.reader.back}</Button><div className="scene-pips" aria-hidden="true">{stops.map((item) => <span key={item.number} data-state={item.number === stop.number ? "here" : stops.indexOf(item) < stops.indexOf(stop) ? "done" : "todo"} />)}</div><div className="scene-nav"><Button variant="round" size="icon" disabled={!previous} aria-label={reading.ui.reader.previous_stop} onClick={() => { if (previous) onNavigate(previous); }}><Icon icon={ArrowRight01Icon} /></Button><Button variant="round" size="icon" disabled={!next && !onClosing} aria-label={next ? reading.ui.reader.next_stop : reading.ui.summary.open} onClick={() => { if (next) onNavigate(next); else onClosing?.(); }}><Icon icon={ArrowLeft01Icon} /></Button></div></header>
+      <header className="scene-topbar"><Button variant="quiet" onClick={onBack}><Icon icon={ArrowRight01Icon} />{wide ? reading.ui.reader.map_view : reading.ui.reader.back}</Button>{wide ? <p className="wide-scene-position">{passage ? <span>{passage.title}</span> : null}{stop.ayahKeys.length ? <span>{reading.ui.reader.ayahs_title} <bdi dir="ltr">{[...new Set(stop.ayahKeys.map((key) => Number(key.split(":")[1])))].sort((a, b) => a - b).filter((_, at, values) => at === 0 || at === values.length - 1).map(numeral).join("–")}</bdi></span> : null}<bdi dir="ltr">{numeral(position + 1)} / {numeral(stops.length)}</bdi></p> : null}<div className="scene-pips" aria-hidden="true">{stops.map((item) => <span key={item.number} data-state={item.number === stop.number ? "here" : stops.indexOf(item) < stops.indexOf(stop) ? "done" : "todo"} />)}</div><div className="scene-nav"><Button variant="round" size="icon" disabled={!previous} aria-label={reading.ui.reader.previous_stop} onClick={() => { if (previous) onNavigate(previous); }}><Icon icon={ArrowRight01Icon} /></Button><Button variant="round" size="icon" disabled={!next && !onClosing} aria-label={next ? reading.ui.reader.next_stop : reading.ui.summary.open} onClick={() => { if (next) onNavigate(next); else onClosing?.(); }}><Icon icon={ArrowLeft01Icon} /></Button></div></header>
       <div className="huda-scene-scroll" ref={scroll}><div key={stop.blockIndex} className={`huda-scene-body ${direction}`}>
         <AyahStage ayahs={stop.ayahKeys.map((key) => reading.ayahs.get(key)!)} ui={reading.ui} selected={shown[0]} onSelect={(key) => setPicked({ number: stop.number, key })} />
-        <div className="scene-heading">{passage ? <p className="scene-kicker" data-run={`scene-passage-${passage.id}`}>{passage.title}<SourceMarker records={passage.records.map((id) => reading.records[id])} ui={reading.ui} onOpen={() => reading.onOpen(passage.records.map((id) => reading.records[id]))} /></p> : null}<DialogTitle asChild><h2 ref={heading} data-scene-heading tabIndex={-1} className={`huda-scene-title${stop.question ? " is-question" : ""}`}>{stop.sceneTitle ?? stop.title}</h2></DialogTitle></div>
+        <div className="scene-heading">{wide && stop.kind === "misconception" ? <MisconceptionBadge ui={reading.ui} /> : null}{passage ? <p className="scene-kicker" data-run={`scene-passage-${passage.id}`}>{passage.title}<SourceMarker records={passage.records.map((id) => reading.records[id])} ui={reading.ui} onOpen={() => reading.onOpen(passage.records.map((id) => reading.records[id]))} /></p> : null}<DialogTitle asChild><h2 ref={heading} data-scene-heading tabIndex={-1} className={`huda-scene-title${stop.question ? " is-question" : ""}`}>{stop.sceneTitle ?? stop.title}</h2></DialogTitle></div>
         <div className="scene-reading">{frame(<><ContinuousView blocks={stop.scene} showTitles={false} openIndex={stop.openIndex} stageKeys={stop.kind === "pin" ? undefined : shown} {...reading} />{weave && questions.length && reading.surahNo ? <WeaveCard key={`${reading.surahNo}:${depth}:${stop.number}`} surah={reading.surahNo} depth={depth} stop={stop.number} questions={questions} onBack={() => heading.current?.focus()} /> : null}<AskedSection stop={stop.number} /><StopSources records={sources} ui={reading.ui} onOpen={reading.onOpen} />{!next && !onClosing && stop.kind !== "pin" && termsSummary ? <TermsSummary summary={termsSummary} ui={reading.ui} onOpen={reading.onOpen} /> : null}<AskDock /><NextCard next={next} previous={previous} nextPassage={nextPassage} nextSurah={nextSurah} closing={!next && onClosing ? onClosing : undefined} ui={reading.ui} records={reading.records} onOpen={reading.onOpen} onNext={() => { if (next) onNavigate(next); }} onPrevious={() => { if (previous) onNavigate(previous); }} onBack={onBack} />{/* Deeper questions come after the way onward, so they never stand between the reader and it; a small second way onward closes them. */}<FollowupsSection candidates={followups} promoted={promoted} />{followups.length && (next || onClosing) ? <div className="next-mini"><Button variant="quiet" onClick={() => { if (next) onNavigate(next); else onClosing?.(); }}>{reading.ui.reader.next_stop}<Icon icon={ArrowLeft01Icon} /></Button></div> : null}</>)} </div>
       </div></div>
   </>;

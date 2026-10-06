@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Depth, SourceRecord, Surah, SurahSummary, Ui } from "@/lib/types";
 import { deriveSurahMap, heroStop } from "@/lib/map";
 import { deriveDepthItems, depthHero, depthPlaylist, sceneNeighbours, type SceneUnit } from "@/lib/depth-items";
@@ -30,6 +30,11 @@ import { AskProvider } from "./ask-context";
 import { AskDock } from "./ask-dock";
 import { AskedSection } from "./asked-section";
 import { useAsk } from "./ask-state";
+import { WideReader } from "@/components/wide/wide-reader";
+import { WideContinuous } from "@/components/wide/wide-continuous";
+import { useWideSurface } from "@/components/wide/wide-surface";
+import { captureWidePosition, restoreWidePosition, restoreWideAyah, WIDE_READING_LINE, type WidePosition } from "@/components/wide/wide-position";
+import { unitAtAyah } from "@/lib/wide-index";
 
 /** Inside AskProvider so a saved or removed question immediately updates this scene. Also works when Ask is off. */
 function SavedStopScene({ depth, ...props }: StopSceneProps & { depth: Depth }) {
@@ -85,6 +90,8 @@ export function Reader({ surah, ui, nextSurah, surahs, ask = false, weave = fals
   const [settled, setSettled] = useState(false);
   const [visited, setVisited] = useState<Set<string>>(() => new Set());
   const [currentStops, setCurrentStops] = useState<Partial<Record<Depth, number>>>({});
+  const wideSurface = useWideSurface();
+  const pendingAyah = useRef<WidePosition | null>(null);
   const { openSource, openUnit } = useSheets();
   const maps = useMemo(() => ([0, 1, 2, 3] as const).map((level) => deriveSurahMap(surah, level)), [surah]);
   const itemModels = useMemo(() => ([0, 1, 2, 3] as const).map((level) => deriveDepthItems(surah, level)), [surah]);
@@ -148,17 +155,37 @@ export function Reader({ surah, ui, nextSurah, surahs, ask = false, weave = fals
   const visitedNumbers = new Set(units.filter((item) => visited.has(`${depth}:${item.blockIndex}`)).map((item) => item.number));
   const reading = { surahNo: surah.surah.no, relations: relationRecords(surah, depth), ayahs, records: surah.records, ui, onOpen: openSource };
   useEffect(() => {
+    const position = pendingAyah.current;
+    pendingAyah.current = null;
+    if (!position || !wideSurface?.wide) return;
+    const frame = requestAnimationFrame(() => { if (!stop) restoreWidePosition(position); });
+    return () => cancelAnimationFrame(frame);
+  }, [depth, view, stopNumber, wideSurface?.wide, stop]);
+  useEffect(() => {
     if (stop || view === "text") return;
+    const wide = wideSurface?.wide;
     const observer = new IntersectionObserver((entries) => {
-      const entry = entries.filter((item) => item.isIntersecting).sort((a, b) => Math.abs(a.boundingClientRect.top - window.innerHeight / 2) - Math.abs(b.boundingClientRect.top - window.innerHeight / 2))[0];
+      // The wide layout reads at a line under its top bar; the phone reads at the middle of the screen.
+      const line = wide ? WIDE_READING_LINE : window.innerHeight / 2;
+      const entry = entries.filter((item) => item.isIntersecting).sort((a, b) => Math.abs(a.boundingClientRect.top - line) - Math.abs(b.boundingClientRect.top - line))[0];
       if (entry) setCurrentAyah((entry.target as HTMLElement).dataset.stationKey ?? null);
-    }, { rootMargin: "-38% 0px -52% 0px" });
+    }, { rootMargin: wide ? `-${WIDE_READING_LINE - 16}px 0px -60% 0px` : "-38% 0px -52% 0px" });
     document.querySelectorAll("[data-station-key]").forEach((element) => observer.observe(element));
     return () => observer.disconnect();
-  }, [stop, view, map]);
-  function chooseScope(next: Scope) { setScope(next); window.requestAnimationFrame(() => jumpToAyah(scopeStart(surah, next))); }
-  function jump(key: string) { if (mapped && view !== "map") chooseView("map"); window.requestAnimationFrame(() => jumpToAyah(key)); }
+  }, [stop, view, map, wideSurface?.wide]);
+  function chooseScope(next: Scope) {
+    // The wide layout has no reading-unit sheet, so choosing the chosen passage again returns to the whole surah.
+    const wide = wideSurface?.wide;
+    const chosen: Scope = wide && next.kind === "passage" && scope.kind === "passage" && scope.id === next.id ? { kind: "surah" } : next;
+    setScope(chosen);
+    window.requestAnimationFrame(() => { if (wide) restoreWideAyah(scopeStart(surah, chosen)); else jumpToAyah(scopeStart(surah, chosen)); });
+  }
+  function jump(key: string) {
+    if (wideSurface?.wide) { restoreWideAyah(key); setCurrentAyah(key); return; }
+    if (mapped && view !== "map") chooseView("map"); window.requestAnimationFrame(() => jumpToAyah(key));
+  }
   function openStop(next: SceneUnit) {
+    if (wideSurface?.wide) wideSurface.closeDetail();
     const entering = stopNumber === null && !closing;
     setStopNumber(next.number); setClosingOpen(false);
     setVisited((previous) => new Set(previous).add(`${depth}:${next.blockIndex}`));
@@ -166,6 +193,7 @@ export function Reader({ surah, ui, nextSurah, surahs, ask = false, weave = fals
     updateUrl(depth, next.number, false, entering);
   }
   function openClosing() {
+    if (wideSurface?.wide) wideSurface.closeDetail();
     const entering = stopNumber === null && !closing;
     setStopNumber(null); setClosingOpen(true);
     updateUrl(depth, "summary", false, entering);
@@ -176,12 +204,30 @@ export function Reader({ surah, ui, nextSurah, surahs, ask = false, weave = fals
     openStop(unit);
   }
   function backToMap() {
+    if (wideSurface?.wide) wideSurface.closeDetail();
     if (window.history.state?.hudaScene) window.history.back();
     else { setStopNumber(null); setClosingOpen(false); updateUrl(depth, null, false, false); }
   }
   function chooseView(next: ReadingView) {
+    if (wideSurface?.wide && next === view) return;
+    if (wideSurface?.wide) { pendingAyah.current = captureWidePosition(stop?.stationKey); wideSurface.closeDetail(); }
     setView(next); setStopNumber(null); setClosingOpen(false); rememberView(next);
     updateUrl(depth, null, next === "text", true);
+  }
+  function chooseDepth(next: Depth) {
+    if (wideSurface?.wide && next === depth) return;
+    let nextStop: SceneUnit | undefined;
+    const preserveClosing = Boolean(wideSurface?.wide && closing && maps[next].summary);
+    if (wideSurface?.wide) {
+      const position = captureWidePosition(stop?.stationKey);
+      const key = position.key;
+      pendingAyah.current = position;
+      if (stop) nextStop = unitAtAyah(maps[next].stops.length ? maps[next].stops : itemModels[next].units, key);
+      wideSurface.closeDetail();
+    }
+    setDepth(next); setStopNumber(nextStop?.number ?? null); setClosingOpen(preserveClosing); remember(next);
+    if (nextStop) { setVisited((previous) => new Set(previous).add(`${next}:${nextStop.blockIndex}`)); setCurrentStops((previous) => ({ ...previous, [next]: nextStop.number })); }
+    updateUrl(next, preserveClosing ? "summary" : nextStop?.number ?? null, view === "text" || !(maps[next].stops.length || itemModels[next].units.length), true);
   }
   const startNumber = Number(scopeStart(surah, scope).split(":")[1]);
   const passages = surah.passages ?? [];
@@ -196,27 +242,27 @@ export function Reader({ surah, ui, nextSurah, surahs, ask = false, weave = fals
     return map.stops.map((item) => item.title)
       .filter((title): title is string => typeof title === "string" && title.endsWith("\u061F") && title !== open).slice(0, 3);
   }, [map.stops, stop]);
-  return <ReadingProvider value={reading}><AskProvider enabled={ask} surah={surah} depth={depth} stop={stop ? { number: stop.number, title: stop.sceneTitle ?? stop.title } : null} starters={starters} surahs={surahs} sources={sources}><div className="huda-reader">
+  return <ReadingProvider value={reading}><AskProvider enabled={ask} surah={surah} depth={depth} stop={stop ? { number: stop.number, title: stop.sceneTitle ?? stop.title } : null} starters={starters} surahs={surahs} sources={sources}><WideReader surah={surah} surahs={surahs} ui={ui} depth={depth} view={view} map={map} items={items} stop={stop} closing={Boolean(closing)} weave={weave} followups={followups} onDepth={chooseDepth} onView={chooseView} onStop={openPart} onBack={backToMap} onClosing={() => { if (view !== "map") { setView("map"); rememberView("map"); } openClosing(); }} onPassage={(id) => { if (wideSurface?.wide) restoreWideAyah(surah.passages?.find((item) => item.id === id)?.from ?? null); else chooseScope({ kind: "passage", id }); }}><div className="huda-reader">
     <SurahHeader surah={surah} surahs={surahs} scope={scope} ui={ui} onOpenUnit={() => openUnit(surah, scope, chooseScope)} onMap={mapped && (view === "text" || stop || closing) ? (stop || closing ? backToMap : () => chooseView("map")) : undefined} />
     {showMap && hero ? <div className="hero-area"><HeroQuestion stop={hero} ui={ui} animate={settled} onOpen={openStop} /></div> : null}
     <div className="console">
       {depth !== 3 || mapped ? <MiniStrip groups={map.groups} depthPins={Object.fromEntries(map.groups.flatMap((group) => group.stations.map((station) => [station.ayah.key, station.stops.length])))} itemPins={items.pins.reduce<Record<string, number>>((counts, pin) => ({ ...counts, [pin.stationKey]: (counts[pin.stationKey] ?? 0) + 1 }), {})} current={currentAyah} scope={scope} onJump={jump} onScope={chooseScope} ariaLabel={ui.reader.ayahs_title} /> : null}
-      <DepthDial depth={depth} levels={ui.levels} label={ui.reader.choose_depth} onChange={(next) => { setDepth(next); setStopNumber(null); setClosingOpen(false); remember(next); updateUrl(next, null, view === "text" || !(maps[next].stops.length || itemModels[next].units.length), true); }} />
+      <DepthDial depth={depth} levels={ui.levels} label={ui.reader.choose_depth} onChange={chooseDepth} />
     </div>
     {mapped ? <ViewToggle view={view} ui={ui} onChange={chooseView} /> : null}
     <article className="reading-body" aria-label={ui.levels.find((item) => item.depth === depth)!.name}>
-      {showMap ? <><SurahThread map={map} items={items} scope={scope} onScope={chooseScope} onAyah={(key) => openUnit(surah, { kind: "ayah", key }, chooseScope)} ui={ui} visited={visitedNumbers} currentStop={currentStops[depth] ?? null} hidden={Boolean(stop || closing)} onOpen={openStop} />
+      {showMap ? <><SurahThread key={wideSurface?.wide ? depth : undefined} map={map} items={items} scope={scope} onScope={chooseScope} onAyah={(key) => openUnit(surah, { kind: "ayah", key }, chooseScope)} ui={ui} visited={visitedNumbers} currentStop={currentStops[depth] ?? null} hidden={Boolean(stop || closing)} onOpen={openStop} />
           {summary ? <ClosingEntry ui={ui} threaded={!items.shelf.length} hidden={Boolean(stop || closing)} onOpen={openClosing} /> : null}
           {termsSummary ? <TermsSummary summary={termsSummary} ui={ui} hidden={Boolean(stop || closing)} onOpen={openSource} /> : null}
           {!summary && !stop ? <AskedSection stop={null} /> : null}</>
-        : level.blocks.length ? <div className="reader-text"><ContinuousView key={depth} blocks={map.continuousBlocks} {...reading} />
+        : level.blocks.length ? <div className="reader-text">{wideSurface?.wide ? <WideContinuous key={depth} blocks={map.continuousBlocks} units={units} {...reading} /> : <ContinuousView key={depth} blocks={map.continuousBlocks} {...reading} />}
           {summary ? <ClosingSection surahName={surah.surah.name} summary={summary} parts={mapped ? parts : parts.map(({ passage }) => ({ passage }))} termsSummary={termsSummary} nextSurah={nextSurah} onPart={openPart} onMap={mapped ? () => chooseView("map") : undefined} {...reading} />
             : <>{termsSummary ? <TermsSummary summary={termsSummary} ui={ui} onOpen={openSource} /> : null}<AskedSection stop={null} /></>}</div> : <p className="reader-text">{ui.reader.empty_level}</p>}
     </article>
     {stop || closing ? <SceneShell onBack={backToMap} onReturnAyah={(key) => setScope({ kind: "ayah", key })}>
-      {stop ? <SavedStopScene stop={stop} followups={followups} weave={weave} depth={depth} stops={playlist} passage={passage} nextPassage={nextPassage} termsSummary={termsSummary} {...neighbours} nextSurah={nextSurah} onClosing={summary ? openClosing : undefined} onNavigate={openStop} onBack={backToMap} {...reading} />
+      {stop ? <SavedStopScene stop={stop} followups={followups} weave={weave && !wideSurface?.wide} depth={depth} stops={playlist} passage={passage} nextPassage={nextPassage} termsSummary={termsSummary} {...neighbours} nextSurah={nextSurah} onClosing={summary ? openClosing : undefined} onNavigate={openStop} onBack={backToMap} {...reading} />
         : <ClosingScene surahName={surah.surah.name} summary={closing!} parts={parts} termsSummary={termsSummary} nextSurah={nextSurah} onPart={openPart} previous={lastUnit} onPrevious={lastUnit ? () => openStop(lastUnit) : undefined} onMap={backToMap} onBack={backToMap} {...reading} />}
     </SceneShell> : null}
     <AskDock />
-  </div></AskProvider></ReadingProvider>;
+  </div></WideReader></AskProvider></ReadingProvider>;
 }

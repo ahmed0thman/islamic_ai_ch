@@ -1,0 +1,54 @@
+/* Clerk's components in the app's tokens. Clerk's own styles sit in the `components` layer (the shadcn theme), so these unlayered rules win without `!important`.
+   Loaded only by the Clerk modules, so the static export does not carry it. */
+
+/* Frame of the sign-in and sign-up pages. The legend bar belongs to the reading, not to this page. */
+.auth-page { display: grid; justify-items: center; gap: var(--space-lg); padding-block: var(--space-md) var(--space-xl); }
+.auth-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); inline-size: 100%; min-block-size: var(--control-height); }
+.auth-brand { font-size: var(--text-door); font-weight: 700; }
+.auth-back { display: inline-flex; align-items: center; gap: var(--space-sm); min-block-size: var(--control-height); color: var(--ink-2); font-size: var(--text-ui); line-height: var(--leading-ui); }
+.auth-back:hover { color: var(--ink); }
+body:has(.auth-page) .huda-legend-bar { display: none; }
+
+/* The app's bare element rules (every button, input and link inherits its font and colour) outrank Clerk's layered styles, so the UI text size is set once on each root. */
+.cl-rootBox, .cl-modalContent, .cl-userButtonPopoverCard { font-size: var(--text-ui); line-height: var(--leading-ui); }
+.cl-formFieldAction, .cl-formResendCodeLink, .cl-alternativeMethodsBlockButton, .cl-backLink, .cl-identityPreviewEditButton { color: var(--accent); }
+
+/* Card: the same surface, line, radius and shadow as the app's cards. */
+.auth-page .cl-rootBox, .auth-page .cl-cardBox { inline-size: 100%; max-inline-size: 26rem; }
+.cl-cardBox { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-2); box-shadow: var(--shadow); }
+.cl-card { gap: var(--space-lg); padding: var(--space-xl) var(--space-lg) var(--space-lg); border-radius: var(--radius); background: var(--surface); box-shadow: none; }
+.cl-header { gap: var(--space-xs); }
+.cl-headerTitle { color: var(--ink); font-size: var(--text-sheet-title); line-height: 1.6; font-weight: 700; text-wrap: balance; }
+.cl-headerSubtitle { color: var(--ink-2); font-size: var(--text-ui); line-height: var(--leading-ui); }
+.cl-main, .cl-form { gap: var(--space-lg); }
+
+/* Fields and buttons: the control height, the control border, a pill for actions. */
+.cl-formFieldLabel { color: var(--ink); font-size: var(--text-ui); line-height: var(--leading-ui); font-weight: 600; }
+.cl-formFieldInput { min-block-size: var(--control-height); padding: var(--space-sm) var(--space-md); border: 1px solid var(--border-ui); border-radius: var(--radius-s); background: var(--surface); color: var(--ink); font-size: var(--text-details); box-shadow: none; }
+.cl-formFieldInput::placeholder { color: var(--ink-3); }
+/* A code is read left to right, in Arabic too. */
+.cl-otpCodeFieldInputs { direction: ltr; gap: var(--space-sm); }
+.cl-otpCodeFieldInput { inline-size: var(--control-height); block-size: var(--control-height); border: 1px solid var(--border-ui); border-radius: var(--radius-s); background: var(--surface); color: var(--ink); font-size: var(--text-details); box-shadow: none; }
+.cl-formButtonPrimary, .cl-socialButtonsBlockButton { min-block-size: var(--control-height); padding: var(--space-sm) var(--space-lg); border-radius: var(--radius-pill); font-size: var(--text-ui); line-height: var(--leading-ui); font-weight: 500; box-shadow: none; }
+.cl-formButtonPrimary { border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent); }
+.cl-formButtonPrimary:hover { background: var(--accent); opacity: .9; }
+.cl-socialButtonsBlockButton { border: 1px solid var(--border-ui); background: var(--surface); color: var(--ink); }
+.cl-socialButtonsBlockButton:hover { background: var(--surface-2); }
+.cl-dividerLine { background: var(--line); }
+.cl-dividerText { color: var(--ink-3); font-size: var(--text-label); }
+.cl-formFieldInput:focus-visible, .cl-otpCodeFieldInput:focus-visible, .cl-button:focus-visible, .cl-footerActionLink:focus-visible, .cl-userButtonTrigger:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; box-shadow: none; }
+
+/* Foot of the card. */
+.cl-footer { background: var(--surface-2); }
+.cl-footerActionText { color: var(--ink-2); font-size: var(--text-ui); }
+.cl-footerActionLink { color: var(--accent); font-size: var(--text-ui); font-weight: 600; }
+
+/* The signed-in reader's avatar in the app bar, and its menu. */
+.cl-userButtonTrigger { display: grid; place-items: center; inline-size: var(--control-height); block-size: var(--control-height); border-radius: 50%; }
+.cl-userButtonAvatarBox { inline-size: 2rem; block-size: 2rem; }
+.cl-userButtonPopoverCard { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
+.cl-userButtonPopoverMain { border-radius: var(--radius); background: var(--surface); }
+.cl-userButtonPopoverActionButton { min-block-size: var(--control-height); color: var(--ink); font-size: var(--text-ui); line-height: var(--leading-ui); }
+.cl-userButtonPopoverActionButton:hover { background: var(--surface-2); }
+.cl-userPreviewMainIdentifier { color: var(--ink); font-size: var(--text-ui); }
+.cl-userPreviewSecondaryIdentifier { color: var(--ink-2); font-size: var(--text-label); }

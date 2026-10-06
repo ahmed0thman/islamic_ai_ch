@@ -1,5 +1,5 @@
 // @ts-expect-error -- Node tests require explicit source extensions.
-import { deriveAtoms, readerUnits, resolveReaderContext } from "./atoms.ts";
+import { deriveAtoms, readerUnits, resolveReaderContext, suspendedNarration } from "./atoms.ts";
 // @ts-expect-error -- Node tests require explicit source extensions.
 import { answer } from "./answer.ts";
 // @ts-expect-error -- Node tests require explicit source extensions.
@@ -43,7 +43,7 @@ export function weaveResult(result: AskResponse): AskResponse {
 }
 
 export async function weaveStop(source: AtomSource, request: WeaveRequest, instruction: string, providers: ChoiceProvider[], options: Pick<AnswerOptions, "log" | "observe"> = {}): Promise<AskResponse> {
-  const atoms = stopAtoms(source, request.depth, request.stop);
+  const atoms = stopAtoms(source, request.depth, request.stop).map((atom) => suspendedNarration(atom, source.records) ? { ...atom, suspended: true } : atom);
   if (!atoms.length || !instruction?.trim()) return { status: "unavailable", atoms: [] };
   const context = resolveReaderContext(source, request.depth, request.stop);
   const history: HistoryTurn[] = request.questions.map((question) => ({ question, answer: "", atom_ids: [] }));

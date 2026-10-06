@@ -19,19 +19,22 @@ import { ExampleParagraph } from "./example-paragraph";
 import { useReading } from "./reading-context";
 import { useAsk, type AskTurn } from "./ask-state";
 import { AskOrb } from "./ask-orb";
-import { KeySheet } from "./key-sheet";
+import { SettingsKeyHint } from "@/components/settings/settings";
 import keyStyles from "./key-sheet.module.css";
+import { WideAskFollowups } from "@/components/wide/wide-ask-followups";
+import { useWideSurface } from "@/components/wide/wide-surface";
 
 const longEnough = (text: string) => [...text.trim()].length >= 3 && [...text.trim()].length <= 300;
 
 export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () => void }) {
+  const wideSurface = useWideSurface();
+  const wide = wideSurface?.wide;
   const ask = useAsk()!;
   const { openRecord } = useSheets();
   const { relations: _relations, ...reading } = useReading();
   const { ui } = reading;
   const id = useId();
   const [question, setQuestion] = useState("");
-  const [keyOpen, setKeyOpen] = useState(false);
   const [ownProvider, setOwnProvider] = useState<OwnKeyProvider | null>(null);
   useEffect(() => {
     const update = () => setOwnProvider(getOwnKey()?.provider ?? null);
@@ -78,6 +81,7 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
 
   // Keyboard inset effect
   useEffect(() => {
+    if (wide) return;
     const vv = typeof window !== "undefined" ? window.visualViewport : null;
     if (!vv) return;
     const update = () => {
@@ -91,10 +95,11 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
       vv.removeEventListener("scroll", update);
       document.documentElement.style.removeProperty("--kb");
     };
-  }, []);
+  }, [wide]);
 
   // Scroll last turn to top
   useEffect(() => {
+    if (wide) return;
     const turnsLen = ask.turns.length;
     if (turnsLen === 0) return;
     const isNew = turnsLen > prevLen.current;
@@ -106,7 +111,13 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       lastTurn.scrollIntoView({ block: "start", behavior: isNew && !prefersReducedMotion ? "smooth" : "auto" });
     }
-  }, [ask.turns.length]);
+  }, [ask.turns.length, wide]);
+  useEffect(() => {
+    if (!wide || wideSurface?.tab !== "ask" || !wideSurface.panelOpen || !bodyRef.current) return;
+    const list = bodyRef.current;
+    const question = list.querySelector<HTMLElement>(".ask-turn:last-child .ask-question");
+    if (question) list.scrollTo({ top: Math.max(0, question.getBoundingClientRect().top - list.getBoundingClientRect().top + list.scrollTop - 8), behavior: "auto" });
+  }, [wide, wideSurface?.tab, wideSurface?.panelOpen, ask.turns]);
 
   // Abort on unmount only: the ask state changes with every turn, so the cleanup must not depend on it.
   const dropTurn = useRef(ask.dropTurn);
@@ -195,6 +206,8 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
     return <>{atoms.map((atom) => atom.role === "source"
       ? <div className="ask-atom" key={atom.id}><SourceAtomRow atom={atom} ui={ui} onOpen={reading.onOpen} /></div>
       : <div className="ask-atom" key={atom.id}>
+        {/* A narration with no record, or whose record is not marked established, says so above its words (decision 093). */}
+        {atom.role === "transmission" && (!atom.records.length || atom.records.some((id) => drawing.records[id]?.badge !== "thabit")) ? <p className="ask-report-note">{ui.ask.report_note}</p> : null}
         <ParagraphView block={{ type: "paragraph", role: blockRole(atom), segments: displaySegments(atom) }} mode="flow" runPrefix={`ask:${turnId}:${atom.id}`} {...shown} />
         {atom.level !== ask.depth ? <span className="level-chip">{ui.ask.from_level} {levelName(atom.level)}</span> : null}
         {atom.surah !== undefined && atom.surah !== surahNo && surahName(atom.surah) ? <p className="ask-from-surah">{ui.ask.from_surah.replace("{name}", surahName(atom.surah))}</p> : null}
@@ -235,10 +248,12 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
              <p className="ask-composed-note">{ui.ask.composed_note}</p>
              {composedItems(composed, turn.id, drawing)}
            </> : atomRows(result.atoms, turn.id, drawing)}
+          <WideAskFollowups onAsk={performSubmit} />
         </>
       ) : (
         <>
           <p className="ask-fixed"><AskOrb size="sm" state="idle" /> {fixed}</p>
+          {result.status === "unavailable" ? <SettingsKeyHint ui={ui} /> : null}
           {(result.status === "fatwa" || result.status === "out_of_scope") && <a className="ask-link" href={ui.links.fatwa.url}>{ui.links.fatwa.label}</a>}
         </>
       )}
@@ -247,13 +262,12 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
 
   return <><BottomSheet variant="ask" title={ask.stop ? ui.ask.title_stop : ui.ask.title} titleAfter={<>
     <span className="ask-ai-badge">{ui.ask.ai_badge}</span>
-    <button type="button" className={keyStyles.open} aria-haspopup="dialog" aria-expanded={keyOpen} onClick={() => setKeyOpen(true)}>{ui.judge_key.open}</button>
   </>} ui={ui} onClose={onClose}>
     <div className="ask-sheet">
       <div className="ask-body" ref={bodyRef}>
         {ownProvider ? <p className={keyStyles.using} role="status">{ui.judge_key.using.replace("{provider}", ui.judge_key.providers[ownProvider])}</p>
           : ask.turns.some((turn) => turn.result?.status === "unavailable") ? <p className={keyStyles.using}>{ui.judge_key.intro}</p> : null}
-        {isListening ? (
+        {isListening && (!wide || !ask.turns.length) ? (
           <div className="ask-stage" role="status" aria-live="polite">
             <AskOrb ref={orbRef} size="lg" state={voice.state === "finalizing" ? "thinking" : "listening"} />
             <p className="ask-stage-title">
@@ -276,10 +290,13 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
           </div>
         ) : (
           <div aria-live="polite">
+            {wide && isListening ? <p className="wide-voice-status" role="status"><AskOrb ref={orbRef} size="sm" state={voice.state === "finalizing" ? "thinking" : "listening"} />
+              {voice.state === "finalizing" ? ui.ask.voice_transcribing : <>{ui.ask.voice_listening_title}<span className="ask-voice-clock">{clock(voice.elapsed)}</span></>}
+            </p> : null}
             <ol className="ask-thread">
               {ask.turns.map(turn => (
                  <li className="ask-turn" key={turn.id}>
-                   <p className="ask-question">{turn.question}</p>
+                   <p className="ask-question">{wide ? <span className="sheet-label wide-question-label">{ui.ask.your_question}</span> : null}{turn.question}</p>
                    {turn.loading ? <div className="ask-loading"><AskOrb size="sm" state="thinking" /> {ui.ask.loading}</div>
                    : turn.result ? renderResult(turn) : null}
                  </li>
@@ -317,6 +334,5 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
       </form>
     </div>
   </BottomSheet>
-    {keyOpen ? <KeySheet ui={ui} onClose={() => setKeyOpen(false)} /> : null}
   </>;
 }

@@ -1,0 +1,44 @@
+:root[data-theme="light"] {
+  --bg:        #f1eee4;   /* page ground (warm neutral) */
+  --surface:   #fbf9f3;   /* cards, sheets, doors */
+  --surface-2: #f3efe3;   /* quotes, evidence blocks, track */
+  --ink:       #1c2420;   /* primary text */
+  --ink-2:     #46514a;   /* secondary text */
+  --ink-3:     #5e6962;   /* tertiary, labels, captions (12.5px and up only) */
+  --line:        rgba(28,36,32,.13);
+  --line-strong: rgba(28,36,32,.26);   /* thread, dividers */
+  --border-ui:   rgba(28,36,32,.5);    /* borders of controls (3:1 against the ground) */
+  --accent:      #14472f;  /* dark green, the primary: stage, hook card, doors' branches, terms, links, selected */
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, transparent);
+  --on-accent:   #f4f0e2;
+  --gold:        #9f7d27;  /* the one accent: ayah-number ring, thread progress, current bead, depth underline, progress pips. Strokes and fills only, never small text */
+  --gold-strong: #7a5c12;  /* gold when it must be text on a light ground (ayah number in the medal) */
+  --on-gold:     #1c1608;
+  --gold-stage:  #d9bc77;  /* gold on the dark green stage (ayah gem) */
+  --stage-a: #14402f;      /* ayah stage + hero card gradient, dark green in both modes */
+  --stage-b: #0b271c;
+  --stage-ink:  #f2eddd;
+  --stage-mute: #a9c4b0;
+  --shadow: 0 1px 0 rgba(28,36,32,.04), 0 14px 28px -18px rgba(16,51,37,.45);
+  --scrim: rgba(8,16,12,.55);
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+
+    --bg:#14161a; --surface:#1a1d22; --surface-2:#1f232a;
+    --ink:#ece8de; --ink-2:#a9aeb6; --ink-3:#8a9098;
+    --line:rgba(236,232,222,.14); --line-strong:rgba(236,232,222,.3); --border-ui:rgba(236,232,222,.5);
+    --accent:#7fc49c; --on-accent:#0b271c;
+    --gold:#c9a95c; --gold-strong:#d9bc77; --on-gold:#1a1608; --gold-stage:#d9bc77;
+    --shadow: 0 1px 0 rgba(255,255,255,.03), 0 14px 28px -16px rgba(0,0,0,.8);
+    --stage-a:#133b2b; --stage-b:#0b271c; --scrim:rgba(0,0,0,.62);
+  
+  color-scheme: dark;
+}
+.theme-choice-row { display: flex; flex: none; align-items: center; justify-content: space-between; gap: var(--space-md); padding: var(--space-md) var(--gutter); border-block-start: 1px solid var(--line); font-size: var(--text-ui); }
+.theme-choice-row label { display: inline-flex; align-items: center; gap: var(--space-sm); }
+.theme-choice-row select { min-block-size: var(--control-height); padding-inline: var(--space-md); border: 1px solid var(--border-ui); border-radius: var(--radius-s); color: var(--ink); background: var(--surface); font: inherit; }
+:root[data-theme="light"] .source-icon, :root[data-theme="light"] .badge-thabit { color: var(--ink); }
+:root[data-theme="light"] .badge-thabit { border-color: var(--ink); }
+:root[data-theme="dark"] .source-icon, :root[data-theme="dark"] .badge-thabit { color: color-mix(in srgb, var(--ink) 45%, white); }
+:root[data-theme="dark"] .badge-thabit { border-color: color-mix(in srgb, var(--ink) 45%, white); }

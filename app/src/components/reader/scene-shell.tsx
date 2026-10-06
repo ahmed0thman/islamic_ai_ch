@@ -3,8 +3,10 @@
 import { createContext, useContext, useRef, useState, type ReactNode } from "react";
 import { jumpToAyah } from "@/lib/reader-dom";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useWideSurface } from "@/components/wide/wide-surface";
+import { WideScene } from "@/components/wide/wide-scene";
 
-const SceneReturnContext = createContext<((key: string) => void) | null>(null);
+export const SceneReturnContext = createContext<((key: string) => void) | null>(null);
 export const useSceneReturn = () => useContext(SceneReturnContext);
 
 /**
@@ -13,6 +15,10 @@ export const useSceneReturn = () => useContext(SceneReturnContext);
  * Its body marks the heading with `data-scene-heading`; the shell focuses it on open and returns focus to the opener on close.
  */
 export function SceneShell({ onBack, onReturnAyah, children }: { onBack: () => void; onReturnAyah?: (key: string) => void; children: ReactNode }) {
+  const surface = useWideSurface();
+  return surface?.wide ? <WideScene onReturnAyah={onReturnAyah}>{children}</WideScene> : <PhoneSceneShell onBack={onBack} onReturnAyah={onReturnAyah}>{children}</PhoneSceneShell>;
+}
+function PhoneSceneShell({ onBack, onReturnAyah, children }: { onBack: () => void; onReturnAyah?: (key: string) => void; children: ReactNode }) {
   const returnKey = useRef<string | null>(null);
   const [origin] = useState(() => ({ opener: typeof document !== "undefined" && document.activeElement instanceof HTMLElement ? document.activeElement : null, y: typeof window !== "undefined" ? window.scrollY : 0 }));
   return <Dialog open onOpenChange={(open) => { if (!open) onBack(); }}>

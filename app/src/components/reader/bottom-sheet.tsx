@@ -6,12 +6,17 @@ import type { Ui } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { useWideSurface, WideSheet } from "@/components/wide/wide-surface";
 
 export type BottomSheetProps = {
   title: string; ui: Ui; onClose: () => void; children: ReactNode | ((dismiss: () => void) => ReactNode); term?: boolean;
-  variant?: "ask"; titleAfter?: ReactNode;
+  variant?: "ask" | "settings"; titleAfter?: ReactNode;
 };
-export function BottomSheet({ title, ui, onClose, children, term = false, variant, titleAfter }: BottomSheetProps) {
+export function BottomSheet(props: BottomSheetProps) {
+  const surface = useWideSurface();
+  return surface?.wide ? <WideSheet {...props} /> : <PhoneBottomSheet {...props} />;
+}
+function PhoneBottomSheet({ title, ui, onClose, children, term = false, variant, titleAfter }: BottomSheetProps) {
   const id = useId();
   const [open, setOpen] = useState(true);
   const closeButton = useRef<HTMLButtonElement>(null);
@@ -70,10 +75,9 @@ export function BottomSheet({ title, ui, onClose, children, term = false, varian
       <header className="huda-sheet-header">
         <SheetTitle className={term ? "huda-sheet-title huda-term-title" : "huda-sheet-title"}>{title}</SheetTitle>
         {titleAfter}
-        <Button ref={closeButton} variant="round" size="icon" onClick={requestClose} aria-label={ui.panel.close}><Icon icon={Cancel01Icon} /></Button>
+        <Button ref={closeButton} variant="round" size="icon" onClick={requestClose} aria-label={variant === "settings" ? ui.settings.back : ui.panel.close}><Icon icon={Cancel01Icon} /></Button>
       </header>
       <div className="huda-sheet-scroll">{typeof children === "function" ? children(requestClose) : children}</div>
     </SheetContent>
   </Sheet>;
 }
-

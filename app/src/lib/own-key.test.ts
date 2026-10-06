@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 // @ts-expect-error -- Node tests require explicit source extensions.
-import { clearOwnKey, getOwnKey, keyWithinShape, OWN_KEY_CHANGE_EVENT, ownKeyHeaders, setOwnKey } from "./own-key.ts";
+import { clearOwnKey, clearProviderOwnKey, getOwnKey, getOwnKeys, keyWithinShape, OWN_KEY_CHANGE_EVENT, ownKeyHeaders, setActiveOwnKey, setOwnKey, setProviderOwnKey } from "./own-key.ts";
 // @ts-expect-error -- Node tests require explicit source extensions.
 import { requestAsk } from "./ask-client.ts";
 // @ts-expect-error -- Node tests require explicit source extensions.
@@ -126,5 +126,63 @@ test("Ask and weave send the current key only in headers; own-key weave requests
     clearOwnKey();
     await requestAsk({ surah: 108, depth: 1, question: "question" }, undefined, send);
     assert.equal(new Headers(seen.at(-1)!.options.headers).has("x-huda-key"), false);
+  } finally { fixture.restore(); }
+});
+
+
+test("provider keys coexist and only the active pair is used", () => {
+  const fixture = browser();
+  try {
+    const keys = { "opencode-go": "x".repeat(20), openai: "y".repeat(20), anthropic: "z".repeat(20) };
+    for (const provider of ["opencode-go", "openai", "anthropic"] as const) {
+      assert.equal(setProviderOwnKey({ provider, key: keys[provider] }), true);
+    }
+    assert.deepEqual(getOwnKeys(), { keys, active: "opencode-go" });
+    assert.equal(setActiveOwnKey("anthropic"), true);
+    assert.equal(getOwnKey()?.provider, "anthropic");
+    assert.deepEqual(Object.keys(ownKeyHeaders()).sort(), ["x-huda-key", "x-huda-provider"]);
+    assert.equal(ownKeyHeaders()["x-huda-key"] === keys.anthropic, true);
+    assert.equal(clearProviderOwnKey("openai"), true);
+    assert.equal(getOwnKey()?.provider, "anthropic");
+    assert.equal(clearProviderOwnKey("anthropic"), true);
+    assert.equal(getOwnKey()?.provider, "opencode-go");
+    assert.equal(clearProviderOwnKey("opencode-go"), true);
+    assert.equal(getOwnKey(), null);
+    assert.deepEqual(ownKeyHeaders(), {});
+    assert.equal(setActiveOwnKey("openai"), false);
+  } finally { fixture.restore(); }
+});
+
+test("legacy storage is read without data loss and upgraded on a provider save", () => {
+  const fixture = browser();
+  try {
+    const legacy = { provider: "openai", key: "x".repeat(20) };
+    fixture.sessionStorage.setItem("huda-own-key", JSON.stringify(legacy));
+    assert.equal(getOwnKey()?.provider, "openai");
+    assert.equal(getOwnKey()?.key === legacy.key, true);
+    assert.equal(setProviderOwnKey({ provider: "anthropic", key: "y".repeat(20) }), true);
+    assert.equal(getOwnKey()?.provider, "openai");
+    assert.deepEqual(Object.keys(getOwnKeys().keys).sort(), ["anthropic", "openai"]);
+    const stored = JSON.parse(fixture.sessionStorage.getItem("huda-own-key")!);
+    assert.deepEqual(Object.keys(stored).sort(), ["active", "keys"]);
+    assert.equal(stored.keys.openai === legacy.key, true);
+  } finally { fixture.restore(); }
+});
+
+test("new storage rejects invalid keys and cannot select an unsaved provider", () => {
+  const fixture = browser();
+  try {
+    fixture.sessionStorage.setItem("huda-own-key", JSON.stringify({
+      keys: { openai: "x".repeat(20), anthropic: "short", "opencode-go": 42, unknown: "y".repeat(20) }, active: "anthropic",
+    }));
+    assert.deepEqual(Object.keys(getOwnKeys().keys), ["openai"]);
+    assert.equal(getOwnKey(), null);
+    assert.deepEqual(ownKeyHeaders(), {});
+    assert.equal(setActiveOwnKey("anthropic"), false);
+    assert.equal(setProviderOwnKey({ provider: "anthropic", key: "short" }), false);
+    assert.equal(setActiveOwnKey("openai"), true);
+    assert.equal(getOwnKey()?.provider, "openai");
+    assert.equal(clearOwnKey(), true);
+    assert.deepEqual(getOwnKeys(), { keys: {} });
   } finally { fixture.restore(); }
 });

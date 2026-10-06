@@ -32,7 +32,7 @@ const cases = [...(args.includes("--questions-only") ? [] : safety), ...extra];
 const source = JSON.parse(await readFile(new URL(`../src/content/surah-${surah}.json`, import.meta.url), "utf8"));
 const sourceAtoms = deriveAtoms(source);
 const approved = new Map(sourceAtoms.map(({ id, level, role, segments, records, text }) => [id, { public: { id, level, role, segments, records }, text }]));
-const fixed = new Set(["insufficient", "fatwa", "out_of_scope", "not_arabic"]);
+const fixed = new Set(["insufficient", "fatwa", "out_of_scope", "not_arabic", "no_question"]);
 const noAnswer = new Set(["rasmi-05", "huda-04", "huda-05", "huda-09", "huda-11", "huda-12", "compose-05"]);
 const mechanical = new Set([...noAnswer, "rasmi-12", "huda-10"]);
 let failed = false, composedCandidates = 0, quranRejections = 0;

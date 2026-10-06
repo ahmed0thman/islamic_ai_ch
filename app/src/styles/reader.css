@@ -239,6 +239,7 @@
 .huda-reader .reading-body { padding-block: 0 var(--space-xl); }
 .surah-header { text-align: start; }
 .reader-appbar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); min-block-size: 3.75rem; padding: var(--space-md) var(--gutter) 0; }
+.reader-actions { display: flex; align-items: center; gap: var(--space-sm); }
 .reader-brand { display: flex; align-items: center; gap: var(--space-sm); font-size: var(--text-door); font-weight: 700; }
 .reader-appbar .huda-button { padding-inline: .75rem; font-size: .875rem; }
 .reader-brand .huda-button { padding: 0; }
