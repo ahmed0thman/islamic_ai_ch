@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { ArrowDown01Icon, BubbleChatQuestionIcon, Cancel01Icon, HelpCircleIcon, Key01Icon, KeyboardIcon, Moon02Icon, Sun03Icon, Settings01Icon, SidebarLeftIcon, RightToLeftListBulletIcon } from "@hugeicons/core-free-icons";
+import { ArrowDown01Icon, BubbleChatQuestionIcon, Cancel01Icon, HelpCircleIcon, HistoryIcon, Key01Icon, KeyboardIcon, Moon02Icon, Sun03Icon, Settings01Icon, SidebarLeftIcon, RightToLeftListBulletIcon } from "@hugeicons/core-free-icons";
 import type { Depth, Surah, SurahSummary, Ui } from "@/lib/types";
 import type { SurahMapModel } from "@/lib/map";
 import type { DepthItemsModel, SceneUnit } from "@/lib/depth-items";
@@ -18,6 +18,7 @@ import { useSheets } from "@/components/reader/sheet-provider";
 import { useAsk } from "@/components/reader/ask-state";
 import { useSettings } from "@/components/settings/settings";
 import { UserBadge, SignInEntry } from "@/components/account/account";
+import { HistoryList } from "@/components/history/history-list";
 import { WideThemeMenu, useWideTheme } from "./theme-choice";
 import { Disclosure } from "@/components/disclosure";
 import { WideContext } from "./wide-context";
@@ -40,7 +41,7 @@ function WideLayout({ surah, surahs, ui, depth, view, map, items, stop, closing,
   const pendingPassage = useRef<string | null>(null);
   const onPassageRef = useRef(onPassage); onPassageRef.current = onPassage;
   const [drawer, setDrawer] = useState(false);
-  const [localPopover, setLocalPopover] = useState<"surahs" | "shortcuts" | "theme" | null>(null);
+  const [localPopover, setLocalPopover] = useState<"surahs" | "shortcuts" | "theme" | "history" | null>(null);
   const settings = useSettings();
   const [query, setQuery] = useState("");
   const [expand, setExpand] = useState(false);
@@ -58,6 +59,7 @@ function WideLayout({ surah, surahs, ui, depth, view, map, items, stop, closing,
     surface.setSuggestions([...new Set(questions)].slice(0, 3));
   }, [surah, depth, stop, followups, surface.setSuggestions]);
   const tabs: WideTab[] = ["passage", "source", "term", ...(ask ? ["ask" as const] : []), ...(weave ? ["weave" as const] : [])];
+  const popoverTitle = localPopover === "surahs" ? ui.reader.surahs_title : localPopover === "history" ? ui.history.title : localPopover ? ui.wide[localPopover] : "";
   const closeLocal = useCallback((refocus = true) => { setLocalPopover(null); if (refocus) opener.current?.focus({ preventScroll: true }); }, []);
   function togglePopover(value: NonNullable<typeof localPopover>, element?: HTMLElement) {
     if (localPopover === value) { closeLocal(); return; }
@@ -122,7 +124,7 @@ function WideLayout({ surah, surahs, ui, depth, view, map, items, stop, closing,
     const anchor = localPopover ? opener.current : surface.popoverAnchor;
     const outside = (event: PointerEvent) => {
       if (!(event.target instanceof Element) || popover.current?.contains(event.target) || anchor?.contains(event.target)) return;
-      const nextTrigger = event.target.closest(".wide-surah-picker, .wide-shortcut-trigger, .wide-theme-trigger, .wide-settings-trigger, .wide-legend-trigger, .wide-index-legend button");
+      const nextTrigger = event.target.closest(".wide-surah-picker, .wide-shortcut-trigger, .wide-theme-trigger, .wide-history-trigger, .wide-settings-trigger, .wide-legend-trigger, .wide-index-legend button");
       if (!nextTrigger) event.preventDefault();
       if (localPopover) closeLocal(!nextTrigger); else surface.closePopover(!nextTrigger);
     };
@@ -195,7 +197,7 @@ function WideLayout({ surah, surahs, ui, depth, view, map, items, stop, closing,
       {iconButton(ui.guide.reopen, HelpCircleIcon, () => { closeLocal(false); surface.closePopover(false); requestGuide(); }, undefined, "wide-guide-trigger")}
       {iconButton(ui.wide.theme, theme.effective === "dark" ? Moon02Icon : Sun03Icon, (element) => togglePopover("theme", element), localPopover === "theme", "wide-theme-trigger")}
       {iconButton(ui.settings.open, Settings01Icon, () => { closeLocal(false); if (settings.isOpen) settings.close(); else settings.open(Boolean(ask)); }, settings.isOpen, "wide-settings-trigger")}
-      {process.env.NEXT_PUBLIC_HUDA_AUTH === "1" ? <div className="wide-account" aria-label={ui.wide.account}><UserBadge /><SignInEntry ui={ui} onAct={(act) => act()} /></div> : null}
+      {process.env.NEXT_PUBLIC_HUDA_AUTH === "1" ? <div className="wide-account" aria-label={ui.wide.account}>{iconButton(ui.history.title, HistoryIcon, (element) => togglePopover("history", element), localPopover === "history", "wide-history-trigger")}<UserBadge /><SignInEntry ui={ui} onAct={(act) => act()} /></div> : null}
       {!surface.panelOpen ? iconButton(ui.wide.panel_show, SidebarLeftIcon, () => surface.setPanelOpen(true), undefined, "wide-panel-show") : null}
     </div></header>
     <div className="wide-grid"><nav className="wide-index" aria-label={ui.wide.toc}><div className="wide-index-scroll" ref={rail}>
@@ -221,8 +223,8 @@ function WideLayout({ surah, surahs, ui, depth, view, map, items, stop, closing,
       <div className="wide-detail-host" ref={detailHost} hidden={surface.tab !== surface.detailTab} />
     </aside></div>
     {drawer ? <button type="button" className="wide-index-scrim" aria-label={ui.panel.close} onClick={() => setDrawer(false)} /> : null}
-    <div className="wide-popover-position" ref={popover} hidden={!localPopover && !surface.hasPopover}><div ref={popoverHost} />{localPopover ? <section className="wide-local-popover" role="dialog" aria-label={localPopover === "surahs" ? ui.reader.surahs_title : ui.wide[localPopover]}><header><h2>{localPopover === "surahs" ? ui.reader.surahs_title : ui.wide[localPopover]}</h2>{iconButton(ui.panel.close, Cancel01Icon, () => closeLocal())}</header>
-      {localPopover === "theme" ? <WideThemeMenu ui={ui} onChoose={() => closeLocal()} /> : localPopover === "surahs" ? <><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} aria-label={ui.menu.search_label} placeholder={ui.menu.search_placeholder} /><ul>{surahs.filter((item) => !query || item.name.includes(query) || String(item.no) === query).map((item) => <li key={item.no}><a href={`/s/${item.no}/`} aria-current={item.no === surah.surah.no ? "page" : undefined}>{item.name}<small>{numeral(item.ayah_count)}</small></a></li>)}</ul></> : <ul className="wide-shortcuts">{[[ui.reader.next_stop, "J / ArrowLeft"], [ui.reader.previous_stop, "K / ArrowRight"], [ui.reader.choose_depth, "1 2 3 4"], [ui.reader.map_view + " / " + ui.reader.read_continuous, "M"], ...(ask ? [[ui.ask.open, "/"]] : []), [ui.panel.close, "Escape"], [ui.wide.shortcuts, "?"]].map(([label, key]) => <li key={key}><span>{label}</span><kbd>{key}</kbd></li>)}</ul>}
+    <div className="wide-popover-position" ref={popover} hidden={!localPopover && !surface.hasPopover}><div ref={popoverHost} />{localPopover ? <section className="wide-local-popover" role="dialog" aria-label={popoverTitle}><header><h2>{popoverTitle}</h2>{iconButton(ui.panel.close, Cancel01Icon, () => closeLocal())}</header>
+      {localPopover === "theme" ? <WideThemeMenu ui={ui} onChoose={() => closeLocal()} /> : localPopover === "history" ? <HistoryList ui={ui} /> : localPopover === "surahs" ? <><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} aria-label={ui.menu.search_label} placeholder={ui.menu.search_placeholder} /><ul>{surahs.filter((item) => !query || item.name.includes(query) || String(item.no) === query).map((item) => <li key={item.no}><a href={`/s/${item.no}/`} aria-current={item.no === surah.surah.no ? "page" : undefined}>{item.name}<small>{numeral(item.ayah_count)}</small></a></li>)}</ul></> : <ul className="wide-shortcuts">{[[ui.reader.next_stop, "J / ArrowLeft"], [ui.reader.previous_stop, "K / ArrowRight"], [ui.reader.choose_depth, "1 2 3 4"], [ui.reader.map_view + " / " + ui.reader.read_continuous, "M"], ...(ask ? [[ui.ask.open, "/"]] : []), [ui.panel.close, "Escape"], [ui.wide.shortcuts, "?"]].map(([label, key]) => <li key={key}><span>{label}</span><kbd>{key}</kbd></li>)}</ul>}
     </section> : null}</div>
   </div>;
 }

@@ -44,6 +44,6 @@ export function AskedSection({ stop }: { stop: number | null }) {
       })}
       <Button className="asked-remove" variant="quiet" size="sm" onClick={() => remove(item.id, entries.length === 1)}>{ui.ask.remove}</Button>
     </li>)}</ul>
-    <p className="asked-note">{ui.ask.saved_on_device}</p>
+    <p className="asked-note">{ask.accountSaved ? ui.history.saved_in_account : ui.ask.saved_on_device}</p>
   </section>;
 }

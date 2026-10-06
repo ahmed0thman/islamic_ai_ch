@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Depth, SourceRecord, Surah, SurahSummary, Ui } from "@/lib/types";
 import { deriveSurahMap, heroStop } from "@/lib/map";
 import { deriveDepthItems, depthHero, depthPlaylist, sceneNeighbours, type SceneUnit } from "@/lib/depth-items";
@@ -28,6 +29,8 @@ import { ContinuousView } from "./continuous-view";
 import { TermsSummary } from "./terms-summary";
 import { AskProvider } from "./ask-context";
 import { AskDock } from "./ask-dock";
+import { useReaderHistory } from "@/components/history/use-reader-history";
+import { ResumeCard } from "@/components/history/resume-card";
 import { Guide } from "@/components/guide/guide";
 import { AskedSection } from "./asked-section";
 import { useAsk } from "./ask-state";
@@ -153,7 +156,7 @@ export function Reader({ surah, ui, nextSurah, surahs, ask = false, weave = fals
   // The scene walks the weaving in its own order, so the opening question is followed by the paragraph the text puts second.
   const playlist: SceneUnit[] = (stop?.kind === "pin" || stop?.kind === "section") ? depthPlaylist(items, stop) : [...map.stops].sort((a, b) => a.blockIndex - b.blockIndex);
   const neighbours = stop ? sceneNeighbours(playlist, stop.number) : { previous: undefined, next: undefined };
-  const visitedNumbers = new Set(units.filter((item) => visited.has(`${depth}:${item.blockIndex}`)).map((item) => item.number));
+  const visitedNumbers = new Set(units.filter((item) => visited.has(`${depth}:${item.blockIndex}`) || history.serverVisited.has(`${depth}:${item.blockIndex}`)).map((item) => item.number));
   const reading = { surahNo: surah.surah.no, relations: relationRecords(surah, depth), ayahs, records: surah.records, ui, onOpen: openSource };
   useEffect(() => {
     const position = pendingAyah.current;
@@ -230,12 +233,32 @@ export function Reader({ surah, ui, nextSurah, surahs, ask = false, weave = fals
     if (nextStop) { setVisited((previous) => new Set(previous).add(`${next}:${nextStop.blockIndex}`)); setCurrentStops((previous) => ({ ...previous, [next]: nextStop.number })); }
     updateUrl(next, preserveClosing ? "summary" : nextStop?.number ?? null, view === "text" || !(maps[next].stops.length || itemModels[next].units.length), true);
   }
+  /** A stop by its URL number at a level, for the account's saved place. */
+  function unitAtStop(level: Depth, number: number) {
+    return (maps[level].stops.length ? maps[level].stops : itemModels[level].units).find((item) => item.number === number);
+  }
+  /** Resume: the saved level and stop, as if the reader had walked there themself; never automatic. */
+  function resumeFrom(level: Depth, number: number) {
+    const unit = unitAtStop(level, number);
+    if (!unit) return;
+    if (wideSurface?.wide) wideSurface.closeDetail();
+    if (view !== "map") { setView("map"); rememberView("map"); }
+    setDepth(level); remember(level);
+    setStopNumber(unit.number); setClosingOpen(false);
+    setVisited((previous) => new Set(previous).add(`${level}:${unit.blockIndex}`));
+    setCurrentStops((previous) => ({ ...previous, [level]: unit.number }));
+    updateUrl(level, unit.number, false, true);
+  }
   const startNumber = Number(scopeStart(surah, scope).split(":")[1]);
   const passages = surah.passages ?? [];
   const hero: SceneUnit | undefined = map.stops.length ? heroStop(map.stops, (key) => scopeContains(key, scope, passages), startNumber) : depthHero(items, startNumber, scope.kind === "surah");
   // Deeper questions under the open stop: derived from the content alone, no model.
   const followups = useMemo(() => stop ? deriveFollowups(surah, depth, { title: stop.title, ayahKeys: stop.ayahKeys }, maps.map((model) => model.stops)) : [], [surah, depth, stop, maps]);
   const passage = stop ? surah.passages?.find((item) => item.id === stop.passage) : undefined;
+  const history = useReaderHistory({ surah, maps, items: itemModels, depth, stopNumber: stopNumber, closing: Boolean(closing), visited, currentStops });
+  const resume = history.resume && !stopNumber && !closing ? history.resume : null;
+  const resumeUnit = resume ? unitAtStop(resume.depth, resume.stop) : undefined;
+  const resumeDepthName = resume ? ui.levels.find((item) => item.depth === resume.depth)?.name ?? "" : "";
   const nextPassage = neighbours.next && neighbours.next.passage !== stop?.passage ? surah.passages?.find((item) => item.id === neighbours.next!.passage) : undefined;
   // Starter questions for the ask panel: this level's stop titles that are themselves questions (they end in the Arabic question mark).
   const starters = useMemo(() => {
@@ -243,7 +266,7 @@ export function Reader({ surah, ui, nextSurah, surahs, ask = false, weave = fals
     return map.stops.map((item) => item.title)
       .filter((title): title is string => typeof title === "string" && title.endsWith("\u061F") && title !== open).slice(0, 3);
   }, [map.stops, stop]);
-  return <ReadingProvider value={reading}><AskProvider enabled={ask} surah={surah} depth={depth} stop={stop ? { number: stop.number, title: stop.sceneTitle ?? stop.title } : null} starters={starters} surahs={surahs} sources={sources}><WideReader surah={surah} surahs={surahs} ui={ui} depth={depth} view={view} map={map} items={items} stop={stop} closing={Boolean(closing)} weave={weave} followups={followups} onDepth={chooseDepth} onView={chooseView} onStop={openPart} onBack={backToMap} onClosing={() => { if (view !== "map") { setView("map"); rememberView("map"); } openClosing(); }} onPassage={(id) => { if (wideSurface?.wide) restoreWideAyah(surah.passages?.find((item) => item.id === id)?.from ?? null); else chooseScope({ kind: "passage", id }); }}><div className="huda-reader">
+  return <ReadingProvider value={reading}><AskProvider enabled={ask} surah={surah} depth={depth} stop={stop ? { number: stop.number, title: stop.sceneTitle ?? stop.title } : null} starters={starters} surahs={surahs} sources={sources} serverQuestions={history.questions} savedToAccount={history.savedToAccount} onSaveQuestion={history.saveQuestion}><WideReader surah={surah} surahs={surahs} ui={ui} depth={depth} view={view} map={map} items={items} stop={stop} closing={Boolean(closing)} weave={weave} followups={followups} onDepth={chooseDepth} onView={chooseView} onStop={openPart} onBack={backToMap} onClosing={() => { if (view !== "map") { setView("map"); rememberView("map"); } openClosing(); }} onPassage={(id) => { if (wideSurface?.wide) restoreWideAyah(surah.passages?.find((item) => item.id === id)?.from ?? null); else chooseScope({ kind: "passage", id }); }}><div className="huda-reader">
     <SurahHeader surah={surah} surahs={surahs} scope={scope} ui={ui} onOpenUnit={() => openUnit(surah, scope, chooseScope)} onMap={mapped && (view === "text" || stop || closing) ? (stop || closing ? backToMap : () => chooseView("map")) : undefined} />
     {showMap && hero ? <div className="hero-area"><HeroQuestion stop={hero} ui={ui} animate={settled} onOpen={openStop} /></div> : null}
     <div className="console">
@@ -252,6 +275,7 @@ export function Reader({ surah, ui, nextSurah, surahs, ask = false, weave = fals
     </div>
     {mapped ? <ViewToggle view={view} ui={ui} onChange={chooseView} /> : null}
     <article className="reading-body" aria-label={ui.levels.find((item) => item.depth === depth)!.name}>
+      {resume && resumeUnit ? <ResumeCard ui={ui} stop={resume.stop} depthName={resumeDepthName} onResume={() => resumeFrom(resume.depth, resume.stop)} onDismiss={history.dismissResume} /> : null}
       {showMap ? <><SurahThread key={wideSurface?.wide ? depth : undefined} map={map} items={items} scope={scope} onScope={chooseScope} onAyah={(key) => openUnit(surah, { kind: "ayah", key }, chooseScope)} ui={ui} visited={visitedNumbers} currentStop={currentStops[depth] ?? null} hidden={Boolean(stop || closing)} onOpen={openStop} />
           {summary ? <ClosingEntry ui={ui} threaded={!items.shelf.length} hidden={Boolean(stop || closing)} onOpen={openClosing} /> : null}
           {termsSummary ? <TermsSummary summary={termsSummary} ui={ui} hidden={Boolean(stop || closing)} onOpen={openSource} /> : null}

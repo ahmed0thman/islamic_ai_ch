@@ -19,6 +19,8 @@ export interface AskState {
   stop: AskStop | null;
   /** Questions this device holds for the surah whose sentences still exist, newest first. */
   entries: AskedEntry[];
+  /** True once a question save reached the signed-in reader's account; the asked note then says so. */
+  accountSaved: boolean;
   open: () => void;
   save: (entry: { question: string; atomIds: string[]; held?: PublicAtom[]; heldContext?: AskExtra }) => void;
   remove: (id: string) => void;

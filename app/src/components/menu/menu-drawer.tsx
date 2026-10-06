@@ -3,13 +3,14 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Dialog, Tabs } from "radix-ui";
-import { Cancel01Icon, HelpCircleIcon, InformationCircleIcon, Quran01Icon, Settings01Icon } from "@hugeicons/core-free-icons";
+import { Cancel01Icon, HelpCircleIcon, HistoryIcon, InformationCircleIcon, Quran01Icon, Settings01Icon } from "@hugeicons/core-free-icons";
 import type { Ui } from "@/lib/types";
 import { jumpToAyah } from "@/lib/reader-dom";
 import { requestGuide } from "@/lib/guide";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { SignInEntry } from "@/components/account/account";
+import { HistoryList } from "@/components/history/history-list";
 import { useSettings } from "@/components/settings/settings";
 import { useAsk } from "@/components/reader/ask-state";
 import { AboutTab } from "./about-tab";
@@ -101,9 +102,11 @@ export function MenuDrawer({ ui, current, onClose }: MenuDrawerProps) {
           <Tabs.List className="menu-tablist" aria-label={ui.menu.title}>
             <Tabs.Trigger className="menu-tab" value="mushaf"><Icon icon={Quran01Icon} />{ui.menu.tab_mushaf}</Tabs.Trigger>
             <Tabs.Trigger className="menu-tab" value="about"><Icon icon={InformationCircleIcon} />{ui.menu.tab_about}</Tabs.Trigger>
+            <Tabs.Trigger className="menu-tab" value="history"><Icon icon={HistoryIcon} />{ui.history.title}</Tabs.Trigger>
           </Tabs.List>
           <Tabs.Content className="menu-panel" value="mushaf"><MushafTab ui={ui} current={current} onChoose={choose} /></Tabs.Content>
           <Tabs.Content className="menu-panel" value="about"><AboutTab ui={ui} onAct={choose} /></Tabs.Content>
+          <Tabs.Content className="menu-panel" value="history"><HistoryList ui={ui} /></Tabs.Content>
         </Tabs.Root>
         <SignInEntry ui={ui} onAct={choose} />
         <Button variant="quiet" className="menu-settings" onClick={() => choose(() => requestGuide())}><Icon icon={HelpCircleIcon} />{ui.guide.reopen}</Button>

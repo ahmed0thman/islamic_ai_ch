@@ -1,0 +1,15 @@
+/* The signed-in reader's history: a resume card at the top of the reading area, and the history list
+   in the menu drawer (phone) and the account popover (wide). Only shared tokens, no new colours. */
+
+.history-resume { margin-block-end: var(--space-lg); padding: var(--space-md) var(--space-lg); border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface-2); }
+.history-resume-title { font-weight: 700; color: var(--ink); }
+.history-resume-body { margin-block-start: var(--space-xs); font-size: var(--text-ui); line-height: var(--leading-ui); color: var(--ink-2); }
+.history-resume-actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-block-start: var(--space-md); }
+
+.history-note { padding: var(--space-md) var(--gutter); font-size: var(--text-ui); line-height: var(--leading-ui); color: var(--ink-2); }
+.history-rows { padding: var(--space-xs) var(--gutter) var(--space-md); }
+.history-row { padding-block: var(--space-sm); border-block-end: 1px solid var(--line); }
+.history-row:last-child { border-block-end: 0; }
+.history-row-name { font-family: var(--font-quran); font-size: var(--text-quote); line-height: 1.9; color: var(--ink); }
+.history-row-line { margin-block-start: var(--space-xs); font-size: var(--text-label); line-height: var(--leading-ui); color: var(--ink-3); }
+.history-row-open { display: inline-flex; align-items: center; min-block-size: var(--control-height); margin-block-start: var(--space-xs); color: var(--accent); font-size: var(--text-label); text-decoration: underline; text-underline-offset: .3em; }
