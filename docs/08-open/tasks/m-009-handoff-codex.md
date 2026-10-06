@@ -11,7 +11,8 @@ Written in English because it is a brief for Codex. The owner is Ahmed Hisham. T
 - **Live:** `https://hudan.ahmedothman.online` (Render service `huda`). `origin/main` = `9b9603b`, live since 21:46. 16 surahs published (`app/src/lib/published.ts`: 93, 100–114).
 - **Repo:** `ahmed0thman/islamic_ai_ch`, still **PRIVATE**. The rules require a public repo; making it public is the owner's own action.
 - **Judged score, the orchestrator's own estimate (not a measurement):** about 3.5 of 5 without the "presentation" criterion; the owner's target is 4. The reference for every number is `docs/07-competition/measured-results.md`.
-- **Running:** the final independent reviews of fifteen surahs (task 1), started 21:59. Nothing else.
+- **Reviews finished 22:12** (task 1): ten surahs "fix then ship" with no critical finding (100, 101, 102, 103, 105, 107, 109, 111, 112, 113); five "do not ship" (93, 104, 108, 110, 114). Totals: 13 critical, 30 major, 54 minor. Critical: 93 six, 108 four, 104, 110 and 114 one each. Most major findings are in 107 (nine) and 112 (seven).
+- **Running since 22:15:** a Claude Opus agent treating the 13 critical findings (order 108, 104, 110, 114, 93; one local commit per surah after its gates pass; no push; brief in the Claude scratchpad `brief-fix-criticals.md`). If the Claude quota ends mid-way, uncommitted edits under `content/` for one of these surahs are its unfinished work: check `git status`, and either finish that surah by the same rules or ask the owner before discarding. After the fixes: re-run the review for those five surahs with `codex:extract-codex` to confirm, then ask the owner for a push. The 30 major findings are untouched.
 
 ## 2. Rules you must keep (the owner's standing rules)
 
