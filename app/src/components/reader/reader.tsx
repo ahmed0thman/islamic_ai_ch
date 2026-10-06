@@ -156,6 +156,7 @@ export function Reader({ surah, ui, nextSurah, surahs, ask = false, weave = fals
   // The scene walks the weaving in its own order, so the opening question is followed by the paragraph the text puts second.
   const playlist: SceneUnit[] = (stop?.kind === "pin" || stop?.kind === "section") ? depthPlaylist(items, stop) : [...map.stops].sort((a, b) => a.blockIndex - b.blockIndex);
   const neighbours = stop ? sceneNeighbours(playlist, stop.number) : { previous: undefined, next: undefined };
+  const history = useReaderHistory({ surah, maps, items: itemModels, depth, stopNumber: stopNumber, closing: Boolean(closing), visited, currentStops });
   const visitedNumbers = new Set(units.filter((item) => visited.has(`${depth}:${item.blockIndex}`) || history.serverVisited.has(`${depth}:${item.blockIndex}`)).map((item) => item.number));
   const reading = { surahNo: surah.surah.no, relations: relationRecords(surah, depth), ayahs, records: surah.records, ui, onOpen: openSource };
   useEffect(() => {
@@ -255,7 +256,6 @@ export function Reader({ surah, ui, nextSurah, surahs, ask = false, weave = fals
   // Deeper questions under the open stop: derived from the content alone, no model.
   const followups = useMemo(() => stop ? deriveFollowups(surah, depth, { title: stop.title, ayahKeys: stop.ayahKeys }, maps.map((model) => model.stops)) : [], [surah, depth, stop, maps]);
   const passage = stop ? surah.passages?.find((item) => item.id === stop.passage) : undefined;
-  const history = useReaderHistory({ surah, maps, items: itemModels, depth, stopNumber: stopNumber, closing: Boolean(closing), visited, currentStops });
   const resume = history.resume && !stopNumber && !closing ? history.resume : null;
   const resumeUnit = resume ? unitAtStop(resume.depth, resume.stop) : undefined;
   const resumeDepthName = resume ? ui.levels.find((item) => item.depth === resume.depth)?.name ?? "" : "";
