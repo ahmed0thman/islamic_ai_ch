@@ -9,7 +9,7 @@ def norm(s):
 def wsq(s): return re.sub(r'\s+',' ',s).strip()
 # stores
 PASS={}
-for l in open(os.environ['HUDA_PASSAGES_JSONL'])  # private cache of book passages, not in the repo:
+for l in open(os.environ['HUDA_PASSAGES_JSONL']):  # private cache of book passages, not in the repo
     o=json.loads(l); PASS[o['id']]=o['text']
 PASS_NORM_ALL=None
 def passnorm_all():
