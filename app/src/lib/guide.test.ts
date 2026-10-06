@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 // @ts-expect-error -- Node 24 requires the source extension; no files are emitted.
-import { GUIDE_OPEN_EVENT, guideSteps, guideStorageKey, readGuideSeen, wideGuideCardPosition, writeGuideSeen } from "./guide.ts";
+import { GUIDE_OPEN_EVENT, guideSteps, guideStorageKey, readGuideSeen, shouldGuideOpen, wideGuideCardPosition, writeGuideSeen } from "./guide.ts";
 import type { GuideUi } from "./types";
 
 const titled = (id: string) => ({ title: `${id}-title`, body: `${id}-body` });
@@ -34,6 +34,15 @@ test("the storage key is per surface", () => {
   assert.equal(guideStorageKey("wide"), "huda:guide-seen:wide:v1");
 });
 test("the reopen event name is stable", () => assert.equal(GUIDE_OPEN_EVENT, "huda:guide-open"));
+test("an explicit request opens the tour on both layouts even when already seen", () => {
+  for (const surface of ["phone", "wide"] as const) assert.equal(shouldGuideOpen({ seen: true, requested: true, surface }), true);
+});
+test("the first visit opens the tour on both layouts", () => {
+  for (const surface of ["phone", "wide"] as const) assert.equal(shouldGuideOpen({ seen: false, requested: false, surface }), true);
+});
+test("a seen layout stays closed without an explicit request", () => {
+  for (const surface of ["phone", "wide"] as const) assert.equal(shouldGuideOpen({ seen: true, requested: false, surface }), false);
+});
 test("a tall wide target puts the card on the side with more free width", () => {
   const card = { width: 384, height: 200 }, viewport = { width: 1280, height: 800 };
   assert.deepEqual(wideGuideCardPosition({ left: 0, right: 256, top: 64, bottom: 800 }, card, viewport), { left: 268, top: 88 });

@@ -91,6 +91,15 @@ export function wideGuideCardPosition(target: Rect, card: Size, viewport: Size):
   return widePopoverPosition(clamped, card, viewport, true);
 }
 
+/**
+ * Whether the tour should open on a surface. An explicit request (`?guide=1`, the help button) always opens,
+ * on either layout; otherwise the first visit to that surface opens it once. The rule is layout-independent:
+ * the `surface` is an input only so both layouts are decided by the same call.
+ */
+export function shouldGuideOpen(input: { seen: boolean; requested: boolean; surface: GuideSurface }): boolean {
+  return input.requested || !input.seen;
+}
+
 /** A blocked storage must not make the guide open on every visit, so it reads as seen. */
 export function readGuideSeen(surface: GuideSurface): boolean {
   try { return localStorage.getItem(guideStorageKey(surface)) === "1"; }

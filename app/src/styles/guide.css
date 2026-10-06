@@ -7,6 +7,8 @@
 .guide-card p { font-size: var(--text-ui); line-height: var(--leading-ui); color: var(--ink-2); }
 .guide-progress { font-size: var(--text-label); color: var(--ink-3); margin-block-end: var(--space-sm); }
 .guide-actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; margin-block-start: var(--space-lg); }
+/* The global `button { color: inherit }` outranks the variant's utility class, so the primary action sets its own text colour. */
+.guide-card .huda-button[data-variant="primary"] { color: var(--on-accent); }
 .guide[data-surface="phone"] .guide-card { inset-inline: var(--gutter); max-inline-size: 26rem; margin-inline: auto; }
 .guide[data-surface="phone"] .guide-card[data-place="bottom"] { inset-block-end: calc(var(--space-lg) + env(safe-area-inset-bottom)); }
 .guide[data-surface="phone"] .guide-card[data-place="top"] { inset-block-start: var(--space-lg); }

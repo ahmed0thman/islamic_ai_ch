@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type RefObject } from "react";
 import type { Ui } from "@/lib/types";
-import { wideGuideCardPosition, GUIDE_OPEN_EVENT, guideSteps, readGuideSeen, writeGuideSeen, type GuideStep, type GuideSurface } from "@/lib/guide";
+import { wideGuideCardPosition, GUIDE_OPEN_EVENT, guideSteps, readGuideSeen, shouldGuideOpen, writeGuideSeen, type GuideStep, type GuideSurface } from "@/lib/guide";
 import { useWideSurface } from "@/components/wide/wide-surface";
 
 export type GuidePlace = "top" | "bottom" | "center" | "wide";
@@ -67,6 +67,7 @@ export function useGuide({ ui, active, onPrepare }: { ui: Ui; active: boolean; o
   const scrollYRef = useRef(0);
   const focusRef = useRef<HTMLElement | null>(null);
   const openSurfaceRef = useRef<GuideSurface>(surface);
+  const suppressAutoRef = useRef(false);
   const [pending, setPending] = useState(false);
   const cardRef = useRef<HTMLElement | null>(null);
   const primaryRef = useRef<HTMLButtonElement | null>(null);
@@ -102,17 +103,7 @@ export function useGuide({ ui, active, onPrepare }: { ui: Ui; active: boolean; o
     setOpen(true);
   }, []);
 
-  // First visit to a surah page: open at step one once the page has painted and no sheet is up.
-  useEffect(() => {
-    if (!active || open) return;
-    if (readGuideSeen(surface)) return;
-    if (document.documentElement.hasAttribute("data-huda-sheet-open")) return;
-    let second = 0;
-    const first = requestAnimationFrame(() => { second = requestAnimationFrame(openGuide); });
-    return () => { cancelAnimationFrame(first); cancelAnimationFrame(second); };
-  }, [active, open, surface, openGuide]);
-
-  // `?guide=1` opens the tour once and leaves the URL clean.
+  // `?guide=1` opens the tour once and leaves the URL clean. The reopen event asks for the same explicit open.
   useEffect(() => {
     const url = new URL(window.location.href);
     if (url.searchParams.get("guide") !== "1") return;
@@ -120,22 +111,29 @@ export function useGuide({ ui, active, onPrepare }: { ui: Ui; active: boolean; o
     window.history.replaceState(window.history.state, "", url);
     setPending(true);
   }, []);
-
-  // A reopen event waits for the map: the reader returns from a stop scene first, then this fires.
   useEffect(() => {
     const onEvent = () => { prepareRef.current(); setPending(true); };
     window.addEventListener(GUIDE_OPEN_EVENT, onEvent);
     return () => window.removeEventListener(GUIDE_OPEN_EVENT, onEvent);
   }, []);
-  useEffect(() => {
-    if (!pending || !active) return;
-    setPending(false);
-    openGuide();
-  }, [pending, active, openGuide]);
 
-  // A surface change while open closes without claiming the tour was seen.
+  // One decision for both surfaces: an explicit request always opens; otherwise the first visit to this surface
+  // opens once, unless a breakpoint resize already closed a guide in this page view. The two-frame delay lets the
+  // phone/wide surface settle, so the tour opens on the surface the reader is actually on.
   useEffect(() => {
-    if (open && openSurfaceRef.current !== surface) closeGuide(false);
+    if (!active || open) return;
+    if (!shouldGuideOpen({ seen: readGuideSeen(surface), requested: pending, surface })) return;
+    if (!pending && suppressAutoRef.current) return;
+    if (!pending && document.documentElement.hasAttribute("data-huda-sheet-open")) return;
+    let second = 0;
+    const first = requestAnimationFrame(() => { second = requestAnimationFrame(() => { setPending(false); openGuide(); }); });
+    return () => { cancelAnimationFrame(first); cancelAnimationFrame(second); };
+  }, [active, open, surface, pending, openGuide]);
+
+  // A surface change while open closes without claiming the tour was seen, and the other surface must not
+  // auto-open for the rest of this page view.
+  useEffect(() => {
+    if (open && openSurfaceRef.current !== surface) { suppressAutoRef.current = true; closeGuide(false); }
   }, [surface, open, closeGuide]);
 
   // The step that is shown: scroll it into view, remember its target, focus the primary action.
