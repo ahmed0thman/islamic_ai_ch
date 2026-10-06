@@ -745,6 +745,15 @@
   color: var(--hu-gold);
 }
 
+/* "14 من 14" is longer than the other figures: smaller size, this card only */
+.hu-s8-val-long {
+  font-size: 56px;
+  line-height: 1.5;
+  white-space: nowrap;
+  letter-spacing: 0;
+  margin-block-end: 10px;
+}
+
 .hu-s8-name {
   font-size: 22px;
   font-weight: 600;

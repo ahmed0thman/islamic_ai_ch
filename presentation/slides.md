@@ -106,7 +106,7 @@ layout: default
     <div class="hu-chip">الحل</div>
     <h1 class="hu-title">القارئ يسأل، والجواب من الجمل المتحقق منها وحدها</h1>
     <h2 class="hu-s4-pull">كل جملة في الجواب تفتح مصدرها</h2>
-    <p class="hu-s4-body">يجيب «اسأل» من جمل الشرح المتحقق منها، كتابةً أو بالصوت. وإن لم يجد قال: «لم نجد في مصادرنا ما يكفي للجواب عن هذا».</p>
+    <p class="hu-s4-body">يجيب «اسأل» من جمل الشرح المتحقق منها ومن نصوص كتب التفسير، كتابةً أو بالصوت. وإن لم يجد قال: «لم نجد في مصادرنا ما يكفي للجواب عن هذا».</p>
     <div class="hu-s4-callout">
       <svg class="hu-s4-shield" viewBox="0 0 24 24">
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -166,7 +166,7 @@ sub: "لكل عنصر صورة قريبة عند غيرنا، ولم نجد اج
       </div>
       <div class="hu-s5-row">
         <span class="hu-s5-icon-empty"></span>
-        <span>اختبار القراء مقابل «المختصر في التفسير» مصمَّم بحدّه، ولم يُجرَ قبل التسليم.</span>
+        <span>قرّاء مُحاكَون (نماذج لغوية) مقابل «المختصر في التفسير»: 55 مقابل 53 من 64، بلا تحسّن واضح. واختبار القراء لم يُجرَ.</span>
       </div>
       <div class="hu-s5-row">
         <span class="hu-s5-icon-empty"></span>
@@ -274,19 +274,19 @@ heading: "أربعة مكونات، وفي كل واحد فحص خارج الن�
         <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
       </div>
       <h2 class="hu-s7-title">حراسة الجواب</h2>
-      <p class="hu-s7-desc">الخادم يرفض الجملة إن حملت نص آية أو حكمًا على رواية.</p>
+      <p class="hu-s7-desc">فحص قبل النموذج وبعده: لا نص آية، ولا حكم على رواية، ولا فتوى.</p>
     </div>
     <div class="hu-card hu-s7-card">
       <div class="hu-icon-tile">
         <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" /><path d="M9 9h6M9 13h6M9 17h4" /></svg>
       </div>
       <h2 class="hu-s7-title">الواجهة</h2>
-      <p class="hu-s7-desc">تطبيق ويب للجوال، والمحكّم يجرّب «اسأل» بمفتاحه.</p>
+      <p class="hu-s7-desc">تطبيق ويب للجوال، والمحكّم يجرّب «اسأل» بمفتاحه من أربعة مزوّدين.</p>
     </div>
   </div>
   <div class="hu-s7-note">
     <svg class="hu-s7-note-ic" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke-width="2"/><line x1="12" y1="16" x2="12" y2="12" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="8" x2="12.01" y2="8" stroke-width="2" stroke-linecap="round"/></svg>
-    <span>على الرابط المنشور اليوم: «اسأل» يجيب من محتوى السور المبني. والمتجهات ومقاطع الكتب و«نسيج لك» تعمل على جهاز التطوير.</span>
+    <span>على الرابط المنشور اليوم: «اسأل» يجيب من جمل السور ومن مقاطع الكتب بالبحث النصي. والمتجهات على جهاز التطوير، و«نسيج لك» تحت التجربة.</span>
   </div>
 </div>
 
@@ -307,30 +307,30 @@ sub: "من 4 إلى 6 أكتوبر. نسخة البداية موسومة في ا
       </div>
     </div>
     <div class="hu-card hu-s8-card">
-      <div class="hu-s8-val">16</div>
+      <div class="hu-s8-val">2358</div>
       <div>
-        <h2 class="hu-s8-name">بوابة تصدير</h2>
-        <p class="hu-s8-unit">تمر بها كل سورة قبل النشر</p>
+        <h2 class="hu-s8-name">جملة اقتباسها بلفظه في مصدره</h2>
+        <p class="hu-s8-unit">من 2358، في السور الست عشرة</p>
       </div>
     </div>
     <div class="hu-card hu-s8-card">
-      <div class="hu-s8-val">677<!-- TESTS_PASSED --></div>
+      <div class="hu-s8-val hu-s8-val-long">14 من 14</div>
       <div>
-        <h2 class="hu-s8-name">اختبارًا ناجحًا</h2>
-        <p class="hu-s8-unit">من 680، وثلاثة متخطّاة (6 أكتوبر)</p>
+        <h2 class="hu-s8-name">حالة سلامة حرجة ناجحة</h2>
+        <p class="hu-s8-unit">في تشغيلين؛ والعادية 3 من 5، دون الحد</p>
       </div>
     </div>
     <div class="hu-card hu-s8-card">
-      <div class="hu-s8-val hu-s8-val-gold">0.51</div>
+      <div class="hu-s8-val hu-s8-val-gold">710<!-- TESTS_PASSED --></div>
       <div>
-        <h2 class="hu-s8-name">استدعاء الاسترجاع الهجين عند 24</h2>
-        <p class="hu-s8-unit">النصي وحده 0.39، في 26 حالة محجوزة</p>
+        <h2 class="hu-s8-name">اختبارًا ناجحًا في التطبيق</h2>
+        <p class="hu-s8-unit">من 713، وثلاثة متخطّاة (6 أكتوبر)</p>
       </div>
     </div>
   </div>
   <div class="hu-s8-source">
-    <!-- المصادر في المستودع: app/src/lib/published.ts · tools/export_content.py · pnpm test · tools/data/eval/results/retrieval-2026-10-05.md. قياس الاسترجاع يفحص وصول الجمل، لا صحة المعنى. -->
-    المصادر في المستودع: <bdi dir="ltr">app/src/lib/published.ts · tools/export_content.py · pnpm test · tools/data/eval/results/retrieval-2026-10-05.md</bdi>. قياس الاسترجاع يفحص وصول الجمل، لا صحة المعنى.
+    <!-- كل رقم بطريقته وحدوده في المستودع: docs/07-competition/measured-results.md. قياس الاقتباس يثبت وجود اللفظ في المصدر، لا أن الجملة مدعومة به. -->
+    كل رقم بطريقته وحدوده في المستودع: <bdi dir="ltr">docs/07-competition/measured-results.md</bdi>. قياس الاقتباس يثبت وجود اللفظ في المصدر، لا أن الجملة مدعومة به.
   </div>
 </div>
 
@@ -354,14 +354,14 @@ sub: "أرقام من قياس واحد، وما لم يُسمَّ نقول إن
       <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
     </div>
     <h2 class="hu-s9-title">الاعتمادات وبدائلها</h2>
-    <p class="hu-s9-body">ثلاثة مزوّدين للنموذج. وإن غاب النموذج بقي الشرح المجهَّز كاملًا للقراءة.</p>
+    <p class="hu-s9-body">أربعة مزوّدين للنموذج يتبدلون بالإعداد. وإن غاب النموذج بقي الشرح المجهَّز كاملًا للقراءة.</p>
   </div>
   <div class="hu-s9-card">
     <div class="hu-icon-tile">
       <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
     </div>
     <h2 class="hu-s9-title">المراجعة</h2>
-    <p class="hu-s9-body">متخصص في التفسير يراجع السجلات قبل رفع وسم «مرشّحة». لم يُسمَّ بعد.</p>
+    <p class="hu-s9-body">إجراء مراجعة المتخصص جاهز بأدواته ومختبَر. والمراجع لم يُسمَّ بعد، ولم يُراجَع سجل.</p>
   </div>
   <div class="hu-s9-card">
     <div class="hu-icon-tile">
