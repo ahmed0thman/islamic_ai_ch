@@ -12,6 +12,7 @@ import { requestGuide } from "@/lib/guide";
 import { numeral } from "@/lib/numerals";
 import type { Followup } from "@/lib/followups";
 import { Icon } from "@/components/ui/icon";
+import { SkipLink } from "@/components/ui/skip-link";
 import { SourceChip } from "@/components/ui/source-chip";
 import { SourceMarker } from "@/components/reader/source-marker";
 import { useSheets } from "@/components/reader/sheet-provider";
@@ -186,7 +187,7 @@ function WideLayout({ surah, surahs, ui, depth, view, map, items, stop, closing,
   }
   const iconButton = (label: string, icon: Parameters<typeof Icon>[0]["icon"], act: (element: HTMLElement) => void, expanded?: boolean, className = "") => <button type="button" className={`wide-icon-button ${className}`} aria-label={label} title={label} aria-expanded={expanded} onClick={(event) => act(event.currentTarget)}><Icon icon={icon} /></button>;
   return <div className="wide-reader" data-panel={surface.panelOpen ? "open" : "closed"} data-drawer={drawer ? "open" : "closed"}>
-    <a className="wide-skip" href="#wide-reading">{ui.wide.skip}</a>
+    <SkipLink href="#wide-reading">{ui.wide.skip}</SkipLink>
     <header className="wide-bar"><div className="wide-bar-start">
       {iconButton(ui.wide.toc, RightToLeftListBulletIcon, () => setDrawer((value) => !value), drawer, "wide-toc-toggle")}
       <a className="wide-brand" href="/" title={ui.landing.back_link}>{ui.app_name}</a><button className="wide-surah-picker" type="button" aria-expanded={localPopover === "surahs"} aria-haspopup="dialog" onClick={(event) => togglePopover("surahs", event.currentTarget)}>{surah.surah.name}<Icon icon={ArrowDown01Icon} size={16} /></button>

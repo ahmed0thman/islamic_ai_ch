@@ -101,6 +101,15 @@
 .source-marker:active .source-chip { transform: scale(.92); }
 .term-link { display: inline; min-block-size: 1.5rem; padding: 0; border: 0; border-block-end: 2px dotted var(--accent); background: transparent; color: var(--accent); font: inherit; font-weight: 600; line-height: 1.8; text-align: inherit; user-select: text; }
 .term-link + .source-marker, .source-marker + .term-link { margin-inline-start: .5rem; }
+/* Hit area (finding: targets under 44px). The control keeps its look and its box; a transparent overlay lifts the touch target to the control height, so no text moves. The overlay only grows a side that is smaller than the target. */
+.source-marker, .mini-rail, .mini-bead-control, .landing-brand, .landing-nav-link, .landing-footer-link, .landing-footer-brand { position: relative; }
+.source-marker::before, .landing-brand::before, .landing-nav-link::before, .landing-footer-link::before, .landing-footer-brand::before { content: ""; position: absolute; inset-block: min(0px, calc((100% - var(--control-height)) / 2)); inset-inline: min(0px, calc((100% - var(--control-height)) / 2)); }
+/* A term link runs inline and may wrap, so it grows only in the block direction, under its dotted line. */
+.term-link { position: relative; }
+.term-link::before { content: ""; position: absolute; inset-block: min(0px, calc((100% - var(--control-height)) / 2)); inset-inline: 0; }
+/* The rail sits above the beads, so it grows upward only; a bead is already tall enough and grows into the gap between columns (the strip cannot be wider). */
+.mini-rail::before { content: ""; position: absolute; inset-block: min(0px, calc(100% - var(--control-height))) 0; inset-inline: 0; }
+.mini-bead-control::before { content: ""; position: absolute; inset-block: 0; inset-inline: -.125rem; }
 .claim-text { margin-block: var(--space-lg); font-size: var(--text-body); line-height: var(--leading-body); overflow-wrap: break-word; text-align: start; }
 .claim-ending { white-space: nowrap; overflow-wrap: normal; word-break: normal; }
 .claim-pulse { display: block; position: relative; padding-inline-start: var(--space-md); }
@@ -245,7 +254,7 @@
 .reader-brand .huda-button { padding: 0; }
 .surah-cover { position: relative; padding: var(--space-md) var(--gutter) var(--space-lg); isolation: isolate; overflow: clip; }
 .surah-cover::before { content: ""; position: absolute; inset-inline-end: -1.25rem; inset-block-start: -1rem; inline-size: 80%; block-size: 100%; pointer-events: none; background: repeating-radial-gradient(circle at 60% 40%, transparent 0 1.625rem, color-mix(in srgb,var(--accent) 12%,transparent) 1.625rem 1.6875rem); mask-image: radial-gradient(circle, black, transparent 68%); }
-.surah-cover h1 { position: relative; padding-block-start: var(--space-sm); font-family: var(--font-quran); font-size: var(--text-cover); line-height: var(--leading-cover); font-weight: 400; }
+.surah-cover :is(h1, h2) { position: relative; padding-block-start: var(--space-sm); font-family: var(--font-quran); font-size: var(--text-cover); line-height: var(--leading-cover); font-weight: 400; }
 .cover-meta { position: relative; display: flex; align-items: start; gap: .75rem; font-size: var(--text-ui); color: var(--ink-2); line-height: var(--leading-ui); }
 .cover-count { display: flex; flex: none; align-items: center; gap: var(--space-sm); color: var(--accent); font-variant-numeric: tabular-nums; }
 .reading-unit-button { margin-block-start: .75rem; inline-size: auto; max-inline-size: 100%; }

@@ -32,6 +32,7 @@ import { AskDock } from "./ask-dock";
 import { useReaderHistory } from "@/components/history/use-reader-history";
 import { ResumeCard } from "@/components/history/resume-card";
 import { Guide } from "@/components/guide/guide";
+import { SkipLink } from "@/components/ui/skip-link";
 import { AskedSection } from "./asked-section";
 import { useAsk } from "./ask-state";
 import { WideReader } from "@/components/wide/wide-reader";
@@ -267,6 +268,7 @@ export function Reader({ surah, ui, nextSurah, surahs, ask = false, weave = fals
       .filter((title): title is string => typeof title === "string" && title.endsWith("\u061F") && title !== open).slice(0, 3);
   }, [map.stops, stop]);
   return <ReadingProvider value={reading}><AskProvider enabled={ask} surah={surah} depth={depth} stop={stop ? { number: stop.number, title: stop.sceneTitle ?? stop.title } : null} starters={starters} surahs={surahs} sources={sources} serverQuestions={history.questions} savedToAccount={history.savedToAccount} onSaveQuestion={history.saveQuestion}><WideReader surah={surah} surahs={surahs} ui={ui} depth={depth} view={view} map={map} items={items} stop={stop} closing={Boolean(closing)} weave={weave} followups={followups} onDepth={chooseDepth} onView={chooseView} onStop={openPart} onBack={backToMap} onClosing={() => { if (view !== "map") { setView("map"); rememberView("map"); } openClosing(); }} onPassage={(id) => { if (wideSurface?.wide) restoreWideAyah(surah.passages?.find((item) => item.id === id)?.from ?? null); else chooseScope({ kind: "passage", id }); }}><div className="huda-reader">
+    {wideSurface?.wide ? null : <SkipLink href="#reading-body">{ui.wide.skip}</SkipLink>}
     <SurahHeader surah={surah} surahs={surahs} scope={scope} ui={ui} onOpenUnit={() => openUnit(surah, scope, chooseScope)} onMap={mapped && (view === "text" || stop || closing) ? (stop || closing ? backToMap : () => chooseView("map")) : undefined} />
     {showMap && hero ? <div className="hero-area"><HeroQuestion stop={hero} ui={ui} animate={settled} onOpen={openStop} /></div> : null}
     <div className="console">
@@ -274,7 +276,7 @@ export function Reader({ surah, ui, nextSurah, surahs, ask = false, weave = fals
       <DepthDial depth={depth} levels={ui.levels} label={ui.reader.choose_depth} onChange={chooseDepth} />
     </div>
     {mapped ? <ViewToggle view={view} ui={ui} onChange={chooseView} /> : null}
-    <article className="reading-body" aria-label={ui.levels.find((item) => item.depth === depth)!.name}>
+    <article className="reading-body" id="reading-body" tabIndex={-1} aria-label={ui.levels.find((item) => item.depth === depth)!.name}>
       {resume && resumeUnit ? <ResumeCard ui={ui} stop={resume.stop} depthName={resumeDepthName} onResume={() => resumeFrom(resume.depth, resume.stop)} onDismiss={history.dismissResume} /> : null}
       {showMap ? <><SurahThread key={wideSurface?.wide ? depth : undefined} map={map} items={items} scope={scope} onScope={chooseScope} onAyah={(key) => openUnit(surah, { kind: "ayah", key }, chooseScope)} ui={ui} visited={visitedNumbers} currentStop={currentStops[depth] ?? null} hidden={Boolean(stop || closing)} onOpen={openStop} />
           {summary ? <ClosingEntry ui={ui} threaded={!items.shelf.length} hidden={Boolean(stop || closing)} onOpen={openClosing} /> : null}
