@@ -111,6 +111,10 @@ python3 tools/check_safety_cases.py
 ## المصادر والتراخيص
 
 نص القرآن من ملف مجمع الملك فهد: `tools/data/qurancomplex/hafsData_v2-0.json` (ق-038). نصوص الكتب لا تُنشر في المستودع (ق-131).
+
+- الكود: رخصة MIT ([`LICENSE`](LICENSE)).
+- المحتوى الذي كتبناه: CC BY-SA 4.0 ([`LICENSE-CONTENT`](LICENSE-CONTENT)).
+- ما ليس لنا (نص المصحف وخطه، واقتباسات الكتب، والحزم والخطوط): في [`NOTICE.md`](NOTICE.md).
 [`docs/07-competition/sources-tools-licenses.md`](docs/07-competition/sources-tools-licenses.md): المصادر المستعملة فعلًا، والأدوات والنماذج وتراخيصها، وما في المستودع وقد لا نملك حق نشره.
 
 ## خريطة المستودع

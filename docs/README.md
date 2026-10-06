@@ -101,7 +101,7 @@
 - [`scientific-annex.md`](07-competition/scientific-annex.md): **الملحق العلمي:** ما فيه وما الملزم منه، ومصادرنا مقابله وما تفتحه منصاته في كل مجال، وضوابطنا مقابله، ومستويات المحتوى الأربعة، وحالات الاختبار، وما قررناه.
 - [`challenge-plan.md`](07-competition/challenge-plan.md): **خطة التحدي (3 أكتوبر):** أين نحن من الهدفين بخانات نموذج العمل ومعايير التحكيم النهائي بمستوياتها، وما غيّره الملحق العلمي، والأولويات يومًا بيوم.
 - [`competition-context.md`](07-competition/competition-context.md): المسار، والمواعيد، ومعايير الترشيح والتحكيم، ومتطلبات التسليم.
-- [`sources-tools-licenses.md`](07-competition/sources-tools-licenses.md): **سجل المصادر والأدوات والتراخيص (5 أكتوبر):** المصادر المستعملة فعلًا في السور الأربع المنشورة بمنصاتها وشروطها، وتراخيص الأدوات والنماذج، وما في المستودع وقد لا نملك حق نشره، واقتراح الترخيص (ج).
+- [`sources-tools-licenses.md`](07-competition/sources-tools-licenses.md): **سجل المصادر والأدوات والتراخيص (5 أكتوبر):** المصادر المستعملة فعلًا في السور الأربع المنشورة بمنصاتها وشروطها، وتراخيص الأدوات والنماذج، وما في المستودع وقد لا نملك حق نشره، وقرار الترخيص (ق-143).
 - [`../presentation/video-script.md`](../presentation/video-script.md): نص الفيديو التوضيحي (دقيقتان) بزمنه وما يُسجَّل على الشاشة، وقائمة لقطات العرض. والعرض النهائي في [`../presentation/slides.md`](../presentation/slides.md)، وعرض التسجيل محفوظ في [`../presentation/slides-registration-2026-09-29.md`](../presentation/slides-registration-2026-09-29.md).
 - [`registration-draft-overview.md`](07-competition/registration-draft-overview.md): حالة مسودة التسجيل، وحقول الخطوة، ونص المسار.
 - [`idea-name.md`](07-competition/idea-name.md): الاسم ومبرره، والتحقق منه، والمناسبة، والسطر الوصفي، وتميز الاسم، والاعتراضات.
