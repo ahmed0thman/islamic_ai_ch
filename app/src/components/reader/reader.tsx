@@ -28,6 +28,7 @@ import { ContinuousView } from "./continuous-view";
 import { TermsSummary } from "./terms-summary";
 import { AskProvider } from "./ask-context";
 import { AskDock } from "./ask-dock";
+import { Guide } from "@/components/guide/guide";
 import { AskedSection } from "./asked-section";
 import { useAsk } from "./ask-state";
 import { WideReader } from "@/components/wide/wide-reader";
@@ -264,5 +265,6 @@ export function Reader({ surah, ui, nextSurah, surahs, ask = false, weave = fals
         : <ClosingScene surahName={surah.surah.name} summary={closing!} parts={parts} termsSummary={termsSummary} nextSurah={nextSurah} onPart={openPart} previous={lastUnit} onPrevious={lastUnit ? () => openStop(lastUnit) : undefined} onMap={backToMap} onBack={backToMap} {...reading} />}
     </SceneShell> : null}
     <AskDock />
+    <Guide ui={ui} active={!stop && !closing} onPrepare={() => { if (stop || closing) backToMap(); }} />
   </div></WideReader></AskProvider></ReadingProvider>;
 }

@@ -3,9 +3,10 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Dialog, Tabs } from "radix-ui";
-import { Cancel01Icon, InformationCircleIcon, Quran01Icon, Settings01Icon } from "@hugeicons/core-free-icons";
+import { Cancel01Icon, HelpCircleIcon, InformationCircleIcon, Quran01Icon, Settings01Icon } from "@hugeicons/core-free-icons";
 import type { Ui } from "@/lib/types";
 import { jumpToAyah } from "@/lib/reader-dom";
+import { requestGuide } from "@/lib/guide";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { SignInEntry } from "@/components/account/account";
@@ -105,6 +106,7 @@ export function MenuDrawer({ ui, current, onClose }: MenuDrawerProps) {
           <Tabs.Content className="menu-panel" value="about"><AboutTab ui={ui} onAct={choose} /></Tabs.Content>
         </Tabs.Root>
         <SignInEntry ui={ui} onAct={choose} />
+        <Button variant="quiet" className="menu-settings" onClick={() => choose(() => requestGuide())}><Icon icon={HelpCircleIcon} />{ui.guide.reopen}</Button>
         <Button variant="quiet" className="menu-settings" aria-haspopup="dialog" onClick={() => choose(() => settings.open(Boolean(ask)))}><Icon icon={Settings01Icon} />{ui.settings.open}</Button>
       </Dialog.Content>
     </Dialog.Portal>
