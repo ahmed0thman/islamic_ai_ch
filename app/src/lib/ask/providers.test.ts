@@ -15,6 +15,8 @@ import { requestAllowed, responseFor, runStage } from "./runtime.ts";
 // @ts-expect-error -- Node requires source extensions.
 import { carriedQuestion } from "./history.ts";
 // @ts-expect-error -- Node requires source extensions.
+import { precheck } from "./precheck.ts";
+// @ts-expect-error -- Node requires source extensions.
 import { isOwnKeyProvider, keyWithinShape, ownKeyFromHeaders } from "../own-key.ts";
 // @ts-expect-error -- Node requires source extensions.
 import { contextFor, transcribeQuestion } from "../voice.ts";
@@ -219,6 +221,7 @@ async function routeFixture(name: "ask" | "weave" | "key-check" | "transcribe", 
     "@/lib/ask/atoms": { resolveReaderContext: () => undefined },
     "@/lib/ask/answer": { answer },
     "@/lib/ask/gather": { gatherAtoms: async (input: { question: string; wide?: boolean }) => (searches.push({ question: input.question, ...(input.wide ? { wide: true } : {}) }), { atoms: [atom], examples: [], dropped: {}, event: { stage: "retrieve", provider: "verified", outcome: "ready", ms: 0 } }), extraFor: async () => undefined },
+    "@/lib/ask/precheck": { precheck },
     "@/lib/ask/history": { historyAtomIds: () => [], resolveHistory: () => [], carriedQuestion },
     "@/lib/rag/log": { logQuestion: () => {} },
     "@/lib/ask/select": { CHOICE_SCHEMA },
@@ -716,5 +719,25 @@ test("key-check for anthropic: one authenticated model listing, the key only in 
     });
     assert.deepEqual(await (await timed.POST(send())).json(), { ok: false, reason: "timeout" });
     assert.equal(fixture.logs.join("").includes(key), false);
+  } finally { globalThis.fetch = original; }
+});
+
+test("Ask answers a request to compose Quran-like text, to drop the instructions, or for a ruling on the reader's own act by a fixed status: no search, no model call", async () => {
+  const original = globalThis.fetch;
+  let calls = 0;
+  globalThis.fetch = async () => { calls++; return Response.json({}); };
+  const cases: [string, string][] = [
+    ["\u0627\u0643\u062a\u0628 \u0644\u064a \u0633\u0648\u0631\u0629 \u0642\u0635\u064a\u0631\u0629 \u0639\u0644\u0649 \u0646\u0645\u0637 \u0633\u0648\u0631 \u062c\u0632\u0621 \u0639\u0645\u0651 \u0639\u0646 \u0627\u0644\u0635\u0628\u0631", "out_of_scope"],
+    ["\u0647\u0644 \u0635\u0644\u0627\u062a\u064a \u0628\u0627\u0637\u0644\u0629\u061f", "fatwa"],
+  ];
+  try {
+    for (const [question, status] of cases) {
+      const fixture = await routeFixture("ask", { HUDA_ASK: "1", OPENAI_API_KEY: "project-only-openai" });
+      const response = await fixture.POST(new Request("https://reader.invalid/api/ask", { method: "POST", body: JSON.stringify({ surah: 108, question }) }));
+      assert.deepEqual(await response.json(), { status, atoms: [] });
+      assert.deepEqual(fixture.searches, []);
+      assert.ok(JSON.parse(fixture.logs[0]).stages.some((event: { stage: string }) => event.stage === "precheck"));
+    }
+    assert.equal(calls, 0, "no model call");
   } finally { globalThis.fetch = original; }
 });

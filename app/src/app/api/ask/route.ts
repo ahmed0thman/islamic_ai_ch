@@ -5,6 +5,7 @@ import { answer } from "@/lib/ask/answer";
 import { extraFor, gatherAtoms } from "@/lib/ask/gather";
 import { carriedQuestion, historyAtomIds, resolveHistory } from "@/lib/ask/history";
 import { logQuestion } from "@/lib/rag/log";
+import { precheck } from "@/lib/ask/precheck";
 import { questionWithinLimit, requestAllowed, responseFor } from "@/lib/ask/runtime";
 import type { AskFault, AskResponse } from "@/lib/ask/types";
 
@@ -33,6 +34,9 @@ export async function POST(request: Request) {
     if ([...trimmed].length < 3 || !questionWithinLimit(trimmed)) return reply("insufficient", 400);
     // A question with no Arabic letter is answered by the fixed status, with no model call.
     if (!/[\u0621-\u064A]/u.test(trimmed)) return reply("not_arabic");
+    // A request to compose Quran-like text, to drop the instructions, or for a ruling on the reader's own act is answered by the fixed status, with no model call.
+    const early = precheck(trimmed);
+    if (early) { flowLog = JSON.stringify({ event: "ask", stages: [{ stage: "precheck", provider: "server", outcome: early.rule, ms: 0 }], ms: Date.now() - started }); return reply(early.status); }
     // "Search again" or "explain more" is not a question of its own: it is carried on the earlier question of the conversation. With none, the reader is asked for one (no model call).
     const carried = carriedQuestion(trimmed, history, typeof stop === "number");
     if (carried === "no_question") return reply("no_question");
