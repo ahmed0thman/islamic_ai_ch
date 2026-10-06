@@ -11,7 +11,7 @@ Written in English because it is a brief for Codex. The owner is Ahmed Hisham. T
 - **Live:** `https://hudan.ahmedothman.online` (Render service `huda`). `origin/main` = `9b9603b`, live since 21:46. 16 surahs published (`app/src/lib/published.ts`: 93, 100–114).
 - **Repo:** `ahmed0thman/islamic_ai_ch`, still **PRIVATE**. The rules require a public repo; making it public is the owner's own action.
 - **Judged score, the orchestrator's own estimate (not a measurement):** about 3.5 of 5 without the "presentation" criterion; the owner's target is 4. The reference for every number is `docs/07-competition/measured-results.md`.
-- **Nothing is running right now.** All agents have reported.
+- **Running:** the final independent reviews of fifteen surahs (task 1), started 21:59. Nothing else.
 
 ## 2. Rules you must keep (the owner's standing rules)
 
@@ -44,10 +44,14 @@ All 16 surahs are published by the owner's decision ق-141, but only one (106) h
 - Final full review failed earlier for lack of Codex quota: **102, 103, 104, 105, 109, 110, 111, 113, 114**.
 - Last full review was on 5 Oct with the verdict "do not ship", and the text was edited since: **93, 107, 108, 112**.
 
-Run (review stage only, never `build` or `fix` in the same call):
+**Started at 21:59 by the Claude orchestrator, detached from its session** (owner's word at 21:58): all fifteen surahs in this order, four at a time: 102 103 104 105 109 110 111 113 114 100 101 93 107 108 112. Log: `.cache/pipeline/final-review-2026-10-06.log`; each surah's result lands in `.cache/pipeline/<n>/review.json` (the previous file was copied to `review.before-final*.json`). **Do not start it again while it runs** (`pgrep -f run_surah.py`); read the results, then list the critical and major problems for the owner.
+
+**Owner's rule ق-146 (21:58): never use Sol at high effort.** The reviewer lane is therefore `codex:extract-codex` (Sol, medium, read-only), not `research-codex` (Sol, high); `code-hard` (Sol, extra high) is excluded too.
+
+The command, should a surah need a re-run (review stage only, never `build` or `fix` in the same call):
 
 ```
-python3 -B tools/pipeline/run_surah.py 102 103 104 105 109 110 111 113 114 --stages review --reviewer codex:research-codex --parallel 4 --timeout-min 10
+python3 -B tools/pipeline/run_surah.py <surah numbers> --stages review --reviewer codex:extract-codex --parallel 4 --timeout-min 10
 ```
 
 Before each run copy `.cache/pipeline/<n>/review.json` to `review.before-final.json` (copy, not move). Then read each new `review.json`. The owner's rule (ق-099): no surah is rejected; the review produces a list of problems that get fixed. Fixes used to go to Claude Opus (critical) and Sonnet (major); with Claude out, propose the fix to the owner before applying it, and have a different model than the fixer confirm it. After any content fix: export, run the checks (`tools/pipeline/README.md`), and the app tests. The error log so far is in `docs/07-competition/measured-results.md` (section 6 and the reliability section).
