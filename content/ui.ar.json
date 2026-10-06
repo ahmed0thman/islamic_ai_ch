@@ -360,5 +360,34 @@
       "openai": "أوبن إيه آي",
       "anthropic": "أنثروبيك (كلود)"
     }
+  },
+  "account": {
+    "sign_in": "تسجيل الدخول",
+    "sign_up": "إنشاء حساب",
+    "back": "ارجع إلى القراءة"
+  },
+  "clerk": {
+    "formFieldLabel__emailAddress": "البريد الإلكتروني",
+    "formFieldInputPlaceholder__emailAddress": "اكتب بريدك الإلكتروني",
+    "formFieldInputPlaceholder__password": "اكتب كلمة المرور",
+    "formFieldInputPlaceholder__signUpPassword": "اختر كلمة مرور",
+    "socialButtonsBlockButton": "المتابعة بحساب {{provider|titleize}}",
+    "signIn": {
+      "start": {
+        "title": "تسجيل الدخول",
+        "titleCombined": "تسجيل الدخول",
+        "actionText": "ليس لك حساب؟",
+        "actionLink": "إنشاء حساب"
+      }
+    },
+    "signUp": {
+      "start": {
+        "title": "إنشاء حساب",
+        "titleCombined": "إنشاء حساب",
+        "subtitleCombined": "للمتابعة إلى {{applicationName}}",
+        "actionText": "لك حساب؟",
+        "actionLink": "تسجيل الدخول"
+      }
+    }
   }
 }
