@@ -28,6 +28,16 @@ self.addEventListener("fetch", (event) => {
   if (request.headers.get("RSC") === "1" && !pathname.endsWith(".txt")) return;
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_NAME);
+    // Navigations are network-first: a deploy must not be pinned by a stale root page under a fixed cache name.
+    // Offline reading is unchanged, because the cached document is still the fallback.
+    if (request.mode === "navigate") {
+      try {
+        const response = await fetch(request);
+        if (response.ok && response.type === "basic") { await cache.put(pathname, response.clone()); return response; }
+      } catch { /* Offline: fall through to the cached document. */ }
+      const cached = await cache.match(pathname);
+      return cached ?? fetch(request);
+    }
     const hit = await cache.match(pathname);
     if (hit) return hit;
     const response = await fetch(request);
