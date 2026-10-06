@@ -26,6 +26,11 @@
       "ayah_count": 19
     },
     {
+      "no": 97,
+      "name": "القَدر",
+      "ayah_count": 5
+    },
+    {
       "no": 98,
       "name": "البَينَة",
       "ayah_count": 8
@@ -36,6 +41,41 @@
       "ayah_count": 8
     },
     {
+      "no": 100,
+      "name": "العَاديَات",
+      "ayah_count": 11
+    },
+    {
+      "no": 101,
+      "name": "القَارعَة",
+      "ayah_count": 11
+    },
+    {
+      "no": 102,
+      "name": "التَّكاثُر",
+      "ayah_count": 8
+    },
+    {
+      "no": 103,
+      "name": "العَصر",
+      "ayah_count": 3
+    },
+    {
+      "no": 104,
+      "name": "الهُمَزة",
+      "ayah_count": 9
+    },
+    {
+      "no": 105,
+      "name": "الفِيل",
+      "ayah_count": 5
+    },
+    {
+      "no": 106,
+      "name": "قُرَيش",
+      "ayah_count": 4
+    },
+    {
       "no": 107,
       "name": "المَاعُون",
       "ayah_count": 7
@@ -44,6 +84,11 @@
       "no": 108,
       "name": "الكَوثر",
       "ayah_count": 3
+    },
+    {
+      "no": 109,
+      "name": "الكافِرون",
+      "ayah_count": 6
     },
     {
       "no": 110,
@@ -59,6 +104,16 @@
       "no": 112,
       "name": "الإخلَاص",
       "ayah_count": 4
+    },
+    {
+      "no": 113,
+      "name": "الفَلَق",
+      "ayah_count": 5
+    },
+    {
+      "no": 114,
+      "name": "النَّاس",
+      "ayah_count": 6
     }
   ]
 }
