@@ -2,26 +2,41 @@
 import { computed } from 'vue'
 import { useSlideContext } from '@slidev/client'
 
-// Reading-flow contract (docs/07-competition/deck-spec.md): one entry point (the title,
-// top right, with one idea line under it), bands read top to bottom, and a thin
-// sources strip at the bottom. The strip is the `sources` named slot.
-const props = defineProps<{ heading?: string; sub?: string }>()
+const props = defineProps<{
+  chip?: string
+  heading?: string
+  sub?: string
+}>()
+
 const { $page } = useSlideContext()
 const num = computed(() => String($page.value).padStart(2, '0'))
 </script>
 
 <template>
-  <div class="slidev-layout hu" dir="rtl" lang="ar">
-    <header v-if="props.heading" class="hu-head">
-      <h1 class="hu-title">{{ props.heading }}</h1>
-      <p v-if="props.sub" class="hu-sub" v-html="props.sub" />
+  <div class="slidev-layout hu hu-paper" dir="rtl" lang="ar">
+    <header class="hu-head">
+      <div v-if="props.chip" class="hu-chip">{{ props.chip }}</div>
+      <h1 v-if="props.heading" class="hu-title">{{ props.heading }}</h1>
+      <p v-if="props.sub" class="hu-sub">{{ props.sub }}</p>
     </header>
     <main class="hu-body">
       <slot />
     </main>
     <footer class="hu-foot">
-      <div class="hu-foot-src"><slot name="sources" /></div>
-      <span class="hu-foot-id"><span class="hu-foot-name">هُدًى</span><span class="hu-foot-num">{{ num }}</span></span>
+      <span class="hu-foot-brand">هُدًى</span>
+      <img
+        src="/identity/image11-trim.png"
+        alt="تحدي الذكاء الاصطناعي في خدمة المحتوى الإسلامي"
+        class="hu-foot-logo"
+      />
+      <span class="hu-foot-num">{{ num }}</span>
     </footer>
   </div>
 </template>
+
+<style scoped>
+.hu-paper {
+  background-color: var(--hu-paper, #faf6ee);
+  color: var(--hu-ink, #17231f);
+}
+</style>
