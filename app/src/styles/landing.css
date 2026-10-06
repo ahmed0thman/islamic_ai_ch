@@ -1,104 +1,1358 @@
-/* The introduction page at `/`. Same token set as the reader; no new color, font or size.
-   Rhythm: sections sit --space-2xl apart; inside a section the head is followed by --space-lg to --space-xl. */
-body:has(.landing) .huda-legend-bar { display: none; }
-body:has(.landing) .page-shell { padding-block-end: calc(var(--space-xl) + env(safe-area-inset-bottom)); }
+/* ==========================================================================
+   The Introduction Page (`/`) — Huda Landing Styles
+   Built strictly with existing design tokens and color-mix().
+   Full-width horizontal bands, centered 72rem containers, RTL logical properties.
+   ========================================================================== */
 
-.landing { display: grid; gap: var(--space-2xl); }
-
-/* Section titles carry the reader's question motif: a short accent dash over a balanced line. */
-.landing-h2 { font-size: var(--text-title); line-height: var(--leading-title); text-wrap: balance; }
-.landing-h2::before { content: ""; display: block; inline-size: 2.25rem; block-size: .25rem; margin-block-end: var(--space-md); border-radius: var(--radius-pill); background: var(--accent); }
-
-/* Compact spec rows separated by hairlines: the problem lines and the status lists share the treatment. */
-.landing-rows { inline-size: 100%; }
-.landing-rows li { padding-block: var(--space-md); color: var(--ink-2); font-size: var(--text-ui); line-height: var(--leading-ui); }
-.landing-rows li + li { border-block-start: 1px solid var(--line); }
-
-/* A product shot in a quiet bezel. The crop is deliberate: the frame peeks into the app from the top. */
-.phone-frame { --frame-w: 15rem; --frame-h: 21rem; display: block; inline-size: min(100%, var(--frame-w)); margin-inline: auto; padding: var(--space-sm); border: 1px solid var(--line-strong); border-radius: var(--radius-sheet); background: var(--surface); box-shadow: var(--shadow); }
-.phone-frame img { display: block; inline-size: 100%; block-size: var(--frame-h); border-radius: var(--radius); object-fit: cover; object-position: top; }
-
-/* Hero: the brand on the product's dark stage, with its ring motif; the device beside the words on wide screens. */
-.landing-hero { position: relative; display: grid; align-items: center; gap: var(--space-xl); overflow: clip; padding: var(--space-xl) var(--space-lg); border: 0; border-radius: var(--radius); background: linear-gradient(160deg, var(--stage-a), var(--stage-b)); color: var(--stage-ink); box-shadow: var(--shadow); }
-.landing-hero::before { content: ""; position: absolute; inset-block-start: -30%; inset-inline-end: -20%; inline-size: 18.75rem; block-size: 18.75rem; border-radius: 50%; background: repeating-radial-gradient(circle, transparent 0 1.375rem, color-mix(in srgb, var(--stage-ink) 7%, transparent) 1.375rem 1.4375rem); pointer-events: none; }
-.landing-hero-text { position: relative; display: grid; justify-items: start; gap: var(--space-md); }
-.landing-name { font-family: var(--font-quran); font-size: var(--text-cover); font-weight: 400; line-height: var(--leading-cover); }
-.landing-tagline { color: var(--stage-mute); font-size: var(--text-ui); line-height: var(--leading-ui); }
-.landing-lead { max-inline-size: 33rem; margin-block-start: var(--space-sm); font-size: var(--text-hero); font-weight: 500; line-height: var(--leading-hero); text-wrap: balance; }
-.landing-sub { max-inline-size: 33rem; color: var(--stage-mute); font-size: var(--text-body); line-height: var(--leading-body); }
-.landing-hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm) var(--space-lg); margin-block-start: var(--space-md); }
-.landing-hero .huda-button[data-variant="pill"] { border-color: transparent; background: var(--stage-ink); color: var(--stage-b); font-weight: 600; }
-.landing-hero .huda-button[data-variant="pill"]:hover { background: var(--stage-ink); opacity: .92; }
-.landing-guide-link { display: inline-flex; align-items: center; min-block-size: var(--control-height); color: var(--stage-ink); font-size: var(--text-ui); line-height: var(--leading-ui); text-decoration: underline; text-underline-offset: .3em; }
-.landing-guide-link:hover { color: var(--stage-mute); }
-.landing-hero :focus-visible { outline-color: var(--stage-ink); }
-.landing-hero-device { --frame-w: 16rem; --frame-h: 22rem; border-color: color-mix(in srgb, var(--stage-ink) 22%, transparent); background: color-mix(in srgb, var(--stage-ink) 7%, transparent); box-shadow: none; }
-
-/* Who it is for and the problem it solves. */
-.landing-band { display: grid; gap: var(--space-xl); }
-.landing-band-col { display: grid; align-content: start; justify-items: start; gap: var(--space-md); }
-.landing-body { max-inline-size: 34rem; color: var(--ink); font-size: var(--text-body); line-height: var(--leading-body); }
-
-/* How it works: four features, hairline between rows, the product beside each on wide screens. */
-.landing-features { display: grid; margin: 0; padding: 0; list-style: none; }
-.landing-feature { display: grid; align-items: center; gap: var(--space-xl); padding-block: var(--space-xl); }
-.landing-feature:first-child { padding-block-start: var(--space-lg); }
-.landing-feature + .landing-feature { border-block-start: 1px solid var(--line); }
-.landing-feature-text { display: grid; justify-items: start; gap: var(--space-md); max-inline-size: 33rem; }
-.landing-feature-text h3 { font-size: var(--text-sheet-title); font-weight: 700; line-height: var(--leading-ui); }
-.landing-feature-text p { color: var(--ink-2); font-size: var(--text-body); line-height: var(--leading-body); }
-.landing-source-chips { display: inline-flex; flex-wrap: wrap; gap: var(--space-sm); margin-block-start: var(--space-xs); }
-.landing-feature-media { justify-self: center; }
-
-/* The depth dial as a specimen: the reader's control, stilled. */
-.landing-dial { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); inline-size: min(100%, 22rem); margin: 0; padding: var(--space-xs); list-style: none; border: 1px solid var(--border-ui); border-radius: var(--radius); background: var(--surface-2); }
-.landing-dial-notch { position: relative; display: flex; align-items: center; justify-content: center; min-block-size: var(--control-height); padding: var(--space-xs); border-radius: var(--radius-s); color: var(--ink-2); font-size: var(--text-ui); font-weight: 600; line-height: 1.5; text-align: center; }
-.landing-dial-notch[data-current] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
-.landing-dial-notch[data-current]::after { content: ""; position: absolute; inset-inline: 20%; inset-block-end: var(--space-xs); block-size: 3px; border-radius: var(--radius-pill); background: var(--gold); }
-
-/* The trust band: a quiet green tint, distinct from the plain sections and the dark hero. */
-.landing-trust { display: grid; gap: var(--space-lg); padding: var(--space-xl) var(--space-lg); border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent); border-radius: var(--radius); background: color-mix(in srgb, var(--accent) 7%, var(--surface)); }
-.landing-trust-grid { display: grid; gap: var(--space-lg); }
-.landing-trust-grid li { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: var(--space-md); }
-.landing-trust-icon { display: grid; place-items: center; inline-size: 2.5rem; block-size: 2.5rem; border: 1px solid var(--line-strong); border-radius: var(--radius-s); background: var(--surface); color: var(--accent); }
-.landing-trust-grid p { padding-block-start: var(--space-sm); color: var(--ink); font-size: var(--text-ui); line-height: var(--leading-ui); }
-.landing-trust-note { max-inline-size: 40rem; padding-block-start: var(--space-lg); border-block-start: 1px solid var(--line); color: var(--ink-2); font-size: var(--text-ui); line-height: var(--leading-ui); }
-
-/* Status: three tiers of certainty — raised card, soft card, dashed outline. */
-.landing-status { display: grid; align-items: start; gap: var(--space-lg); }
-.landing-status-block { display: grid; justify-items: start; gap: var(--space-md); inline-size: 100%; padding: var(--space-lg); border-radius: var(--radius); }
-.landing-status-block h2 { display: flex; align-items: center; gap: var(--space-sm); font-size: var(--text-sheet-title); font-weight: 700; line-height: var(--leading-ui); }
-.landing-status-block h2::before { content: ""; flex: none; inline-size: .625rem; block-size: .625rem; border-radius: 50%; }
-.landing-status-block[data-state="today"] { border: 1px solid var(--line); background: var(--surface); box-shadow: var(--shadow); }
-.landing-status-block[data-state="today"] h2::before { background: var(--accent); }
-.landing-status-block[data-state="progress"] { border: 1px solid var(--line); background: var(--surface-2); }
-.landing-status-block[data-state="progress"] h2::before { background: var(--gold); }
-.landing-status-block[data-state="planned"] { border: 1.5px dashed var(--line-strong); }
-.landing-status-block[data-state="planned"] h2::before { border: 2px solid var(--ink-3); }
-.landing-count { max-inline-size: 30rem; color: var(--ink); font-size: var(--text-ui); font-weight: 600; line-height: var(--leading-ui); }
-.landing-note { inline-size: 100%; padding-block-start: var(--space-md); border-block-start: 1px solid var(--line); color: var(--ink-3); font-size: var(--text-label); line-height: var(--leading-ui); }
-
-/* The close: published surahs as the reader's own chips, then the entry button once more. */
-.landing-closing { display: grid; justify-items: center; gap: var(--space-lg); padding-block-start: var(--space-2xl); border-block-start: 1px solid var(--line-strong); text-align: center; }
-.landing-closing .landing-h2::before { margin-inline: auto; }
-.landing-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-sm); }
-
-/* A gentle rise on first appearance; gone where scroll-driven animations are unsupported or motion is reduced. */
-@supports (animation-timeline: view()) {
-  .landing-reveal { animation: landing-reveal var(--dur-scene) var(--ease) both; animation-timeline: view(); animation-range: entry 5% entry 45%; }
-  @keyframes landing-reveal { from { opacity: 0; transform: translateY(1.25rem); } }
+/* --- Page shell and layout overrides for landing --- */
+.page-shell:has(.landing),
+body:has(.landing) .page-shell {
+  max-inline-size: none;
+  max-width: none;
+  padding-inline: 0;
+  padding-block: 0;
+  margin-inline: 0;
 }
 
-@media (min-width: 40rem) {
-  .landing-trust-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-lg) var(--space-xl); }
+body:has(.landing) .huda-legend-bar {
+  display: none;
 }
 
+body:has(.landing) .disclosure {
+  display: none;
+}
+
+/* --- Base landing layout & tokens --- */
+.landing {
+  --landing-container-max: 72rem;
+  --landing-container-pad: clamp(1rem, 4vw, 2.5rem);
+  --landing-band-pad: clamp(3.5rem, 8vw, 7rem);
+  --landing-display: clamp(1.875rem, 3.3vw, 3rem);
+  --landing-section-title: clamp(1.75rem, 3.2vw, 2.5rem);
+  --landing-lead: clamp(1.0625rem, 1.4vw, 1.25rem);
+
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  min-inline-size: 0;
+  overflow-x: clip;
+  color: var(--ink);
+  background: var(--surface);
+  font-family: var(--font-ui);
+}
+
+/* Centered content container for each band */
+.landing-container {
+  inline-size: 100%;
+  max-inline-size: var(--landing-container-max);
+  margin-inline: auto;
+  padding-inline: var(--landing-container-pad);
+  box-sizing: border-box;
+}
+
+/* Shared band baseline */
+.landing-band {
+  inline-size: 100%;
+  padding-block: var(--landing-band-pad);
+  box-sizing: border-box;
+}
+
+/* Typography defaults for landing */
+.landing p,
+.landing li {
+  line-height: 1.8;
+}
+
+.landing h1,
+.landing h2,
+.landing h3 {
+  line-height: 1.5;
+  text-wrap: balance;
+}
+
+/* Paragraph max line length */
+.landing-body,
+.landing-hero-sub,
+.landing-journey-lead,
+.landing-feature-desc,
+.landing-trust-note,
+.landing-footer-note {
+  max-inline-size: 36rem;
+}
+
+/* Interactive transitions and focus rings */
+.landing a,
+.landing button,
+.landing .landing-card,
+.landing .landing-journey-card,
+.landing .landing-trust-card,
+.landing .landing-status-block,
+.landing .landing-feature-panel {
+  transition: color 180ms var(--ease),
+              background 180ms var(--ease),
+              border-color 180ms var(--ease),
+              box-shadow 180ms var(--ease),
+              opacity 180ms var(--ease);
+}
+
+.landing :focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* --- Section headers & eyebrow row --- */
+.landing-section-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  margin-block-end: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.landing-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--ink-3);
+  font-size: var(--text-label);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.landing-eyebrow-dash {
+  display: inline-block;
+  inline-size: 1.75rem;
+  block-size: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+}
+
+.landing-eyebrow-num {
+  font-family: var(--font-ui);
+  letter-spacing: 0.05em;
+}
+
+.landing-section-title {
+  font-size: var(--landing-section-title);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* --- Reusable Icon Tile --- */
+.landing-icon-tile {
+  display: grid;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border-radius: var(--radius-s);
+  flex-shrink: 0;
+}
+
+.landing-icon-tile svg {
+  inline-size: 22px;
+  block-size: 22px;
+}
+
+.landing-icon-tile-accent {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+}
+
+.landing-icon-tile-gold {
+  background: color-mix(in srgb, var(--gold) 16%, transparent);
+  color: var(--gold-strong);
+}
+
+/* --- Compact hairline rows (Status lists) --- */
+.landing-rows {
+  inline-size: 100%;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.landing-rows li {
+  padding-block: var(--space-md);
+  color: var(--ink-2);
+  font-size: var(--text-ui);
+  line-height: 1.8;
+}
+
+.landing-rows li + li {
+  border-block-start: 1px solid var(--line);
+}
+
+/* --- Phone frame product shot --- */
+.phone-frame {
+  --frame-w: 15rem;
+  --frame-h: 21rem;
+  display: block;
+  inline-size: min(100%, var(--frame-w));
+  margin-inline: auto;
+  padding: var(--space-sm);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sheet);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.phone-frame img {
+  display: block;
+  inline-size: 100%;
+  block-size: var(--frame-h);
+  border-radius: var(--radius);
+  object-fit: cover;
+  object-position: top;
+}
+
+/* ==========================================================================
+   Band 1: Sticky Site Header
+   ========================================================================== */
+.landing-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 50;
+  block-size: 4rem;
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-block-end: 1px solid var(--line);
+}
+
+.landing-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  block-size: 100%;
+  gap: var(--space-md);
+}
+
+.landing-brand {
+  display: inline-flex;
+  align-items: center;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.landing-brand-name {
+  font-family: var(--font-quran);
+  font-size: 1.75rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.landing-header-nav {
+  display: none;
+  align-items: center;
+  gap: clamp(1rem, 2.4vw, 2rem);
+}
+
+.landing-nav-link {
+  color: var(--ink-2);
+  font-size: var(--text-ui);
+  font-weight: 500;
+  text-decoration: none;
+  padding-block: var(--space-xs);
+  transition: color 180ms var(--ease), text-decoration-color 180ms var(--ease);
+}
+
+.landing-nav-link:hover,
+.landing-nav-link:active {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.5em;
+}
+
+.landing-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* Theme toggle icon button */
+.landing-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.landing-theme-toggle:hover {
+  background: var(--surface-2);
+  border-color: var(--line-strong);
+}
+
+.landing-header-enter {
+  font-size: var(--text-ui);
+}
+
+/* ==========================================================================
+   Band 2: Hero Stage
+   ========================================================================== */
+.landing-hero-band {
+  position: relative;
+  min-block-size: min(40rem, 82vh);
+  display: flex;
+  align-items: center;
+  overflow: clip;
+  background: linear-gradient(160deg, var(--stage-a), var(--stage-b));
+  color: var(--stage-ink);
+}
+
+/* Scaled-up ring motif */
+.landing-hero-band::before {
+  content: "";
+  position: absolute;
+  inset-block-start: -25%;
+  inset-inline-end: -15%;
+  inline-size: 38rem;
+  block-size: 38rem;
+  border-radius: 50%;
+  background: repeating-radial-gradient(
+    circle,
+    transparent 0 1.75rem,
+    color-mix(in srgb, var(--stage-ink) 7%, transparent) 1.75rem 1.8125rem
+  );
+  pointer-events: none;
+}
+
+.landing-hero-grid {
+  position: relative;
+  display: grid;
+  align-items: center;
+  gap: var(--space-2xl);
+  inline-size: 100%;
+}
+
+.landing-hero-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-md);
+}
+
+.landing-hero-label {
+  font-family: var(--font-quran);
+  font-size: 1.125rem;
+  color: var(--stage-mute);
+  margin-block-end: calc(-1 * var(--space-xs));
+}
+
+.landing-hero-headline {
+  font-size: clamp(1.875rem, 3.3vw, 3rem);
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--stage-ink);
+  text-wrap: balance;
+  max-inline-size: none;
+}
+
+.landing-hero-sub {
+  color: var(--stage-mute);
+  font-size: var(--landing-lead);
+  line-height: 1.8;
+  max-inline-size: 40rem;
+}
+
+.landing-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm) var(--space-lg);
+  margin-block-start: var(--space-sm);
+}
+
+.landing-hero-btn {
+  background: var(--stage-ink);
+  color: var(--stage-b);
+  border-color: transparent;
+  font-weight: 600;
+}
+
+.landing-hero-btn:hover {
+  background: var(--stage-ink);
+  opacity: 0.92;
+}
+
+.landing-guide-link {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--control-height);
+  color: var(--stage-ink);
+  font-size: var(--text-ui);
+  text-decoration: underline;
+  text-underline-offset: 0.35em;
+}
+
+.landing-guide-link:hover {
+  color: var(--stage-mute);
+}
+
+.landing-hero-band :focus-visible {
+  outline-color: var(--stage-ink);
+}
+
+/* Proof row */
+.landing-hero-proof {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  margin-block-start: var(--space-lg);
+  padding-block-start: var(--space-lg);
+  border-block-start: 1px solid color-mix(in srgb, var(--stage-ink) 20%, transparent);
+  gap: var(--space-md);
+}
+
+.landing-proof-item {
+  display: flex;
+  align-items: center;
+  color: var(--stage-ink);
+}
+
+.landing-proof-count {
+  font-size: var(--text-ui);
+  font-weight: 500;
+  color: var(--stage-ink);
+  line-height: 1.6;
+}
+
+.landing-proof-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.landing-proof-chip {
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--stage-ink) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--stage-ink) 20%, transparent);
+  color: var(--stage-ink);
+  font-size: var(--text-label);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.landing-proof-sources {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+/* Hero media device & soft glow */
+.landing-hero-media {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.landing-hero-media::before {
+  content: "";
+  grid-area: 1 / 1;
+  inline-size: calc(clamp(16rem, 26vw, 21rem) * 1.2);
+  block-size: calc(clamp(16rem, 26vw, 21rem) * 1.2);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--stage-ink) 10%, transparent);
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.landing-hero-device {
+  grid-area: 1 / 1;
+  position: relative;
+  z-index: 1;
+  --frame-w: clamp(16rem, 26vw, 21rem);
+  --frame-h: calc(clamp(16rem, 26vw, 21rem) * 1.75);
+  border-color: color-mix(in srgb, var(--stage-ink) 25%, transparent);
+  background: color-mix(in srgb, var(--stage-ink) 8%, transparent);
+  box-shadow: 0 24px 48px -18px rgba(0, 0, 0, 0.55);
+}
+
+/* ==========================================================================
+   Band 3: Audience & Problem (#why) — Background: --surface
+   ========================================================================== */
+.landing-why-band {
+  background: var(--surface);
+}
+
+.landing-audience-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-lg);
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+  border-radius: var(--radius);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  margin-block-end: clamp(2rem, 4vw, 3rem);
+}
+
+.landing-audience-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  min-inline-size: 0;
+}
+
+.landing-audience-lead {
+  font-size: clamp(1.0625rem, 1.4vw, 1.25rem);
+  font-weight: 500;
+  line-height: 1.8;
+  color: var(--ink);
+}
+
+.landing-audience-sub {
+  font-size: var(--text-ui);
+  line-height: 1.8;
+  color: var(--ink-2);
+}
+
+.landing-problem-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.landing-problem-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: clamp(1.25rem, 2.4vw, 1.75rem);
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  box-sizing: border-box;
+  transition: border-color 180ms var(--ease), transform 180ms var(--ease);
+}
+
+/* Five cards fit one row from 64rem, so none is left alone on a second row. */
 @media (min-width: 64rem) {
-  .page-shell:has(.landing) { max-inline-size: 64rem; padding-block-start: var(--space-2xl); }
-  .landing-hero { grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-2xl); padding: var(--space-2xl); }
-  .landing-hero-device { --frame-h: 28rem; }
-  .landing-band { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2xl); }
-  .landing-feature { grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-2xl); }
-  .landing-feature:nth-child(even) .landing-feature-media { order: -1; }
-  .landing-status { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-xl); }
+  .landing-problem-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.landing-problem-card:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+}
+
+.landing-problem-card .landing-icon-tile {
+  margin-block-end: var(--space-md);
+}
+
+.landing-problem-title {
+  font-size: var(--text-sheet-title);
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.5;
+  margin-block-end: var(--space-xs);
+}
+
+.landing-problem-body {
+  color: var(--ink-2);
+  font-size: var(--text-ui);
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* ==========================================================================
+   Band 4: Journey (#journey) — Background: --surface-2
+   ========================================================================== */
+.landing-journey-band {
+  background: var(--surface-2);
+}
+
+.landing-journey-lead {
+  font-size: var(--landing-lead);
+  line-height: 1.8;
+  color: var(--ink-2);
+  max-inline-size: 40rem;
+  margin-block-end: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.landing-journey-grid {
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  grid-template-columns: 1fr;
+}
+
+.landing-journey-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: clamp(1.25rem, 2.4vw, 1.75rem);
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-sizing: border-box;
+  transition: border-color 180ms var(--ease), transform 180ms var(--ease);
+}
+
+.landing-journey-card:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+}
+
+.landing-journey-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  inline-size: 100%;
+  margin-block-end: var(--space-md);
+}
+
+.landing-journey-num {
+  font-size: var(--text-ui);
+  font-weight: 600;
+  color: var(--ink-3);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.landing-journey-title {
+  font-size: var(--text-sheet-title);
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.5;
+  margin-block-end: var(--space-xs);
+}
+
+.landing-journey-body {
+  color: var(--ink-2);
+  font-size: var(--text-ui);
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* Specimen row pushed to card bottom */
+.landing-journey-specimen {
+  margin-block-start: auto;
+  padding-block-start: var(--space-md);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  align-items: center;
+  inline-size: 100%;
+}
+
+.landing-specimen-ticket,
+.landing-specimen-chip,
+.landing-specimen-badge-verified,
+.landing-specimen-badge-pending,
+.landing-specimen-badge-warning,
+.landing-specimen-label-example {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--text-label);
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-pill);
+  line-height: 1.4;
+  font-style: normal;
+}
+
+.landing-specimen-ticket {
+  border: 1.5px dashed var(--line-strong);
+  color: var(--ink);
+  font-weight: 600;
+  background: transparent;
+}
+
+.landing-specimen-chip {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.landing-chip-accent {
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+}
+
+.landing-chip-gold {
+  background: color-mix(in srgb, var(--gold) 14%, var(--surface));
+}
+
+.landing-chip-ink-3 {
+  background: color-mix(in srgb, var(--ink-3) 14%, var(--surface));
+}
+
+.landing-specimen-term {
+  display: inline-block;
+  color: var(--accent);
+  font-size: var(--text-label);
+  font-weight: 600;
+  line-height: 1.4;
+  text-decoration: underline dotted;
+  text-underline-offset: 0.35em;
+  padding-block: 0.2rem;
+}
+
+.landing-specimen-badge-verified {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.landing-specimen-badge-pending {
+  border: 1px solid var(--gold);
+  color: var(--ink);
+  font-weight: 500;
+  background: transparent;
+}
+
+.landing-specimen-badge-pending svg {
+  color: var(--gold-strong);
+}
+
+.landing-specimen-badge-warning {
+  background: color-mix(in srgb, var(--gold) 16%, transparent);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.landing-specimen-badge-warning svg {
+  color: var(--gold-strong);
+}
+
+.landing-specimen-label-example {
+  border: 1.5px dashed var(--line-strong);
+  color: var(--ink);
+  font-weight: 500;
+  font-style: normal;
+  background: transparent;
+}
+
+/* ==========================================================================
+   Band 5: How it Works (#how) — Background: --surface
+   ========================================================================== */
+.landing-how-band {
+  background: var(--surface);
+}
+
+.landing-features {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 6vw, 5rem);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.landing-feature {
+  display: grid;
+  align-items: center;
+  gap: var(--space-xl);
+  grid-template-columns: 1fr;
+}
+
+.landing-feature-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-xs);
+  max-inline-size: 30rem;
+}
+
+.landing-feature-num {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  margin-block-end: var(--space-xs);
+}
+
+.landing-feature-title {
+  font-size: var(--text-sheet-title);
+  font-weight: 700;
+  color: var(--ink);
+  margin-block-end: var(--space-xs);
+}
+
+.landing-feature-desc {
+  color: var(--ink-2);
+  font-size: var(--text-body);
+  line-height: 1.8;
+}
+
+.landing-source-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-block-start: var(--space-sm);
+}
+
+.landing-feature-media-col {
+  inline-size: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.landing-feature-panel {
+  inline-size: 100%;
+  min-block-size: 20rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-xl);
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface-2));
+  box-sizing: border-box;
+}
+
+.landing-feature-panel:hover {
+  border-color: var(--line-strong);
+}
+
+/* First row with depth dial: no min-height, generous padding */
+.landing-feature-panel-dial,
+.landing-feature:first-child .landing-feature-panel {
+  min-block-size: auto;
+  padding: clamp(2rem, 5vw, 3.5rem);
+}
+
+.landing-feature-device {
+  --frame-w: 16rem;
+  --frame-h: 22rem;
+  box-shadow: var(--shadow);
+}
+
+/* Depth dial inside panel: larger dimensions and notch */
+.landing-dial {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  inline-size: min(100%, 26rem);
+  margin: 0;
+  padding: var(--space-xs);
+  list-style: none;
+  border: 1px solid var(--border-ui);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+
+.landing-dial-notch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 3.25rem;
+  padding: var(--space-xs);
+  border-radius: var(--radius-s);
+  color: var(--ink-2);
+  font-size: var(--text-body);
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.landing-dial-notch[data-current] {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+
+.landing-dial-notch[data-current]::after {
+  content: "";
+  position: absolute;
+  inset-inline: 20%;
+  inset-block-end: var(--space-xs);
+  block-size: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--gold);
+}
+
+/* ==========================================================================
+   Band 6: Trust (#trust) — Background: --surface-2
+   ========================================================================== */
+.landing-trust-band {
+  background: var(--surface-2);
+}
+
+.landing-trust-grid {
+  display: grid;
+  gap: var(--space-lg);
+  grid-template-columns: 1fr;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.landing-trust-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.landing-trust-card:hover {
+  border-color: var(--line-strong);
+}
+
+.landing-trust-icon {
+  display: grid;
+  place-items: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-s);
+  background: var(--surface-2);
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.landing-trust-text {
+  color: var(--ink);
+  font-size: var(--text-ui);
+  line-height: 1.8;
+  margin: 0;
+}
+
+.landing-trust-note {
+  color: var(--ink-2);
+  font-size: var(--text-ui);
+  line-height: 1.8;
+  padding-block-start: var(--space-lg);
+  margin-block-start: var(--space-xl);
+  border-block-start: 1px solid var(--line);
+}
+
+/* ==========================================================================
+   Band 7: Status (#status) — Background: --surface
+   ========================================================================== */
+.landing-status-band {
+  background: var(--surface);
+}
+
+.landing-status-grid {
+  display: grid;
+  align-items: start;
+  gap: var(--space-lg);
+  grid-template-columns: 1fr;
+}
+
+.landing-status-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-md);
+  inline-size: 100%;
+  padding: var(--space-xl);
+  border-radius: var(--radius);
+  box-sizing: border-box;
+}
+
+.landing-status-block:hover {
+  border-color: var(--line-strong);
+}
+
+.landing-status-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-xs);
+  inline-size: 100%;
+}
+
+.landing-status-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--text-sheet-title);
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.landing-status-title::before {
+  content: "";
+  flex: none;
+  inline-size: 0.625rem;
+  block-size: 0.625rem;
+  border-radius: 50%;
+}
+
+.landing-status-block[data-state="today"] {
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  box-shadow: var(--shadow);
+}
+
+.landing-status-block[data-state="today"] .landing-status-title::before {
+  background: var(--accent);
+}
+
+.landing-status-block[data-state="progress"] {
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+}
+
+.landing-status-block[data-state="progress"] .landing-status-title::before {
+  background: var(--gold);
+}
+
+.landing-status-block[data-state="planned"] {
+  border: 1.5px dashed var(--line-strong);
+  background: var(--surface-2);
+}
+
+.landing-status-block[data-state="planned"] .landing-status-title::before {
+  border: 2px solid var(--ink-3);
+  box-sizing: border-box;
+}
+
+.landing-count {
+  color: var(--ink);
+  font-size: var(--text-ui);
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+/* Status rows with hanging indent */
+.landing-status-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.landing-status-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  margin-block-start: 0.25em;
+}
+
+.landing-status-icon-today {
+  color: var(--accent);
+}
+
+.landing-status-icon-progress {
+  color: var(--gold-strong);
+}
+
+.landing-status-icon-planned {
+  color: var(--ink-3);
+}
+
+.landing-status-text {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.landing-note {
+  inline-size: 100%;
+  margin-block-start: var(--space-md);
+  padding-block-start: var(--space-md);
+  border-block-start: 1px solid var(--line);
+  color: var(--ink-3);
+  font-size: var(--text-label);
+  line-height: 1.7;
+}
+
+/* ==========================================================================
+   Band 8: Published Surahs & Closing Call (#surahs)
+   ========================================================================== */
+.landing-closing-band {
+  background: linear-gradient(160deg, var(--stage-a), var(--stage-b));
+  color: var(--stage-ink);
+}
+
+.landing-closing-band :focus-visible {
+  outline-color: var(--stage-ink);
+}
+
+.landing-closing-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-xl);
+}
+
+.landing-closing-header {
+  align-items: center;
+  text-align: center;
+}
+
+.landing-closing-header .landing-eyebrow {
+  color: var(--stage-mute);
+}
+
+.landing-closing-header .landing-eyebrow-dash {
+  background: var(--gold);
+}
+
+.landing-closing-header .landing-section-title {
+  color: var(--stage-ink);
+}
+
+.landing-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-sm);
+  max-inline-size: 48rem;
+}
+
+.landing-surah-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: var(--control-height);
+  padding: var(--space-xs) var(--space-lg);
+  border-radius: var(--radius-pill);
+  border: 1px solid color-mix(in srgb, var(--stage-ink) 25%, transparent);
+  background: color-mix(in srgb, var(--stage-ink) 10%, transparent);
+  color: var(--stage-ink);
+  font-family: var(--font-quran);
+  font-size: 1.25rem;
+  line-height: 1.5;
+  text-decoration: none;
+}
+
+.landing-surah-chip:hover {
+  background: color-mix(in srgb, var(--stage-ink) 22%, transparent);
+  border-color: var(--stage-ink);
+}
+
+.landing-closing-action {
+  margin-block-start: var(--space-sm);
+}
+
+.landing-closing-btn {
+  background: var(--stage-ink);
+  color: var(--stage-b);
+  border-color: transparent;
+  font-weight: 600;
+}
+
+.landing-closing-btn:hover {
+  background: var(--stage-ink);
+  opacity: 0.92;
+}
+
+/* ==========================================================================
+   Band 9: Site Footer
+   ========================================================================== */
+.landing-footer-band {
+  background: var(--surface);
+  border-block-start: 1px solid var(--line);
+  padding-block: clamp(2rem, 4vw, 3rem);
+}
+
+.landing-footer-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  align-items: flex-start;
+}
+
+.landing-footer-brand-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.landing-footer-brand {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.landing-footer-tagline {
+  color: var(--ink-3);
+  font-size: var(--text-ui);
+  line-height: 1.7;
+}
+
+.landing-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.landing-footer-link {
+  color: var(--ink);
+  font-size: var(--text-ui);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 0.35em;
+}
+
+.landing-footer-link:hover {
+  color: var(--accent);
+}
+
+.landing-footer-note {
+  margin-block-start: var(--space-lg);
+  padding-block-start: var(--space-md);
+  border-block-start: 1px solid var(--line);
+  color: var(--ink-3);
+  font-size: var(--text-label);
+  line-height: 1.8;
+}
+
+/* ==========================================================================
+   Dark Theme Adjustments
+   Dim screenshots slightly and outline panels in dark mode.
+   ========================================================================== */
+:root[data-theme="dark"] .phone-frame img,
+[data-theme="dark"] .phone-frame img {
+  filter: brightness(0.86) saturate(0.95);
+}
+
+:root[data-theme="dark"] .landing-feature-panel,
+[data-theme="dark"] .landing-feature-panel {
+  border: 1px solid var(--line);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .phone-frame img {
+    filter: brightness(0.86) saturate(0.95);
+  }
+
+  :root:not([data-theme="light"]) .landing-feature-panel {
+    border: 1px solid var(--line);
+  }
+}
+
+/* ==========================================================================
+   Motion & Scroll-Driven Animation
+   ========================================================================== */
+@supports (animation-timeline: view()) {
+  .landing-reveal {
+    animation: landing-reveal var(--dur-scene) var(--ease) both;
+    animation-timeline: view();
+    animation-range: entry 5% entry 45%;
+  }
+
+  @keyframes landing-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(1.25rem);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-reveal {
+    animation: none !important;
+  }
+  .landing,
+  .landing *,
+  .landing *::before,
+  .landing *::after {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   Logical RTL throughout, fluid clamps handle intermediate sizes.
+   ========================================================================== */
+
+/* < 40rem (phones) */
+@media (max-width: 39.99rem) {
+  .landing-proof-item:not(:last-child) {
+    padding-block-end: var(--space-md);
+    border-block-end: 1px solid color-mix(in srgb, var(--stage-ink) 20%, transparent);
+    inline-size: 100%;
+  }
+}
+
+/* ≥ 40rem (640px) */
+@media (min-width: 40rem) {
+  .landing-hero-proof {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm) var(--space-lg);
+  }
+
+  .landing-proof-item:not(:last-child) {
+    padding-inline-end: var(--space-lg);
+    border-inline-end: 1px solid color-mix(in srgb, var(--stage-ink) 20%, transparent);
+  }
+
+  .landing-journey-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .landing-trust-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .landing-footer-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .landing-footer-links {
+    margin-inline-start: auto;
+  }
+}
+
+/* ≥ 64rem (1024px) */
+@media (min-width: 64rem) {
+  .landing-header-nav {
+    display: flex;
+  }
+
+  .landing-hero-grid {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+    gap: var(--space-2xl);
+  }
+
+
+  .landing-journey-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .landing-feature {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: center;
+  }
+
+  /* Odd rows: text sits against the gap side (inline-end in RTL) */
+  .landing-feature:nth-child(odd) .landing-feature-text {
+    justify-self: end;
+  }
+
+  /* Even rows: media panel on inline-start (order: -1), text sits against the gap side (inline-start in RTL) */
+  .landing-feature:nth-child(even) .landing-feature-media-col {
+    order: -1;
+  }
+
+  .landing-feature:nth-child(even) .landing-feature-text {
+    justify-self: start;
+  }
+
+  .landing-trust-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .landing-status-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-xl);
+    align-items: start;
+  }
 }
