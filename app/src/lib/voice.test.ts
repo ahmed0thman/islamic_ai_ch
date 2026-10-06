@@ -44,6 +44,30 @@ test("a local STT url transcribes with no Groq key and skips repair", async () =
   assert.equal((calls[0].options.headers as Record<string, string>).authorization, undefined);
 });
 
+test("a judge's own Groq key is used alone, at Groq, even when a project key or a local URL is configured; a failure never falls back", async () => {
+  const own = { ownKey: "test-only-sentinel-groq" };
+  const { calls, fetchImpl } = scriptFetch([async () => Response.json({ text: "alpha beta gamma" })]);
+  assert.deepEqual(await transcribeQuestion(base({ GROQ_API_KEY: "project-only", HUDA_VOICE_STT_URL: "http://127.0.0.1:8178/v1" }, fetchImpl, { live: true, ...own })),
+    { status: "ok", text: "alpha beta gamma", corrected: false });
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].url, `${GROQ_BASE_URL}/audio/transcriptions`);
+  assert.equal((calls[0].options.headers as Record<string, string>).authorization, "Bearer test-only-sentinel-groq");
+  // No project key at all: the judge's key alone makes the path available.
+  const alone = scriptFetch([async () => Response.json({ text: "alpha beta gamma" })]);
+  assert.equal((await transcribeQuestion(base({}, alone.fetchImpl, { live: true, ...own }))).status, "ok");
+  // Rejected, busy or down: the project's key is never tried.
+  for (const [reply, expected] of [[() => new Response("no", { status: 401 }), "error"], [() => new Response("no", { status: 429 }), "busy"], [() => { throw new Error("down"); }, "error"]] as const) {
+    const seen: string[] = [];
+    const failing: typeof fetch = async (_url, options) => { seen.push((options!.headers as Record<string, string>).authorization); return reply(); };
+    assert.deepEqual(await transcribeQuestion(base({ GROQ_API_KEY: "project-only" }, failing, { live: true, ...own })), { status: expected });
+    assert.ok(seen.length > 0 && seen.every((value) => value === "Bearer test-only-sentinel-groq"));
+  }
+  // The repair step of a final request runs on the judge's key too, never the project's.
+  const repair = scriptFetch([async () => Response.json({ text: "alpha beta gamma" }), async () => Response.json({ choices: [{ message: { content: '{"text":"alpha beta gamma"}' } }] })]);
+  await transcribeQuestion(base({ GROQ_API_KEY: "project-only" }, repair.fetchImpl, own));
+  assert.deepEqual(repair.calls.map((call) => (call.options.headers as Record<string, string>).authorization), ["Bearer test-only-sentinel-groq", "Bearer test-only-sentinel-groq"]);
+});
+
 test("speech request shape: url, bearer, verified fields, and a natural-sentence prompt", async () => {
   const { calls, fetchImpl } = scriptFetch([async () => Response.json({ text: "alpha beta gamma" })]);
   assert.deepEqual(await transcribeQuestion(base({ GROQ_API_KEY: "k" }, fetchImpl, { live: true })),

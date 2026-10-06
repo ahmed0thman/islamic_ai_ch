@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import type { Ui } from "@/lib/types";
-import { clearOwnKey, clearProviderOwnKey, getOwnKeys, keyWithinShape, OWN_KEY_CHANGE_EVENT, OWN_KEY_PROVIDERS, setActiveOwnKey, setProviderOwnKey, type OwnKeyProvider } from "@/lib/own-key";
+import { clearOwnKey, clearProviderOwnKey, getOwnKeys, keyWithinShape, OWN_KEY_CHANGE_EVENT, isAskKeyProvider, OWN_KEY_PROVIDERS, setActiveOwnKey, setProviderOwnKey, type OwnKeyProvider } from "@/lib/own-key";
 import { BottomSheet } from "./bottom-sheet";
 import styles from "./key-sheet.module.css";
 
@@ -91,14 +91,17 @@ function ProviderKeyForm({ ui, provider, savedKey, inUse, clearVersion }: {
 
   return <form className={styles.field} onSubmit={save} aria-busy={status === "checking" || undefined}>
     <label htmlFor={`${id}-key`}>{ui.judge_key.providers[provider]}</label>
+    <p id={`${id}-hint`} className={styles.intro}>{ui.judge_key.hints[provider]}</p>
     <input id={`${id}-key`} className={styles.input} type="password" autoComplete="off" spellCheck={false} dir="ltr"
-      autoCapitalize="none" maxLength={300} value={draft} aria-describedby={`${id}-choice ${id}-status`} aria-invalid={status === "bad" || undefined}
+      autoCapitalize="none" maxLength={300} value={draft} aria-describedby={`${id}-hint ${id}-choice ${id}-status`} aria-invalid={status === "bad" || undefined}
       onChange={(event) => { resetCheck(); setDraft(event.target.value); }} />
     <div id={`${id}-choice`} className={styles.using}>
-      {savedKey ? <button type="button" className={`${styles.button} ${styles.choice}`} aria-pressed={inUse}
-        onClick={() => { if (!setActiveOwnKey(provider)) setStatus("bad"); }}>
-        {inUse ? ui.judge_key.in_use : ui.judge_key.use_this}
-      </button> : <span>{ui.judge_key.empty}</span>}
+      {!savedKey ? <span>{ui.judge_key.empty}</span>
+        // A transcription key has no "use this" choice: once saved it is simply the one used for the spoken question.
+        : isAskKeyProvider(provider) ? <button type="button" className={`${styles.button} ${styles.choice}`} aria-pressed={inUse}
+          onClick={() => { if (!setActiveOwnKey(provider)) setStatus("bad"); }}>
+          {inUse ? ui.judge_key.in_use : ui.judge_key.use_this}
+        </button> : <span>{ui.judge_key.in_use}</span>}
     </div>
     <p id={`${id}-status`} className={styles.status} role="status" aria-live="polite" aria-atomic="true">{status ? ui.judge_key[status] : null}</p>
     <div className={styles.actions}>

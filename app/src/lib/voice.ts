@@ -155,15 +155,15 @@ const FIX_LIMIT_MS = 8_000;
 
 interface SpeechReply { kind: "empty" | "error" | "busy" | "text"; text?: string; segments?: unknown }
 
-/** HUDA_VOICE_STT_URL, when set, sends speech-to-text to that base URL instead of Groq. */
+/** HUDA_VOICE_STT_URL, when set, sends speech-to-text to that base URL instead of Groq. A judge's own Groq key is used alone, at Groq, and never falls back to the project's key. */
 export async function transcribeQuestion(input: {
   audio: Blob; filename: string; context: VoiceContext; hintText: HintText; live: boolean;
-  env: Readonly<Record<string, string | undefined>>; fetchImpl?: typeof fetch; signal?: AbortSignal;
+  env: Readonly<Record<string, string | undefined>>; ownKey?: string; fetchImpl?: typeof fetch; signal?: AbortSignal;
 }): Promise<VoiceResult> {
   const { audio, filename, context, hintText, live, env, fetchImpl = fetch, signal } = input;
-  const apiKey = env.GROQ_API_KEY;
-  const sttBase = env.HUDA_VOICE_STT_URL?.replace(/\/+$/, "") || GROQ_BASE_URL;
-  const local = Boolean(env.HUDA_VOICE_STT_URL);
+  const apiKey = input.ownKey ?? env.GROQ_API_KEY;
+  const local = Boolean(env.HUDA_VOICE_STT_URL) && input.ownKey === undefined;
+  const sttBase = local ? env.HUDA_VOICE_STT_URL!.replace(/\/+$/, "") : GROQ_BASE_URL;
   if (!apiKey && !local) return { status: "unavailable" };
   const hint = hintSentence(context, hintText);
   const sttFetch = (inner: AbortSignal, withPrompt: boolean): Promise<Response> => {

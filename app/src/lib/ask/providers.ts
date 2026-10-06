@@ -6,9 +6,10 @@ import { lexicalScore } from "./normalize.ts";
 // @ts-expect-error -- Node requires source extensions.
 import { fetchRetry, runStage } from "./runtime.ts";
 // @ts-expect-error -- Node tests require explicit source extensions.
-import { keyWithinShape } from "../own-key.ts";
-import type { ChoiceProvider } from "./types";
+import { keyWithinShape, ownKeyFromHeaders } from "../own-key.ts";
+import type { ChoiceProvider, SelectionRequest } from "./types";
 
+export const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta";
 export const DEFAULT_GEMINI_MODEL = "gemini-3.8-flash";
 // Gemini supports a subset of JSON Schema; validateChoice enforces uniqueness.
 export const GEMINI_CHOICE_SCHEMA = {
@@ -17,9 +18,17 @@ export const GEMINI_CHOICE_SCHEMA = {
     atom_ids: { type: "array", items: { type: "string" }, maxItems: 4 } },
 };
 
-export function geminiProvider(apiKey: string, model = DEFAULT_GEMINI_MODEL): ChoiceProvider {
-  return { name: "gemini", async choose({ system, message, signal, schema }) {
-    const response = await fetchRetry(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+/** Thrown for a fault of the model's service (HTTP 5xx, 429, no answer from the network): the one kind that the fallback model may retry. */
+class GeminiServiceError extends Error {}
+export const DEFAULT_GEMINI_FALLBACK_MODEL = "gemini-3.5-flash-lite";
+/** The model that answers when the configured one is down; an empty HUDA_ASK_GEMINI_FALLBACK_MODEL switches it off. */
+export function geminiFallbackModel(env: Readonly<Record<string, string | undefined>>): string | undefined {
+  return (env.HUDA_ASK_GEMINI_FALLBACK_MODEL ?? DEFAULT_GEMINI_FALLBACK_MODEL) || undefined;
+}
+
+export function geminiProvider(apiKey: string, model = DEFAULT_GEMINI_MODEL, fallbackModel?: string): ChoiceProvider {
+  const call = async (name: string, attempts: number, { system, message, signal, schema }: SelectionRequest): Promise<unknown> => {
+    const response = await fetchRetry(`${GEMINI_BASE_URL}/models/${encodeURIComponent(name)}:generateContent`, {
       method: "POST", signal,
       headers: { "x-goog-api-key": apiKey, "content-type": "application/json" },
       body: JSON.stringify({
@@ -27,8 +36,8 @@ export function geminiProvider(apiKey: string, model = DEFAULT_GEMINI_MODEL): Ch
         contents: [{ role: "user", parts: [{ text: message }] }],
         generationConfig: { temperature: 0, responseMimeType: "application/json", responseJsonSchema: schema ? withoutUniqueItems(schema) : GEMINI_CHOICE_SCHEMA },
       }),
-    });
-    if (!response.ok) throw new Error("Provider failed");
+    }, attempts).catch((error) => { throw signal.aborted ? error : new GeminiServiceError("Provider unreachable"); });
+    if (!response.ok) throw response.status === 429 || response.status >= 500 ? new GeminiServiceError("Provider failed") : new Error("Provider failed");
     const data = await response.json();
     const candidates = data.candidates;
     if (!Array.isArray(candidates) || candidates.length !== 1 || candidates[0].finishReason !== "STOP") {
@@ -37,6 +46,15 @@ export function geminiProvider(apiKey: string, model = DEFAULT_GEMINI_MODEL): Ch
     const parts = candidates[0].content?.parts;
     if (!Array.isArray(parts) || parts.some((part) => part.thought || typeof part.text !== "string")) throw new Error("Missing choice");
     return JSON.parse(parts.map((part) => part.text).join(""));
+  };
+  const fallback = fallbackModel && fallbackModel !== model ? fallbackModel : undefined;
+  return { name: "gemini", async choose(request) {
+    // With a fallback the configured model gets one attempt: the second model is the retry, inside the stage's own deadline.
+    try { return await call(model, fallback ? 1 : 3, request); }
+    catch (error) {
+      if (!fallback || !(error instanceof GeminiServiceError) || request.signal.aborted) throw error;
+      return call(fallback, 3, request);
+    }
   } };
 }
 
@@ -126,25 +144,22 @@ export function opencodeGoProvider(apiKey: string, model = "gpt-6-luna", effort?
 export function openaiProvider(apiKey: string, model = "gpt-6-luna", effort?: string): ChoiceProvider {
   return responsesProvider({ name: "openai", baseUrl: OPENAI_BASE_URL, apiKey, model, sessionHeader: false, effort });
 }
-/** The supplied secret belongs only to the returned request-scoped provider. */
+/** The supplied secret belongs only to the returned request-scoped provider. Only the Ask providers a judge may enter are built here. */
 export function providersFromKey(provider: string, key: string, env: Readonly<Record<string, string | undefined>>): ChoiceProvider[] {
   if (!keyWithinShape(key)) return [];
   const effort = env.HUDA_ASK_EFFORT === "default" ? undefined : env.HUDA_ASK_EFFORT || "low";
-  if (provider === "opencode-go") return [opencodeGoProvider(key, env.HUDA_ASK_MODEL || "gpt-6-luna", effort)];
   if (provider === "openai") return [openaiProvider(key, env.HUDA_ASK_MODEL || "gpt-6-luna", effort)];
-  if (provider === "anthropic") return [anthropicProvider(key, env.HUDA_ASK_MODEL || "claude-sonnet-5-5")];
+  // The judge's Google key calls the same model as the project's, with the same fallback model; HUDA_ASK_MODEL names the OpenAI model, so Google has its own override.
+  if (provider === "gemini") return [geminiProvider(key, env.HUDA_ASK_GEMINI_MODEL || DEFAULT_GEMINI_MODEL, geminiFallbackModel(env))];
   return [];
 }
 
 /** Any own-key header opts out of the project's chain, including malformed or incomplete pairs. */
 export function providersForRequest(headers: Headers, env: Readonly<Record<string, string | undefined>>) {
-  const provider = headers.get("x-huda-provider");
-  const key = headers.get("x-huda-key");
-  const ownKey = provider !== null || key !== null;
-  const name = provider === "opencode-go" || provider === "openai" || provider === "anthropic" ? provider : undefined;
+  const { present, own } = ownKeyFromHeaders(headers, "ask");
   return {
-    ownKey, provider: name,
-    providers: ownKey ? provider !== null && key !== null ? providersFromKey(provider, key, env) : [] : providersFromEnv(env),
+    ownKey: present, provider: own?.provider,
+    providers: present ? own ? providersFromKey(own.provider, own.key, env) : [] : providersFromEnv(env),
   };
 }
 export function providersFromEnv(env: Readonly<Record<string, string | undefined>>): ChoiceProvider[] {
@@ -157,7 +172,7 @@ export function providersFromEnv(env: Readonly<Record<string, string | undefined
     if (name === "opencode-go" && env.OPENCODE_GO_API_KEY) return [opencodeGoProvider(env.OPENCODE_GO_API_KEY, env.HUDA_ASK_MODEL || "gpt-6-luna", effort)];
     if (name === "openai" && env.OPENAI_API_KEY) return [openaiProvider(env.OPENAI_API_KEY, env.HUDA_ASK_MODEL || "gpt-6-luna", effort)];
     if (name === "groq" && env.GROQ_API_KEY) return [{ ...openaiCompatibleProvider({ baseUrl: GROQ_BASE_URL, apiKey: env.GROQ_API_KEY, model: env.HUDA_ASK_GROQ_MODEL || "openai/gpt-oss-120b" }), name: "groq" }];
-    if (name === "gemini" && env.GEMINI_API_KEY) return [geminiProvider(env.GEMINI_API_KEY, env.HUDA_ASK_MODEL || DEFAULT_GEMINI_MODEL)];
+    if (name === "gemini" && env.GEMINI_API_KEY) return [geminiProvider(env.GEMINI_API_KEY, env.HUDA_ASK_MODEL || DEFAULT_GEMINI_MODEL, geminiFallbackModel(env))];
     if (name === "anthropic" && env.ANTHROPIC_API_KEY) return [anthropicProvider(env.ANTHROPIC_API_KEY, env.HUDA_ASK_MODEL || "claude-sonnet-5-5")];
     if (name === "lexical" && env.NODE_ENV !== "production") return [lexicalProvider()];
     return [];

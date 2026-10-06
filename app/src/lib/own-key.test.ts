@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 // @ts-expect-error -- Node tests require explicit source extensions.
-import { clearOwnKey, clearProviderOwnKey, getOwnKey, getOwnKeys, keyWithinShape, OWN_KEY_CHANGE_EVENT, ownKeyHeaders, setActiveOwnKey, setOwnKey, setProviderOwnKey } from "./own-key.ts";
+import { clearOwnKey, clearProviderOwnKey, getOwnKey, getOwnKeys, keyWithinShape, OWN_KEY_CHANGE_EVENT, ownKeyFromHeaders, ownKeyHeaders, ownTranscribeHeaders, setActiveOwnKey, setOwnKey, setProviderOwnKey } from "./own-key.ts";
 // @ts-expect-error -- Node tests require explicit source extensions.
 import { requestAsk } from "./ask-client.ts";
 // @ts-expect-error -- Node tests require explicit source extensions.
@@ -37,7 +37,7 @@ test("own keys round-trip in session storage only; change events carry no secret
       changes++;
       assert.equal("detail" in event, false);
     });
-    for (const provider of ["opencode-go", "openai", "anthropic"] as const) {
+    for (const provider of ["openai", "gemini"] as const) {
       const own = { provider, key: "test-only-sentinel-" + provider };
       assert.equal(setOwnKey(own), true);
       assert.deepEqual(getOwnKey(), own);
@@ -48,14 +48,14 @@ test("own keys round-trip in session storage only; change events carry no secret
     assert.equal(getOwnKey(), null);
     assert.deepEqual(ownKeyHeaders(), {});
     assert.equal(fixture.values.size, 0);
-    assert.equal(changes, 4);
+    assert.equal(changes, 3);
   } finally { fixture.restore(); }
 });
 
 test("storage corruption and unsupported or malformed keys are ignored", () => {
   const fixture = browser();
   try {
-    for (const raw of ["{", "null", "[]", JSON.stringify({ provider: "gemini", key: "x".repeat(20) }),
+    for (const raw of ["{", "null", "[]", JSON.stringify({ provider: "anthropic", key: "x".repeat(20) }), JSON.stringify({ provider: "opencode-go", key: "x".repeat(20) }),
       JSON.stringify({ provider: "openai", key: 42 }), JSON.stringify({ provider: "openai", key: "x".repeat(19) })]) {
       fixture.values.set("huda-own-key", raw);
       assert.equal(getOwnKey(), null);
@@ -108,7 +108,7 @@ test("Ask and weave send the current key only in headers; own-key weave requests
     await weave(input);
     await weave(input);
     assert.equal(seen.length, 2);
-    for (const provider of ["openai", "anthropic"] as const) {
+    for (const provider of ["openai", "gemini"] as const) {
       const own = { provider, key: "test-only-sentinel-" + provider };
       setOwnKey(own);
       await requestAsk({ surah: 108, depth: 1, question: "question" }, undefined, send);
@@ -130,27 +130,50 @@ test("Ask and weave send the current key only in headers; own-key weave requests
 });
 
 
-test("provider keys coexist and only the active pair is used", () => {
+test("provider keys coexist, only the active Ask pair travels with Ask, and the Groq key only with transcription", () => {
   const fixture = browser();
   try {
-    const keys = { "opencode-go": "x".repeat(20), openai: "y".repeat(20), anthropic: "z".repeat(20) };
-    for (const provider of ["opencode-go", "openai", "anthropic"] as const) {
-      assert.equal(setProviderOwnKey({ provider, key: keys[provider] }), true);
-    }
-    assert.deepEqual(getOwnKeys(), { keys, active: "opencode-go" });
-    assert.equal(setActiveOwnKey("anthropic"), true);
-    assert.equal(getOwnKey()?.provider, "anthropic");
+    const keys = { openai: "y".repeat(20), gemini: "z".repeat(20), groq: "x".repeat(20) };
+    assert.deepEqual(ownTranscribeHeaders(), {});
+    assert.equal(setProviderOwnKey({ provider: "groq", key: keys.groq }), true);
+    assert.equal(getOwnKey(), null, "a transcription key is never the Ask key");
+    assert.deepEqual(ownKeyHeaders(), {});
+    assert.deepEqual(ownTranscribeHeaders(), { "x-huda-provider": "groq", "x-huda-key": keys.groq });
+    for (const provider of ["openai", "gemini"] as const) assert.equal(setProviderOwnKey({ provider, key: keys[provider] }), true);
+    assert.deepEqual(getOwnKeys(), { keys, active: "openai" });
+    assert.equal(setActiveOwnKey("gemini"), true);
+    assert.equal(getOwnKey()?.provider, "gemini");
     assert.deepEqual(Object.keys(ownKeyHeaders()).sort(), ["x-huda-key", "x-huda-provider"]);
-    assert.equal(ownKeyHeaders()["x-huda-key"] === keys.anthropic, true);
+    assert.equal(ownKeyHeaders()["x-huda-key"] === keys.gemini, true);
+    assert.equal(ownTranscribeHeaders()["x-huda-key"] === keys.groq, true);
+    assert.equal(setOwnKey({ provider: "groq", key: "w".repeat(20) }), true);
+    assert.equal(getOwnKey()?.provider, "gemini", "saving the Groq key does not change the active Ask key");
     assert.equal(clearProviderOwnKey("openai"), true);
-    assert.equal(getOwnKey()?.provider, "anthropic");
-    assert.equal(clearProviderOwnKey("anthropic"), true);
-    assert.equal(getOwnKey()?.provider, "opencode-go");
-    assert.equal(clearProviderOwnKey("opencode-go"), true);
+    assert.equal(getOwnKey()?.provider, "gemini");
+    assert.equal(clearProviderOwnKey("gemini"), true);
     assert.equal(getOwnKey(), null);
     assert.deepEqual(ownKeyHeaders(), {});
+    assert.equal(ownTranscribeHeaders()["x-huda-key"] === "w".repeat(20), true);
+    assert.equal(clearProviderOwnKey("groq"), true);
+    assert.deepEqual(ownTranscribeHeaders(), {});
     assert.equal(setActiveOwnKey("openai"), false);
+    assert.equal(setActiveOwnKey("groq" as unknown as "openai"), false);
   } finally { fixture.restore(); }
+});
+
+test("server header parser: one helper, purpose-bound; any header opts out of the project's keys", () => {
+  const key = "test-only-sentinel-header";
+  const headers = (provider: string | null, value: string | null) => new Headers({ ...(provider ? { "x-huda-provider": provider } : {}), ...(value ? { "x-huda-key": value } : {}) });
+  assert.deepEqual(ownKeyFromHeaders(new Headers(), "ask"), { present: false });
+  assert.deepEqual(ownKeyFromHeaders(headers("openai", key), "ask"), { present: true, own: { provider: "openai", key } });
+  assert.deepEqual(ownKeyFromHeaders(headers("gemini", key), "ask"), { present: true, own: { provider: "gemini", key } });
+  assert.deepEqual(ownKeyFromHeaders(headers("groq", key), "transcribe"), { present: true, own: { provider: "groq", key } });
+  for (const [provider, purpose] of [["groq", "ask"], ["openai", "transcribe"], ["gemini", "transcribe"], ["anthropic", "ask"], ["opencode-go", "ask"], ["unknown", "transcribe"]] as const) {
+    assert.deepEqual(ownKeyFromHeaders(headers(provider, key), purpose), { present: true });
+  }
+  assert.deepEqual(ownKeyFromHeaders(headers("openai", null), "ask"), { present: true });
+  assert.deepEqual(ownKeyFromHeaders(headers(null, key), "ask"), { present: true });
+  assert.deepEqual(ownKeyFromHeaders(headers("openai", "short"), "ask"), { present: true });
 });
 
 test("legacy storage is read without data loss and upgraded on a provider save", () => {
@@ -160,9 +183,9 @@ test("legacy storage is read without data loss and upgraded on a provider save",
     fixture.sessionStorage.setItem("huda-own-key", JSON.stringify(legacy));
     assert.equal(getOwnKey()?.provider, "openai");
     assert.equal(getOwnKey()?.key === legacy.key, true);
-    assert.equal(setProviderOwnKey({ provider: "anthropic", key: "y".repeat(20) }), true);
+    assert.equal(setProviderOwnKey({ provider: "gemini", key: "y".repeat(20) }), true);
     assert.equal(getOwnKey()?.provider, "openai");
-    assert.deepEqual(Object.keys(getOwnKeys().keys).sort(), ["anthropic", "openai"]);
+    assert.deepEqual(Object.keys(getOwnKeys().keys).sort(), ["gemini", "openai"]);
     const stored = JSON.parse(fixture.sessionStorage.getItem("huda-own-key")!);
     assert.deepEqual(Object.keys(stored).sort(), ["active", "keys"]);
     assert.equal(stored.keys.openai === legacy.key, true);
@@ -173,16 +196,40 @@ test("new storage rejects invalid keys and cannot select an unsaved provider", (
   const fixture = browser();
   try {
     fixture.sessionStorage.setItem("huda-own-key", JSON.stringify({
-      keys: { openai: "x".repeat(20), anthropic: "short", "opencode-go": 42, unknown: "y".repeat(20) }, active: "anthropic",
+      keys: { openai: "x".repeat(20), gemini: "short", groq: 42, unknown: "y".repeat(20) }, active: "gemini",
     }));
     assert.deepEqual(Object.keys(getOwnKeys().keys), ["openai"]);
     assert.equal(getOwnKey(), null);
     assert.deepEqual(ownKeyHeaders(), {});
-    assert.equal(setActiveOwnKey("anthropic"), false);
-    assert.equal(setProviderOwnKey({ provider: "anthropic", key: "short" }), false);
+    assert.equal(setActiveOwnKey("gemini"), false);
+    assert.equal(setProviderOwnKey({ provider: "gemini", key: "short" }), false);
     assert.equal(setActiveOwnKey("openai"), true);
     assert.equal(getOwnKey()?.provider, "openai");
     assert.equal(clearOwnKey(), true);
     assert.deepEqual(getOwnKeys(), { keys: {} });
+  } finally { fixture.restore(); }
+});
+
+test("stored keys of the removed providers are ignored without a crash; the rest of the storage still reads", () => {
+  const fixture = browser();
+  try {
+    for (const removed of ["opencode-go", "anthropic"]) {
+      fixture.sessionStorage.setItem("huda-own-key", JSON.stringify({ provider: removed, key: "x".repeat(20) }));
+      assert.deepEqual(getOwnKeys(), { keys: {} });
+      assert.equal(getOwnKey(), null);
+      assert.deepEqual(ownKeyHeaders(), {});
+      assert.deepEqual(ownTranscribeHeaders(), {});
+    }
+    fixture.sessionStorage.setItem("huda-own-key", JSON.stringify({
+      keys: { "opencode-go": "a".repeat(20), anthropic: "b".repeat(20), gemini: "c".repeat(20), groq: "d".repeat(20) }, active: "anthropic",
+    }));
+    assert.deepEqual(getOwnKeys(), { keys: { gemini: "c".repeat(20), groq: "d".repeat(20) } });
+    assert.equal(getOwnKey(), null, "an active value naming a removed provider selects nothing");
+    assert.equal(setActiveOwnKey("gemini"), true);
+    assert.equal(ownKeyHeaders()["x-huda-provider"], "gemini");
+    // A legacy single record holding the Groq key does not become an Ask key.
+    fixture.sessionStorage.setItem("huda-own-key", JSON.stringify({ provider: "groq", key: "x".repeat(20) }));
+    assert.equal(getOwnKey(), null);
+    assert.equal(ownTranscribeHeaders()["x-huda-provider"], "groq");
   } finally { fixture.restore(); }
 });

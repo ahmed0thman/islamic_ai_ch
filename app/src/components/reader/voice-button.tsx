@@ -5,6 +5,7 @@ import {
   clock, fileNameFor, LIVE_EVERY_MS, LIVE_MIN_MS, liveAllowed, MAX_RECORDING_MS,
   nextAfterFinal, pickMimeType, TIMESLICE_MS, type VoiceState, levelFrom, silenceStep, type SilenceState
 } from "@/lib/voice-client";
+import { ownTranscribeHeaders } from "@/lib/own-key";
 
 const FINAL_TIMEOUT_MS = 25_000;
 /** Below this the recording holds no usable words; only the provisional text, if any, survives. */
@@ -86,7 +87,7 @@ export function useVoice({ surah, depth, stop, onStart, onLive, onFinal, onLevel
     if (stop !== null) form.set("stop", String(stop));
     if (live) form.set("live", "1");
     try {
-      const response = await fetch("/api/transcribe/", { method: "POST", body: form, signal });
+      const response = await fetch("/api/transcribe/", { method: "POST", body: form, signal, cache: "no-store", headers: ownTranscribeHeaders() });
       if (response.status === 429) return { status: "busy" };
       if (!response.ok) return { status: "error" };
       const body: unknown = await response.json();

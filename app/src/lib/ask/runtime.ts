@@ -21,11 +21,11 @@ export const responseFor = (status: AskResponse["status"], httpStatus = 200) => 
 });
 
 /** Retries consume the caller's stage deadline, including backoff. */
-export async function fetchRetry(url: string, options: RequestInit): Promise<Response> {
+export async function fetchRetry(url: string, options: RequestInit, attempts = 3): Promise<Response> {
   for (let attempt = 0; ; attempt++) {
     options.signal?.throwIfAborted();
     const response = await fetch(url, options);
-    if (![429, 500, 502, 503, 504].includes(response.status) || attempt === 2) return response;
+    if (![429, 500, 502, 503, 504].includes(response.status) || attempt === attempts - 1) return response;
     await response.body?.cancel();
     await sleep([700, 1800][attempt], undefined, { signal: options.signal || undefined });
   }

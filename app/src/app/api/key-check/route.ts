@@ -1,6 +1,6 @@
-import { providersFromKey } from "@/lib/ask/providers";
-import { requestAllowed, runStage } from "@/lib/ask/runtime";
-import { CHOICE_SCHEMA } from "@/lib/ask/select";
+import { checkOwnKey } from "@/lib/ask/key-check";
+import { requestAllowed } from "@/lib/ask/runtime";
+import { isOwnKeyProvider, keyWithinShape } from "@/lib/own-key";
 
 export const runtime = "nodejs";
 
@@ -16,18 +16,8 @@ export async function POST(request: Request) {
   try { body = await request.json(); } catch { return reply(false, "rejected", 400); }
   if (!body || typeof body !== "object" || Array.isArray(body)) return reply(false, "rejected", 400);
   const { provider, key } = body as Record<string, unknown>;
-  if (provider !== "opencode-go" && provider !== "openai" && provider !== "anthropic") return reply(false, "unsupported");
-  if (typeof key !== "string") return reply(false, "rejected");
-  const providers = providersFromKey(provider, key, process.env);
-  if (!providers.length) return reply(false, "rejected");
-  let reason: Reason = "rejected";
-  try {
-    const value = await runStage({
-      system: 'Return only {"status":"insufficient","atom_ids":[]}.', message: "Check access.", schema: CHOICE_SCHEMA, stage: "select",
-    }, providers, 8_000, (event) => { if (event.outcome === "timeout") reason = "timeout"; }, request.signal);
-    if (!value || typeof value !== "object" || Array.isArray(value)) return reply(false, "rejected");
-    const choice = value as Record<string, unknown>;
-    return Object.keys(choice).length === 2 && choice.status === "insufficient" && Array.isArray(choice.atom_ids) && choice.atom_ids.length === 0
-      ? reply(true) : reply(false, "rejected");
-  } catch { return reply(false, reason); }
+  if (!isOwnKeyProvider(provider)) return reply(false, "unsupported");
+  if (typeof key !== "string" || !keyWithinShape(key)) return reply(false, "rejected");
+  const outcome = await checkOwnKey(provider, key, process.env, request.signal);
+  return outcome === "ok" ? reply(true) : reply(false, outcome);
 }

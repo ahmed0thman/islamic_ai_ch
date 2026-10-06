@@ -6,7 +6,7 @@ import type { AskResponse, PublicAtom } from "@/lib/ask/types";
 import { composedView, type ComposedItem } from "@/lib/ask-composed-view";
 import { historyFromTurns } from "@/lib/ask/history";
 import { blockRole, displaySegments, drawingFor, requestAsk } from "@/lib/ask-client";
-import { getOwnKey, OWN_KEY_CHANGE_EVENT, type OwnKeyProvider } from "@/lib/own-key";
+import { getOwnKey, OWN_KEY_CHANGE_EVENT, type AskKeyProvider } from "@/lib/own-key";
 import { mergeQuestion, clock } from "@/lib/voice-client";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
@@ -35,7 +35,7 @@ export function AskSheet({ surahNo, onClose }: { surahNo: number; onClose: () =>
   const { ui } = reading;
   const id = useId();
   const [question, setQuestion] = useState("");
-  const [ownProvider, setOwnProvider] = useState<OwnKeyProvider | null>(null);
+  const [ownProvider, setOwnProvider] = useState<AskKeyProvider | null>(null);
   useEffect(() => {
     const update = () => setOwnProvider(getOwnKey()?.provider ?? null);
     update();
