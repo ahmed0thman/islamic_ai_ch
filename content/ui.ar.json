@@ -514,6 +514,21 @@
       }
     }
   },
+  "history": {
+    "title": "سجلّ قراءتك",
+    "resume_title": "تابع من حيث وقفت",
+    "resume_body": "وقفت عند الوقفة {stop}، بدرجة {depth}.",
+    "resume_action": "تابع",
+    "resume_dismiss": "ابدأ من أول السورة",
+    "empty": "لم يُحفظ لك شيء بعد. ما تقرؤه وما تسأل عنه وأنت مسجَّل الدخول يُحفظ هنا.",
+    "signed_out": "سجّل الدخول ليُحفظ ما تقرؤه وما تسأل عنه، وتجده على أي جهاز.",
+    "row_progress": "زرت {visited} من {total} وقفة · الدرجة: {depth}",
+    "row_questions": "أسئلتك: {count}",
+    "last_seen": "آخر قراءة: {date}",
+    "questions_title": "أسئلتك في هذه السورة",
+    "saved_in_account": "محفوظة في حسابك، وتجدها على أي جهاز.",
+    "open_surah": "افتح السورة"
+  },
   "clerk": {
     "formFieldLabel__emailAddress": "البريد الإلكتروني",
     "formFieldInputPlaceholder__emailAddress": "اكتب بريدك الإلكتروني",

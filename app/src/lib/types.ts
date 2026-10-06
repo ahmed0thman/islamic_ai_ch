@@ -62,6 +62,8 @@ export interface GuideUi extends Record<"title" | "reopen" | "next" | "previous"
   phone: Record<"stop" | "marks" | "views" | "ask" | "menu", TitledText>;
   wide: Record<"index" | "reading" | "panel" | "ask" | "tools", TitledText>;
 }
+/** The signed-in reader's history. Slots: `{stop}`, `{depth}`, `{visited}`, `{total}`, `{count}`, `{date}`. */
+export interface HistoryUi extends Record<"title" | "resume_title" | "resume_body" | "resume_action" | "resume_dismiss" | "empty" | "signed_out" | "row_progress" | "row_questions" | "last_seen" | "questions_title" | "saved_in_account" | "open_surah", string> {}
 export interface Ui {
   draft: boolean; app_name: string; tagline: string;
   levels: { depth: Depth; name: string }[];
@@ -80,6 +82,7 @@ export interface Ui {
   account: Record<"sign_in" | "sign_up" | "back", string>;
   landing: LandingUi;
   guide: GuideUi;
+  history: HistoryUi;
   settings: Record<"title" | "open" | "appearance" | "model" | "account" | "back" | "key_needed" | "open_from_ask", string>;
   wide: Record<"skip" | "toc" | "purpose" | "ayah_one" | "ayah_few" | "tab_passage" | "tab_source" | "tab_term" | "tab_ask" | "tab_weave" | "passage_sources" | "all_sources" | "source_hint" | "term_hint" | "weave_empty" | "shortcuts" | "theme" | "theme_light" | "theme_dark" | "theme_system" | "account" | "panel_hide" | "panel_show" | "expand_all" | "collapse_all" | "load_failed", string> & Partial<Record<"reading_region" | "context_region", string>>;
   judge_key: Record<"open" | "title" | "intro" | "provider" | "key" | "test" | "save" | "clear" | "checking" | "ok" | "bad" | "using" | "in_use" | "use_this" | "empty" | "clear_all", string> & {
