@@ -42,6 +42,26 @@ export interface Surah {
   records: Record<string, SourceRecord>;
 }
 interface LegendEntry { color: string; label: string; meaning: string }
+interface TitledText { title: string; body: string }
+interface TitledList { title: string; items: string[] }
+/** The introduction page. `today.count` carries a `{count}` slot that the page fills from the published list; no number of surahs is written in the text. */
+export interface LandingUi {
+  label: string; back_link: string; hero: Record<"lead" | "sub", string>;
+  enter: string; guide_link: string; surahs_title: string;
+  audience: { title: string; body: string[] };
+  problem: { title: string; body: string[] };
+  how: { title: string; items: TitledText[] };
+  ai: TitledList & { note: string };
+  today: TitledList & { count: string };
+  in_progress: TitledList;
+  planned: TitledList & { note: string };
+}
+/** The first-visit guide of the reader. `shared` steps open both tours; `progress` carries `{current}` and `{total}` slots. */
+export interface GuideUi extends Record<"title" | "reopen" | "next" | "previous" | "skip" | "done" | "progress", string> {
+  shared: Record<"welcome" | "depth", TitledText>;
+  phone: Record<"stop" | "marks" | "views" | "ask" | "menu", TitledText>;
+  wide: Record<"index" | "reading" | "panel" | "ask" | "tools", TitledText>;
+}
 export interface Ui {
   draft: boolean; app_name: string; tagline: string;
   levels: { depth: Depth; name: string }[];
@@ -58,6 +78,8 @@ export interface Ui {
   weave: Record<"badge" | "ready" | "open" | "back" | "note" | "from_question" | "trigger" | "instruction" | "failed", string>;
   misconception: Record<"badge" | "intro" | "back", string>;
   account: Record<"sign_in" | "sign_up" | "back", string>;
+  landing: LandingUi;
+  guide: GuideUi;
   settings: Record<"title" | "open" | "appearance" | "model" | "account" | "back" | "key_needed" | "open_from_ask", string>;
   wide: Record<"skip" | "toc" | "purpose" | "ayah_one" | "ayah_few" | "tab_passage" | "tab_source" | "tab_term" | "tab_ask" | "tab_weave" | "passage_sources" | "all_sources" | "source_hint" | "term_hint" | "weave_empty" | "shortcuts" | "theme" | "theme_light" | "theme_dark" | "theme_system" | "account" | "panel_hide" | "panel_show" | "expand_all" | "collapse_all" | "load_failed", string> & Partial<Record<"reading_region" | "context_region", string>>;
   judge_key: Record<"open" | "title" | "intro" | "provider" | "key" | "test" | "save" | "clear" | "checking" | "ok" | "bad" | "using" | "in_use" | "use_this" | "empty" | "clear_all", string> & {
