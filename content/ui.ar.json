@@ -362,7 +362,7 @@
     "clear_all": "امسح كل المفاتيح",
     "providers": {
       "opencode-go": "أوبن كود جو",
-      "openai": "أوبن إيه آي",
+      "openai": "OpenAI",
       "anthropic": "Anthropic",
       "gemini": "Google",
       "groq": "Groq"
