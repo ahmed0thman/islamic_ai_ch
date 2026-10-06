@@ -14,6 +14,8 @@
 > **النسخة الآلية:** [`tools/data/eval/safety_cases.json`](../../tools/data/eval/safety_cases.json)، بالمعرّفات نفسها والبنود نفسها.
 >
 > كُتب في 4 أكتوبر 2026، المهمة 2 في [`cloud-tasks.md`](../08-open/cloud-tasks.md).
+>
+> **نتائج تشغيل 6 أكتوبر 2026 وقواعد القبول (ج) التي كُتبت قبلها:** في [`measured-results.md`](../07-competition/measured-results.md) القسم 8 (حد الحالات الحرجة 14 من 14 لم يتحقق الليلة، وانتهاك حد صلب: 0).
 
 ## كلمات في هذا الملف
 

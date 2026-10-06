@@ -1,0 +1,3104 @@
+{
+ "cases": [
+  {
+   "id": "ext-100-0-1",
+   "kind": "stop_title_ext",
+   "surah": 100,
+   "depth": 0,
+   "question": "بماذا تبدأ السورة؟",
+   "gold_atoms": [
+    "100:0:blocks.1:0",
+    "100:0:blocks.1:1",
+    "100:0:blocks.1:2",
+    "100:0:blocks.1:3",
+    "100:0:blocks.1:4"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-100-0-2",
+   "kind": "stop_title_ext",
+   "surah": 100,
+   "depth": 0,
+   "question": "ماذا تقول عن الإنسان؟",
+   "gold_atoms": [
+    "100:0:blocks.2:0",
+    "100:0:blocks.2:1",
+    "100:0:blocks.2:2",
+    "100:0:blocks.2:3",
+    "100:0:blocks.2:4"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-100-0-3",
+   "kind": "stop_title_ext",
+   "surah": 100,
+   "depth": 0,
+   "question": "بماذا تنتهي السورة؟",
+   "gold_atoms": [
+    "100:0:blocks.3:0",
+    "100:0:blocks.3:1",
+    "100:0:blocks.3:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-100-1-2",
+   "kind": "stop_title_ext",
+   "surah": 100,
+   "depth": 1,
+   "question": "بماذا أقسم الله في أولها؟",
+   "gold_atoms": [
+    "100:1:blocks.2:0",
+    "100:1:blocks.2:1",
+    "100:1:blocks.2:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-100-1-3",
+   "kind": "stop_title_ext",
+   "surah": 100,
+   "depth": 1,
+   "question": "هل المقصود الخيل أم الإبل؟",
+   "gold_atoms": [
+    "100:1:blocks.3:0",
+    "100:1:blocks.3:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-100-1-4",
+   "kind": "stop_title_ext",
+   "surah": 100,
+   "depth": 1,
+   "question": "القسم بغير الله: ما حكمه؟",
+   "gold_atoms": [
+    "100:1:blocks.4:0",
+    "100:1:blocks.4:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-100-1-5",
+   "kind": "stop_title_ext",
+   "surah": 100,
+   "depth": 1,
+   "question": "ماذا تصف الآيات من الثانية إلى الخامسة؟",
+   "gold_atoms": [
+    "100:1:blocks.5:0",
+    "100:1:blocks.5:1",
+    "100:1:blocks.5:2",
+    "100:1:blocks.5:3",
+    "100:1:blocks.5:4",
+    "100:1:blocks.5:5"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-100-1-6",
+   "kind": "stop_title_ext",
+   "surah": 100,
+   "depth": 1,
+   "question": "على أي شيء كان القسم؟",
+   "gold_atoms": [
+    "100:1:blocks.6:0",
+    "100:1:blocks.6:1",
+    "100:1:blocks.6:2",
+    "100:1:blocks.6:3",
+    "100:1:blocks.6:4",
+    "100:1:blocks.6:5"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-100-1-7",
+   "kind": "stop_title_ext",
+   "surah": 100,
+   "depth": 1,
+   "question": "من الشاهد في الآية السابعة؟",
+   "gold_atoms": [
+    "100:1:blocks.7:0",
+    "100:1:blocks.7:1",
+    "100:1:blocks.7:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-100-1-8",
+   "kind": "stop_title_ext",
+   "surah": 100,
+   "depth": 1,
+   "question": "ما «الخير» الذي يشتد حبه له؟",
+   "gold_atoms": [
+    "100:1:blocks.8:0",
+    "100:1:blocks.8:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-100-1-9",
+   "kind": "stop_title_ext",
+   "surah": 100,
+   "depth": 1,
+   "question": "ماذا يحدث حين يُبعث الناس؟",
+   "gold_atoms": [
+    "100:1:blocks.9:0",
+    "100:1:blocks.9:1",
+    "100:1:blocks.9:2",
+    "100:1:blocks.9:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-100-2-2",
+   "kind": "stop_title_ext",
+   "surah": 100,
+   "depth": 2,
+   "question": "من الذي يُغير: الخيل أم راكبوها؟",
+   "gold_atoms": [
+    "100:2:blocks.3:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-100-2-3",
+   "kind": "stop_title_ext",
+   "surah": 100,
+   "depth": 2,
+   "question": "لماذا تغيّر الأسلوب بعد الآية الثالثة؟",
+   "gold_atoms": [
+    "100:2:blocks.2:0",
+    "100:2:blocks.2:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-100-2-4",
+   "kind": "stop_title_ext",
+   "surah": 100,
+   "depth": 2,
+   "question": "لماذا تقدّم «لربه»؟",
+   "gold_atoms": [
+    "100:2:blocks.4:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-100-2-5",
+   "kind": "stop_title_ext",
+   "surah": 100,
+   "depth": 2,
+   "question": "هل يسلم أحد من هذا الطبع؟",
+   "gold_atoms": [
+    "100:2:blocks.5:0",
+    "100:2:blocks.5:1",
+    "100:2:blocks.5:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-100-2-6",
+   "kind": "stop_title_ext",
+   "surah": 100,
+   "depth": 2,
+   "question": "كيف يشهد الإنسان على نفسه؟",
+   "gold_atoms": [
+    "100:2:blocks.6:0",
+    "100:2:blocks.6:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-100-2-7",
+   "kind": "stop_title_ext",
+   "surah": 100,
+   "depth": 2,
+   "question": "حب المال والبخل: ما الصلة؟",
+   "gold_atoms": [
+    "100:2:blocks.7:0",
+    "100:2:blocks.7:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-100-2-8",
+   "kind": "stop_title_ext",
+   "surah": 100,
+   "depth": 2,
+   "question": "لماذا لم تذكر الآية ما يعلمه الإنسان؟",
+   "gold_atoms": [
+    "100:2:blocks.8:0",
+    "100:2:blocks.8:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-100-2-9",
+   "kind": "stop_title_ext",
+   "surah": 100,
+   "depth": 2,
+   "question": "إلى أي شيء تدعو خاتمة السورة؟",
+   "gold_atoms": [
+    "100:2:blocks.9:0",
+    "100:2:blocks.9:1",
+    "100:2:blocks.9:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-0-1",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 0,
+   "question": "ما «القارعة»؟",
+   "gold_atoms": [
+    "101:0:blocks.1:0",
+    "101:0:blocks.1:1",
+    "101:0:blocks.1:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-0-2",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 0,
+   "question": "كيف يكون الناس والجبال يومها؟",
+   "gold_atoms": [
+    "101:0:blocks.2:0",
+    "101:0:blocks.2:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-0-3",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 0,
+   "question": "إلى أين ينتهي كل فريق؟",
+   "gold_atoms": [
+    "101:0:blocks.3:0",
+    "101:0:blocks.3:1",
+    "101:0:blocks.3:2",
+    "101:0:blocks.3:3",
+    "101:0:blocks.3:4",
+    "101:0:blocks.3:5"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-1-2",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 1,
+   "question": "ما معنى «القارعة»؟",
+   "gold_atoms": [
+    "101:1:blocks.2:0",
+    "101:1:blocks.2:1",
+    "101:1:blocks.2:2",
+    "101:1:blocks.2:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-1-3",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 1,
+   "question": "لماذا جاء بعدها سؤالان؟",
+   "gold_atoms": [
+    "101:1:blocks.3:0",
+    "101:1:blocks.3:1",
+    "101:1:blocks.3:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-1-4",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 1,
+   "question": "كيف يكون الناس في ذلك اليوم؟",
+   "gold_atoms": [
+    "101:1:blocks.5:0",
+    "101:1:blocks.5:1",
+    "101:1:blocks.5:2",
+    "101:1:blocks.5:3",
+    "101:1:blocks.5:4"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-1-5",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 1,
+   "question": "ماذا يحدث للجبال؟",
+   "gold_atoms": [
+    "101:1:blocks.6:0",
+    "101:1:blocks.6:1",
+    "101:1:blocks.6:2",
+    "101:1:blocks.6:3",
+    "101:1:blocks.6:4"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-1-6",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 1,
+   "question": "إلى كم قسم ينقسم الناس بعدها؟",
+   "gold_atoms": [
+    "101:1:blocks.8:0",
+    "101:1:blocks.8:1",
+    "101:1:blocks.8:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-1-7",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 1,
+   "question": "ما جزاء من رجحت حسناته؟",
+   "gold_atoms": [
+    "101:1:blocks.9:0",
+    "101:1:blocks.9:1",
+    "101:1:blocks.9:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-1-8",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 1,
+   "question": "لماذا سُمّيت النار «أمّه»؟",
+   "gold_atoms": [
+    "101:1:blocks.10:0",
+    "101:1:blocks.10:1",
+    "101:1:blocks.10:2",
+    "101:1:blocks.10:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-1-9",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 1,
+   "question": "ما هذه «الهاوية»؟",
+   "gold_atoms": [
+    "101:1:blocks.11:0",
+    "101:1:blocks.11:1",
+    "101:1:blocks.11:2",
+    "101:1:blocks.11:3",
+    "101:1:blocks.11:4"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-2-2",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 2,
+   "question": "لماذا بدأت السورة بهذا اللفظ وحده؟",
+   "gold_atoms": [
+    "101:2:blocks.2:0",
+    "101:2:blocks.2:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-2-3",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 2,
+   "question": "ما الذي تفيده إعادة اسمها؟",
+   "gold_atoms": [
+    "101:2:blocks.3:0",
+    "101:2:blocks.3:1",
+    "101:2:blocks.3:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-2-4",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 2,
+   "question": "بماذا شُبّه الناس والجبال؟",
+   "gold_atoms": [
+    "101:2:blocks.5:0",
+    "101:2:blocks.5:1",
+    "101:2:blocks.5:2",
+    "101:2:blocks.5:3",
+    "101:2:blocks.5:4"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-2-5",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 2,
+   "question": "هل حال الناس مثل حال الجبال؟",
+   "gold_atoms": [
+    "101:2:blocks.6:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-2-6",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 2,
+   "question": "لماذا لم تذكر الآية ما يثقّل الموازين؟",
+   "gold_atoms": [
+    "101:2:blocks.8:0",
+    "101:2:blocks.8:1",
+    "101:2:blocks.8:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-2-7",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 2,
+   "question": "بماذا يتحدد مصير كل إنسان؟",
+   "gold_atoms": [
+    "101:2:blocks.13:0",
+    "101:2:blocks.13:1",
+    "101:2:blocks.13:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-2-8",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 2,
+   "question": "ما الذي يحمله لفظ «أمّه»؟",
+   "gold_atoms": [
+    "101:2:blocks.9:0",
+    "101:2:blocks.9:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-2-9",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 2,
+   "question": "لمن وُجّه السؤال عن «الهاوية»؟",
+   "gold_atoms": [
+    "101:2:blocks.10:0",
+    "101:2:blocks.10:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-2-10",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 2,
+   "question": "أليست كل نار حارة؟",
+   "gold_atoms": [
+    "101:2:blocks.11:0",
+    "101:2:blocks.11:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-101-2-11",
+   "kind": "stop_title_ext",
+   "surah": 101,
+   "depth": 2,
+   "question": "كم تزيد حرارتها على نار الدنيا؟",
+   "gold_atoms": [
+    "101:2:blocks.12:0",
+    "101:2:blocks.12:1",
+    "101:2:blocks.12:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-102-0-1",
+   "kind": "stop_title_ext",
+   "surah": 102,
+   "depth": 0,
+   "question": "ما الذي شغل الناس؟",
+   "gold_atoms": [
+    "102:0:blocks.1:0",
+    "102:0:blocks.1:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-102-0-2",
+   "kind": "stop_title_ext",
+   "surah": 102,
+   "depth": 0,
+   "question": "ماذا سيعلمون؟",
+   "gold_atoms": [
+    "102:0:blocks.2:0",
+    "102:0:blocks.2:1",
+    "102:0:blocks.2:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-102-0-3",
+   "kind": "stop_title_ext",
+   "surah": 102,
+   "depth": 0,
+   "question": "كيف تنتهي السورة؟",
+   "gold_atoms": [
+    "102:0:blocks.3:0",
+    "102:0:blocks.3:1",
+    "102:0:blocks.3:2",
+    "102:0:blocks.3:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-102-1-2",
+   "kind": "stop_title_ext",
+   "surah": 102,
+   "depth": 1,
+   "question": "عن أي شيء شُغل الناس؟",
+   "gold_atoms": [
+    "102:1:blocks.2:0",
+    "102:1:blocks.2:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-102-1-3",
+   "kind": "stop_title_ext",
+   "surah": 102,
+   "depth": 1,
+   "question": "بماذا كانوا يتكاثرون؟",
+   "gold_atoms": [
+    "102:1:blocks.3:0",
+    "102:1:blocks.3:1",
+    "102:1:blocks.3:2",
+    "102:1:blocks.3:3",
+    "102:1:blocks.3:4"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-102-1-4",
+   "kind": "stop_title_ext",
+   "surah": 102,
+   "depth": 1,
+   "question": "ما معنى «زرتم» هنا؟",
+   "gold_atoms": [
+    "102:1:blocks.4:0",
+    "102:1:blocks.4:1",
+    "102:1:blocks.4:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-102-1-5",
+   "kind": "stop_title_ext",
+   "surah": 102,
+   "depth": 1,
+   "question": "ماذا تقول «كلا» للمخاطَبين؟",
+   "gold_atoms": [
+    "102:1:blocks.5:0",
+    "102:1:blocks.5:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-102-1-6",
+   "kind": "stop_title_ext",
+   "surah": 102,
+   "depth": 1,
+   "question": "لماذا تكرر التهديد مرتين؟",
+   "gold_atoms": [
+    "102:1:blocks.6:0",
+    "102:1:blocks.6:1",
+    "102:1:blocks.6:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-102-1-7",
+   "kind": "stop_title_ext",
+   "surah": 102,
+   "depth": 1,
+   "question": "ما الذي لو علموه لتغيّر حالهم؟",
+   "gold_atoms": [
+    "102:1:blocks.7:0",
+    "102:1:blocks.7:1",
+    "102:1:blocks.7:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-102-1-8",
+   "kind": "stop_title_ext",
+   "surah": 102,
+   "depth": 1,
+   "question": "كيف تتصل رؤية الجحيم بالتهديد السابق؟",
+   "gold_atoms": [
+    "102:1:blocks.8:0",
+    "102:1:blocks.8:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-102-1-9",
+   "kind": "stop_title_ext",
+   "surah": 102,
+   "depth": 1,
+   "question": "هل هما رؤيتان للجحيم؟",
+   "gold_atoms": [
+    "102:1:blocks.9:0",
+    "102:1:blocks.9:1",
+    "102:1:blocks.9:2",
+    "102:1:blocks.9:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-102-1-10",
+   "kind": "stop_title_ext",
+   "surah": 102,
+   "depth": 1,
+   "question": "ما «النعيم» الذي سيُسألون عنه؟",
+   "gold_atoms": [
+    "102:1:blocks.10:0",
+    "102:1:blocks.10:1",
+    "102:1:blocks.10:2",
+    "102:1:blocks.10:3",
+    "102:1:blocks.10:4",
+    "102:1:blocks.10:5"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-102-2-2",
+   "kind": "stop_title_ext",
+   "surah": 102,
+   "depth": 2,
+   "question": "لمن الخطاب في السورة؟",
+   "gold_atoms": [
+    "102:2:blocks.2:0",
+    "102:2:blocks.2:1",
+    "102:2:blocks.2:2",
+    "102:2:blocks.2:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-102-2-3",
+   "kind": "stop_title_ext",
+   "surah": 102,
+   "depth": 2,
+   "question": "ماذا يحذر المسلمون هنا؟",
+   "gold_atoms": [
+    "102:2:blocks.3:0",
+    "102:2:blocks.3:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-102-2-4",
+   "kind": "stop_title_ext",
+   "surah": 102,
+   "depth": 2,
+   "question": "لماذا قيل «زرتم» بالماضي؟",
+   "gold_atoms": [
+    "102:2:blocks.4:0",
+    "102:2:blocks.4:1",
+    "102:2:blocks.4:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-102-2-5",
+   "kind": "stop_title_ext",
+   "surah": 102,
+   "depth": 2,
+   "question": "ماذا تزيد «ثم» في التهديد الثاني؟",
+   "gold_atoms": [
+    "102:2:blocks.5:0",
+    "102:2:blocks.5:1",
+    "102:2:blocks.5:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-102-2-6",
+   "kind": "stop_title_ext",
+   "surah": 102,
+   "depth": 2,
+   "question": "لماذا لم يُذكر ما كان سيحصل لو علموا؟",
+   "gold_atoms": [
+    "102:2:blocks.6:0",
+    "102:2:blocks.6:1",
+    "102:2:blocks.6:2",
+    "102:2:blocks.6:3",
+    "102:2:blocks.6:4"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-102-2-7",
+   "kind": "stop_title_ext",
+   "surah": 102,
+   "depth": 2,
+   "question": "عن أي سؤال تجيب الآية السادسة؟",
+   "gold_atoms": [
+    "102:2:blocks.7:0",
+    "102:2:blocks.7:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-102-2-8",
+   "kind": "stop_title_ext",
+   "surah": 102,
+   "depth": 2,
+   "question": "ماذا في السؤال الأخير من تهديد؟",
+   "gold_atoms": [
+    "102:2:blocks.8:0",
+    "102:2:blocks.8:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-0-1",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 0,
+   "question": "ماذا قالت السورة عن الإنسان؟",
+   "gold_atoms": [
+    "103:0:blocks.1:0",
+    "103:0:blocks.1:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-0-2",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 0,
+   "question": "من الذي ينجو؟",
+   "gold_atoms": [
+    "103:0:blocks.2:0",
+    "103:0:blocks.2:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-0-3",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 0,
+   "question": "ما الذي يوصي به بعضهم بعضًا؟",
+   "gold_atoms": [
+    "103:0:blocks.3:0",
+    "103:0:blocks.3:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-1-2",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 1,
+   "question": "بماذا أقسم الله في أول السورة؟",
+   "gold_atoms": [
+    "103:1:blocks.2:0",
+    "103:1:blocks.2:1",
+    "103:1:blocks.2:2",
+    "103:1:blocks.2:3",
+    "103:1:blocks.2:4",
+    "103:1:blocks.2:5"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-1-3",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 1,
+   "question": "لماذا أقسم الله بـ«العصر»؟",
+   "gold_atoms": [
+    "103:1:blocks.3:0",
+    "103:1:blocks.3:1",
+    "103:1:blocks.3:2",
+    "103:1:blocks.4:0",
+    "103:1:blocks.4:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-1-4",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 1,
+   "question": "متى نزلت السورة، وكم طولها؟",
+   "gold_atoms": [
+    "103:1:blocks.14:0",
+    "103:1:blocks.14:1",
+    "103:1:blocks.14:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-1-5",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 1,
+   "question": "من المقصود بـ«الإنسان» في السورة؟",
+   "gold_atoms": [
+    "103:1:blocks.5:0",
+    "103:1:blocks.5:1",
+    "103:1:blocks.5:2",
+    "103:1:blocks.5:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-1-6",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 1,
+   "question": "لماذا قال «خسر» ولم يقل «خاسر»؟",
+   "gold_atoms": [
+    "103:1:blocks.7:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-1-7",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 1,
+   "question": "هل الخسارة هنا خسارة المال والدنيا؟",
+   "gold_atoms": [
+    "103:1:blocks.8:0",
+    "103:1:blocks.8:1",
+    "103:1:blocks.8:2",
+    "103:1:blocks.8:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-1-8",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 1,
+   "question": "ما الصفات التي تنجّي من الخسارة؟",
+   "gold_atoms": [
+    "103:1:blocks.9:0",
+    "103:1:blocks.9:1",
+    "103:1:blocks.9:2",
+    "103:1:blocks.9:3",
+    "103:1:blocks.9:4",
+    "103:1:blocks.9:5"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-1-9",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 1,
+   "question": "كيف يفسّر العلماء «الحق» هنا؟",
+   "gold_atoms": [
+    "103:1:blocks.10:0",
+    "103:1:blocks.10:1",
+    "103:1:blocks.10:2",
+    "103:1:blocks.10:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-1-10",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 1,
+   "question": "ماذا يُقصد بـ«الصبر» هنا؟",
+   "gold_atoms": [
+    "103:1:blocks.11:0",
+    "103:1:blocks.11:1",
+    "103:1:blocks.11:2",
+    "103:1:blocks.11:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-1-11",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 1,
+   "question": "هل يكفي أن يصلح المرء نفسه وحده؟",
+   "gold_atoms": [
+    "103:1:blocks.12:0",
+    "103:1:blocks.12:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-1-12",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 1,
+   "question": "كيف تتصل آية الاستثناء بما قبلها؟",
+   "gold_atoms": [
+    "103:1:blocks.13:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-2-2",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 2,
+   "question": "علامَ ينبّه وقت العصر؟",
+   "gold_atoms": [
+    "103:2:blocks.2:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-2-3",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 2,
+   "question": "لماذا اختيرت كلمة «العصر»؟",
+   "gold_atoms": [
+    "103:2:blocks.3:0",
+    "103:2:blocks.3:1",
+    "103:2:blocks.3:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-2-4",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 2,
+   "question": "كيف ينجو العبد من الخسارة؟",
+   "gold_atoms": [
+    "103:2:blocks.12:0",
+    "103:2:blocks.12:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-2-5",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 2,
+   "question": "هل الخسارة درجة واحدة؟",
+   "gold_atoms": [
+    "103:2:blocks.4:0",
+    "103:2:blocks.4:1",
+    "103:2:blocks.4:2",
+    "103:2:blocks.4:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-2-6",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 2,
+   "question": "ما الذي يدل عليه هذا التأكيد كله؟",
+   "gold_atoms": [
+    "103:2:blocks.5:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-2-7",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 2,
+   "question": "كيف يشبّه المفسرون الخسارة والنجاة بالتجارة؟",
+   "gold_atoms": [
+    "103:2:blocks.6:0",
+    "103:2:blocks.6:1",
+    "103:2:blocks.6:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-2-8",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 2,
+   "question": "ما حال المؤمن الذي وقع في ذنب؟",
+   "gold_atoms": [
+    "103:2:blocks.7:0",
+    "103:2:blocks.7:1",
+    "103:2:blocks.7:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-2-9",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 2,
+   "question": "ماذا تدلّ عليه كلمة «تواصوا»؟",
+   "gold_atoms": [
+    "103:2:blocks.8:0",
+    "103:2:blocks.8:1",
+    "103:2:blocks.8:2",
+    "103:2:blocks.8:3",
+    "103:2:blocks.8:4",
+    "103:2:blocks.8:5"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-2-10",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 2,
+   "question": "لماذا ذُكر التواصي بعد العمل الصالح؟",
+   "gold_atoms": [
+    "103:2:blocks.9:0",
+    "103:2:blocks.9:1",
+    "103:2:blocks.9:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-2-11",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 2,
+   "question": "ما الفرق بين الحق والصبر هنا؟",
+   "gold_atoms": [
+    "103:2:blocks.10:0",
+    "103:2:blocks.10:1",
+    "103:2:blocks.10:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-103-2-12",
+   "kind": "stop_title_ext",
+   "surah": 103,
+   "depth": 2,
+   "question": "هل كل تحمّل للمشقة يسمّى صبرًا؟",
+   "gold_atoms": [
+    "103:2:blocks.11:0",
+    "103:2:blocks.11:1",
+    "103:2:blocks.11:2",
+    "103:2:blocks.11:3",
+    "103:2:blocks.11:4"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-0-1",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 0,
+   "question": "من تتوعده السورة؟",
+   "gold_atoms": [
+    "104:0:blocks.1:0",
+    "104:0:blocks.1:1",
+    "104:0:blocks.1:2",
+    "104:0:blocks.1:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-0-2",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 0,
+   "question": "هل ينفعه ماله؟",
+   "gold_atoms": [
+    "104:0:blocks.2:0",
+    "104:0:blocks.2:1",
+    "104:0:blocks.2:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-0-3",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 0,
+   "question": "هل له مخرج من النار؟",
+   "gold_atoms": [
+    "104:0:blocks.3:0",
+    "104:0:blocks.3:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-1-2",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 1,
+   "question": "ما معنى «ويل»؟",
+   "gold_atoms": [
+    "104:1:blocks.2:0",
+    "104:1:blocks.2:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-1-3",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 1,
+   "question": "بماذا يختلف الهمّاز عن اللمّاز؟",
+   "gold_atoms": [
+    "104:1:blocks.3:0",
+    "104:1:blocks.3:1",
+    "104:1:blocks.3:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-1-4",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 1,
+   "question": "هل الوعيد لشخص واحد؟",
+   "gold_atoms": [
+    "104:1:blocks.4:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-1-5",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 1,
+   "question": "ما همّه في الدنيا؟",
+   "gold_atoms": [
+    "104:1:blocks.5:0",
+    "104:1:blocks.5:1",
+    "104:1:blocks.5:2",
+    "104:1:blocks.5:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-1-6",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 1,
+   "question": "هل يظن أحد أن المال يخلّده؟",
+   "gold_atoms": [
+    "104:1:blocks.6:0",
+    "104:1:blocks.6:1",
+    "104:1:blocks.6:2",
+    "104:1:blocks.6:3",
+    "104:1:blocks.6:4"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-1-7",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 1,
+   "question": "ما معنى «كلا» هنا؟",
+   "gold_atoms": [
+    "104:1:blocks.7:0",
+    "104:1:blocks.7:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-1-8",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 1,
+   "question": "لماذا سُمّيت النار «الحطمة»؟",
+   "gold_atoms": [
+    "104:1:blocks.8:0",
+    "104:1:blocks.8:1",
+    "104:1:blocks.8:2",
+    "104:1:blocks.8:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-1-9",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 1,
+   "question": "كيف وصفت السورة هذه النار؟",
+   "gold_atoms": [
+    "104:1:blocks.9:0",
+    "104:1:blocks.9:1",
+    "104:1:blocks.9:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-1-10",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 1,
+   "question": "هل يخرجون منها؟",
+   "gold_atoms": [
+    "104:1:blocks.10:0",
+    "104:1:blocks.10:1",
+    "104:1:blocks.10:2",
+    "104:1:blocks.10:3",
+    "104:1:blocks.10:4"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-2-1",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 2,
+   "question": "على ماذا يدل وزن «همزة»؟",
+   "gold_atoms": [
+    "104:2:blocks.1:0",
+    "104:2:blocks.1:1",
+    "104:2:blocks.1:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-2-2",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 2,
+   "question": "دعاء أم وعيد؟",
+   "gold_atoms": [
+    "104:2:blocks.2:0",
+    "104:2:blocks.2:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-2-3",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 2,
+   "question": "ومن فعل ذلك من المسلمين؟",
+   "gold_atoms": [
+    "104:2:blocks.11:0",
+    "104:2:blocks.11:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-2-4",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 2,
+   "question": "لماذا ذُكر جمع المال بعد عيب الناس؟",
+   "gold_atoms": [
+    "104:2:blocks.3:0",
+    "104:2:blocks.3:1",
+    "104:2:blocks.3:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-2-5",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 2,
+   "question": "هل يُسأل العبد عن ماله؟",
+   "gold_atoms": [
+    "104:2:blocks.4:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-2-6",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 2,
+   "question": "ماذا تفيد صيغة الماضي في «أخلده»؟",
+   "gold_atoms": [
+    "104:2:blocks.5:0",
+    "104:2:blocks.5:1",
+    "104:2:blocks.5:2",
+    "104:2:blocks.5:3",
+    "104:2:blocks.5:4",
+    "104:2:blocks.5:5"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-2-7",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 2,
+   "question": "ما الذي غاب عنه؟",
+   "gold_atoms": [
+    "104:2:blocks.6:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-2-8",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 2,
+   "question": "كيف ترد الآية الرابعة على ظنه؟",
+   "gold_atoms": [
+    "104:2:blocks.7:0",
+    "104:2:blocks.7:1",
+    "104:2:blocks.7:2",
+    "104:2:blocks.7:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-2-9",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 2,
+   "question": "لماذا نُسبت النار إلى الله؟",
+   "gold_atoms": [
+    "104:2:blocks.8:0",
+    "104:2:blocks.8:1",
+    "104:2:blocks.8:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-2-10",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 2,
+   "question": "كيف تصل النار إلى القلوب؟",
+   "gold_atoms": [
+    "104:2:blocks.9:0",
+    "104:2:blocks.9:1",
+    "104:2:blocks.9:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-104-2-11",
+   "kind": "stop_title_ext",
+   "surah": 104,
+   "depth": 2,
+   "question": "بماذا شُبِّه إغلاقها عليهم؟",
+   "gold_atoms": [
+    "104:2:blocks.10:0",
+    "104:2:blocks.10:1",
+    "104:2:blocks.10:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-105-1-2",
+   "kind": "stop_title_ext",
+   "surah": 105,
+   "depth": 1,
+   "question": "ما الذي تثبته الآيات من القصة؟",
+   "gold_atoms": [
+    "105:1:blocks.2:0",
+    "105:1:blocks.2:1",
+    "105:1:blocks.2:2",
+    "105:1:blocks.2:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-105-1-3",
+   "kind": "stop_title_ext",
+   "surah": 105,
+   "depth": 1,
+   "question": "لماذا بدأت السورة بسؤال؟",
+   "gold_atoms": [
+    "105:1:blocks.3:0",
+    "105:1:blocks.3:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-105-1-5",
+   "kind": "stop_title_ext",
+   "surah": 105,
+   "depth": 1,
+   "question": "لماذا قال «كيف» ولم يقل «ما»؟",
+   "gold_atoms": [
+    "105:1:blocks.6:0",
+    "105:1:blocks.6:1",
+    "105:1:blocks.6:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-105-1-7",
+   "kind": "stop_title_ext",
+   "surah": 105,
+   "depth": 1,
+   "question": "كيف تتصل الآية الأولى بما بعدها؟",
+   "gold_atoms": [
+    "105:1:blocks.13:0",
+    "105:1:blocks.13:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-105-1-8",
+   "kind": "stop_title_ext",
+   "surah": 105,
+   "depth": 1,
+   "question": "ما «الكيد» الذي أُبطل؟",
+   "gold_atoms": [
+    "105:1:blocks.8:0",
+    "105:1:blocks.8:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-105-1-9",
+   "kind": "stop_title_ext",
+   "surah": 105,
+   "depth": 1,
+   "question": "من أين جاءت كلمة «تضليل»؟",
+   "gold_atoms": [
+    "105:1:blocks.9:0",
+    "105:1:blocks.9:1",
+    "105:1:blocks.9:2",
+    "105:1:blocks.9:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-105-1-10",
+   "kind": "stop_title_ext",
+   "surah": 105,
+   "depth": 1,
+   "question": "ما معنى «أبابيل»؟",
+   "gold_atoms": [
+    "105:1:blocks.10:0",
+    "105:1:blocks.10:1",
+    "105:1:blocks.10:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-105-1-12",
+   "kind": "stop_title_ext",
+   "surah": 105,
+   "depth": 1,
+   "question": "ماذا تصوّر الآية الأخيرة؟",
+   "gold_atoms": [
+    "105:1:blocks.12:0",
+    "105:1:blocks.12:1",
+    "105:1:blocks.12:2",
+    "105:1:blocks.12:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-105-2-3",
+   "kind": "stop_title_ext",
+   "surah": 105,
+   "depth": 2,
+   "question": "كيف ذكر النبي ﷺ هذه الحادثة؟",
+   "gold_atoms": [
+    "105:2:blocks.10:0",
+    "105:2:blocks.10:1",
+    "105:2:blocks.10:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-105-2-4",
+   "kind": "stop_title_ext",
+   "surah": 105,
+   "depth": 2,
+   "question": "ماذا نتعلم من هذا الهلاك؟",
+   "gold_atoms": [
+    "105:2:blocks.11:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-105-2-5",
+   "kind": "stop_title_ext",
+   "surah": 105,
+   "depth": 2,
+   "question": "لماذا جاء الحرف «في» قبل «تضليل»؟",
+   "gold_atoms": [
+    "105:2:blocks.2:0",
+    "105:2:blocks.2:1",
+    "105:2:blocks.2:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-105-2-6",
+   "kind": "stop_title_ext",
+   "surah": 105,
+   "depth": 2,
+   "question": "لماذا خُصّ إرسال الطير بالذكر؟",
+   "gold_atoms": [
+    "105:2:blocks.3:0",
+    "105:2:blocks.3:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-105-2-9",
+   "kind": "stop_title_ext",
+   "surah": 105,
+   "depth": 2,
+   "question": "ما علاقة هذه الحجارة بحجارة قوم لوط؟",
+   "gold_atoms": [
+    "105:2:blocks.6:0",
+    "105:2:blocks.6:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-105-2-11",
+   "kind": "stop_title_ext",
+   "surah": 105,
+   "depth": 2,
+   "question": "ما صلة السورة بسورة قريش؟",
+   "gold_atoms": [
+    "105:2:blocks.8:0",
+    "105:2:blocks.8:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-0-1",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 0,
+   "question": "عمّ تتحدث السورة؟",
+   "gold_atoms": [
+    "106:0:blocks.1:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-0-2",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 0,
+   "question": "ماذا يُطلب منهم؟",
+   "gold_atoms": [
+    "106:0:blocks.2:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-0-3",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 0,
+   "question": "ما الذي أعطاهم الله؟",
+   "gold_atoms": [
+    "106:0:blocks.3:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-1-3",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 1,
+   "question": "ما معنى «إيلاف»؟",
+   "gold_atoms": [
+    "106:1:blocks.3:0",
+    "106:1:blocks.3:1",
+    "106:1:blocks.3:2",
+    "106:1:blocks.3:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-1-4",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 1,
+   "question": "من هم قريش؟",
+   "gold_atoms": [
+    "106:1:blocks.4:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-1-5",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 1,
+   "question": "لماذا بدأت السورة بكلمة «لإيلاف»؟",
+   "gold_atoms": [
+    "106:1:blocks.5:0",
+    "106:1:blocks.5:1",
+    "106:1:blocks.5:2",
+    "106:1:blocks.5:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-1-6",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 1,
+   "question": "إلى أين كانت الرحلتان؟",
+   "gold_atoms": [
+    "106:1:blocks.6:0",
+    "106:1:blocks.6:1",
+    "106:1:blocks.6:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-1-7",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 1,
+   "question": "لماذا ذُكر الإيلاف مرتين؟",
+   "gold_atoms": [
+    "106:1:blocks.7:0",
+    "106:1:blocks.7:1",
+    "106:1:blocks.7:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-1-8",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 1,
+   "question": "ماذا طُلب من قريش؟",
+   "gold_atoms": [
+    "106:1:blocks.8:0",
+    "106:1:blocks.8:1",
+    "106:1:blocks.8:2",
+    "106:1:blocks.8:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-1-9",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 1,
+   "question": "ما المقصود بـ«البيت»؟",
+   "gold_atoms": [
+    "106:1:blocks.9:0",
+    "106:1:blocks.9:1",
+    "106:1:blocks.9:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-1-11",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 1,
+   "question": "ما الخوف الذي أُمّنوا منه؟",
+   "gold_atoms": [
+    "106:1:blocks.11:0",
+    "106:1:blocks.11:1",
+    "106:1:blocks.11:2",
+    "106:1:blocks.11:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-2-2",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 2,
+   "question": "لماذا خُصّت هذه النعمة بالذكر؟",
+   "gold_atoms": [
+    "106:2:blocks.2:0",
+    "106:2:blocks.2:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-2-3",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 2,
+   "question": "بماذا ترتبط اللام في الآية الأولى؟",
+   "gold_atoms": [
+    "106:2:blocks.3:0",
+    "106:2:blocks.3:1",
+    "106:2:blocks.3:2",
+    "106:2:blocks.3:3",
+    "106:2:blocks.3:4",
+    "106:2:blocks.3:5"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-2-4",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 2,
+   "question": "لماذا قال «رحلة» والمراد رحلتان؟",
+   "gold_atoms": [
+    "106:2:blocks.4:0",
+    "106:2:blocks.4:1",
+    "106:2:blocks.4:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-2-5",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 2,
+   "question": "ماذا تدل عليه نعمة الرحلتين؟",
+   "gold_atoms": [
+    "106:2:blocks.5:0",
+    "106:2:blocks.5:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-2-6",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 2,
+   "question": "ما الفائدة من ذكر الإيلاف عامًّا ثم مفصّلًا؟",
+   "gold_atoms": [
+    "106:2:blocks.6:0",
+    "106:2:blocks.6:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-2-7",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 2,
+   "question": "لماذا نُسب الرب إلى البيت؟",
+   "gold_atoms": [
+    "106:2:blocks.7:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-2-8",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 2,
+   "question": "ما جزاء من استجاب للأمر ومن عصاه؟",
+   "gold_atoms": [
+    "106:2:blocks.12:0",
+    "106:2:blocks.12:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-2-9",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 2,
+   "question": "كيف ترتبط الآية الرابعة بالثالثة؟",
+   "gold_atoms": [
+    "106:2:blocks.8:0",
+    "106:2:blocks.8:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-2-10",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 2,
+   "question": "ما معنى «من» في الآية الرابعة؟",
+   "gold_atoms": [
+    "106:2:blocks.9:0",
+    "106:2:blocks.9:1",
+    "106:2:blocks.9:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-2-11",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 2,
+   "question": "كيف كان أمنهم في السفر والإقامة؟",
+   "gold_atoms": [
+    "106:2:blocks.10:0",
+    "106:2:blocks.10:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-106-2-12",
+   "kind": "stop_title_ext",
+   "surah": 106,
+   "depth": 2,
+   "question": "هل للإطعام صلة بالرحلتين؟",
+   "gold_atoms": [
+    "106:2:blocks.11:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-109-0-1",
+   "kind": "stop_title_ext",
+   "surah": 109,
+   "depth": 0,
+   "question": "ماذا يطلب الله من نبيه أن يقول؟",
+   "gold_atoms": [
+    "109:0:blocks.1:0",
+    "109:0:blocks.1:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-109-0-2",
+   "kind": "stop_title_ext",
+   "surah": 109,
+   "depth": 0,
+   "question": "وهل يعبدون ما يعبده؟",
+   "gold_atoms": [
+    "109:0:blocks.2:0",
+    "109:0:blocks.2:1",
+    "109:0:blocks.2:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-109-0-3",
+   "kind": "stop_title_ext",
+   "surah": 109,
+   "depth": 0,
+   "question": "كيف تنتهي السورة؟",
+   "gold_atoms": [
+    "109:0:blocks.3:0",
+    "109:0:blocks.3:1",
+    "109:0:blocks.3:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-109-1-2",
+   "kind": "stop_title_ext",
+   "surah": 109,
+   "depth": 1,
+   "question": "من الذين يخاطبهم النبي ﷺ؟",
+   "gold_atoms": [
+    "109:1:blocks.2:0",
+    "109:1:blocks.2:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-109-1-3",
+   "kind": "stop_title_ext",
+   "surah": 109,
+   "depth": 1,
+   "question": "ما الذي تبرأ منه النبي ﷺ هنا؟",
+   "gold_atoms": [
+    "109:1:blocks.3:0",
+    "109:1:blocks.3:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-109-1-5",
+   "kind": "stop_title_ext",
+   "surah": 109,
+   "depth": 1,
+   "question": "ما معنى النفي في الآية الرابعة؟",
+   "gold_atoms": [
+    "109:1:blocks.5:0",
+    "109:1:blocks.5:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-109-1-6",
+   "kind": "stop_title_ext",
+   "surah": 109,
+   "depth": 1,
+   "question": "لماذا تتكرر الجمل في السورة؟",
+   "gold_atoms": [
+    "109:1:blocks.6:0",
+    "109:1:blocks.6:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-109-1-8",
+   "kind": "stop_title_ext",
+   "surah": 109,
+   "depth": 1,
+   "question": "ماذا تقول الآية الأخيرة؟",
+   "gold_atoms": [
+    "109:1:blocks.8:0",
+    "109:1:blocks.8:1",
+    "109:1:blocks.8:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-109-1-9",
+   "kind": "stop_title_ext",
+   "surah": 109,
+   "depth": 1,
+   "question": "كيف تتصل الآية الأخيرة بما قبلها؟",
+   "gold_atoms": [
+    "109:1:blocks.9:0",
+    "109:1:blocks.9:1",
+    "109:1:blocks.9:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-109-2-2",
+   "kind": "stop_title_ext",
+   "surah": 109,
+   "depth": 2,
+   "question": "لماذا نودوا بوصف «الكافرين»؟",
+   "gold_atoms": [
+    "109:2:blocks.3:0",
+    "109:2:blocks.3:1",
+    "109:2:blocks.3:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-109-2-3",
+   "kind": "stop_title_ext",
+   "surah": 109,
+   "depth": 2,
+   "question": "ماذا يفيد الأمر بالقول هنا؟",
+   "gold_atoms": [
+    "109:2:blocks.4:0",
+    "109:2:blocks.4:1",
+    "109:2:blocks.4:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-109-2-4",
+   "kind": "stop_title_ext",
+   "surah": 109,
+   "depth": 2,
+   "question": "كيف يُعبَّر بـ«ما» عن الله؟",
+   "gold_atoms": [
+    "109:2:blocks.5:0",
+    "109:2:blocks.5:1",
+    "109:2:blocks.5:2",
+    "109:2:blocks.5:3",
+    "109:2:blocks.5:4",
+    "109:2:blocks.5:5"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-109-2-5",
+   "kind": "stop_title_ext",
+   "surah": 109,
+   "depth": 2,
+   "question": "على ماذا يدل الفعل الماضي في «عبدتم»؟",
+   "gold_atoms": [
+    "109:2:blocks.6:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-109-2-6",
+   "kind": "stop_title_ext",
+   "surah": 109,
+   "depth": 2,
+   "question": "لماذا صرّحت الآية الرابعة بما سبق؟",
+   "gold_atoms": [
+    "109:2:blocks.7:0",
+    "109:2:blocks.7:1",
+    "109:2:blocks.7:2",
+    "109:2:blocks.7:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-109-2-7",
+   "kind": "stop_title_ext",
+   "surah": 109,
+   "depth": 2,
+   "question": "ماذا يحتاج كل عابد؟",
+   "gold_atoms": [
+    "109:2:blocks.9:0",
+    "109:2:blocks.9:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-109-2-8",
+   "kind": "stop_title_ext",
+   "surah": 109,
+   "depth": 2,
+   "question": "ما الذي يشبه هذه الآية في القرآن؟",
+   "gold_atoms": [
+    "109:2:blocks.8:0",
+    "109:2:blocks.8:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-110-0-2",
+   "kind": "stop_title_ext",
+   "surah": 110,
+   "depth": 0,
+   "question": "ماذا يُطلب عند النصر؟",
+   "gold_atoms": [
+    "110:0:blocks.2:0",
+    "110:0:blocks.2:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-110-1-2",
+   "kind": "stop_title_ext",
+   "surah": 110,
+   "depth": 1,
+   "question": "أيّ فتح هذا؟",
+   "gold_atoms": [
+    "110:1:blocks.2:0",
+    "110:1:blocks.2:1",
+    "110:1:blocks.2:2",
+    "110:1:blocks.2:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-110-1-3",
+   "kind": "stop_title_ext",
+   "surah": 110,
+   "depth": 1,
+   "question": "ما علاقة الفتح بإسلام العرب؟",
+   "gold_atoms": [
+    "110:1:blocks.3:0",
+    "110:1:blocks.3:1",
+    "110:1:blocks.3:2",
+    "110:1:blocks.3:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-110-1-4",
+   "kind": "stop_title_ext",
+   "surah": 110,
+   "depth": 1,
+   "question": "كيف فهم الصحابة السورة؟",
+   "gold_atoms": [
+    "110:1:blocks.7:0",
+    "110:1:blocks.7:1",
+    "110:1:blocks.7:2",
+    "110:1:blocks.7:3",
+    "110:1:blocks.7:4"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-110-1-5",
+   "kind": "stop_title_ext",
+   "surah": 110,
+   "depth": 1,
+   "question": "كيف دخل الناس الإسلام؟",
+   "gold_atoms": [
+    "110:1:blocks.4:0",
+    "110:1:blocks.4:1",
+    "110:1:blocks.4:2",
+    "110:1:blocks.4:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-110-1-6",
+   "kind": "stop_title_ext",
+   "surah": 110,
+   "depth": 1,
+   "question": "بمَ أُمر النبي ﷺ بعد النصر؟",
+   "gold_atoms": [
+    "110:1:blocks.5:0",
+    "110:1:blocks.5:1",
+    "110:1:blocks.5:2",
+    "110:1:blocks.5:3",
+    "110:1:blocks.5:4",
+    "110:1:blocks.5:5"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-110-1-7",
+   "kind": "stop_title_ext",
+   "surah": 110,
+   "depth": 1,
+   "question": "لماذا الاستغفار عند النصر؟",
+   "gold_atoms": [
+    "110:1:blocks.6:0",
+    "110:1:blocks.6:1",
+    "110:1:blocks.6:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-110-2-2",
+   "kind": "stop_title_ext",
+   "surah": 110,
+   "depth": 2,
+   "question": "ما علاقة التسبيح باستمرار النصر؟",
+   "gold_atoms": [
+    "110:2:blocks.2:0",
+    "110:2:blocks.2:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-110-2-3",
+   "kind": "stop_title_ext",
+   "surah": 110,
+   "depth": 2,
+   "question": "كيف نظر ابن كثير إلى الفهمين؟",
+   "gold_atoms": [
+    "110:2:blocks.4:0",
+    "110:2:blocks.4:1",
+    "110:2:blocks.4:2",
+    "110:2:blocks.4:3",
+    "110:2:blocks.4:4"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-110-2-4",
+   "kind": "stop_title_ext",
+   "surah": 110,
+   "depth": 2,
+   "question": "علامَ يدل ختم العمر بالاستغفار؟",
+   "gold_atoms": [
+    "110:2:blocks.3:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-110-2-6",
+   "kind": "stop_title_ext",
+   "surah": 110,
+   "depth": 2,
+   "question": "ماذا نأخذ من السورة؟",
+   "gold_atoms": [
+    "110:2:blocks.6:0",
+    "110:2:blocks.6:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-111-0-1",
+   "kind": "stop_title_ext",
+   "surah": 111,
+   "depth": 0,
+   "question": "هل نفع أبا لهب مالُه وولدُه؟",
+   "gold_atoms": [
+    "111:0:blocks.2:0",
+    "111:0:blocks.2:1",
+    "111:0:blocks.2:2",
+    "111:0:blocks.2:3",
+    "111:0:blocks.2:4",
+    "111:0:blocks.3:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-111-1-1",
+   "kind": "stop_title_ext",
+   "surah": 111,
+   "depth": 1,
+   "question": "لماذا نزلت سورة في أبي لهب؟",
+   "gold_atoms": [
+    "111:1:blocks.2:0",
+    "111:1:blocks.2:1",
+    "111:1:blocks.2:2",
+    "111:1:blocks.3:0",
+    "111:1:blocks.3:1",
+    "111:1:blocks.3:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-111-1-2",
+   "kind": "stop_title_ext",
+   "surah": 111,
+   "depth": 1,
+   "question": "ما مقصد السورة كلها؟",
+   "gold_atoms": [
+    "111:1:blocks.4:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-111-1-3",
+   "kind": "stop_title_ext",
+   "surah": 111,
+   "depth": 1,
+   "question": "لماذا ذُكر الخسران مرتين؟",
+   "gold_atoms": [
+    "111:1:blocks.5:0",
+    "111:1:blocks.5:1",
+    "111:1:blocks.5:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-111-1-4",
+   "kind": "stop_title_ext",
+   "surah": 111,
+   "depth": 1,
+   "question": "ما المراد بخسران يديه؟",
+   "gold_atoms": [
+    "111:1:blocks.6:0",
+    "111:1:blocks.6:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-111-1-5",
+   "kind": "stop_title_ext",
+   "surah": 111,
+   "depth": 1,
+   "question": "هل نفعه ماله وولده؟",
+   "gold_atoms": [
+    "111:1:blocks.7:0",
+    "111:1:blocks.7:1",
+    "111:1:blocks.7:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-111-1-6",
+   "kind": "stop_title_ext",
+   "surah": 111,
+   "depth": 1,
+   "question": "أي نار تنتظره؟",
+   "gold_atoms": [
+    "111:1:blocks.8:0",
+    "111:1:blocks.8:1",
+    "111:1:blocks.8:2",
+    "111:1:blocks.8:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-111-1-7",
+   "kind": "stop_title_ext",
+   "surah": 111,
+   "depth": 1,
+   "question": "ومن يدخلها معه؟",
+   "gold_atoms": [
+    "111:1:blocks.9:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-111-1-8",
+   "kind": "stop_title_ext",
+   "surah": 111,
+   "depth": 1,
+   "question": "ما معنى وصفها بحمل الحطب؟",
+   "gold_atoms": [
+    "111:1:blocks.10:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-111-1-9",
+   "kind": "stop_title_ext",
+   "surah": 111,
+   "depth": 1,
+   "question": "ما الحبل الذي في عنقها؟",
+   "gold_atoms": [
+    "111:1:blocks.11:0",
+    "111:1:blocks.11:1",
+    "111:1:blocks.11:2",
+    "111:1:blocks.11:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-111-2-1",
+   "kind": "stop_title_ext",
+   "surah": 111,
+   "depth": 2,
+   "question": "ما الهداية في خبر نزول السورة؟",
+   "gold_atoms": [
+    "111:2:blocks.2:0",
+    "111:2:blocks.2:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-111-2-2",
+   "kind": "stop_title_ext",
+   "surah": 111,
+   "depth": 2,
+   "question": "إلى متى يبقى هذا الذم؟",
+   "gold_atoms": [
+    "111:2:blocks.3:0",
+    "111:2:blocks.3:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-111-2-3",
+   "kind": "stop_title_ext",
+   "surah": 111,
+   "depth": 2,
+   "question": "بماذا تبدأ السورة؟",
+   "gold_atoms": [
+    "111:2:blocks.7:0",
+    "111:2:blocks.7:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-111-2-5",
+   "kind": "stop_title_ext",
+   "surah": 111,
+   "depth": 2,
+   "question": "هل نفعه ماله وولده؟",
+   "gold_atoms": [
+    "111:2:blocks.8:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-111-2-6",
+   "kind": "stop_title_ext",
+   "surah": 111,
+   "depth": 2,
+   "question": "ما مصيره ومصير امرأته؟",
+   "gold_atoms": [
+    "111:2:blocks.9:0",
+    "111:2:blocks.9:1",
+    "111:2:blocks.9:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-111-2-7",
+   "kind": "stop_title_ext",
+   "surah": 111,
+   "depth": 2,
+   "question": "كيف فسّر السعدي حملها الحطب؟",
+   "gold_atoms": [
+    "111:2:blocks.4:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-111-2-8",
+   "kind": "stop_title_ext",
+   "surah": 111,
+   "depth": 2,
+   "question": "مِمَّ صُنع الحبل الذي في عنقها؟",
+   "gold_atoms": [
+    "111:2:blocks.5:0",
+    "111:2:blocks.5:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-113-0-1",
+   "kind": "stop_title_ext",
+   "surah": 113,
+   "depth": 0,
+   "question": "بمن نلتجئ، ومن ماذا؟",
+   "gold_atoms": [
+    "113:0:blocks.1:0",
+    "113:0:blocks.1:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-113-0-2",
+   "kind": "stop_title_ext",
+   "surah": 113,
+   "depth": 0,
+   "question": "أي الشرور خُصّت بالذكر؟",
+   "gold_atoms": [
+    "113:0:blocks.2:0",
+    "113:0:blocks.2:1",
+    "113:0:blocks.2:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-113-1-3",
+   "kind": "stop_title_ext",
+   "surah": 113,
+   "depth": 1,
+   "question": "ما «الفلق»؟",
+   "gold_atoms": [
+    "113:1:blocks.4:0",
+    "113:1:blocks.4:1",
+    "113:1:blocks.4:2",
+    "113:1:blocks.4:3",
+    "113:1:blocks.4:4"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-113-1-5",
+   "kind": "stop_title_ext",
+   "surah": 113,
+   "depth": 1,
+   "question": "من أي شيء نلتجئ إلى الله؟",
+   "gold_atoms": [
+    "113:1:blocks.5:0",
+    "113:1:blocks.5:1",
+    "113:1:blocks.5:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-113-1-6",
+   "kind": "stop_title_ext",
+   "surah": 113,
+   "depth": 1,
+   "question": "لماذا ذُكرت ثلاثة شرور بعد الشرور كلها؟",
+   "gold_atoms": [
+    "113:1:blocks.6:0",
+    "113:1:blocks.6:1",
+    "113:1:blocks.6:2",
+    "113:1:blocks.6:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-113-1-7",
+   "kind": "stop_title_ext",
+   "surah": 113,
+   "depth": 1,
+   "question": "أي ليل يُستعاذ من شرّه؟",
+   "gold_atoms": [
+    "113:1:blocks.8:0",
+    "113:1:blocks.8:1",
+    "113:1:blocks.8:2",
+    "113:1:blocks.8:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-113-1-8",
+   "kind": "stop_title_ext",
+   "surah": 113,
+   "depth": 1,
+   "question": "من هنّ «النفاثات»؟",
+   "gold_atoms": [
+    "113:1:blocks.9:0",
+    "113:1:blocks.9:1",
+    "113:1:blocks.9:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-113-1-9",
+   "kind": "stop_title_ext",
+   "surah": 113,
+   "depth": 1,
+   "question": "ما الذي يفعله الحاسد؟",
+   "gold_atoms": [
+    "113:1:blocks.10:0",
+    "113:1:blocks.10:1",
+    "113:1:blocks.10:2",
+    "113:1:blocks.10:3",
+    "113:1:blocks.10:4",
+    "113:1:blocks.10:5"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-113-2-1",
+   "kind": "stop_title_ext",
+   "surah": 113,
+   "depth": 2,
+   "question": "لماذا وُصف الله هنا بربّ الصبح؟",
+   "gold_atoms": [
+    "113:2:blocks.2:0",
+    "113:2:blocks.2:1",
+    "113:2:blocks.2:2",
+    "113:2:blocks.2:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-113-2-2",
+   "kind": "stop_title_ext",
+   "surah": 113,
+   "depth": 2,
+   "question": "ماذا فعل النبي ﷺ لما نزلت المعوذتان؟",
+   "gold_atoms": [
+    "113:2:blocks.9:0",
+    "113:2:blocks.9:1",
+    "113:2:blocks.9:2",
+    "113:2:blocks.9:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-113-2-3",
+   "kind": "stop_title_ext",
+   "surah": 113,
+   "depth": 2,
+   "question": "إلى ماذا تدعو السورة؟",
+   "gold_atoms": [
+    "113:2:blocks.11:0",
+    "113:2:blocks.11:1",
+    "113:2:blocks.11:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-113-2-5",
+   "kind": "stop_title_ext",
+   "surah": 113,
+   "depth": 2,
+   "question": "هل «الغاسق» الليل أم القمر؟",
+   "gold_atoms": [
+    "113:2:blocks.3:0",
+    "113:2:blocks.3:1",
+    "113:2:blocks.3:2",
+    "113:2:blocks.3:3",
+    "113:2:blocks.3:4"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-113-2-6",
+   "kind": "stop_title_ext",
+   "surah": 113,
+   "depth": 2,
+   "question": "لماذا ذُكر الليل حين يدخل ظلامه؟",
+   "gold_atoms": [
+    "113:2:blocks.4:0",
+    "113:2:blocks.4:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-113-2-8",
+   "kind": "stop_title_ext",
+   "surah": 113,
+   "depth": 2,
+   "question": "لماذا «غاسق» بلا «ال» و«النفاثات» بـ«ال»؟",
+   "gold_atoms": [
+    "113:2:blocks.6:0",
+    "113:2:blocks.6:1",
+    "113:2:blocks.6:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-113-2-9",
+   "kind": "stop_title_ext",
+   "surah": 113,
+   "depth": 2,
+   "question": "ما الذي يربط الشرور الثلاثة؟",
+   "gold_atoms": [
+    "113:2:blocks.7:0",
+    "113:2:blocks.7:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-113-2-10",
+   "kind": "stop_title_ext",
+   "surah": 113,
+   "depth": 2,
+   "question": "علامَ تدل الاستعاذة من السحر؟",
+   "gold_atoms": [
+    "113:2:blocks.8:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-114-0-1",
+   "kind": "stop_title_ext",
+   "surah": 114,
+   "depth": 0,
+   "question": "بمن نلتجئ؟",
+   "gold_atoms": [
+    "114:0:blocks.1:0",
+    "114:0:blocks.1:1",
+    "114:0:blocks.1:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-114-0-2",
+   "kind": "stop_title_ext",
+   "surah": 114,
+   "depth": 0,
+   "question": "ممن نلتجئ؟",
+   "gold_atoms": [
+    "114:0:blocks.2:0",
+    "114:0:blocks.2:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-114-1-2",
+   "kind": "stop_title_ext",
+   "surah": 114,
+   "depth": 1,
+   "question": "هل هي مكية أم مدنية؟",
+   "gold_atoms": [
+    "114:1:blocks.2:0",
+    "114:1:blocks.2:1",
+    "114:1:blocks.2:2",
+    "114:1:blocks.2:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-114-1-3",
+   "kind": "stop_title_ext",
+   "surah": 114,
+   "depth": 1,
+   "question": "ما معنى «أعوذ»، ومن المخاطَب؟",
+   "gold_atoms": [
+    "114:1:blocks.3:0",
+    "114:1:blocks.3:1",
+    "114:1:blocks.3:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-114-1-4",
+   "kind": "stop_title_ext",
+   "surah": 114,
+   "depth": 1,
+   "question": "لماذا خُصّ الناس بالذكر مع الرب؟",
+   "gold_atoms": [
+    "114:1:blocks.4:0",
+    "114:1:blocks.4:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-114-1-5",
+   "kind": "stop_title_ext",
+   "surah": 114,
+   "depth": 1,
+   "question": "ما معنى «الملك» و«الإله» هنا؟",
+   "gold_atoms": [
+    "114:1:blocks.5:0",
+    "114:1:blocks.5:1",
+    "114:1:blocks.5:2",
+    "114:1:blocks.5:3",
+    "114:1:blocks.5:4"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-114-1-6",
+   "kind": "stop_title_ext",
+   "surah": 114,
+   "depth": 1,
+   "question": "لماذا يتكرر لفظ «الناس»؟",
+   "gold_atoms": [
+    "114:1:blocks.6:0",
+    "114:1:blocks.6:1",
+    "114:1:blocks.6:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-114-1-7",
+   "kind": "stop_title_ext",
+   "surah": 114,
+   "depth": 1,
+   "question": "من هو «الوسواس»؟",
+   "gold_atoms": [
+    "114:1:blocks.7:0",
+    "114:1:blocks.7:1",
+    "114:1:blocks.7:2",
+    "114:1:blocks.7:3",
+    "114:1:blocks.7:4",
+    "114:1:blocks.7:5"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-114-1-8",
+   "kind": "stop_title_ext",
+   "surah": 114,
+   "depth": 1,
+   "question": "لماذا يُسمّى «الخنّاس»؟",
+   "gold_atoms": [
+    "114:1:blocks.8:0",
+    "114:1:blocks.8:1",
+    "114:1:blocks.8:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-114-1-9",
+   "kind": "stop_title_ext",
+   "surah": 114,
+   "depth": 1,
+   "question": "ماذا يفعل الوسواس وأين؟",
+   "gold_atoms": [
+    "114:1:blocks.9:0",
+    "114:1:blocks.9:1",
+    "114:1:blocks.9:2"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-114-1-10",
+   "kind": "stop_title_ext",
+   "surah": 114,
+   "depth": 1,
+   "question": "هل يدخل الجن في «الناس»؟",
+   "gold_atoms": [
+    "114:1:blocks.11:0",
+    "114:1:blocks.11:1",
+    "114:1:blocks.11:2",
+    "114:1:blocks.11:3"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-114-2-2",
+   "kind": "stop_title_ext",
+   "surah": 114,
+   "depth": 2,
+   "question": "ماذا قال النبي ﷺ عن السورتين؟",
+   "gold_atoms": [
+    "114:2:blocks.2:0",
+    "114:2:blocks.3:0",
+    "114:2:blocks.4:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-114-2-3",
+   "kind": "stop_title_ext",
+   "surah": 114,
+   "depth": 2,
+   "question": "كيف رُتّبت الصفات الثلاث؟",
+   "gold_atoms": [
+    "114:2:blocks.5:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-114-2-4",
+   "kind": "stop_title_ext",
+   "surah": 114,
+   "depth": 2,
+   "question": "لماذا وُصف الله هنا بـ«الملك»؟",
+   "gold_atoms": [
+    "114:2:blocks.6:0",
+    "114:2:blocks.6:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-114-2-5",
+   "kind": "stop_title_ext",
+   "surah": 114,
+   "depth": 2,
+   "question": "كيف يوسوس ثم يختفي؟",
+   "gold_atoms": [
+    "114:2:blocks.7:0",
+    "114:2:blocks.7:1"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-114-2-7",
+   "kind": "stop_title_ext",
+   "surah": 114,
+   "depth": 2,
+   "question": "ماذا نفعل مع وساوس الشيطان؟",
+   "gold_atoms": [
+    "114:2:blocks.10:0",
+    "114:2:blocks.10:1",
+    "114:2:blocks.11:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-114-2-8",
+   "kind": "stop_title_ext",
+   "surah": 114,
+   "depth": 2,
+   "question": "علامَ تحثّ السورة؟",
+   "gold_atoms": [
+    "114:2:blocks.12:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-114-2-9",
+   "kind": "stop_title_ext",
+   "surah": 114,
+   "depth": 2,
+   "question": "لماذا قُدّمت الجنّة على الناس؟",
+   "gold_atoms": [
+    "114:2:blocks.13:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  },
+  {
+   "id": "ext-114-2-10",
+   "kind": "stop_title_ext",
+   "surah": 114,
+   "depth": 2,
+   "question": "ما خطر وسوسة الناس بعضهم لبعض؟",
+   "gold_atoms": [
+    "114:2:blocks.14:0"
+   ],
+   "split": "held",
+   "title_is_gold": false
+  }
+ ]
+}

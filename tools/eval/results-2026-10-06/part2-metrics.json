@@ -1,0 +1,450 @@
+[
+ {
+  "surah": 93,
+  "A": {
+   "sent": 0,
+   "named": 0,
+   "quotes": 0,
+   "q_exact": 0,
+   "q_norm": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 1,
+   "status": "insufficient"
+  },
+  "B": {
+   "sent": 3,
+   "named": 3,
+   "quotes": 3,
+   "q_exact": 1,
+   "q_norm": 1,
+   "mixed": 0,
+   "verse_quotes": 1,
+   "verse_exact": 1,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "ok"
+  }
+ },
+ {
+  "surah": 100,
+  "A": {
+   "sent": 0,
+   "named": 0,
+   "quotes": 0,
+   "q_exact": 0,
+   "q_norm": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 1,
+   "status": "insufficient"
+  },
+  "B": {
+   "sent": 1,
+   "named": 1,
+   "quotes": 1,
+   "q_exact": 0,
+   "q_norm": 0,
+   "mixed": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "ok"
+  }
+ },
+ {
+  "surah": 101,
+  "A": {
+   "sent": 2,
+   "named": 2,
+   "quotes": 0,
+   "q_exact": 0,
+   "q_norm": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "answer"
+  },
+  "B": {
+   "sent": 1,
+   "named": 1,
+   "quotes": 1,
+   "q_exact": 0,
+   "q_norm": 0,
+   "mixed": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "ok"
+  }
+ },
+ {
+  "surah": 102,
+  "A": {
+   "sent": 1,
+   "named": 1,
+   "quotes": 0,
+   "q_exact": 0,
+   "q_norm": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "answer"
+  },
+  "B": {
+   "sent": 2,
+   "named": 2,
+   "quotes": 2,
+   "q_exact": 0,
+   "q_norm": 0,
+   "mixed": 1,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "ok"
+  }
+ },
+ {
+  "surah": 103,
+  "A": {
+   "sent": 2,
+   "named": 2,
+   "quotes": 0,
+   "q_exact": 0,
+   "q_norm": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "answer"
+  },
+  "B": {
+   "sent": 3,
+   "named": 3,
+   "quotes": 3,
+   "q_exact": 0,
+   "q_norm": 0,
+   "mixed": 2,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "ok"
+  }
+ },
+ {
+  "surah": 104,
+  "A": {
+   "sent": 2,
+   "named": 2,
+   "quotes": 0,
+   "q_exact": 0,
+   "q_norm": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "answer"
+  },
+  "B": {
+   "sent": 2,
+   "named": 2,
+   "quotes": 2,
+   "q_exact": 1,
+   "q_norm": 1,
+   "mixed": 1,
+   "verse_quotes": 1,
+   "verse_exact": 1,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "ok"
+  }
+ },
+ {
+  "surah": 105,
+  "A": {
+   "sent": 3,
+   "named": 3,
+   "quotes": 0,
+   "q_exact": 0,
+   "q_norm": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "answer"
+  },
+  "B": {
+   "sent": 1,
+   "named": 1,
+   "quotes": 1,
+   "q_exact": 0,
+   "q_norm": 0,
+   "mixed": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "ok"
+  }
+ },
+ {
+  "surah": 106,
+  "A": {
+   "sent": 0,
+   "named": 0,
+   "quotes": 0,
+   "q_exact": 0,
+   "q_norm": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 1,
+   "status": "insufficient"
+  },
+  "B": {
+   "sent": 1,
+   "named": 1,
+   "quotes": 1,
+   "q_exact": 0,
+   "q_norm": 0,
+   "mixed": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "ok"
+  }
+ },
+ {
+  "surah": 107,
+  "A": {
+   "sent": 2,
+   "named": 2,
+   "quotes": 0,
+   "q_exact": 0,
+   "q_norm": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "answer"
+  },
+  "B": {
+   "sent": 2,
+   "named": 2,
+   "quotes": 2,
+   "q_exact": 0,
+   "q_norm": 0,
+   "mixed": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "ok"
+  }
+ },
+ {
+  "surah": 108,
+  "A": {
+   "sent": 1,
+   "named": 1,
+   "quotes": 0,
+   "q_exact": 0,
+   "q_norm": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "answer"
+  },
+  "B": {
+   "sent": 1,
+   "named": 1,
+   "quotes": 1,
+   "q_exact": 0,
+   "q_norm": 0,
+   "mixed": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "ok"
+  }
+ },
+ {
+  "surah": 109,
+  "A": {
+   "sent": 4,
+   "named": 4,
+   "quotes": 0,
+   "q_exact": 0,
+   "q_norm": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "answer"
+  },
+  "B": {
+   "sent": 2,
+   "named": 2,
+   "quotes": 2,
+   "q_exact": 0,
+   "q_norm": 0,
+   "mixed": 2,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "ok"
+  }
+ },
+ {
+  "surah": 110,
+  "A": {
+   "sent": 3,
+   "named": 3,
+   "quotes": 1,
+   "q_exact": 1,
+   "q_norm": 1,
+   "verse_quotes": 2,
+   "verse_exact": 2,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "answer"
+  },
+  "B": {
+   "sent": 2,
+   "named": 2,
+   "quotes": 2,
+   "q_exact": 1,
+   "q_norm": 1,
+   "mixed": 0,
+   "verse_quotes": 2,
+   "verse_exact": 1,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "ok"
+  }
+ },
+ {
+  "surah": 111,
+  "A": {
+   "sent": 2,
+   "named": 2,
+   "quotes": 0,
+   "q_exact": 0,
+   "q_norm": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "answer"
+  },
+  "B": {
+   "sent": 1,
+   "named": 1,
+   "quotes": 1,
+   "q_exact": 0,
+   "q_norm": 0,
+   "mixed": 1,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "ok"
+  }
+ },
+ {
+  "surah": 112,
+  "A": {
+   "sent": 5,
+   "named": 5,
+   "quotes": 2,
+   "q_exact": 2,
+   "q_norm": 2,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "answer"
+  },
+  "B": {
+   "sent": 3,
+   "named": 3,
+   "quotes": 3,
+   "q_exact": 0,
+   "q_norm": 0,
+   "mixed": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "ok"
+  }
+ },
+ {
+  "surah": 113,
+  "A": {
+   "sent": 3,
+   "named": 3,
+   "quotes": 0,
+   "q_exact": 0,
+   "q_norm": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "answer"
+  },
+  "B": {
+   "sent": 3,
+   "named": 3,
+   "quotes": 3,
+   "q_exact": 0,
+   "q_norm": 0,
+   "mixed": 2,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "ok"
+  }
+ },
+ {
+  "surah": 114,
+  "A": {
+   "sent": 1,
+   "named": 1,
+   "quotes": 0,
+   "q_exact": 0,
+   "q_norm": 0,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "answer"
+  },
+  "B": {
+   "sent": 1,
+   "named": 1,
+   "quotes": 1,
+   "q_exact": 0,
+   "q_norm": 0,
+   "mixed": 1,
+   "verse_quotes": 0,
+   "verse_exact": 0,
+   "verse_unmarked": 0,
+   "declined": 0,
+   "status": "ok"
+  }
+ }
+]

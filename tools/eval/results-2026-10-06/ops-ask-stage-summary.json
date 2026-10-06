@@ -1,0 +1,218 @@
+[
+ {
+  "i": 1,
+  "total_ms": 3195,
+  "retrieve": {
+   "stage": "retrieve",
+   "provider": "hybrid",
+   "outcome": "32/8/27",
+   "ms": 752
+  },
+  "model_calls": 2,
+  "model_ms": 2890,
+  "calls": [
+   "compose:gemini:ok:1978",
+   "support:gemini:ok:912"
+  ],
+  "own_key": false,
+  "keys": [
+   "event",
+   "stages",
+   "ms",
+   "dropped",
+   "cited"
+  ]
+ },
+ {
+  "i": 2,
+  "total_ms": 2708,
+  "retrieve": {
+   "stage": "retrieve",
+   "provider": "hybrid",
+   "outcome": "35/8/27",
+   "ms": 843
+  },
+  "model_calls": 2,
+  "model_ms": 2583,
+  "calls": [
+   "compose:gemini:ok:1814",
+   "support:gemini:ok:769"
+  ],
+  "own_key": false,
+  "keys": [
+   "event",
+   "stages",
+   "ms",
+   "dropped",
+   "cited"
+  ]
+ },
+ {
+  "i": 3,
+  "total_ms": 463,
+  "retrieve": {
+   "stage": "retrieve",
+   "provider": "hybrid",
+   "outcome": "35/8/27",
+   "ms": 913
+  },
+  "model_calls": 1,
+  "model_ms": 462,
+  "calls": [
+   "compose:openai:http_401:462"
+  ],
+  "own_key": true,
+  "keys": [
+   "event",
+   "stages",
+   "ms",
+   "dropped",
+   "own_key",
+   "provider"
+  ]
+ },
+ {
+  "i": 4,
+  "total_ms": 1251,
+  "retrieve": {
+   "stage": "retrieve",
+   "provider": "hybrid",
+   "outcome": "35/8/27",
+   "ms": 53
+  },
+  "model_calls": 1,
+  "model_ms": 1250,
+  "calls": [
+   "compose:openai:http_429:1250"
+  ],
+  "own_key": true,
+  "keys": [
+   "event",
+   "stages",
+   "ms",
+   "dropped",
+   "own_key",
+   "provider"
+  ]
+ },
+ {
+  "i": 5,
+  "total_ms": 882,
+  "retrieve": {
+   "stage": "retrieve",
+   "provider": "hybrid",
+   "outcome": "35/8/27",
+   "ms": 67
+  },
+  "model_calls": 1,
+  "model_ms": 882,
+  "calls": [
+   "compose:openai:http_429:882"
+  ],
+  "own_key": true,
+  "keys": [
+   "event",
+   "stages",
+   "ms",
+   "dropped",
+   "own_key",
+   "provider"
+  ]
+ },
+ {
+  "i": 6,
+  "total_ms": 977,
+  "retrieve": {
+   "stage": "retrieve",
+   "provider": "hybrid",
+   "outcome": "35/8/27",
+   "ms": 70
+  },
+  "model_calls": 1,
+  "model_ms": 976,
+  "calls": [
+   "compose:openai:http_429:976"
+  ],
+  "own_key": true,
+  "keys": [
+   "event",
+   "stages",
+   "ms",
+   "dropped",
+   "own_key",
+   "provider"
+  ]
+ },
+ {
+  "i": 7,
+  "total_ms": 524,
+  "retrieve": {
+   "stage": "retrieve",
+   "provider": "hybrid",
+   "outcome": "35/8/27",
+   "ms": 1057
+  },
+  "model_calls": 1,
+  "model_ms": 523,
+  "calls": [
+   "compose:anthropic:http_400:523"
+  ],
+  "own_key": true,
+  "keys": [
+   "event",
+   "stages",
+   "ms",
+   "dropped",
+   "own_key",
+   "provider"
+  ]
+ },
+ {
+  "i": 8,
+  "total_ms": 9240,
+  "retrieve": {
+   "stage": "retrieve",
+   "provider": "hybrid",
+   "outcome": "31/8/26",
+   "ms": 68
+  },
+  "model_calls": 2,
+  "model_ms": 9075,
+  "calls": [
+   "compose:gemini:ok:6733",
+   "support:gemini:ok:2342"
+  ],
+  "own_key": false,
+  "keys": [
+   "event",
+   "stages",
+   "ms",
+   "dropped",
+   "cited"
+  ]
+ },
+ {
+  "i": 9,
+  "total_ms": 4143,
+  "retrieve": {
+   "stage": "retrieve",
+   "provider": "hybrid",
+   "outcome": "31/8/30",
+   "ms": 65
+  },
+  "model_calls": 3,
+  "model_ms": 4141,
+  "calls": [
+   "compose:gemini:ok:1398",
+   "repair:gemini:ok:1298",
+   "select:gemini:ok:1445"
+  ],
+  "own_key": false,
+  "keys": [
+   "event",
+   "stages",
+   "ms",
+   "dropped"
+  ]
+ }
+]
