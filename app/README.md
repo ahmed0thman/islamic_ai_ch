@@ -110,7 +110,7 @@ pnpm dev                       # قارئ ثابت على http://localhost:3000�
 2. `pnpm rag:ingest` يملأ القاعدة بالجمل الموثقة وسجلات السور المنشورة. ويقرأ `.cache/records/<رقم>/records.v2.json` إن وُجد.
 3. شغّل `HUDA_ASK=1 pnpm dev`، أو `HUDA_ASK=1 pnpm build && HUDA_ASK=1 pnpm start`. المتغير يلزم وقت البناء ووقت التشغيل معًا.
 4. «نسيج لك» يعمل بـ`HUDA_WEAVE=1` بالطريقة نفسها.
-5. المفتاح: إما من متغيرات البيئة، وإما **أن يُدخل المحكّم مفتاحه من الواجهة** (ق-088، ق-140، ق-142): OpenAI أو Google لجواب «اسأل»، وGroq للتفريغ الصوتي. يُحفظ في `sessionStorage` ويُرسل في الترويستين `x-huda-provider` و`x-huda-key`، ولا يُخزَّن في الخادم ولا يُسجَّل (`src/lib/own-key.ts`، `src/lib/ask/providers.ts`، `src/app/api/transcribe/route.ts`).
+5. المفتاح: إما من متغيرات البيئة، وإما **أن يُدخل المحكّم مفتاحه من الواجهة** (ق-088، ق-140، ق-142، ق-144): OpenAI أو Google أو Anthropic لجواب «اسأل»، وGroq للتفريغ الصوتي. يُحفظ في `sessionStorage` ويُرسل في الترويستين `x-huda-provider` و`x-huda-key`، ولا يُخزَّن في الخادم ولا يُسجَّل (`src/lib/own-key.ts`، `src/lib/ask/providers.ts`، `src/app/api/transcribe/route.ts`).
 6. السؤال بالصوت يحتاج `GROQ_API_KEY`، أو خادم ويسبر محليًّا بـ`HUDA_VOICE_STT_URL`. والميكروفون لا يعمل إلا على رابط آمن (https) أو على الجهاز نفسه.
 
 جُرّب في الجلسة السحابية (في نسخة منفصلة، بلا قاعدة ولا مفاتيح): `HUDA_ASK=1 pnpm build` نجح، و`HUDA_ASK=1 pnpm start` أقلع، وردّ `/api/health/` بالرمز 200 وبالنص `{"ok":true,"db":false,"embed":"off"}`. وبلا `DATABASE_URL` يتوقف `pnpm rag:ingest` فورًا برسالة `DATABASE_URL is not set`. **ولم يُجرَّب:** «اسأل» نفسه، و«نسيج لك»، والصوت، والمفتاح المُدخَل من الواجهة، وتسجيل الدخول؛ كلها تحتاج قاعدة أو مفتاحًا.
