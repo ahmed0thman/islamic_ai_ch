@@ -1,51 +1,104 @@
-/* The introduction page at `/`. Same token set as the reader; no new color, font or size. */
+/* The introduction page at `/`. Same token set as the reader; no new color, font or size.
+   Rhythm: sections sit --space-2xl apart; inside a section the head is followed by --space-lg to --space-xl. */
 body:has(.landing) .huda-legend-bar { display: none; }
 body:has(.landing) .page-shell { padding-block-end: calc(var(--space-xl) + env(safe-area-inset-bottom)); }
 
-.landing { display: grid; gap: var(--space-xl); }
+.landing { display: grid; gap: var(--space-2xl); }
 
-.landing-hero { display: grid; gap: var(--space-md); background: linear-gradient(160deg, var(--stage-a), var(--stage-b)); color: var(--stage-ink); border-radius: var(--radius); padding: var(--space-xl) var(--space-lg); }
-.landing-hero h1 { font-size: var(--text-cover); line-height: var(--leading-title); }
-.landing-tagline { color: var(--stage-mute); font-size: var(--text-ui); }
-.landing-lead { font-size: var(--text-hero); line-height: var(--leading-hero); }
-.landing-sub { font-size: var(--text-body); }
-.landing-guide-link { display: inline-flex; align-items: center; justify-self: start; min-block-size: var(--control-height); color: var(--stage-ink); font-size: var(--text-ui); text-decoration: underline; }
-.landing-hero .huda-button { justify-self: start; }
+/* Section titles carry the reader's question motif: a short accent dash over a balanced line. */
+.landing-h2 { font-size: var(--text-title); line-height: var(--leading-title); text-wrap: balance; }
+.landing-h2::before { content: ""; display: block; inline-size: 2.25rem; block-size: .25rem; margin-block-end: var(--space-md); border-radius: var(--radius-pill); background: var(--accent); }
 
-.landing-section h2, .landing-status-block h2, .landing-surahs h2 { font-size: var(--text-hero); line-height: var(--leading-hero); margin-block-end: var(--space-md); }
-.landing-section p { font-size: var(--text-body); line-height: var(--leading-body); color: var(--ink); }
-.landing-section p + p { margin-block-start: var(--space-md); }
+/* Compact spec rows separated by hairlines: the problem lines and the status lists share the treatment. */
+.landing-rows { inline-size: 100%; }
+.landing-rows li { padding-block: var(--space-md); color: var(--ink-2); font-size: var(--text-ui); line-height: var(--leading-ui); }
+.landing-rows li + li { border-block-start: 1px solid var(--line); }
 
-.landing-card, .landing-status-block { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: var(--space-lg); box-shadow: var(--shadow); }
-.landing-card h3 { font-size: var(--text-door); color: var(--accent); }
-.landing-card p, .landing-status-block p, .landing-list li, .landing-status-block li { font-size: var(--text-ui); line-height: var(--leading-ui); color: var(--ink-2); }
+/* A product shot in a quiet bezel. The crop is deliberate: the frame peeks into the app from the top. */
+.phone-frame { --frame-w: 15rem; --frame-h: 21rem; display: block; inline-size: min(100%, var(--frame-w)); margin-inline: auto; padding: var(--space-sm); border: 1px solid var(--line-strong); border-radius: var(--radius-sheet); background: var(--surface); box-shadow: var(--shadow); }
+.phone-frame img { display: block; inline-size: 100%; block-size: var(--frame-h); border-radius: var(--radius); object-fit: cover; object-position: top; }
 
-.landing-chips { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm); margin-block-start: var(--space-md); }
-.landing-chip { border: 1px solid var(--border-ui); border-radius: var(--radius-pill); padding: 0 var(--space-md); font-size: var(--text-label); line-height: var(--control-height); }
+/* Hero: the brand on the product's dark stage, with its ring motif; the device beside the words on wide screens. */
+.landing-hero { position: relative; display: grid; align-items: center; gap: var(--space-xl); overflow: clip; padding: var(--space-xl) var(--space-lg); border: 0; border-radius: var(--radius); background: linear-gradient(160deg, var(--stage-a), var(--stage-b)); color: var(--stage-ink); box-shadow: var(--shadow); }
+.landing-hero::before { content: ""; position: absolute; inset-block-start: -30%; inset-inline-end: -20%; inline-size: 18.75rem; block-size: 18.75rem; border-radius: 50%; background: repeating-radial-gradient(circle, transparent 0 1.375rem, color-mix(in srgb, var(--stage-ink) 7%, transparent) 1.375rem 1.4375rem); pointer-events: none; }
+.landing-hero-text { position: relative; display: grid; justify-items: start; gap: var(--space-md); }
+.landing-name { font-family: var(--font-quran); font-size: var(--text-cover); font-weight: 400; line-height: var(--leading-cover); }
+.landing-tagline { color: var(--stage-mute); font-size: var(--text-ui); line-height: var(--leading-ui); }
+.landing-lead { max-inline-size: 33rem; margin-block-start: var(--space-sm); font-size: var(--text-hero); font-weight: 500; line-height: var(--leading-hero); text-wrap: balance; }
+.landing-sub { max-inline-size: 33rem; color: var(--stage-mute); font-size: var(--text-body); line-height: var(--leading-body); }
+.landing-hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm) var(--space-lg); margin-block-start: var(--space-md); }
+.landing-hero .huda-button[data-variant="pill"] { border-color: transparent; background: var(--stage-ink); color: var(--stage-b); font-weight: 600; }
+.landing-hero .huda-button[data-variant="pill"]:hover { background: var(--stage-ink); opacity: .92; }
+.landing-guide-link { display: inline-flex; align-items: center; min-block-size: var(--control-height); color: var(--stage-ink); font-size: var(--text-ui); line-height: var(--leading-ui); text-decoration: underline; text-underline-offset: .3em; }
+.landing-guide-link:hover { color: var(--stage-mute); }
+.landing-hero :focus-visible { outline-color: var(--stage-ink); }
+.landing-hero-device { --frame-w: 16rem; --frame-h: 22rem; border-color: color-mix(in srgb, var(--stage-ink) 22%, transparent); background: color-mix(in srgb, var(--stage-ink) 7%, transparent); box-shadow: none; }
 
-.landing-list li + li, .landing-status-block li + li { margin-block-start: var(--space-sm); }
-.landing-list li::before, .landing-status-block li::before { content: ""; display: inline-block; inline-size: .5rem; block-size: .5rem; margin-inline-end: var(--space-sm); border-radius: 50%; vertical-align: middle; }
-.landing-ai li::before, .landing-status-block[data-state="today"] li::before { background: var(--accent); }
-.landing-status-block[data-state="progress"] li::before { background: var(--gold); }
-.landing-status-block[data-state="planned"] li::before { background: transparent; border: 2px solid var(--ink-3); }
+/* Who it is for and the problem it solves. */
+.landing-band { display: grid; gap: var(--space-xl); }
+.landing-band-col { display: grid; align-content: start; justify-items: start; gap: var(--space-md); }
+.landing-body { max-inline-size: 34rem; color: var(--ink); font-size: var(--text-body); line-height: var(--leading-body); }
 
-.landing-note { font-size: var(--text-label); color: var(--ink-3); margin-block-start: var(--space-md); }
+/* How it works: four features, hairline between rows, the product beside each on wide screens. */
+.landing-features { display: grid; margin: 0; padding: 0; list-style: none; }
+.landing-feature { display: grid; align-items: center; gap: var(--space-xl); padding-block: var(--space-xl); }
+.landing-feature:first-child { padding-block-start: var(--space-lg); }
+.landing-feature + .landing-feature { border-block-start: 1px solid var(--line); }
+.landing-feature-text { display: grid; justify-items: start; gap: var(--space-md); max-inline-size: 33rem; }
+.landing-feature-text h3 { font-size: var(--text-sheet-title); font-weight: 700; line-height: var(--leading-ui); }
+.landing-feature-text p { color: var(--ink-2); font-size: var(--text-body); line-height: var(--leading-body); }
+.landing-source-chips { display: inline-flex; flex-wrap: wrap; gap: var(--space-sm); margin-block-start: var(--space-xs); }
+.landing-feature-media { justify-self: center; }
 
-.landing-status { display: grid; gap: var(--space-lg); }
+/* The depth dial as a specimen: the reader's control, stilled. */
+.landing-dial { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); inline-size: min(100%, 22rem); margin: 0; padding: var(--space-xs); list-style: none; border: 1px solid var(--border-ui); border-radius: var(--radius); background: var(--surface-2); }
+.landing-dial-notch { position: relative; display: flex; align-items: center; justify-content: center; min-block-size: var(--control-height); padding: var(--space-xs); border-radius: var(--radius-s); color: var(--ink-2); font-size: var(--text-ui); font-weight: 600; line-height: 1.5; text-align: center; }
+.landing-dial-notch[data-current] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.landing-dial-notch[data-current]::after { content: ""; position: absolute; inset-inline: 20%; inset-block-end: var(--space-xs); block-size: 3px; border-radius: var(--radius-pill); background: var(--gold); }
 
-.landing-surahs { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm); }
-.landing-surahs h2 { flex-basis: 100%; }
-.landing-surahs .huda-button { margin-inline-start: auto; }
+/* The trust band: a quiet green tint, distinct from the plain sections and the dark hero. */
+.landing-trust { display: grid; gap: var(--space-lg); padding: var(--space-xl) var(--space-lg); border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent); border-radius: var(--radius); background: color-mix(in srgb, var(--accent) 7%, var(--surface)); }
+.landing-trust-grid { display: grid; gap: var(--space-lg); }
+.landing-trust-grid li { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: var(--space-md); }
+.landing-trust-icon { display: grid; place-items: center; inline-size: 2.5rem; block-size: 2.5rem; border: 1px solid var(--line-strong); border-radius: var(--radius-s); background: var(--surface); color: var(--accent); }
+.landing-trust-grid p { padding-block-start: var(--space-sm); color: var(--ink); font-size: var(--text-ui); line-height: var(--leading-ui); }
+.landing-trust-note { max-inline-size: 40rem; padding-block-start: var(--space-lg); border-block-start: 1px solid var(--line); color: var(--ink-2); font-size: var(--text-ui); line-height: var(--leading-ui); }
 
-.landing-cards { display: grid; gap: var(--space-md); list-style: none; margin: 0; padding: 0; }
+/* Status: three tiers of certainty — raised card, soft card, dashed outline. */
+.landing-status { display: grid; align-items: start; gap: var(--space-lg); }
+.landing-status-block { display: grid; justify-items: start; gap: var(--space-md); inline-size: 100%; padding: var(--space-lg); border-radius: var(--radius); }
+.landing-status-block h2 { display: flex; align-items: center; gap: var(--space-sm); font-size: var(--text-sheet-title); font-weight: 700; line-height: var(--leading-ui); }
+.landing-status-block h2::before { content: ""; flex: none; inline-size: .625rem; block-size: .625rem; border-radius: 50%; }
+.landing-status-block[data-state="today"] { border: 1px solid var(--line); background: var(--surface); box-shadow: var(--shadow); }
+.landing-status-block[data-state="today"] h2::before { background: var(--accent); }
+.landing-status-block[data-state="progress"] { border: 1px solid var(--line); background: var(--surface-2); }
+.landing-status-block[data-state="progress"] h2::before { background: var(--gold); }
+.landing-status-block[data-state="planned"] { border: 1.5px dashed var(--line-strong); }
+.landing-status-block[data-state="planned"] h2::before { border: 2px solid var(--ink-3); }
+.landing-count { max-inline-size: 30rem; color: var(--ink); font-size: var(--text-ui); font-weight: 600; line-height: var(--leading-ui); }
+.landing-note { inline-size: 100%; padding-block-start: var(--space-md); border-block-start: 1px solid var(--line); color: var(--ink-3); font-size: var(--text-label); line-height: var(--leading-ui); }
 
-@media (min-width: 640px) {
-  .landing-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* The close: published surahs as the reader's own chips, then the entry button once more. */
+.landing-closing { display: grid; justify-items: center; gap: var(--space-lg); padding-block-start: var(--space-2xl); border-block-start: 1px solid var(--line-strong); text-align: center; }
+.landing-closing .landing-h2::before { margin-inline: auto; }
+.landing-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-sm); }
+
+/* A gentle rise on first appearance; gone where scroll-driven animations are unsupported or motion is reduced. */
+@supports (animation-timeline: view()) {
+  .landing-reveal { animation: landing-reveal var(--dur-scene) var(--ease) both; animation-timeline: view(); animation-range: entry 5% entry 45%; }
+  @keyframes landing-reveal { from { opacity: 0; transform: translateY(1.25rem); } }
 }
-@media (min-width: 1024px) {
+
+@media (min-width: 40rem) {
+  .landing-trust-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-lg) var(--space-xl); }
+}
+
+@media (min-width: 64rem) {
   .page-shell:has(.landing) { max-inline-size: 64rem; padding-block-start: var(--space-2xl); }
-  .landing { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .landing-hero, .landing-how, .landing-ai, .landing-status, .landing-surahs { grid-column: 1 / -1; }
-  .landing-hero h1, .landing-hero p { max-inline-size: 40rem; }
-  .landing-status { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; }
+  .landing-hero { grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-2xl); padding: var(--space-2xl); }
+  .landing-hero-device { --frame-h: 28rem; }
+  .landing-band { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2xl); }
+  .landing-feature { grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-2xl); }
+  .landing-feature:nth-child(even) .landing-feature-media { order: -1; }
+  .landing-status { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-xl); }
 }
