@@ -58,6 +58,7 @@ The app renders only what is in `content/`. It never writes Arabic text itself.
   "id": "108-r06",
   "icons": ["scholar"],                   // keys of ui.ar.json -> icons, in legend order
   "badge": null,                          // null | "thabit" | "la_yathbut" | "khilaf_mutabar"
+  "review_status": "candidate",           // "candidate" | "reviewed" | "rejected". Always present. candidate = no human has reviewed it (the value of every record today); reviewed / rejected = a named reviewer marked it (tools/apply_review.py). The reader interface may show it; the reviewer's name and note are not exported. A surah whose text uses a rejected record is refused (check C17)
   "claim": "…",
   "status_text": "…",                     // ready sentence(s) describing the state, one per line; may be empty. Holds the reason a record is
                                           //   suspended or shown in level 3 only, and the record's `status_note` (decision 083): what the woven

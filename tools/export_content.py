@@ -16,6 +16,7 @@ import re
 import sys
 
 from quran_scan import normalize, key
+import review_sheet
 
 PROJECT = Path(__file__).resolve().parent.parent
 QURAN = PROJECT / "tools/data/qurancomplex/hafsData_v2-0.json"
@@ -29,7 +30,7 @@ CHECKS = {
     "C9": "four nonempty levels", "C10": "held blocks excluded",
     "C11": "stop titles", "C12": "stop ayahs",
     "C13": "passages", "C14": "map size", "C15": "examples",
-    "C16": "summary",
+    "C16": "summary", "C17": "rejected records are not displayed",
     "W12": "stop ayahs carried by the stop's records (warning)",
     "W17": "talk about the source or the state stays short in displayed text (warning)",
 }
@@ -431,6 +432,8 @@ def run_checks(nasij, records, quran, no, ui=None, sources=None):
                       (display.get("depth") != "depth3" or depth == 3),
                       f"{location}: {ident} violates depth_min/depth3")
                 check("C8", display.get("decision") == "نعم", f"{location}: {ident} display permission is not نعم")
+                check("C17", r.get("review_status") != review_sheet.REJECTED,
+                      f"{location}: {ident} was rejected by the reviewer")
 
     levels = nasij["levels"]
     check("C9", len(levels) == 4 and sorted(l["depth"] for l in levels) == [0, 1, 2, 3]
@@ -622,6 +625,8 @@ def public_record(r, sources, ui, quran):
     require(r.get("display", {}).get("decision") in ("نعم", "لا"), f"{ident}: unknown display decision")
     require(r["display"].get("depth") in ("from_depth_min", "depth3"), f"{ident}: unknown display depth")
     require(r.get("review_tier") in ("all", "sample", "none"), f"{ident}: unknown review tier")
+    review_status = r.get("review_status", review_sheet.CANDIDATE)
+    require(review_status in review_sheet.REVIEW_STATUSES, f"{ident}: unknown review_status {review_status!r}")
     badge = r.get("badge") or None
     require(badge is None or badge in ui["badges"], f"{ident}: unknown badge {badge!r}")
     evidence = unique_map(r.get("evidence"), f"{ident}.evidence")
@@ -697,7 +702,7 @@ def public_record(r, sources, ui, quran):
     if term:
         require(isinstance(term, str) and bool(term), f"{ident}: term must be a nonempty string")
     out_record = {"id": ident, "icons": [i for i in ui["icon_order"] if i in icons],
-                  "badge": badge, "claim": r["claim"], "status_text": status,
+                  "badge": badge, "review_status": review_status, "claim": r["claim"], "status_text": status,
                   "depth_min": r["depth_min"], "ayah_keys": list(r["ayah_keys"]),
                   "evidence": out}
     if science:
@@ -709,23 +714,71 @@ def public_record(r, sources, ui, quran):
     return out_record
 
 
-def review_text(records, sources, uses, no):
+NARRATION_ICONS = ("hadith", "athar")
+
+
+def grading_lines(r, sources):
+    """Sheet lines for each narration of the record: the transmitted grading with its named scholar, or
+    the state "reported, not judged" when no grading was transmitted (never a grading of ours)."""
+    lines = []
+    for e in r["evidence"]:
+        if e.get("icon") not in NARRATION_ICONS:
+            continue
+        rulings = [x for x in e.get("rulings", []) if x.get("kind") == "ruling"]
+        if not rulings:
+            lines.append(f"  Grading [{e['id']}]: reported, not judged")
+        for x in rulings:
+            where = sources.get(x.get("source_id"), {}).get("title", "")
+            lines.append(f"  Grading [{e['id']}]: {x.get('wording', '')}; {x.get('grader') or 'grader not named'}; {where}")
+    return lines
+
+
+def state_lines(r, ui):
+    """Badge and state as the reader sees them: the labels of ui.ar.json, never new wording."""
+    badge = r.get("badge") or None
+    lines = [f"  Badge: {ui['badges'][badge]['label'] if badge in ui['badges'] else badge or 'none'}"]
+    state = r.get("state")
+    if state:
+        lines.append(f"  State: {(ui.get('states') or {}).get(state, {}).get('label', state)}")
+    return lines
+
+
+def review_text(records, sources, uses, no, ui=None, previous=None):
+    """The review sheet. `previous` is the parsed old sheet: its marks, notes, reviewer and date carry over
+    by record id, so a new export never wipes a reviewer's work."""
+    ui = ui or {"badges": {}}
+    previous = previous or review_sheet.Sheet()
     pools = {tier: sorted((r for r in records.values() if r.get("review_tier") == tier), key=lambda r: r["id"])
              for tier in ("all", "sample")}
     sample = pools["sample"]
     size = min(len(sample), max(5, math.ceil(len(sample) * .2)))
     pools["sample"] = sorted(random.Random(no).sample(sample, size), key=lambda r: r["id"])
-    lines = [f"# Surah {no} — human review", "", f"Seed: {no}; sample: {size}/{len(sample)} (20%, rounded up; minimum 5 where available).", ""]
+    lines = [f"# Surah {no} — human review", "", f"Seed: {no}; sample: {size}/{len(sample)} (20%, rounded up; minimum 5 where available).",
+             f"{review_sheet.REVIEWER_LABEL} {previous.reviewer}".rstrip(), f"{review_sheet.DATE_LABEL} {previous.date}".rstrip(), ""]
+    shown = set()
     for tier, selected in pools.items():
         lines += [f"## {tier} ({len(selected)})", ""]
         for r in selected:
-            lines += [f"- [ ] {r['id']}", f"  Claim: {r['claim']}"]
+            shown.add(r["id"])
+            head, note = review_sheet.record_head(r["id"], previous)
+            lines += [head, *state_lines(r, ui), *grading_lines(r, sources), f"  Claim: {r['claim']}"]
             for e in r["evidence"]:
                 source = sources.get(e.get("source_id"), {})
                 lines += [f"  Source: {source.get('title', '')}; {e.get('sayer') or source.get('author', '')}; {e.get('locator', '')}",
                           f"  Quote: {e.get('quote') or ''}"]
-            lines += ["  Used: " + "; ".join(uses.get(r["id"], ["not used in exported text"])), ""]
+            lines += [note, "  Used: " + "; ".join(uses.get(r["id"], ["not used in exported text"])), ""]
+    lines += review_sheet.orphan_lines(previous, shown)
     return "\n".join(lines) + "\n"
+
+
+def read_previous_sheet(path):
+    """The sheet already on disk, or None. A sheet that cannot be read stops the export: never overwrite marks."""
+    if not path.exists():
+        return None
+    try:
+        return review_sheet.parse_sheet(path.read_text(encoding="utf-8"))
+    except review_sheet.SheetError as exc:
+        raise review_sheet.SheetError(f"{path}: {exc}") from exc
 
 
 def export_surah(no, records_root, content_root, quran, ui, check_only=False):
@@ -760,7 +813,7 @@ def export_surah(no, records_root, content_root, quran, ui, check_only=False):
                   "levels": levels, "records": mapped}
         if "passages" in nasij:
             output["passages"] = deepcopy(nasij["passages"])
-        review = review_text(records, sources, uses, no)
+        review = review_text(records, sources, uses, no, ui, read_previous_sheet(records_root / str(no) / "review.md"))
     except (ValueError, TypeError, KeyError) as exc:
         print(f"{no} MAP FAIL checked=1 failed=1: {exc}")
         return False
