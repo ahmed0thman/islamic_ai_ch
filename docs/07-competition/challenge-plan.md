@@ -6,7 +6,7 @@
 >
 > **التصنيف:** نصوص الدليل والملحق العلمي منقولة كما هي. وما عداها (ج): تقييمنا واقتراحاتنا، حتى يعتمدها صاحب الفكرة. والقرارات المحسومة يُشار إليها بأرقامها في [`decisions.md`](../decisions.md). والأفكار الجديدة مسجلة في [`ideas.md`](../ideas.md) (ف-011 إلى ف-021).
 >
-> **المصادر:** [`islamicaich_guide.pdf`](../../islamicaich_guide.pdf)، والإحالة إلى ترتيب صفحات الملف. و[`official/informations-data-refereces.pdf`](official/informations-data-refereces.pdf) («المرجعية والحزمة العلمية والبيانات»، ويُسمى هنا «الملحق»). و[`business-model-rules.md`](business-model-rules.md).
+> **المصادر:** `islamicaich_guide.pdf` (خارج المستودع العام)، والإحالة إلى ترتيب صفحات الملف. و`official/informations-data-refereces.pdf` (خارج المستودع العام) («المرجعية والحزمة العلمية والبيانات»، ويُسمى هنا «الملحق»). و[`business-model-rules.md`](business-model-rules.md).
 
 ## 1. الخلاصة
 

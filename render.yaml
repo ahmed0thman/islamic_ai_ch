@@ -17,7 +17,7 @@ services:
       - key: HUDA_ASK
         value: "1"
       - key: HUDA_ASK_PROVIDER
-        value: "opencode-go"
+        value: "openai"
       - key: HUDA_ASK_EFFORT
         value: "low"
       # The embedding model needs ~700 MB of memory, so production retrieval is lexical-only.

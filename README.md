@@ -12,10 +12,14 @@
 
 «اسأل» يحتاج مفتاح نموذج. **مفتاح المشروع على حصص مجانية محدودة وقد لا يجيب، فأدخل مفتاحك أنت.**
 
-1. افتح القائمة، ثم «الإعدادات»، ثم قسم «النموذج» (العنوان فيه: «جرّب «اسأل» بمفتاحك»).
-2. اختر المزوّد، وألصق المفتاح، ثم «جرّب المفتاح»، ثم «استعمله»:
-   - **OpenAI** («أوبن إيه آي») **أو Google (Gemini):** لجواب «اسأل».
-   - **Groq:** للسؤال بالصوت وحده: يحوّل كلامك إلى نص، ولا يُستعمل في الجواب.
+1. **افتح الإعدادات.** في الجوال: زر «افتح القائمة» أعلى الصفحة، ثم «الإعدادات» في أسفل القائمة. وفي الشاشة العريضة: أيقونة الترس («الإعدادات») في الشريط العلوي. (ولا يظهر القسم في صفحة «عن هُدًى»، بل داخل القراءة، مثل `/s/93/`.)
+2. في قسم **«النموذج»** ثلاث خانات بهذا الترتيب: **«أوبن إيه آي»**، ثم **«Google»**، ثم **«Groq»**. ألصق مفتاحك في خانة مزوّدك وحدها:
+   - **«أوبن إيه آي» أو «Google» (Gemini):** لجواب «اسأل». ويكفي واحد منهما.
+   - **«Groq»:** للسؤال بالصوت وحده: يحوّل كلامك إلى نص، ولا يُستعمل في الجواب.
+3. تحت كل خانة ثلاثة أزرار بهذا الترتيب: **«جرّب المفتاح»** (اختياري: يفحص أن المفتاح يعمل)، ثم **«استعمله»** (يحفظه في هذه الصفحة)، ثم **«امسحه»**. ثم يظهر تحت الخانة المحفوظة ما يلي:
+   - في «أوبن إيه آي» و«Google»: أول مفتاح تحفظه يصير هو المستعمل («يُستعمل الآن»). فإن حفظت المفتاحين فاضغط **«استعمل هذا المفتاح»** تحت الذي تريده.
+   - في «Groq»: لا زر اختيار؛ يكتب «يُستعمل الآن» ويُستعمل للسؤال بالصوت وحده.
+4. «امسح كل المفاتيح» (آخر الأزرار في القسم) يمسح الثلاثة.
 
 **ما يحدث للمفتاح** (من `app/src/lib/own-key.ts` ومسارات `app/src/app/api/`):
 
@@ -119,6 +123,6 @@ python3 tools/check_safety_cases.py
 
 ---
 
-**In English (short).** Huda ("guidance") is an Arabic reader that explains a Quran surah to a non-specialist at four depths; every claim carries a named source, and the AI weaves text from verified records without writing verses, inventing meanings, grading narrations or issuing fatwas. Live: https://hudan.ahmedothman.online. **Judges: the project's model key may be out of quota, so enter your own key** (menu, Settings, "Model": OpenAI or Google for "Ask", Groq for voice transcription only). The key stays in `sessionStorage`, is sent in two headers, is never stored or logged, and the project's key is never used in its place. Reading works without any key. Nothing has been reviewed by a specialist yet.
+**In English (short).** Huda ("guidance") is an Arabic reader that explains a Quran surah to a non-specialist at four depths; every claim carries a named source, and the AI weaves text from verified records without writing verses, inventing meanings, grading narrations or issuing fatwas. Live: https://hudan.ahmedothman.online. **Judges: the project's model key may be out of quota, so enter your own key** (menu, Settings, "Model" section: the OpenAI or Google field for "Ask", the Groq field for voice transcription only; on a wide screen, the gear icon in the top bar). The key stays in `sessionStorage`, is sent in two headers, is never stored or logged, and the project's key is never used in its place. Reading works without any key. Nothing has been reviewed by a specialist yet.
 
 </div>
