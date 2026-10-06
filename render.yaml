@@ -39,6 +39,7 @@ services:
         sync: false
       - key: CLERK_SECRET_KEY
         sync: false
+      # The two paths below are optional overrides: the code defaults to /sign-in and /sign-up (app/src/lib/auth-urls.ts).
       - key: NEXT_PUBLIC_CLERK_SIGN_IN_URL
         value: "/sign-in"
       - key: NEXT_PUBLIC_CLERK_SIGN_UP_URL
